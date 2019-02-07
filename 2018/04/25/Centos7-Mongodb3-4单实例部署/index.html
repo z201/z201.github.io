@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/favicon.ico?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Centos7,运维,Mongodb3.4," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="mongodb的安装方式比较简单，下面演示在CentOS7上用yum方式安装。  参考文献 下载地址 https://www.mongodb.com/download-center#community 在线文档 https://docs.mongodb.com/manual/introduction/  使用yum方式安装 仅供学习参考，若在生产环境中部署请注意修改安全配置。   整个mongo">
+<meta name="keywords" content="Centos7,运维,Mongodb3.4">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Centos7.*-Mongodb3.4单实例部署">
+<meta property="og:url" content="https://z201.github.io/2018/04/25/Centos7-Mongodb3-4单实例部署/index.html">
+<meta property="og:site_name" content="枫叶的小博客">
+<meta property="og:description" content="mongodb的安装方式比较简单，下面演示在CentOS7上用yum方式安装。  参考文献 下载地址 https://www.mongodb.com/download-center#community 在线文档 https://docs.mongodb.com/manual/introduction/  使用yum方式安装 仅供学习参考，若在生产环境中部署请注意修改安全配置。   整个mongo">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-04-24T21:33:32.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Centos7.*-Mongodb3.4单实例部署">
+<meta name="twitter:description" content="mongodb的安装方式比较简单，下面演示在CentOS7上用yum方式安装。  参考文献 下载地址 https://www.mongodb.com/download-center#community 在线文档 https://docs.mongodb.com/manual/introduction/  使用yum方式安装 仅供学习参考，若在生产环境中部署请注意修改安全配置。   整个mongo">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://z201.github.io/2018/04/25/Centos7-Mongodb3-4单实例部署/"/>
+
+
+
+
+
+  <title>Centos7.*-Mongodb3.4单实例部署 | 枫叶的小博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?b7172b501cdbc930ed342083d76b4a63";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">枫叶的小博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">合抱之木，生于毫末；九层之台，起于累土；千里之行，始于足下。</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-存档">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            存档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-分类">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-书架">
+          <a href="/books" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            书架
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-电影">
+          <a href="/movie" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-file-video-o"></i> <br />
+            
+            电影
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-如何学习">
+          <a href="/howToLean/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-graduation-cap"></i> <br />
+            
+            如何学习
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-公益404">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/25/Centos7-Mongodb3-4单实例部署/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Centos7.*-Mongodb3.4单实例部署</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-25T05:16:12+08:00">
+                2018-04-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux运维/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux运维</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,924
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  8
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>mongodb的安装方式比较简单，下面演示在CentOS7上用yum方式安装。</p>
+</blockquote>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><ul>
+<li>下载地址 <a href="https://www.mongodb.com/download-center#community" target="_blank" rel="noopener">https://www.mongodb.com/download-center#community</a></li>
+<li>在线文档 <a href="https://docs.mongodb.com/manual/introduction/" target="_blank" rel="noopener">https://docs.mongodb.com/manual/introduction/</a></li>
+</ul>
+<h2 id="使用yum方式安装"><a href="#使用yum方式安装" class="headerlink" title="使用yum方式安装"></a>使用yum方式安装</h2><blockquote>
+<p>仅供学习参考，若在生产环境中部署请注意修改安全配置。</p>
+</blockquote>
+<ul>
+<li>整个mongodb（社区版）包含如下软件</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>软件名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mongodb-org-server</td>
+<td>包含mongod守护程序和关联的配置和init脚本</td>
+</tr>
+<tr>
+<td>mongodb-org-mongos</td>
+<td>包含mongos守护程序</td>
+</tr>
+<tr>
+<td>mongodb-org-shell</td>
+<td>包含mongo shell，它是一个连接mongodb的命令行客户端，允许用户直接输入nosql语法管理数据库。</td>
+</tr>
+<tr>
+<td>mongodb-org-tools</td>
+<td>包含以下工具的MongoDB：数据导入、导出、备份、恢复等等</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>创建yum源文件</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/yum.repos.d/mongodb-org-3.4.repo1</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<ul>
+<li>把下面的内容复制到上面的文件中</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[mongodb-org-3.4]</span><br><span class="line">name=MongoDB Repository</span><br><span class="line">baseurl=https://repo.mongodb.org/yum/redhat/<span class="variable">$releasever</span>/mongodb-org/3.4/x86_64/</span><br><span class="line">gpgcheck=1</span><br><span class="line">enabled=1</span><br><span class="line">gpgkey=https://www.mongodb.org/static/pgp/server-3.4.asc123456</span><br></pre></td></tr></table></figure>
+<ul>
+<li>启动yum命令开始安装</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y mongodb-org1</span><br></pre></td></tr></table></figure>
+<ul>
+<li>如果使用SELinux，则必须配置SELinux，以允许在基于Red Hat Linux的系统（Red Hat Enterprise Linux或CentOS Linux）上启动MongoDB。</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/selinux/config</span><br><span class="line"><span class="comment">#在打开的文件中将值设置为disabled</span></span><br><span class="line">SELINUX=disabled</span><br></pre></td></tr></table></figure>
+<h2 id="关闭THP"><a href="#关闭THP" class="headerlink" title="关闭THP"></a>关闭THP</h2><blockquote>
+<p>自CentOS6版本开始引入了Transparent Huge Pages(THP)，从CentOS7版本开始，该特性默认就会启用。尽管THP的本意是为提升内存的性能，不过某些数据库厂商还是建议直接关闭THP(比如说Oracle、MariaDB、MongoDB等)，否则可能会导致性能出现下降。</p>
+</blockquote>
+<p>首先检查THP的启用状态：不关闭mongo启动的时候会警告。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// 检查THP状态</span><br><span class="line">cat /sys/kernel/mm/transparent_hugepage/defrag</span><br><span class="line">[always] madvise never</span><br><span class="line">cat /sys/kernel/mm/transparent_hugepage/enabled</span><br><span class="line">[always] madvise never</span><br><span class="line">这个状态就说明都是启用的。</span><br></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">//禁用THP,编辑rc.local文件</span><br><span class="line">vim /etc/rc.d/rc.local</span><br><span class="line">增加下列内容：</span><br><span class="line"><span class="keyword">if</span> <span class="built_in">test</span> -f /sys/kernel/mm/transparent_hugepage/enabled; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> never &gt; /sys/kernel/mm/transparent_hugepage/enabled</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"><span class="keyword">if</span> <span class="built_in">test</span> -f /sys/kernel/mm/transparent_hugepage/defrag; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> never &gt; /sys/kernel/mm/transparent_hugepage/defrag</span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+<p>  编辑完了需要重启服务器才能生效。</p>
+<h2 id="配置信息"><a href="#配置信息" class="headerlink" title="配置信息"></a>配置信息</h2><h3 id="mongo配置文件操作"><a href="#mongo配置文件操作" class="headerlink" title="mongo配置文件操作"></a>mongo配置文件操作</h3><ul>
+<li><p>安装完后寻找相关配置信息</p>
+</li>
+<li><p>whereis mongd</p>
+</li>
+<li><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mongod: /usr/bin/mongod /etc/mongod.conf /usr/share/man/man1/mongod.1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>mongd.conf 就是配置文件。</p>
+</li>
+<li><p>打开就可以看到相关配置信息。</p>
+</li>
+</ul>
+<h3 id="mongdb权限操作配置信息"><a href="#mongdb权限操作配置信息" class="headerlink" title="mongdb权限操作配置信息"></a>mongdb权限操作配置信息</h3><h4 id="Built-In-Roles（内置角色）："><a href="#Built-In-Roles（内置角色）：" class="headerlink" title="Built-In Roles（内置角色）："></a>Built-In Roles（内置角色）：</h4><ul>
+<li>数据库用户角色：<ul>
+<li>read、readWrite;</li>
+</ul>
+</li>
+<li>数据库管理角色：<ul>
+<li>dbAdmin、dbOwner、userAdmin；</li>
+</ul>
+</li>
+<li>集群管理角色：<ul>
+<li>clusterAdmin、clusterManager、clusterMonitor、hostManager；</li>
+</ul>
+</li>
+<li>备份恢复角色：<ul>
+<li>backup、restore；</li>
+</ul>
+</li>
+<li>所有数据库角色：<ul>
+<li>readAnyDatabase、readWriteAnyDatabase、userAdminAnyDatabase、dbAdminAnyDatabase</li>
+</ul>
+</li>
+<li>超级用户角色：<ul>
+<li>root  <ul>
+<li>这里还有几个角色间接或直接提供了系统超级用户的访问（dbOwner 、userAdmin、userAdminAnyDatabase）</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>内部角色：<ul>
+<li>__system</li>
+</ul>
+</li>
+</ul>
+<h4 id="具体角色："><a href="#具体角色：" class="headerlink" title="具体角色："></a>具体角色：</h4><ul>
+<li>Read：<ul>
+<li>允许用户读取指定数据库。</li>
+</ul>
+</li>
+<li>readWrite：<ul>
+<li>允许用户读写指定数据库。</li>
+</ul>
+</li>
+<li>dbAdmin：<ul>
+<li>允许用户在指定数据库中执行管理函数，如索引创建、删除，查看统计或访问system.profile。</li>
+</ul>
+</li>
+<li>userAdmin：<ul>
+<li>允许用户向system.users集合写入，可以找指定数据库里创建、删除和管理用户。</li>
+</ul>
+</li>
+<li>clusterAdmin：<ul>
+<li>只在admin数据库中可用，赋予用户所有分片和复制集相关函数的管理权限。</li>
+</ul>
+</li>
+<li>readAnyDatabase：<ul>
+<li>只在admin数据库中可用，赋予用户所有数据库的读权限。</li>
+</ul>
+</li>
+<li>readWriteAnyDatabase：<ul>
+<li>只在admin数据库中可用，赋予用户所有数据库的读写权限。</li>
+</ul>
+</li>
+<li>userAdminAnyDatabase：<ul>
+<li>只在admin数据库中可用，赋予用户所有数据库的userAdmin权限。</li>
+</ul>
+</li>
+<li>dbAdminAnyDatabase：<ul>
+<li>只在admin数据库中可用，赋予用户所有数据库的dbAdmin权限。</li>
+</ul>
+</li>
+<li>root：<ul>
+<li>只在admin数据库中可用。超级账号，超级权限。</li>
+</ul>
+</li>
+</ul>
+<h3 id="开启用户权限"><a href="#开启用户权限" class="headerlink" title="开启用户权限"></a>开启用户权限</h3><blockquote>
+<p>提示：即便设置了账号密码依然可以不通过密码链接，需要在mongo 启动的时候开启认证。</p>
+</blockquote>
+<ul>
+<li>创建用户<ul>
+<li>注意读写用户的权限请使用readWrite。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">show dbs; </span><br><span class="line">//显示数据库列表</span><br><span class="line"></span><br><span class="line">use admin; </span><br><span class="line"> //进入admin collections</span><br><span class="line"></span><br><span class="line">db.createUser(&#123;"user":"root","pwd":"z201.com","roles":[&#123;"role":"root","db":"admin"&#125;]&#125;) </span><br><span class="line">//创建超级管理员root库管理账号</span><br><span class="line"></span><br><span class="line">db.auth("root","eoner.com")</span><br><span class="line">//校验账号是否匹配</span><br><span class="line"><span class="number">1</span> </span><br><span class="line">//显示1表示匹配成功</span><br><span class="line"></span><br><span class="line">user yisheng; </span><br><span class="line">//进入yisheng collections,如果没有该数据库会自己创建一个；但是如果不在里面插入数据是不显示出来的。</span><br><span class="line"></span><br><span class="line">db.createUser(&#123;"user":"yisheng","pwd":"z201.com","roles":[&#123;"role":"readWrite","db":"yisheng"&#125;]&#125;)</span><br><span class="line">//创建数据库管理员</span><br><span class="line"></span><br><span class="line">db.auth("yisheng","z201.com")</span><br><span class="line"><span class="number">1</span> </span><br><span class="line">//显示1表示匹配成功</span><br></pre></td></tr></table></figure>
+<ul>
+<li>修改密码</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.changeUserPassword('root','z201.com');</span><br></pre></td></tr></table></figure>
+<ul>
+<li>数据库开启认证，注意请进入数据库中在执行。</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">security:</span><br><span class="line">    authorization:true</span><br></pre></td></tr></table></figure>
+<h2 id="基础操作"><a href="#基础操作" class="headerlink" title="基础操作"></a>基础操作</h2><p>启动</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start mongod</span><br></pre></td></tr></table></figure>
+<p>重启</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart mongod</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>如果无效</p>
+<ul>
+<li>use admin</li>
+<li>db.shutdownServer();</li>
+</ul>
+</li>
+</ul>
+<p>停止</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop mongod</span><br></pre></td></tr></table></figure>
+<p>认证模式启动</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup mongod --auth --port 27017 --dbpath /var/lib/mongo/ &amp;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>/var/bin/mongd 可以在mongod.conf中查看。</li>
+</ul>
+<h2 id="客户端连接失败问题："><a href="#客户端连接失败问题：" class="headerlink" title="客户端连接失败问题："></a>客户端连接失败问题：</h2><blockquote>
+<p><code>SCRAM-SHA-1 authentication failed `</code>for<code></code>root`</p>
+</blockquote>
+<ul>
+<li>mongodb加入了SCRAM-SHA-1校验方式，需要第三方工具配合进行验证。如果直接用代码连接会出问题。</li>
+<li>如果客户端没有SCRAM-SHA-1的校验方式，可以选择将authverison 版本降低；不使用该认证方式，同时工具连接的时候需要手动修改默认的认证方式。</li>
+<li><p>参考文献</p>
+<ul>
+<li><a href="https://yq.aliyun.com/articles/16919" target="_blank" rel="noopener">MongoDB中使用的SCRAM-SHA1认证机制</a></li>
+</ul>
+</li>
+</ul>
+<h3 id="CURD"><a href="#CURD" class="headerlink" title="CURD"></a>CURD</h3><ul>
+<li>插入</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">db.ops_dev.insert(&#123;title: 'MongoDB ', </span><br><span class="line">    description: 'MongoDB 是一个 Nosql 数据库',</span><br><span class="line">    tags: ['mongodb', 'database', 'NoSQL']</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<h2 id="其他注意事项"><a href="#其他注意事项" class="headerlink" title="其他注意事项"></a>其他注意事项</h2><h3 id="mongodb进程莫名退出"><a href="#mongodb进程莫名退出" class="headerlink" title="mongodb进程莫名退出"></a>mongodb进程莫名退出</h3><blockquote>
+<p>每天早上到公司发现Mongo都会自己关闭掉。</p>
+</blockquote>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">2018-01-03T18:21:03.135+0800 I CONTROL  [signalProcessingThread] got signal 1 (Hangup), will terminate after current cmd ends</span><br><span class="line">2018-01-03T18:21:03.136+0800 I NETWORK  [signalProcessingThread] shutdown: going to close listening sockets...</span><br><span class="line">2018-01-03T18:21:03.136+0800 I NETWORK  [signalProcessingThread] closing listening socket: 6</span><br><span class="line">2018-01-03T18:21:03.136+0800 I NETWORK  [signalProcessingThread] closing listening socket: 7</span><br><span class="line">2018-01-03T18:21:03.136+0800 I NETWORK  [signalProcessingThread] removing socket file: /tmp/mongodb-27017.sock</span><br><span class="line">2018-01-03T18:21:03.136+0800 I NETWORK  [signalProcessingThread] shutdown: going to flush diaglog...</span><br><span class="line">2018-01-03T18:21:03.136+0800 I FTDC     [signalProcessingThread] Shutting down full-time diagnostic data capture</span><br><span class="line">2018-01-03T18:21:03.138+0800 I STORAGE  [signalProcessingThread] WiredTigerKVEngine shutting down</span><br><span class="line">2018-01-03T18:21:03.366+0800 I STORAGE  [signalProcessingThread] shutdown: removing fs lock...</span><br><span class="line">2018-01-03T18:21:03.366+0800 I CONTROL  [signalProcessingThread] now exiting</span><br><span class="line">2018-01-03T18:21:03.366+0800 I CONTROL  [signalProcessingThread] shutting down with code:0</span><br></pre></td></tr></table></figure>
+<ul>
+<li>天啦噜有人发送了Hangup。。。好比<code>kill -1 pid</code>,但可以确认的是没有人手动信号给mongodb进程。</li>
+<li>然后网上找了很久发现了这篇文档 <a href="https://www.gnu.org/software/bash/manual/html_node/Signals.html" target="_blank" rel="noopener">Signals</a></li>
+</ul>
+<blockquote>
+<p>Bash resends a SIGHUP to all jobs if it receives a SIGHUP itself; this would include mongod.<br>Also, if you happen to have huponexit turned on, every job will receive a SIGHUP when bash exits. </p>
+</blockquote>
+<p>​    shell登进之后启动了mongo,然后退出shell使用的方式是直接关掉窗口,linux认为这是一起异常退出,这样一来这个shell进程就会收到SIGHUP信号,为了保证状态一致性,从而给它的所有子进程发送SIGHUP信号.而使用命令exit退出就不会有这种问题,因为linux会认为这是一种正常的退出。<br>​    mongodb官方文档会发现mongo有–-fork这样的一个参数,使用该参数启动mongo时,会自动将其挂到init进程(pid为1)下启动,而不加的话ppid(父进程id)就是当前的shell进程。</p>
+<ul>
+<li>如果使用了 fork 参数就必须添加 logpath</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mongod --fork --auth --port 27017 --dbpath /var/lib/mongo/ --logpath /opt/mongod/mongod.log</span><br></pre></td></tr></table></figure>
+<h2 id="安全的推出方式"><a href="#安全的推出方式" class="headerlink" title="安全的推出方式"></a>安全的推出方式</h2><blockquote>
+<p>一定要以命令方式关闭</p>
+</blockquote>
+<p>关闭服务时，一定要注意，用–shutdown命令关闭，既方便又安全。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+	
+    <div>    
+      
+      <ul class="post-copyright">
+         <li class="post-copyright-link">
+          <strong>本文作者：</strong>
+          <a href="/" title="欢迎访问 小峰同学 的个人博客">小峰同学</a>
+        </li>
+
+        <li class="post-copyright-link">
+          <strong>本文标题：</strong>
+          <a href="https://z201.github.io/2018/04/25/Centos7-Mongodb3-4单实例部署/" title="Centos7.*-Mongodb3.4单实例部署">Centos7.*-Mongodb3.4单实例部署</a>
+        </li>
+
+        <li class="post-copyright-link">
+          <strong>本文链接：</strong>
+          <a href="https://z201.github.io/2018/04/25/Centos7-Mongodb3-4单实例部署/" title="Centos7.*-Mongodb3.4单实例部署">https://z201.github.io/2018/04/25/Centos7-Mongodb3-4单实例部署/</a>
+        </li>
+
+        <li class="post-copyright-date">
+            <strong>发布时间：</strong>2018年4月25日 - 05时04分
+        </li>  
+        
+      </ul>
+		
+    </div>
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Centos7/" rel="tag"># Centos7</a>
+          
+            <a href="/tags/运维/" rel="tag"># 运维</a>
+          
+            <a href="/tags/Mongodb3-4/" rel="tag"># Mongodb3.4</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/04/23/linux基础命令/" rel="next" title="linux基础命令">
+                <i class="fa fa-chevron-left"></i> linux基础命令
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/04/26/Centos7-Redis单实例部署/" rel="prev" title="Centos7.*-Redis单实例部署">
+                Centos7.*-Redis单实例部署 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_fav">收藏夹</a>
+<a class="jiathis_button_copy">复制网址</a>
+<a class="jiathis_button_email">邮件</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_qzone">QQ空间</a>
+<a class="jiathis_button_tqq">腾讯微博</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a class="jiathis_button_share">一键分享</a>
+
+<a href="http://www.jiathis.com/share?uid=2140465" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+var jiathis_config={
+  data_track_clickback:true,
+  summary:"",
+  shortUrl:false,
+  hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar-min.jpg"
+                alt="小峰同学" />
+            
+              <p class="site-author-name" itemprop="name">小峰同学</p>
+              <p class="site-description motion-element" itemprop="description">有志青年o(∩_∩)o</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">38</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/z201" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:int_java_se@@163.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://twitter.com/se_int" target="_blank" title="Twitter">
+                      
+                        <i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.freecls.com/" title="沧浪水" target="_blank">沧浪水</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.fontawesome.com.cn/" title="Font Awesome中文网" target="_blank">Font Awesome中文网</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.spring4all.com/" title="spring4all 最专业的Spring民间组织" target="_blank">spring4all 最专业的Spring民间组织</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.sczyh30.com/" title="浮生若梦" target="_blank">浮生若梦</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://tengj.top/" title="嘟嘟独立博客" target="_blank">嘟嘟独立博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://indienova.com/" title="独立精神" target="_blank">独立精神</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.ityouknow.com/" title="纯洁的微笑" target="_blank">纯洁的微笑</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文献"><span class="nav-number">1.</span> <span class="nav-text">参考文献</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用yum方式安装"><span class="nav-number">2.</span> <span class="nav-text">使用yum方式安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关闭THP"><span class="nav-number">3.</span> <span class="nav-text">关闭THP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置信息"><span class="nav-number">4.</span> <span class="nav-text">配置信息</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#mongo配置文件操作"><span class="nav-number">4.1.</span> <span class="nav-text">mongo配置文件操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mongdb权限操作配置信息"><span class="nav-number">4.2.</span> <span class="nav-text">mongdb权限操作配置信息</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Built-In-Roles（内置角色）："><span class="nav-number">4.2.1.</span> <span class="nav-text">Built-In Roles（内置角色）：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#具体角色："><span class="nav-number">4.2.2.</span> <span class="nav-text">具体角色：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开启用户权限"><span class="nav-number">4.3.</span> <span class="nav-text">开启用户权限</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基础操作"><span class="nav-number">5.</span> <span class="nav-text">基础操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#客户端连接失败问题："><span class="nav-number">6.</span> <span class="nav-text">客户端连接失败问题：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CURD"><span class="nav-number">6.1.</span> <span class="nav-text">CURD</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他注意事项"><span class="nav-number">7.</span> <span class="nav-text">其他注意事项</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#mongodb进程莫名退出"><span class="nav-number">7.1.</span> <span class="nav-text">mongodb进程莫名退出</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安全的推出方式"><span class="nav-number">8.</span> <span class="nav-text">安全的推出方式</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小峰同学</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">55.1k</span>
+  
+</div>
+
+<!--
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+--> 
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
