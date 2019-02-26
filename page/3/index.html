@@ -363,6 +363,251 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/05/02/MySQL基础（二）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/05/02/MySQL基础（二）/" itemprop="url">MySQL基础（二）</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-02T05:02:46+08:00">
+                2018-05-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数据库基础操作/" itemprop="url" rel="index">
+                    <span itemprop="name">数据库基础操作</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  5,131
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  25
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <blockquote>
+<p>本章是整理知识内容，为强化知识长期更新。</p>
+</blockquote>
+<ul>
+<li>在 <a href="http://z201.cn/2018/04/29/MySQL基础" target="_blank" rel="noopener">MySQL基础（一）</a> 已经介绍了MYSQL最常用基础的操作，由于篇幅已经很大，所以分开记录。</li>
+</ul>
+<h2 id="MySql基础操作"><a href="#MySql基础操作" class="headerlink" title="MySql基础操作"></a>MySql基础操作</h2><h3 id="子查询与连接"><a href="#子查询与连接" class="headerlink" title="子查询与连接"></a>子查询与连接</h3><blockquote>
+<p>在MYSQL实际操作中，最大的操作就是查询，下面就关于子查询和链接做记录。</p>
+</blockquote>
+<h4 id="子查询"><a href="#子查询" class="headerlink" title="子查询"></a>子查询</h4><ul>
+<li>子查询(SubQuery)是指出现在其它SQL语句中的SELECT子句。比如</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM table_1 AS t1 WHERE columns_1 = (SELECT columns_2 FROM table_2 AS t2);</span><br><span class="line"># 这里的SELECT * FROM table_1 AS t1 称之为 Outer Query/Outer Statement;SELECT columns_2 FROM table_2 AS t2 成为 SubQuery。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>子查询严格以上是指<code>嵌套在查询内部，且必须始终出现在圆括号内</code></li>
+<li>子查询可以包含多个关键字：<code>DISTINCT</code>、<code>GROUP BY</code>、<code>ORDER BY</code>、<code>LIMIT</code>等函数。</li>
+<li>子查询的外层可以是：<code>INSERT</code>、<code>UPDATE</code>、<code>SELECT</code>、<code>DELETE</code>、<code>SET</code>、<code>DO</code>等操作。</li>
+<li>子查询可以返回结果，这个结果可以是<code>标量</code>、<code>一行</code>、<code>一列</code>，或者子查询。</li>
+<li>子查询的引发条件：<code>这里需要特别注意，并不是显示的才是子查询。</code><ul>
+<li>使用比较运算符的子查询：<code>= , &gt; , &lt; , &gt;= , &lt;= , &lt;&gt; , != , &lt;=&gt;</code></li>
+<li>使用结构语法：operand comparison_operator subquery ，可以使用一下修饰符来配合比较运算符。<ul>
+<li>operand comparison_operator <code>ANY</code>(subquery)</li>
+<li>operand comparison_operator <code>SOME</code>(subquery)</li>
+<li>operand comparison_operator <code>ALL</code>(subquery)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>运算符\关键字</th>
+<th>ANY</th>
+<th>SOME</th>
+<th>ALL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&gt;</code> 、<code>&gt;=</code></td>
+<td>最大值</td>
+<td>最小值</td>
+<td>最大</td>
+</tr>
+<tr>
+<td><code>&lt;</code>、<code>&lt;=</code></td>
+<td>最大值</td>
+<td>最大值</td>
+<td>最小值</td>
+</tr>
+<tr>
+<td><code>=</code></td>
+<td>任意值</td>
+<td>任意值</td>
+<td></td>
+</tr>
+<tr>
+<td><code>&lt;&gt;</code>、<code>!=</code></td>
+<td></td>
+<td></td>
+<td>任意值</td>
+</tr>
+</tbody>
+</table>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/05/02/MySQL基础（二）/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+	
+    <div>    
+      
+    </div>
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/29/MySQL基础（一）/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1137,201 +1382,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/26/Centos7-Redis单实例部署/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/04/26/Centos7-Redis单实例部署/" itemprop="url">Centos7.*-Redis单实例部署</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-26T06:34:08+08:00">
-                2018-04-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux运维/" itemprop="url" rel="index">
-                    <span itemprop="name">Linux运维</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  838
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  3
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h1><blockquote>
-<p>Redis全称：Remote Dictionary Server(远程数据服务)。Redis是一个开源的使用ANSI C语言编写、支持网络、可基于内存亦可持久化的日志型、Key-Value数据库，并提供多种语言的API。</p>
-</blockquote>
-<h2 id="单实例安装"><a href="#单实例安装" class="headerlink" title="单实例安装"></a>单实例安装</h2><blockquote>
-<p>只是学习使用使用yum 方式安装比较快。而且centos自带官方源。</p>
-</blockquote>
-<h3 id="yum安装"><a href="#yum安装" class="headerlink" title="yum安装"></a>yum安装</h3><ul>
-<li>yum install epel-release    –下载fedora的epel仓库</li>
-<li>yum install redis    – 安装redis数据库</li>
-</ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/04/26/Centos7-Redis单实例部署/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-	
-    <div>    
-      
-    </div>
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1381,7 +1436,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-count">36</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1518,7 +1573,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">56.2k</span>
+    <span title="Site words total count">57.3k</span>
   
 </div>
 
