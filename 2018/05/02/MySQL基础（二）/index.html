@@ -95,7 +95,7 @@
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/mysql/mysql_right_join.jpg">
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/mysql/right_join.jpg">
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/mysql/%E4%B8%89%E5%BC%A0%E8%A1%A8%E5%86%85%E8%BF%9E%E6%8E%A5%E7%BB%93%E6%9E%9C.jpg">
-<meta property="og:updated_time" content="2018-05-08T14:59:38.000Z">
+<meta property="og:updated_time" content="2019-02-27T14:08:50.423Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL基础（二）">
 <meta name="twitter:description" content="本章是整理知识内容，为强化知识长期更新。   在 MySQL基础（一） 已经介绍了MYSQL最常用基础的操作，由于篇幅已经很大，所以分开记录。  MySql基础操作子查询与连接 在MYSQL实际操作中，最大的操作就是查询，下面就关于子查询和链接做记录。  子查询 子查询(SubQuery)是指出现在其它SQL语句中的SELECT子句。比如  12SELECT * FROM table_1 AS">
@@ -465,7 +465,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  5,131
+                  5,070
                 </span>
               
 
@@ -481,7 +481,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  25
+                  24
                 </span>
               
             </div>
@@ -670,18 +670,13 @@
 <li>这里可以看到t_goods_typs中存在一个字段parent_id，如果不是0即表示有上级类别，而上级列表是指type_id。</li>
 </ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"># 尝试查询一次参考子类的信息。</span><br><span class="line">[root@localhost][Demo]&gt; SELECT t.type_id , t.type_name , p.type_name AS parent_name FROM t_goods_types AS t LEFT JOIN t_goods_types AS p ON t.paarent_id = p.type_id;</span><br><span class="line">+---------+-----------------+-----------------+</span><br><span class="line">| type_id | type_name       | parent_name     |</span><br><span class="line">+---------+-----------------+-----------------+</span><br><span class="line">|       1 | 家用电器        | NULL            |</span><br><span class="line">|       2 | 电脑、办公      | NULL            |</span><br><span class="line">|       3 | 大家电          | 家用电器        |</span><br><span class="line">|       4 | 生活电器        | 家用电器        |</span><br><span class="line">|       5 | 平板电视        | 大家电          |</span><br><span class="line">|       6 | 空调            | 大家电          |</span><br><span class="line">|       7 | 电风扇          | 生活电器        |</span><br><span class="line">|       8 | 饮水机          | 生活电器        |</span><br><span class="line">|       9 | 电脑整机        | 电脑、办公      |</span><br><span class="line">|      10 | 电脑配件        | 电脑、办公      |</span><br><span class="line">|      11 | 笔记本          | 电脑整机        |</span><br><span class="line">|      12 | 超级本          | 电脑整机        |</span><br><span class="line">|      13 | 游戏本          | 电脑整机        |</span><br><span class="line">|      14 | CPU             | 电脑配件        |</span><br><span class="line">+---------+-----------------+-----------------+</span><br><span class="line">14 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><blockquote>
-<p>MySQL索引的建立对于MySQL的高效运行是很重要的，索引可以大大提高MySQL的检索速度。 但是不当的使用也会出问题。</p>
+<h5 id="连接查询小结"><a href="#连接查询小结" class="headerlink" title="连接查询小结"></a>连接查询小结</h5><blockquote>
+<p>JOIN作为经常使用的关键字之一，使用的是否正确直接影响到查询结果和查询效率。</p>
 </blockquote>
-<p>…待续。</p>
-<h2 id="JOIN使用"><a href="#JOIN使用" class="headerlink" title="JOIN使用"></a>JOIN使用</h2><blockquote>
-<p>JOIN作为经常使用的关键字之一，使用的是否正确直接影响到查询结果和查询效率。在上面的操作中只是用了部分的，现在单独介绍下JOIN关键字使用。</p>
-</blockquote>
-<p>SQL表中JOIN类型</p>
+<p>SQL标准的JOIN类型</p>
 <ul>
 <li>内连接<code>INNER</code></li>
-<li>全外连接<code>FULL OUTER</code></li>
+<li>全外连接<code>FULL OUTER</code> 在mysql中并不能直接使用。</li>
 <li>左外连接<code>LEFT OUTER</code></li>
 <li>右外连接<code>RIGHT OUTER</code></li>
 <li>交叉连接<code>CROSS</code></li>
@@ -994,7 +989,7 @@ var jiathis_config={
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#MySql基础操作"><span class="nav-number">1.</span> <span class="nav-text">MySql基础操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#子查询与连接"><span class="nav-number">1.1.</span> <span class="nav-text">子查询与连接</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#子查询"><span class="nav-number">1.1.1.</span> <span class="nav-text">子查询</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#使用-运算符-的子查询"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">使用 运算符 的子查询</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#使用-NOT-IN-的子查询"><span class="nav-number">1.1.1.2.</span> <span class="nav-text">使用 [ NOT ] IN 的子查询</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#使用-NOT-EXISTS-子查询"><span class="nav-number">1.1.1.3.</span> <span class="nav-text">使用[NOT] EXISTS 子查询</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#连接查询"><span class="nav-number">1.1.2.</span> <span class="nav-text">连接查询</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#内连接"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">内连接</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#左外连接"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">左外连接</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#右外连接"><span class="nav-number">1.1.2.3.</span> <span class="nav-text">右外连接</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#多表连接"><span class="nav-number">1.1.2.4.</span> <span class="nav-text">多表连接</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#注意事项"><span class="nav-number">1.1.2.5.</span> <span class="nav-text">注意事项</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#自连接"><span class="nav-number">1.1.2.6.</span> <span class="nav-text">自连接</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#索引"><span class="nav-number">2.</span> <span class="nav-text">索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JOIN使用"><span class="nav-number">3.</span> <span class="nav-text">JOIN使用</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#MySql基础操作"><span class="nav-number">1.</span> <span class="nav-text">MySql基础操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#子查询与连接"><span class="nav-number">1.1.</span> <span class="nav-text">子查询与连接</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#子查询"><span class="nav-number">1.1.1.</span> <span class="nav-text">子查询</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#使用-运算符-的子查询"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">使用 运算符 的子查询</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#使用-NOT-IN-的子查询"><span class="nav-number">1.1.1.2.</span> <span class="nav-text">使用 [ NOT ] IN 的子查询</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#使用-NOT-EXISTS-子查询"><span class="nav-number">1.1.1.3.</span> <span class="nav-text">使用[NOT] EXISTS 子查询</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#连接查询"><span class="nav-number">1.1.2.</span> <span class="nav-text">连接查询</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#内连接"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">内连接</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#左外连接"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">左外连接</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#右外连接"><span class="nav-number">1.1.2.3.</span> <span class="nav-text">右外连接</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#多表连接"><span class="nav-number">1.1.2.4.</span> <span class="nav-text">多表连接</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#注意事项"><span class="nav-number">1.1.2.5.</span> <span class="nav-text">注意事项</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#自连接"><span class="nav-number">1.1.2.6.</span> <span class="nav-text">自连接</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#连接查询小结"><span class="nav-number">1.1.2.7.</span> <span class="nav-text">连接查询小结</span></a></li></ol></li></ol></li></ol></li></ol></div>
             
 
           </div>
@@ -1028,7 +1023,7 @@ var jiathis_config={
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">60.3k</span>
+    <span title="Site words total count">60.2k</span>
   
 </div>
 
