@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Mysql,InnoDB,索引,">
+  <meta name="keywords" content="Mysql,InnoDB,索引,数据库隔离,锁,">
 
 
 
@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="日常开发过程中，经常会使用到事物。最常见的多个sql语句操作要么都成功要么都失败。一想到食物就会想起ACID(Atomicity、Consistency、Isolation、Durability)也就是原子型、一致性、隔离性、持久性。   原子性 Atomicity ：一个事务（transaction）中的所有操作，或者全部完成，或者全部不完成，不会结束在中间某个环节。事务在执行过程中发生错误，">
-<meta name="keywords" content="Mysql,InnoDB,索引">
+<meta name="description" content="日常开发过程中，经常会使用到事物。最常见的多个sql语句操作要么都成功要么都失败。  划重点 索引 数据库隔离 锁 面试题  索引 目前工作中主要使用的数据库引擎就是InnoDB，所以关于索引的知识必不可少。   在了解索引之前，大概理解下mysql存储数据的大小划分表空间 -&amp;gt; 段 -&amp;gt; 区 -&amp;gt; 数据页 。  事物隔离 平常开发的时候，经常需要改变数据库的事务隔离级别，以保">
+<meta name="keywords" content="Mysql,InnoDB,索引,数据库隔离,锁">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL进阶（二）">
 <meta property="og:url" content="https://z201.github.io/2018/07/23/MySQL进阶（二）/index.html">
 <meta property="og:site_name" content="枫叶的小博客">
-<meta property="og:description" content="日常开发过程中，经常会使用到事物。最常见的多个sql语句操作要么都成功要么都失败。一想到食物就会想起ACID(Atomicity、Consistency、Isolation、Durability)也就是原子型、一致性、隔离性、持久性。   原子性 Atomicity ：一个事务（transaction）中的所有操作，或者全部完成，或者全部不完成，不会结束在中间某个环节。事务在执行过程中发生错误，">
+<meta property="og:description" content="日常开发过程中，经常会使用到事物。最常见的多个sql语句操作要么都成功要么都失败。  划重点 索引 数据库隔离 锁 面试题  索引 目前工作中主要使用的数据库引擎就是InnoDB，所以关于索引的知识必不可少。   在了解索引之前，大概理解下mysql存储数据的大小划分表空间 -&amp;gt; 段 -&amp;gt; 区 -&amp;gt; 数据页 。  事物隔离 平常开发的时候，经常需要改变数据库的事务隔离级别，以保">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-03-16T02:11:33.633Z">
+<meta property="og:updated_time" content="2019-03-16T05:07:42.002Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL进阶（二）">
-<meta name="twitter:description" content="日常开发过程中，经常会使用到事物。最常见的多个sql语句操作要么都成功要么都失败。一想到食物就会想起ACID(Atomicity、Consistency、Isolation、Durability)也就是原子型、一致性、隔离性、持久性。   原子性 Atomicity ：一个事务（transaction）中的所有操作，或者全部完成，或者全部不完成，不会结束在中间某个环节。事务在执行过程中发生错误，">
+<meta name="twitter:description" content="日常开发过程中，经常会使用到事物。最常见的多个sql语句操作要么都成功要么都失败。  划重点 索引 数据库隔离 锁 面试题  索引 目前工作中主要使用的数据库引擎就是InnoDB，所以关于索引的知识必不可少。   在了解索引之前，大概理解下mysql存储数据的大小划分表空间 -&amp;gt; 段 -&amp;gt; 区 -&amp;gt; 数据页 。  事物隔离 平常开发的时候，经常需要改变数据库的事务隔离级别，以保">
 
 
 
@@ -437,7 +437,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  534
+                  685
                 </span>
               
 
@@ -475,7 +475,22 @@
 
       
         <blockquote>
-<p>日常开发过程中，经常会使用到事物。最常见的多个sql语句操作要么都成功要么都失败。一想到食物就会想起ACID(Atomicity、Consistency、Isolation、Durability)也就是原子型、一致性、隔离性、持久性。</p>
+<p>日常开发过程中，经常会使用到事物。最常见的多个sql语句操作要么都成功要么都失败。</p>
+</blockquote>
+<h2 id="划重点"><a href="#划重点" class="headerlink" title="划重点"></a>划重点</h2><ul>
+<li>索引</li>
+<li>数据库隔离</li>
+<li>锁</li>
+<li>面试题</li>
+</ul>
+<h3 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h3><blockquote>
+<p>目前工作中主要使用的数据库引擎就是InnoDB，所以关于索引的知识必不可少。</p>
+</blockquote>
+<ul>
+<li>在了解索引之前，大概理解下mysql存储数据的大小划分<code>表空间 -&gt; 段 -&gt; 区 -&gt; 数据页</code> 。</li>
+</ul>
+<h3 id="事物隔离"><a href="#事物隔离" class="headerlink" title="事物隔离"></a>事物隔离</h3><blockquote>
+<p>平常开发的时候，经常需要改变数据库的事务隔离级别，以保证部分的业务能完成需求。</p>
 </blockquote>
 <ul>
 <li><p>原子性 Atomicity ：一个事务（transaction）中的所有操作，或者全部完成，或者全部不完成，不会结束在中间某个环节。事务在执行过程中发生错误，会被恢复（Rollback）到事务开始前的状态，就像这个事务从来没有执行过一样。即，事务不可分割、不可约简。</p>
@@ -486,7 +501,7 @@
 </li>
 <li>持久性 Durability ：事务处理结束后，对数据的修改就是永久的，即便系统故障也不会丢失。</li>
 </ul>
-<h3 id="事物隔离"><a href="#事物隔离" class="headerlink" title="事物隔离"></a>事物隔离</h3><table>
+<table>
 <thead>
 <tr>
 <th>事务隔离级别</th>
@@ -533,6 +548,12 @@
 <li>可重复读，一个事物执行的过程中看到的数据，总是跟这个事物在启动时候看的数据一致。</li>
 <li>串行化，对同一行数据 <code>写</code>会加<code>写锁</code>,<code>读</code>会加<code>读锁</code>。当出现读写冲突的时候，必须按数据执行事务。</li>
 </ul>
+<h3 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h3><blockquote>
+<p>这很重要不管是面试工作，还是排查异常，出现问题的时候需要发现、定位、解决能力。也是开发人员必须掌握的一项能力。</p>
+</blockquote>
+<h3 id="面试题"><a href="#面试题" class="headerlink" title="面试题"></a>面试题</h3><blockquote>
+<p><em>自古真情留不住</em>,唯有套路得人心。</p>
+</blockquote>
 
       
     </div>
@@ -581,6 +602,10 @@
             <a href="/tags/InnoDB/" rel="tag"># InnoDB</a>
           
             <a href="/tags/索引/" rel="tag"># 索引</a>
+          
+            <a href="/tags/数据库隔离/" rel="tag"># 数据库隔离</a>
+          
+            <a href="/tags/锁/" rel="tag"># 锁</a>
           
         </div>
       
@@ -732,7 +757,7 @@ var jiathis_config={
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">42</span>
+                  <span class="site-state-item-count">44</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -843,7 +868,7 @@ var jiathis_config={
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#事物隔离"><span class="nav-number">1.</span> <span class="nav-text">事物隔离</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#划重点"><span class="nav-number">1.</span> <span class="nav-text">划重点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#索引"><span class="nav-number">1.1.</span> <span class="nav-text">索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事物隔离"><span class="nav-number">1.2.</span> <span class="nav-text">事物隔离</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#锁"><span class="nav-number">1.3.</span> <span class="nav-text">锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#面试题"><span class="nav-number">1.4.</span> <span class="nav-text">面试题</span></a></li></ol></li></ol></div>
             
 
           </div>
