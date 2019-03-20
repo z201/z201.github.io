@@ -633,7 +633,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  3,014
+                  3,030
                 </span>
               
 
@@ -671,8 +671,10 @@
 
       
         
-          
-            <h2 id="后端应用性能指标"><a href="#后端应用性能指标" class="headerlink" title="后端应用性能指标"></a>后端应用性能指标</h2><h3 id="吞吐量、PV、QPS、TPS、RPS、I-O负载概念。"><a href="#吞吐量、PV、QPS、TPS、RPS、I-O负载概念。" class="headerlink" title="吞吐量、PV、QPS、TPS、RPS、I/O负载概念。"></a>吞吐量、PV、QPS、TPS、RPS、I/O负载概念。</h3><blockquote>
+          <h2 id="后端应用性能指标"><a href="#后端应用性能指标" class="headerlink" title="后端应用性能指标"></a>后端应用性能指标</h2><blockquote>
+<p>很久以前的笔记，被翻出来了。</p>
+</blockquote>
+<h3 id="吞吐量、PV、QPS、TPS、RPS、I-O负载概念。"><a href="#吞吐量、PV、QPS、TPS、RPS、I-O负载概念。" class="headerlink" title="吞吐量、PV、QPS、TPS、RPS、I/O负载概念。"></a>吞吐量、PV、QPS、TPS、RPS、I/O负载概念。</h3><blockquote>
 <p><strong>吞吐量</strong>:指单位时间内系统处理用户的请求数,不同的角度评估方式也不同。</p>
 <p><strong>PV </strong>  :  是Page View的缩写。来自浏览器的一次html内容请求会被看作一个PV。</p>
 <p><strong>QPS</strong>：Queries Per Second意思是“每秒查询率”，是一台服务器每秒能够相应的查询次数，是对一个特定的查询服务器在规定时间内所处理流量多少的衡量标准。</p>
@@ -683,186 +685,13 @@
 <ul>
 <li>在技术人员的职业生涯中，总是不断开发新的系统。在设计系统的时候，因场景、时间而异。一个系统并不是开始就能设计的非常完美，绝对多数的情况是在有限的资源，优先解决核心问题。并预测可能发生的问题，通过反复迭代的逐步消除痛点。这本身是一个持久性的过程。但是早期优良的架构设计能为未来的工作带来非常大的帮助，如何去评判设计是否合理需要数据佐证。吞吐量、PV、QPS、TPS、RPS、I/O这些指标早设计初期能为开发人员提供非常大的帮助。</li>
 </ul>
-<blockquote>
-<p>在设计系统时，应该多思考<strong><a href="http://wiki.mbalib.com/wiki/%E5%A2%A8%E8%8F%B2%E5%AE%9A%E5%BE%8B" target="_blank" rel="noopener">墨菲定律</a></strong></p>
-<ul>
-<li>任何事情都没表面看起来那么简单。</li>
-<li>所以事情都会比你预期的时间长。</li>
-<li>可能出错的事情总会出错。</li>
-<li>如果你担心某一件发生，那么它就更有可能发生。</li>
-</ul>
-<p>在系统划分的时，也要思考<strong><a href="http://www.melconway.com/Home/Conways_Law.html?spm=5176.100239.blogcont8611.8.e7792abC1tP3C" target="_blank" rel="noopener">康威定律 </a></strong> </p>
-<ul>
-<li>系统架构是公司组织架构的反映。</li>
-<li>应该按照业务闭环进行系统拆分/组织架构拆分,实现闭环/高内聚/低耦合,减少沟通成本。</li>
-<li>在合适的时间进行系统拆分,不要一开始就吧系统/服务拆分非常细。虽然闭环，但是每个人维护的系统多,维护成本高。</li>
-</ul>
-<p>​                                                            —亿级流量网站架构核心技术 </p>
-</blockquote>
-<h3 id="TPS-吞吐量"><a href="#TPS-吞吐量" class="headerlink" title="TPS(吞吐量)"></a>TPS(吞吐量)</h3><blockquote>
-<p>一个系统的承压能力。单位时间内完成的工作量的量度。通常，平均响应时间越短，系统吞吐量越大；平均响应时间越长，系统吞吐量越小。但是，系统吞吐量越大，未必平均响应时间越短。因为在某些情况（例如，不增加任何硬件配置）吞吐量的增大，有时会把平均响应时间作为牺牲，来换取一段时间处理更多的请求。</p>
-</blockquote>
-<ul>
-<li>影响吞吐量的几个重要参数指标<ul>
-<li>QPS、TPS、并发数、响应。</li>
-</ul>
-</li>
-<li>名词概述<ul>
-<li><strong>并发数</strong> ： 系统同时处理的 reqeust / 事物数。</li>
-<li><strong>响应时间</strong> :  一般取reqeust的平均响应时间，很大程度上受客户端环境因素影响。</li>
-<li><strong>TPS</strong> （<strong>QPS</strong> ）: 并发数 / 响应时间。</li>
-</ul>
-</li>
-</ul>
-<h4 id="系统响应时间计算"><a href="#系统响应时间计算" class="headerlink" title="系统响应时间计算"></a><strong>系统响应时间计算</strong></h4><ul>
-<li>用于测量完成一个特定请求需要花费多少时间。它是一个非常重要的度量值因为它是用户体验的一个指数。尽管这样，你必须确保你理解你测量的是什么：<ul>
-<li>系统级的反应时间。</li>
-<li>组件级的反应时间。</li>
-</ul>
-</li>
-<li>它们是完全不同的，因为系统级包括像队列时间这样的变量是差别很大的。</li>
-<li>值得注意的是，响应时间同时也是不容易测量的度量值，因为它比其它的度量值更容易变化。因此你必需了解反应时间的分布。如果应用对你大部分用户的反应时间是2秒钟，而对10％用户的反应时间却是10秒钟，在这种情况下，你必须知道这个反应时间的分布，才能精确地评估该问题和解决它。这就要测量它们的反应时间并且得到它们的标准偏差，理想的情况是用一个柱状图把反应时间的分布显示出来。</li>
-<li>举个🌰 场景：<ul>
-<li>一位用户通过浏览器访问网站查看新闻。<strong>栗子中每个操作用别名代替，比如客户请求服务器过程、时间同称N1。</strong></li>
-</ul>
-</li>
-<li><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/web/%E5%90%9E%E5%90%90%E9%87%8F%E6%A0%97%E5%AD%90.svg" alt=""></li>
-<li>实线（请求），虚线（响应）。</li>
-<li>网络传输时间: N1+N2 。</li>
-<li>应用服务器处理时间: A1 + A11 <strong>OR</strong> A2 + A22。</li>
-<li>数据库服务器处理时间: D1 + D11 <strong>OR</strong> D2 + D22。</li>
-<li>响应时间  N1+N2+A1+A11+D1+D11 <strong>OR</strong> N1 + N2 + A2 + A22 + D2 + D22。</li>
-<li><p>假设参数耗时 : </p>
-<ul>
-<li>N1 = 150ms ; N2 = 200ms。</li>
-<li>A1 = 10ms ; A11 = 10ms ; A2 = 10ms ；A22 = 10ms 。</li>
-<li>D1 = 10ms ; D11 = 20ms ; D2 = 20ms  ; D22 = 30。</li>
-</ul>
-</li>
-<li><p><strong>单次reqeust</strong> 。</p>
-<ul>
-<li>流程：<strong>P1</strong> = N1–&gt; A1 – &gt; D1 –&gt; D11 – &gt; A11 –&gt; N2。<ul>
-<li>耗时：<strong>T1</strong> = N1 + A1 + D1 + D11 + A11 + N2。</li>
-</ul>
-</li>
-<li>请求一次网站首页响应时间： 150 + 200 +  10 + 10 + 10 + 20 = 400，也就是客户请求网站地址的那一刻到看到网站至少需要400ms（半秒）。</li>
-</ul>
-</li>
-</ul>
-<h4 id="并发用户数的计算公式"><a href="#并发用户数的计算公式" class="headerlink" title="并发用户数的计算公式"></a>并发用户数的计算公式</h4><ul>
-<li>系统用户数: 系统额定的用户数量，如一个OA系统，可能使用该系统的用户总数是4000个，那么这个数量，就是系统用户数。</li>
-<li>同时在线用户数: 在一定的时间范围内，最大的同时在线用户数量。</li>
-<li>同时在线用户数 = 每秒请求数RPS(吞吐量) + 并发连接数 + 平均用户思考时间。</li>
-<li>平均并发用户数的计算: C = nL / T<ul>
-<li>C是平均的并发用户数。</li>
-<li>n是平均每天访问用户数(login session)。</li>
-<li>L是一天内用户从登录到退出的平均时间(login session的平均时间)。</li>
-<li>T是考察时间长度(一天内多长时间有用户使用系统)。</li>
-</ul>
-</li>
-<li>并发用户数峰值计算: C^约等于C + 3* 根号C 其中 C^ 是并发用户峰值，C 是平均并发用户数，该公式遵循泊松分布理论。</li>
-</ul>
-<h4 id="吞吐量的计算公式"><a href="#吞吐量的计算公式" class="headerlink" title="吞吐量的计算公式"></a>吞吐量的计算公式</h4><ul>
-<li>从业务角度看<ul>
-<li>吞吐量可以用<ul>
-<li>请求数/秒。</li>
-<li>页面数/秒。</li>
-<li>人数/天或处理业务数/小时等单位来衡量。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>从网络角度看，吞吐量可以用:<ul>
-<li>字节/秒来衡量</li>
-</ul>
-</li>
-<li>对于交互式应用来说，吞吐量指标反映的是服务器承受的压力，他能够说明系统的负载能力。</li>
-<li>以不同方式表达的吞吐量可以说明不同层次的问题，例如：<ul>
-<li>以字节数/秒方式可以表示数要受网络基础设施、服务器架构、应用服务器制约等方面的瓶颈。</li>
-<li>已请求数/秒的方式表示主要是受应用服务器和应用代码的制约体现出的瓶颈。</li>
-</ul>
-</li>
-</ul>
-<h4 id="思考时间的计算公式"><a href="#思考时间的计算公式" class="headerlink" title="思考时间的计算公式"></a><strong>思考时间的计算公式</strong></h4><ul>
-<li><p>Think Time，从业务角度来看，这个时间指用户进行操作时每个请求之间的时间间隔，为了模拟这样的时间间隔，引入了思考时间这个概念，来更加真实的模拟用户的操作。<br>在吞吐量这个公式中 F = VU * R / T说明吞吐量 F 是 VU 数量、每个用户发出的请求数 R 和时间 T 的函数，而其中的 R 又可以用时间T和用户思考时间 TS 来计算：R = T / TS<br>下面给出一个计算思考时间的一般步骤：</p>
-<ul>
-<li><p>首先计算出系统的并发用户数</p>
-<p>C = nL / TF = R × C</p>
-</li>
-<li><p>统计出系统平均的吞吐量</p>
-<p>F= VU <em> R / T R × C = VU </em> R / T</p>
-</li>
-<li><p>统计出平均每个用户发出的请求数量</p>
-<p>R= u<em>C</em>T / VU</p>
-</li>
-<li><p>根据公式计算出思考时间</p>
-<p>TS= T / R</p>
-</li>
-</ul>
-</li>
-</ul>
-<h4 id="因素（指标）"><a href="#因素（指标）" class="headerlink" title="因素（指标）"></a>因素（指标）</h4><ul>
-<li><p><strong>资源利用率</strong></p>
-<blockquote>
-<p>这里所谓的资源是对于系统中的一个抽象的概念，它包括很多方面</p>
-</blockquote>
-<ol>
-<li>reqeust  对 cpu 的消耗：单个reqeust对CPU消耗越高，外部系统接口、IO影响速度越慢，系统吞吐能力越低，反之越高。</li>
-<li>内存负载： 系统对系统内存、vm虚拟内存、swap交换区的使用情况。</li>
-<li>iO负载消耗 (<strong>这里的IO负载是指硬盘IO ，并不是网络IO</strong>): 系统在运行中常常会涉及到大量的磁盘读写操作。磁盘有两个重要的参数: Seek time、 Rotational latency。正常的I/O计数为：1000/(Seek time+Rotational latency)*0.75    在此范围内属正常。当达到85％的I/O计数以上时则基本认为已经存在I/O瓶劲。理论情况下，磁盘的随机读计数为125、顺序读计数为225。对于数据文件而言是随机读写，日志文件是顺序读写。</li>
-</ol>
-</li>
-<li><p><strong>外部接口</strong></p>
-<ol>
-<li>一个系统会将系统内的功能封装成接口(RESTFUL、SOAP)的形式向外部提供，这些外部接口和内部的代码处理逻辑是强关联的。比如使用到支付包，在一个支付reqeust中需要发起对支付接口的请求完成整个业务流程。</li>
-</ol>
-</li>
-</ul>
-<h3 id="2、PV"><a href="#2、PV" class="headerlink" title="2、PV"></a>2、PV</h3><ul>
-<li>PV（page view）即页面浏览量，通常是衡量一个网络新闻频道或网站甚至一条网络新闻的主要指标。网页浏览数（page view）是评价网站流量最常用的指标之一，简称为PV。搜索引擎会根据网站的PV来判断网站的好与坏，是影响网站排名的重要因素之一。</li>
-<li>一般看新闻也就集中在早上、中午、晚上。假设早上7:30 - 8:30网站有会很大访问量大概3500左右。</li>
-<li><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/web/%E7%BD%91%E7%AB%99PV.png" alt=""></li>
-</ul>
-<h3 id="3、QPS、TPS"><a href="#3、QPS、TPS" class="headerlink" title="3、QPS、TPS"></a>3、QPS、TPS</h3><blockquote>
-<p>每秒钟request/事务数量，一个事务是指一个客户机向服务器发送请求然后服务器做出反应的过程。</p>
-</blockquote>
-<ol>
-<li><p>事务可以从客户端角度进行定义。如：</p>
-<ol>
-<li>一个登录的POST请求可定义为一个事务。</li>
-<li>一个文件上传下载的动作也可定义为一个事务。</li>
-<li>一组连续的请求操作也可定义一个事务。</li>
-</ol>
-</li>
-<li><p>事务也可从服务器端定义，如：</p>
-<ol>
-<li>执行一个数据库事务。</li>
-<li>执行一段存储过程。</li>
-<li>执行一个服务器请求等。</li>
-</ol>
-<p>理解了事务，再理解TPS，TPS需要结合性能测试场景来说明：</p>
-<ol>
-<li>单体<ol>
-<li>本次测试只测登录这一功能，便于分析和寻找瓶颈。</li>
-<li>也可做并发测试。</li>
-<li>TPS = 总事务数 / 总时间(秒)。</li>
-</ol>
-</li>
-<li>混合<ol>
-<li>多种模块一起进行测试，更符合真实场景，便于对服务器的整体处理能力进行评估。</li>
-<li>TPS=单个事务的TPS总和。</li>
-</ol>
-</li>
-</ol>
-</li>
-<li><p>大多数情况下，我们使用加权协函数平均方法来计算客户机的得分，利用客户机的这些信息使用加权协函数平均方法来计算服务器端的整体TPS得分。</p>
-</li>
-</ol>
-<h3 id="5、RPS"><a href="#5、RPS" class="headerlink" title="5、RPS"></a>5、RPS</h3><blockquote>
-<p>每秒请求数，这里还有两个我们通常认为和RPS相等的名词，arrival rate、TPS。</p>
-</blockquote>
-<h3 id="6、IO"><a href="#6、IO" class="headerlink" title="6、IO"></a>6、IO</h3>
-          
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/03/20/后端应用性能指标/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
