@@ -90,7 +90,7 @@
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/mysql/mysql%E6%9E%B6%E6%9E%84.svg">
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/mysql/SHOW_PROCESSLIST.png">
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/mysql/SHOW_ENGINES.png">
-<meta property="og:updated_time" content="2019-03-17T02:23:11.200Z">
+<meta property="og:updated_time" content="2019-03-25T16:04:23.835Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL进阶（一）">
 <meta name="twitter:description" content="之前已经介绍了最基础的操作，那么这里开始从mysql自身理解。  Mysql基础架构图 简单介绍上图相关模块功能 连接器：管理连接，权限验证  查询缓存：命中缓存则直接返回结果  语法解析：词法分析，语法分析 查询优化：执行计划生成，索引选择 执行器：操作引擎，返回结果 存储引擎：存储数据，提供读写结构。">
@@ -441,7 +441,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1,728
+                  2,362
                 </span>
               
 
@@ -457,7 +457,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  6
+                  8
                 </span>
               
             </div>
@@ -522,6 +522,10 @@
 <p>连接完成后如果没有执行后续操作则 Command会显示Sleep的状态，长时间Sleep会导致连接自动断开。默认的时间是8小时，也就是参数 <code>wait_timeout</code>。当客户端连接断开后，若客户端再次发出请求就会提示一个</p>
 <p><code>Lost connection to MySQL server during query</code>，此时就只能重新建立连接了。</p>
 </blockquote>
+<h5 id="半双工"><a href="#半双工" class="headerlink" title="半双工"></a>半双工</h5><ul>
+<li>MySQL客户端/服务端通信协议是<code>“半双工”</code>的：在任一时刻，要么是服务器向客户端发送数据，要么是客户端向服务器发送数据，这两个动作不能同时发生。一旦一端开始发送消息，另一端要接收完整个消息才能响应它，所以我们无法也无须将一个消息切成小块独立发送，也没有办法进行流量控制。</li>
+<li>服务器响应给用户的数据通常会很多，由多个数据包组成。但是当服务器响应客户端请求时，客户端必须完整的接收整个返回结果，而不能简单的只取前面几条结果，然后让服务器停止发送。因而在实际开发中，尽量保持查询简单且只返回必需的数据，减小通信间数据包的大小和数量是一个非常好的习惯，这也是查询中尽量避免使用<code>SELECT *</code>以及加上<code>LIMIT</code>限制的原因之一。</li>
+</ul>
 <h5 id="长连接与短连接"><a href="#长连接与短连接" class="headerlink" title="长连接与短连接"></a>长连接与短连接</h5><ul>
 <li><p>在数据库里面，长连接是指数据库建立连接，如果客户端有持续的请求则使用同一个连接，短连接是指每次执行几次短的查询就断开连接，下次查询再次创建连接。由于创建的过程复杂，一般来说尽量减少创建连接的动作，尽可能使用长连接。特别是在开发的时候出现大伙突然连接不上测试库，此时就检查下连接是不是太多了。因为连接多了会导致内存消耗特别快。</p>
 <ul>
@@ -538,16 +542,23 @@
 <li>建立完成后，假设执行一次<code>SELECT</code>语句，执行逻辑就会到第二部查询缓存。mysql拿到一个查询之后，会先到缓存中寻找释放有完全对应的，因为之前执行的查询语句和结果集会直接被缓存起来，以<code>Keys-value</code>的形式。keys是查询语句-value是查询结果集。如果能命中这个key则直接返回value。咋一看挺有用的，但实际上查询缓存的实效的太频繁。并且keys的命中条件太不聪明了，<code>如果两次查询语句在任何的字符上存在不通（空格、大小写）</code>都不会缓存命中。为什么会频繁失效，因为如果对查询语句中的表进行更新，就会导致缓存失效。比如<code>INSERT、UPDATE 、DELETE 、TRUNCATE TABLE 、ALTER TABLE</code>等等就会导致缓存失效。</li>
 </ul>
 <h4 id="语法解析"><a href="#语法解析" class="headerlink" title="语法解析"></a>语法解析</h4><blockquote>
-<p>如果没有命中查询缓存，就要开始执行sql语句了。mysql需要做什么，因此需要对sql进行解析。</p>
+<p>如果没有命中查询缓存，就要开始执行sql语句了。mysql需要做什么，因此需要对sql进行解析。MySQL通过关键字将SQL语句进行解析，并生成一颗对应的解析树。这个过程解析器主要通过语法规则来验证和解析。比如SQL中是否使用了错误的关键字或者关键字的顺序是否正确等等。预处理则会根据MySQL规则进一步检查解析树是否合法。比如检查要查询的数据表和数据列是否存在等等。</p>
 </blockquote>
 <ul>
 <li>本质上发送过来的是一个文本信息，这里就需要对该文本信息进行编译，涉及到<code>词法解析</code>、<code>语法解析</code>、<code>语义解析</code>等阶段。需要注意的是，这里会对sql语句进行一些检查，比如设计的相关表、表字段。这里检查通过的才会进入查询优化模块。</li>
 </ul>
 <h4 id="查询优化"><a href="#查询优化" class="headerlink" title="查询优化"></a>查询优化</h4><blockquote>
-<p>通过之前的语法解析，此时mysql就知道文本内容要做什么。</p>
+<p>通过之前的语法解析，基本可以判定语法树是合法的，此时mysql就知道文本内容要做什么。</p>
 </blockquote>
 <ul>
 <li>mysql会对查询语句进行优化，优化的结果就是生成一个执行计划，这个计划会表明使用了那些查询索引，表之间的连接是什么样子的。有时候出现多种执行方式，只是效率不通，优化器会决定使用哪一个执行方案，这个时候就涉及到<code>EXPLAIN</code>语句，该语句可以查看sql到执行计划，这将涉及到查询优化。</li>
+<li>MySQL的查询优化器是一个非常复杂的部件，它使用了非常多的优化策略来生成一个最优的执行计划：<ul>
+<li>重新定义表的关联顺序（多张表关联查询时，并不一定按照SQL中指定的顺序进行，但有一些技巧可以指定关联顺序）</li>
+<li>优化函数</li>
+<li>提前终止查询（比如：使用Limit时，查找到满足数量的结果集后会立即终止查询）</li>
+<li>优化排序（在老版本MySQL会使用两次传输排序，即先读取行指针和需要排序的字段在内存中对其排序，然后再根据排序结果去读取数据行，而新版本采用的是单次传输排序，也就是一次读取所有的数据行，然后根据给定的列排序。对于<code>I/O</code>密集型应用，效率会高很多。</li>
+</ul>
+</li>
 </ul>
 <h4 id="执行器"><a href="#执行器" class="headerlink" title="执行器"></a>执行器</h4><blockquote>
 <p>进入到执行sql到环节。</p>
@@ -873,7 +884,7 @@ var jiathis_config={
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Mysql基础架构图"><span class="nav-number">1.</span> <span class="nav-text">Mysql基础架构图</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#简单介绍上图相关模块功能"><span class="nav-number">1.1.</span> <span class="nav-text">简单介绍上图相关模块功能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#连接器"><span class="nav-number">1.2.</span> <span class="nav-text">连接器</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#长连接与短连接"><span class="nav-number">1.2.1.</span> <span class="nav-text">长连接与短连接</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查询缓存"><span class="nav-number">1.3.</span> <span class="nav-text">查询缓存</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#语法解析"><span class="nav-number">1.4.</span> <span class="nav-text">语法解析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查询优化"><span class="nav-number">1.5.</span> <span class="nav-text">查询优化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#执行器"><span class="nav-number">1.6.</span> <span class="nav-text">执行器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#存储引擎"><span class="nav-number">1.7.</span> <span class="nav-text">存储引擎</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Mysql基础架构图"><span class="nav-number">1.</span> <span class="nav-text">Mysql基础架构图</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#简单介绍上图相关模块功能"><span class="nav-number">1.1.</span> <span class="nav-text">简单介绍上图相关模块功能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#连接器"><span class="nav-number">1.2.</span> <span class="nav-text">连接器</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#半双工"><span class="nav-number">1.2.1.</span> <span class="nav-text">半双工</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#长连接与短连接"><span class="nav-number">1.2.2.</span> <span class="nav-text">长连接与短连接</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查询缓存"><span class="nav-number">1.3.</span> <span class="nav-text">查询缓存</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#语法解析"><span class="nav-number">1.4.</span> <span class="nav-text">语法解析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查询优化"><span class="nav-number">1.5.</span> <span class="nav-text">查询优化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#执行器"><span class="nav-number">1.6.</span> <span class="nav-text">执行器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#存储引擎"><span class="nav-number">1.7.</span> <span class="nav-text">存储引擎</span></a></li></ol></li></ol></div>
             
 
           </div>
@@ -907,7 +918,7 @@ var jiathis_config={
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">94.6k</span>
+    <span title="Site words total count">95.8k</span>
   
 </div>
 
