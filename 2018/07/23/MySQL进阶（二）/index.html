@@ -79,19 +79,19 @@
 
 
 
-<meta name="description" content="MySQL基础知识  InnoDB架构 这是官方文档中的架构图   划重点 MySQL涉及到的知识太庞大了，对与业务开发人员来说掌握一部分经常使用的知识即可。   索引 数据库隔离 锁 面试题  索引 目前工作中主要使用的数据库引擎就是InnoDB，所以关于索引的知识必不可少。   在了解索引之前，大概理解下mysql存储数据的大小划分表空间 -&amp;gt; 段 -&amp;gt; 区 -&amp;gt; 数据页">
+<meta name="description" content="MySQL基础知识  InnoDB架构 这是官方文档中的架构图   划重点 MySQL涉及到的知识太庞大了，对与业务开发人员来说掌握一部分经常使用的知识即可。   索引 数据库隔离 锁  索引 目前工作中主要使用的数据库引擎就是InnoDB，所以关于索引的知识必不可少。   在了解索引之前，大概理解下mysql存储数据的大小划分表空间 -&amp;gt; 段 -&amp;gt; 区 -&amp;gt; 数据页 。  索">
 <meta name="keywords" content="Mysql,Mysql5.7,InnoDB,索引,数据库隔离,锁">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL进阶（二）">
 <meta property="og:url" content="https://z201.github.io/2018/07/23/MySQL进阶（二）/index.html">
 <meta property="og:site_name" content="枫叶的小博客">
-<meta property="og:description" content="MySQL基础知识  InnoDB架构 这是官方文档中的架构图   划重点 MySQL涉及到的知识太庞大了，对与业务开发人员来说掌握一部分经常使用的知识即可。   索引 数据库隔离 锁 面试题  索引 目前工作中主要使用的数据库引擎就是InnoDB，所以关于索引的知识必不可少。   在了解索引之前，大概理解下mysql存储数据的大小划分表空间 -&amp;gt; 段 -&amp;gt; 区 -&amp;gt; 数据页">
+<meta property="og:description" content="MySQL基础知识  InnoDB架构 这是官方文档中的架构图   划重点 MySQL涉及到的知识太庞大了，对与业务开发人员来说掌握一部分经常使用的知识即可。   索引 数据库隔离 锁  索引 目前工作中主要使用的数据库引擎就是InnoDB，所以关于索引的知识必不可少。   在了解索引之前，大概理解下mysql存储数据的大小划分表空间 -&amp;gt; 段 -&amp;gt; 区 -&amp;gt; 数据页 。  索">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/mysql/innodb-architecture.png">
-<meta property="og:updated_time" content="2019-03-17T02:28:20.372Z">
+<meta property="og:updated_time" content="2019-03-25T15:53:00.570Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL进阶（二）">
-<meta name="twitter:description" content="MySQL基础知识  InnoDB架构 这是官方文档中的架构图   划重点 MySQL涉及到的知识太庞大了，对与业务开发人员来说掌握一部分经常使用的知识即可。   索引 数据库隔离 锁 面试题  索引 目前工作中主要使用的数据库引擎就是InnoDB，所以关于索引的知识必不可少。   在了解索引之前，大概理解下mysql存储数据的大小划分表空间 -&amp;gt; 段 -&amp;gt; 区 -&amp;gt; 数据页">
+<meta name="twitter:description" content="MySQL基础知识  InnoDB架构 这是官方文档中的架构图   划重点 MySQL涉及到的知识太庞大了，对与业务开发人员来说掌握一部分经常使用的知识即可。   索引 数据库隔离 锁  索引 目前工作中主要使用的数据库引擎就是InnoDB，所以关于索引的知识必不可少。   在了解索引之前，大概理解下mysql存储数据的大小划分表空间 -&amp;gt; 段 -&amp;gt; 区 -&amp;gt; 数据页 。  索">
 <meta name="twitter:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/mysql/innodb-architecture.png">
 
 
@@ -439,7 +439,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  853
+                  1,329
                 </span>
               
 
@@ -455,7 +455,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  3
+                  5
                 </span>
               
             </div>
@@ -490,25 +490,45 @@
 <li>索引</li>
 <li>数据库隔离</li>
 <li>锁</li>
-<li>面试题</li>
 </ul>
 <h3 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h3><blockquote>
 <p>目前工作中主要使用的数据库引擎就是InnoDB，所以关于索引的知识必不可少。</p>
 </blockquote>
 <ul>
-<li>在了解索引之前，大概理解下mysql存储数据的大小划分<code>表空间 -&gt; 段 -&gt; 区 -&gt; 数据页</code> 。</li>
+<li><p>在了解索引之前，大概理解下mysql存储数据的大小划分<code>表空间 -&gt; 段 -&gt; 区 -&gt; 数据页</code> 。</p>
+</li>
+<li><p>索引的优点：1. 天生排序。2. 快速查找；索引的缺点：1. 占用空间。2. 降低更新表的速度。</p>
+</li>
+<li><p>注意点：</p>
+<ul>
+<li><p>小表使用全表扫描更快，中大表才使用索引。超级大表索引基本无效。</p>
+</li>
+<li><p>索引实现，分成 2 种：聚集索引和辅助索引（也叫二级索引或者非聚集索引）</p>
+</li>
+<li><p>功能区分，分为 6 种：普通索引，唯一索引，主键索引，复合索引，外键索引，全文索引。</p>
+<p>1、普通索引：最基本的索引，没有任何约束。<br>2、唯一索引：与普通索引类似，但具有唯一性约束。<br>3、主键索引：<strong>特殊的唯一索引，不允许有空值</strong>。<br>4、复合索引：将多个列组合在一起创建索引，可以覆盖多个列。<br>5、外键索引：只有InnoDB类型的表才可以使用外键索引，保证数据的一致性、完整性和实现级联操作。<br>6、全文索引：MySQL 自带的全文索引只能用于 InnoDB、MyISAM ，并且只能对英文进行全文检索，一般使用全文索引引擎（ES，Solr）。</p>
+</li>
+</ul>
+</li>
+<li><p><code>注意：主键就是唯一索引，但是唯一索引不一定是主键，唯一索引可以为空，但是空值只能有一个，主键不能为空。</code></p>
+</li>
 </ul>
 <h3 id="事物隔离"><a href="#事物隔离" class="headerlink" title="事物隔离"></a>事物隔离</h3><blockquote>
 <p>ACID模式是一组数据库设计原则强调的是，对于业务数据和关键任务应用重要的可靠性方面。MySQL包含诸如的组件<code>InnoDB</code>存储引擎与ACID模型紧密结合，因此数据不会损坏，并且不会因软件崩溃和硬件故障等特殊情况而导致结果失真。当您依赖符合ACID的功能时，您无需重新发明一致性检查和崩溃恢复机制。如果您有其他软件安全措施，超可靠硬件或可以容忍少量数据丢失或不一致的应用程序，您可以调整MySQL设置以交换一些ACID可靠性以获得更高的性能或吞吐量。</p>
 </blockquote>
 <ul>
-<li><p>原子性 Atomicity ：一个事务（transaction）中的所有操作，或者全部完成，或者全部不完成，不会结束在中间某个环节。事务在执行过程中发生错误，会被恢复（Rollback）到事务开始前的状态，就像这个事务从来没有执行过一样。即，事务不可分割、不可约简。</p>
+<li>原子性 Atomicity ：一个事务（transaction）中的所有操作，或者全部完成，或者全部不完成，不会结束在中间某个环节。事务在执行过程中发生错误，会被恢复（Rollback）到事务开始前的状态，就像这个事务从来没有执行过一样。即，事务不可分割、不可约简。</li>
+<li>一致性 Consistency ：在事务开始之前和事务结束以后，数据库的完整性没有被破坏。这表示写入的资料必须完全符合所有的预设约束、触发器、级联回滚等。</li>
+<li>隔离性 Isolation ：数据库允许多个并发事务同时对其数据进行读写和修改的能力，隔离性可以防止多个事务并发执行时由于交叉执行而导致数据的不一致。事务隔离分为不同级别，包括读未提交（Read uncommitted）、读提交（read committed）、可重复读（repeatable read）和串行化（Serializable）。</li>
+<li><p>持久性 Durability ：事务处理结束后，对数据的修改就是永久的，即便系统故障也不会丢失。</p>
 </li>
-<li><p>一致性 Consistency ：在事务开始之前和事务结束以后，数据库的完整性没有被破坏。这表示写入的资料必须完全符合所有的预设约束、触发器、级联回滚等。</p>
+<li><p>四个特性，最重要的就是一致性。而<strong>一致性</strong>由原子性，隔离性，持久性来保证。</p>
+<ul>
+<li>原子性由 Undo log 保证。Undo Log 会保存每次变更之前的记录，从而在发生错误时进行回滚。</li>
+<li>隔离性由 MVCC 和 Lock 保证。这个后面说。</li>
+<li>持久性由 Redo Log 保证。每次真正修改数据之前，都会将记录写到 Redo Log 中，只有 Redo Log 写入成功，才会真正的写入到 B+ 树中，如果提交之前断电，就可以通过 Redo Log 恢复记录。</li>
+</ul>
 </li>
-<li><p>隔离性 Isolation ：数据库允许多个并发事务同时对其数据进行读写和修改的能力，隔离性可以防止多个事务并发执行时由于交叉执行而导致数据的不一致。事务隔离分为不同级别，包括读未提交（Read uncommitted）、读提交（read committed）、可重复读（repeatable read）和串行化（Serializable）。</p>
-</li>
-<li>持久性 Durability ：事务处理结束后，对数据的修改就是永久的，即便系统故障也不会丢失。</li>
 </ul>
 <table>
 <thead>
@@ -917,7 +937,7 @@ var jiathis_config={
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">93.4k</span>
+    <span title="Site words total count">94.6k</span>
   
 </div>
 
