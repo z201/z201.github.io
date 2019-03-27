@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="枫叶的小博客">
 <meta property="og:description" content="本章是整理知识内容，为强化知识长期更新。  什么是面向对象？ 面向对象是一个思想，时间万物皆可以被看做一个对象。  介绍下 Java 基本数据类型 Java中存在8个原生数据类型，同时又分成四种：整形、浮点型、char、Boolean。它们之间存在自动类型转换，规则是从小到大。并且都存在自动装箱拆箱特性，但是这种操作是隐式操作而且在某些情况会导致CG压力增大。     类型 存储需求 取值范围">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-03-26T04:07:18.578Z">
+<meta property="og:updated_time" content="2019-03-27T12:16:58.639Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="查缺补漏-JavaCore">
 <meta name="twitter:description" content="本章是整理知识内容，为强化知识长期更新。  什么是面向对象？ 面向对象是一个思想，时间万物皆可以被看做一个对象。  介绍下 Java 基本数据类型 Java中存在8个原生数据类型，同时又分成四种：整形、浮点型、char、Boolean。它们之间存在自动类型转换，规则是从小到大。并且都存在自动装箱拆箱特性，但是这种操作是隐式操作而且在某些情况会导致CG压力增大。     类型 存储需求 取值范围">
@@ -437,7 +437,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  5,168
+                  5,700
                 </span>
               
 
@@ -453,7 +453,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  20
+                  22
                 </span>
               
             </div>
@@ -887,6 +887,23 @@
 </ul>
 </li>
 </ul>
+<h3 id="Sleep-和-wait的区别"><a href="#Sleep-和-wait的区别" class="headerlink" title="Sleep 和 wait的区别"></a>Sleep 和 wait的区别</h3><ul>
+<li>sleep是Thread的成员方法，睡眠时保持对象锁，仍然占有该锁。<ul>
+<li>sleep()使当前线程进入停滞状态（阻塞当前线程），让出CUP的使用、目的是不让当前线程独自霸占该进程所获的CPU资源，以留一定时间给其他线程执行的机会;<br>　　 sleep()是Thread类的Static(静态)的方法；因此他不能改变对象的机锁，所以当在一个Synchronized块中调用Sleep()方法是，线程虽然休眠了，但是对象的机锁并木有被释放，其他线程无法访问这个对象（即使睡着也持有对象锁）。<br>　　在sleep()休眠时间期满后，该线程不一定会立即执行，这是因为其它线程可能正在运行而且没有被调度为放弃执行，除非此线程具有更高的优先级。 </li>
+</ul>
+</li>
+<li>wait是Object的成员方法睡眠时，释放对象锁。<ul>
+<li>wait()方法是Object类里的方法；当一个线程执行到wait()方法时，它就进入到一个和该对象相关的等待池中，同时失去（释放）了对象的机锁（暂时失去机锁，wait(long timeout)超时时间到后还需要返还对象锁）；其他线程可以访问；<br>　　wait()使用notify或者notifyAlll或者指定睡眠时间来唤醒当前等待池中的线程。<br>　　wiat()必须放在synchronized block中，否则会在program runtime时扔出”java.lang.IllegalMonitorStateException“异常。</li>
+</ul>
+</li>
+</ul>
+<h3 id="notify与notifyAll的区别"><a href="#notify与notifyAll的区别" class="headerlink" title="notify与notifyAll的区别"></a>notify与notifyAll的区别</h3><blockquote>
+<p>尽量使用notifyAll。</p>
+</blockquote>
+<ul>
+<li>调用 notify() 方法导致解除阻塞的线程是从因调用该对象的 wait() 方法而阻塞的线程中随机选取的，我们无法预料哪一个线程将会被选择，所以编程时要特别小心，避免因这种不确定性而产生问题。</li>
+<li>notifyAll() 也可起到类似作用，唯一的区别在于，调用 notifyAll() 方法将把因调用该对象的 wait() 方法而阻塞的所有线程一次性全部解除阻塞。当然，只有获得锁的那一个线程才能进入可执行状态。</li>
+</ul>
 
       
     </div>
@@ -943,8 +960,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/01/01/查缺补漏-通讯协议/" rel="next" title="查缺补漏-通讯协议">
-                <i class="fa fa-chevron-left"></i> 查缺补漏-通讯协议
+              <a href="/2019/01/01/查缺补漏-Spring/" rel="next" title="查缺补漏-Spring">
+                <i class="fa fa-chevron-left"></i> 查缺补漏-Spring
               </a>
             
           </div>
@@ -953,8 +970,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/01/01/查缺补漏-JavaJdbc/" rel="prev" title="查缺补漏-JavaJdbc">
-                查缺补漏-JavaJdbc <i class="fa fa-chevron-right"></i>
+              <a href="/2019/01/01/查缺补漏-JavaConcurrent/" rel="prev" title="查缺补漏-JavaConcurrent">
+                查缺补漏-JavaConcurrent <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -1060,7 +1077,7 @@ var jiathis_config={
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-count">82</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1071,7 +1088,7 @@ var jiathis_config={
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-count">14</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -1082,7 +1099,7 @@ var jiathis_config={
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">76</span>
+                  <span class="site-state-item-count">77</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -1201,7 +1218,7 @@ var jiathis_config={
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是面向对象？"><span class="nav-number">1.</span> <span class="nav-text">什么是面向对象？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#介绍下-Java-基本数据类型"><span class="nav-number">2.</span> <span class="nav-text">介绍下 Java 基本数据类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#声明一个Double变量赋值-0-001会编译错误吗-？"><span class="nav-number">3.</span> <span class="nav-text">声明一个Double变量赋值 0.001会编译错误吗 ？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java是纯粹的面向对象语言吗？"><span class="nav-number">4.</span> <span class="nav-text">Java是纯粹的面向对象语言吗？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java面向对象的特征？"><span class="nav-number">5.</span> <span class="nav-text">Java面向对象的特征？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java中访问类型有哪几种"><span class="nav-number">6.</span> <span class="nav-text">Java中访问类型有哪几种</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java中重载和重写的区别"><span class="nav-number">7.</span> <span class="nav-text">Java中重载和重写的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java值传递和引用传递的区别"><span class="nav-number">8.</span> <span class="nav-text">Java值传递和引用传递的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#String、StringBuffer、StringBuilder的区别"><span class="nav-number">9.</span> <span class="nav-text">String、StringBuffer、StringBuilder的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#和-equals"><span class="nav-number">10.</span> <span class="nav-text">== 和 equals</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么要重写equals和hashcode方法"><span class="nav-number">11.</span> <span class="nav-text">为什么要重写equals和hashcode方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#描述下final-与-finally、finalize的区别。"><span class="nav-number">12.</span> <span class="nav-text">描述下final 与 finally、finalize的区别。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#finally对应的try-catch语句流程"><span class="nav-number">13.</span> <span class="nav-text">finally对应的try catch语句流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#介绍下异常类型"><span class="nav-number">14.</span> <span class="nav-text">介绍下异常类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#描述下异常处理方式"><span class="nav-number">15.</span> <span class="nav-text">描述下异常处理方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#throw-与-throws-的区别"><span class="nav-number">16.</span> <span class="nav-text">throw 与 throws 的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常见的几种异常"><span class="nav-number">17.</span> <span class="nav-text">常见的几种异常</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何正确的在一个循环中删除ArrayList中的元素。"><span class="nav-number">18.</span> <span class="nav-text">如何正确的在一个循环中删除ArrayList中的元素。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是-Java-序列化？"><span class="nav-number">19.</span> <span class="nav-text">什么是 Java 序列化？</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是面向对象？"><span class="nav-number">1.</span> <span class="nav-text">什么是面向对象？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#介绍下-Java-基本数据类型"><span class="nav-number">2.</span> <span class="nav-text">介绍下 Java 基本数据类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#声明一个Double变量赋值-0-001会编译错误吗-？"><span class="nav-number">3.</span> <span class="nav-text">声明一个Double变量赋值 0.001会编译错误吗 ？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java是纯粹的面向对象语言吗？"><span class="nav-number">4.</span> <span class="nav-text">Java是纯粹的面向对象语言吗？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java面向对象的特征？"><span class="nav-number">5.</span> <span class="nav-text">Java面向对象的特征？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java中访问类型有哪几种"><span class="nav-number">6.</span> <span class="nav-text">Java中访问类型有哪几种</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java中重载和重写的区别"><span class="nav-number">7.</span> <span class="nav-text">Java中重载和重写的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java值传递和引用传递的区别"><span class="nav-number">8.</span> <span class="nav-text">Java值传递和引用传递的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#String、StringBuffer、StringBuilder的区别"><span class="nav-number">9.</span> <span class="nav-text">String、StringBuffer、StringBuilder的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#和-equals"><span class="nav-number">10.</span> <span class="nav-text">== 和 equals</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么要重写equals和hashcode方法"><span class="nav-number">11.</span> <span class="nav-text">为什么要重写equals和hashcode方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#描述下final-与-finally、finalize的区别。"><span class="nav-number">12.</span> <span class="nav-text">描述下final 与 finally、finalize的区别。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#finally对应的try-catch语句流程"><span class="nav-number">13.</span> <span class="nav-text">finally对应的try catch语句流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#介绍下异常类型"><span class="nav-number">14.</span> <span class="nav-text">介绍下异常类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#描述下异常处理方式"><span class="nav-number">15.</span> <span class="nav-text">描述下异常处理方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#throw-与-throws-的区别"><span class="nav-number">16.</span> <span class="nav-text">throw 与 throws 的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常见的几种异常"><span class="nav-number">17.</span> <span class="nav-text">常见的几种异常</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何正确的在一个循环中删除ArrayList中的元素。"><span class="nav-number">18.</span> <span class="nav-text">如何正确的在一个循环中删除ArrayList中的元素。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是-Java-序列化？"><span class="nav-number">19.</span> <span class="nav-text">什么是 Java 序列化？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Sleep-和-wait的区别"><span class="nav-number">20.</span> <span class="nav-text">Sleep 和 wait的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#notify与notifyAll的区别"><span class="nav-number">21.</span> <span class="nav-text">notify与notifyAll的区别</span></a></li></ol></div>
             
 
           </div>
@@ -1235,7 +1252,7 @@ var jiathis_config={
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">98.6k</span>
+    <span title="Site words total count">101.1k</span>
   
 </div>
 
