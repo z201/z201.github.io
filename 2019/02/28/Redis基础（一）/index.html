@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="枫叶的小博客">
 <meta property="og:description" content="本章是整理知识内容，为强化知识长期更新。   一、初认Redis Redis是一个速度非常快的非关系型数据库(non-relationl databases),它可以是存储键对值（key-vakue）方式存储数据。它拥有5中数据类型。同时可以将存储在内存中的数据持久化到因硬盘中。 Redis所有的数据都是以唯一的key字符串为名称，然后可以通过这个key来获取对应的value。     结构类型">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-03-26T11:20:01.609Z">
+<meta property="og:updated_time" content="2019-03-31T21:33:13.314Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Redis基础（一）">
 <meta name="twitter:description" content="本章是整理知识内容，为强化知识长期更新。   一、初认Redis Redis是一个速度非常快的非关系型数据库(non-relationl databases),它可以是存储键对值（key-vakue）方式存储数据。它拥有5中数据类型。同时可以将存储在内存中的数据持久化到因硬盘中。 Redis所有的数据都是以唯一的key字符串为名称，然后可以通过这个key来获取对应的value。     结构类型">
@@ -457,7 +457,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  2,033
+                  2,091
                 </span>
               
 
@@ -545,7 +545,7 @@
 <h3 id="过期时间"><a href="#过期时间" class="headerlink" title="过期时间"></a>过期时间</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 给key添加过期时间</span></span><br><span class="line">192.168.31.7:6379&gt; <span class="built_in">set</span> ex time </span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; expire ex 10 <span class="comment"># 过期时间10秒</span></span><br><span class="line">(<span class="built_in">integer</span>) 1</span><br><span class="line">192.168.31.7:6379&gt; get ex</span><br><span class="line"><span class="string">"time"</span></span><br><span class="line">192.168.31.7:6379&gt; get ex</span><br><span class="line">(nil)</span><br><span class="line"><span class="comment"># 创建的时候就给key设置过期时间</span></span><br><span class="line">192.168.31.7:6379&gt; setex ex 10 time <span class="comment"># 这里的过期时间要写在key 和value 的中间</span></span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; get ex</span><br><span class="line">(nil)</span><br></pre></td></tr></table></figure>
 <!--more-->
 <h3 id="创建时是否存在判断"><a href="#创建时是否存在判断" class="headerlink" title="创建时是否存在判断"></a>创建时是否存在判断</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建时候条件判断</span></span><br><span class="line">192.168.31.7:6379&gt; setnx ex time</span><br><span class="line">(<span class="built_in">integer</span>) 1</span><br><span class="line">192.168.31.7:6379&gt; get ex</span><br><span class="line"><span class="string">"time"</span></span><br><span class="line">192.168.31.7:6379&gt; setnx ex z <span class="comment"># 再次插入</span></span><br><span class="line">(<span class="built_in">integer</span>) 0  <span class="comment"># 失败，因为key ex 已经存在。</span></span><br></pre></td></tr></table></figure>
-<h4 id="计数"><a href="#计数" class="headerlink" title="计数"></a>计数</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 如果value 就是一个整数，可以使用inrc对value进行累加。这里了解下自增范围 就是signed long的取值范围。</span></span><br><span class="line">192.168.31.7:6379&gt; <span class="built_in">set</span> count 1</span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; incr count </span><br><span class="line">(<span class="built_in">integer</span>) 2</span><br><span class="line">192.168.31.7:6379&gt; incr count </span><br><span class="line">(<span class="built_in">integer</span>) 3</span><br><span class="line">192.168.31.7:6379&gt; incr count </span><br><span class="line">(<span class="built_in">integer</span>) 4</span><br><span class="line">192.168.31.7:6379&gt; incr count </span><br><span class="line">(<span class="built_in">integer</span>) 5</span><br><span class="line">192.168.31.7:6379&gt; get count</span><br><span class="line"><span class="string">"5"</span></span><br></pre></td></tr></table></figure>
+<h4 id="计数"><a href="#计数" class="headerlink" title="计数"></a>计数</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 如果value 就是一个整数，可以使用inrc对value进行累加。这里了解下自增范围 就是signed long的取值范围。</span></span><br><span class="line">192.168.31.7:6379&gt; <span class="built_in">set</span> count 1</span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; incr count </span><br><span class="line">(<span class="built_in">integer</span>) 2</span><br><span class="line">192.168.31.7:6379&gt; incr count </span><br><span class="line">(<span class="built_in">integer</span>) 3</span><br><span class="line">192.168.31.7:6379&gt; incr count </span><br><span class="line">(<span class="built_in">integer</span>) 4</span><br><span class="line">192.168.31.7:6379&gt; incr count </span><br><span class="line">(<span class="built_in">integer</span>) 5</span><br><span class="line">192.168.31.7:6379&gt; get count</span><br><span class="line"><span class="string">"5"</span></span><br><span class="line">192.168.31.7:6379&gt; incrby count 5 <span class="comment"># 指定累加数字</span></span><br><span class="line">(<span class="built_in">integer</span>) 10</span><br><span class="line">192.168.31.7:6379&gt; get count</span><br><span class="line"><span class="string">"10"</span></span><br><span class="line">192.168.31.7:6379&gt; decr count  <span class="comment"># 自减</span></span><br><span class="line">(<span class="built_in">integer</span>) 9 </span><br><span class="line">192.168.31.7:6379&gt; decrby count 4 <span class="comment"># 指定减数字</span></span><br><span class="line">(<span class="built_in">integer</span>) 5</span><br></pre></td></tr></table></figure>
 <h3 id="List"><a href="#List" class="headerlink" title="List"></a>List</h3><ul>
 <li>Redis中的List有点类似Java中的LinkedList的结构,也是一个链表，所以插入和删除速度很快O(1)。索引很慢O(n)。这一特性导致Redis中的列表经常用来做列队。</li>
 </ul>
@@ -626,8 +626,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/02/28/MySQL基础（三）/" rel="next" title="MySQL基础（三）">
-                <i class="fa fa-chevron-left"></i> MySQL基础（三）
+              <a href="/2019/02/27/实践-mybatis+h2+logback单元测试/" rel="next" title="实战-mybatis+h2+logback单元测试">
+                <i class="fa fa-chevron-left"></i> 实战-mybatis+h2+logback单元测试
               </a>
             
           </div>
@@ -636,8 +636,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/02/28/实践-sakila数据库项目/" rel="prev" title="实战-sakila数据库项目">
-                实战-sakila数据库项目 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/02/28/MySQL基础（三）/" rel="prev" title="MySQL基础（三）">
+                MySQL基础（三） <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
