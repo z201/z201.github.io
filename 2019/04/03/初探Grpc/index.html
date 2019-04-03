@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/favicon.ico?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Grpc,ProtoBuf,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="gRPC 流程概念 性能对比 谁在使用 ProtoBuf Protocol Buffers 是 google 的一种数据交换的格式，它独立于语言，独立于平台。google 提供了多种语言的实现：java、c#、c++、go、PHP 和 python，每一种实现都包含了相应语言的编译器以及库文件。由于它是一种二进制的格式，比使用 xml 进行数据交换快许多。可以把它用于分布式应用之间的数据通信或者异">
+<meta name="keywords" content="Grpc,ProtoBuf">
+<meta property="og:type" content="article">
+<meta property="og:title" content="初探Grpc">
+<meta property="og:url" content="https://z201.github.io/2019/04/03/初探Grpc/index.html">
+<meta property="og:site_name" content="枫叶的小博客">
+<meta property="og:description" content="gRPC 流程概念 性能对比 谁在使用 ProtoBuf Protocol Buffers 是 google 的一种数据交换的格式，它独立于语言，独立于平台。google 提供了多种语言的实现：java、c#、c++、go、PHP 和 python，每一种实现都包含了相应语言的编译器以及库文件。由于它是一种二进制的格式，比使用 xml 进行数据交换快许多。可以把它用于分布式应用之间的数据通信或者异">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Grpc/grpc-1.png">
+<meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Grpc/grpc-2.png">
+<meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Grpc/grpc-3.png">
+<meta property="og:image" content="http://img.blog.csdn.net/20170408181252896?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc2hlbnNreTcxMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:updated_time" content="2019-04-03T14:27:35.024Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="初探Grpc">
+<meta name="twitter:description" content="gRPC 流程概念 性能对比 谁在使用 ProtoBuf Protocol Buffers 是 google 的一种数据交换的格式，它独立于语言，独立于平台。google 提供了多种语言的实现：java、c#、c++、go、PHP 和 python，每一种实现都包含了相应语言的编译器以及库文件。由于它是一种二进制的格式，比使用 xml 进行数据交换快许多。可以把它用于分布式应用之间的数据通信或者异">
+<meta name="twitter:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Grpc/grpc-1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://z201.github.io/2019/04/03/初探Grpc/">
+
+
+
+
+
+  <title>初探Grpc | 枫叶的小博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?b7172b501cdbc930ed342083d76b4a63";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">枫叶的小博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">先完成、在完美。</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-存档">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            存档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-分类">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-书架">
+          <a href="/books" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br>
+            
+            书架
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-电影">
+          <a href="/movie" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-file-video-o"></i> <br>
+            
+            电影
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-学习java">
+          <a href="/tags/Java/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-graduation-cap"></i> <br>
+            
+            学习java
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-学习mysql">
+          <a href="/tags/Mysql/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-graduation-cap"></i> <br>
+            
+            学习mysql
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-学习git">
+          <a href="/tags/Git" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-graduation-cap"></i> <br>
+            
+            学习git
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-学习spring">
+          <a href="/tags/Spring" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-graduation-cap"></i> <br>
+            
+            学习spring
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-学习linux">
+          <a href="/tags/Linux" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-graduation-cap"></i> <br>
+            
+            学习linux
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-学习docker">
+          <a href="/tags/Docker" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-graduation-cap"></i> <br>
+            
+            学习docker
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-学习redis">
+          <a href="/tags/Redis" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-graduation-cap"></i> <br>
+            
+            学习redis
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-学习mybatis">
+          <a href="/tags/Mybatis" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-graduation-cap"></i> <br>
+            
+            学习mybatis
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-公益404">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br>
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/04/03/初探Grpc/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">初探Grpc</h1>
+        
+
+        <div class="post-meta">
+	  
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-03T22:18:34+08:00">
+                2019-04-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/基础理论/" itemprop="url" rel="index">
+                    <span itemprop="name">基础理论</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3,865
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  16
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="gRPC"><a href="#gRPC" class="headerlink" title="gRPC "></a><a href="https://github.com/grpc/grpc" target="_blank" rel="noopener">gRPC </a></h2><h3 id="流程概念"><a href="#流程概念" class="headerlink" title="流程概念"></a>流程概念</h3><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Grpc/grpc-1.png" alt=""></p>
+<h3 id="性能对比"><a href="#性能对比" class="headerlink" title="性能对比"></a>性能对比</h3><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Grpc/grpc-2.png" alt=""></p>
+<h3 id="谁在使用"><a href="#谁在使用" class="headerlink" title="谁在使用"></a>谁在使用</h3><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Grpc/grpc-3.png" alt=""></p>
+<h2 id="ProtoBuf"><a href="#ProtoBuf" class="headerlink" title="ProtoBuf"></a>ProtoBuf</h2><blockquote>
+<p>Protocol Buffers 是 google 的一种数据交换的格式，它独立于语言，独立于平台。google 提供了多种语言的实现：java、c#、c++、go、PHP 和 python，每一种实现都包含了相应语言的编译器以及库文件。由于它是一种二进制的格式，比使用 xml 进行数据交换快许多。可以把它用于分布式应用之间的数据通信或者异构环境下的数据交换。作为一种效率和兼容性都很优秀的二进制数据传输格式，可以用于诸如网络传输、配置文件、数据存储等诸多领域。</p>
+<p>至于protobuf是什么、使用场景、有什么好处，本文不做说明，这里将会为大家介绍怎么用 <code>protobuf</code> 来定义我们的交互协议，包括 <code>.proto</code> 的语法以及如何根据proto文件生成相应的代码。本文基于<a href="https://developers.google.com/protocol-buffers/docs/proto3" target="_blank" rel="noopener">proto3</a>，读者也可以点击了解<a href="https://developers.google.com/protocol-buffers/docs/proto" target="_blank" rel="noopener">proto2</a></p>
+</blockquote>
+<h2 id="proto3语法"><a href="#proto3语法" class="headerlink" title="proto3语法"></a>proto3语法</h2><h3 id="定义一个-Message"><a href="#定义一个-Message" class="headerlink" title="定义一个 Message"></a>定义一个 Message</h3><p>首先我们来定义一个 Search 请求，在这个请求里面，我们需要给服务端发送三个信息：</p>
+<ul>
+<li>query：查询条件</li>
+<li>page_number：你想要哪一页数据</li>
+<li>result_per_page：每一页有多少条数据</li>
+</ul>
+<p>于是我们可以这样定义：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// 指定使用proto3，如果不指定的话，编译器会使用proto2去编译</span><br><span class="line">syntax = &quot;proto3&quot;; //[proto2|proto3]</span><br><span class="line"></span><br><span class="line">message SearchRequests &#123;</span><br><span class="line">    // 定义SearchRequests的成员变量，需要指定：变量类型、变量名、变量Tag</span><br><span class="line">    string query = 1;</span><br><span class="line">    int32 page_number = 2;</span><br><span class="line">    int32 result_per_page = 3;</span><br><span class="line">&#125;123456789</span><br></pre></td></tr></table></figure>
+<h3 id="定义多个-message-类型"><a href="#定义多个-message-类型" class="headerlink" title="定义多个 message 类型"></a>定义多个 message 类型</h3><p>一个 proto 文件可以定义多个 message ，比如我们可以在刚才那个 proto 文件中把服务端返回的消息结构也一起定义：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">message SearchRequest &#123;</span><br><span class="line">    string query = 1;</span><br><span class="line">    int32 page_number = 2;</span><br><span class="line">    int32 result_per_page = 3;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message SearchResponse &#123;</span><br><span class="line">    repeated string result = 1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>message 可以嵌套定义，比如 message 可以定义在另一个 message 内部</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">message SearchResponse &#123;</span><br><span class="line">    message Result &#123;</span><br><span class="line">        string url = 1;</span><br><span class="line">        string title = 2;</span><br><span class="line">        repeated string snippets = 3;</span><br><span class="line">    &#125;</span><br><span class="line">    repeated Result results = 1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>定义在 message 内部的 message 可以这样使用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">message SomeOtherMessage &#123;</span><br><span class="line">    SearchResponse.Result result = 1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="定义变量类型"><a href="#定义变量类型" class="headerlink" title="定义变量类型"></a>定义变量类型</h3><p>在刚才的例子之中，我们使用了2个<code>标准值类型</code>： string 和 int32，除了这些标准类型之外，变量的类型还可以是复杂类型，比如自定义的<code>枚举</code>和自定义的 <code>message</code></p>
+<p>这里我们把标准类型列举一下protobuf内置的标准类型以及跟各平台对应的关系：</p>
+<table>
+<thead>
+<tr>
+<th>.proto</th>
+<th>说明</th>
+<th style="text-align:left">C++</th>
+<th>Java</th>
+<th>Python</th>
+<th>Go</th>
+<th>Ruby</th>
+<th>C#</th>
+<th>PHP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>double</td>
+<td></td>
+<td style="text-align:left">double</td>
+<td>double</td>
+<td>float</td>
+<td>float64</td>
+<td>Float</td>
+<td>double</td>
+<td>float</td>
+</tr>
+<tr>
+<td>float</td>
+<td></td>
+<td style="text-align:left">float</td>
+<td>float</td>
+<td>float</td>
+<td>float32</td>
+<td>Float</td>
+<td>float</td>
+<td>float</td>
+</tr>
+<tr>
+<td>int32</td>
+<td>使用变长编码，对负数编码效率低，如果你的变量可能是负数，可以使用sint32</td>
+<td style="text-align:left">int32</td>
+<td>int</td>
+<td>int</td>
+<td>int32</td>
+<td>Fixnum or Bignum (as required)</td>
+<td>int</td>
+<td>integer</td>
+</tr>
+<tr>
+<td>int64</td>
+<td>使用变长编码，对负数编码效率低，如果你的变量可能是负数，可以使用sint64</td>
+<td style="text-align:left">int64</td>
+<td>long</td>
+<td>int/long</td>
+<td>int64</td>
+<td>Bignum</td>
+<td>long</td>
+<td>integer/string</td>
+</tr>
+<tr>
+<td>uint32</td>
+<td>使用变长编码</td>
+<td style="text-align:left">uint32</td>
+<td>int</td>
+<td>int/long</td>
+<td>uint32</td>
+<td>Fixnum or Bignum (as required)</td>
+<td>uint</td>
+<td>integer</td>
+</tr>
+<tr>
+<td>uint64</td>
+<td>使用变长编码</td>
+<td style="text-align:left">uint64</td>
+<td>long</td>
+<td>int/long</td>
+<td>uint64</td>
+<td>Bignum</td>
+<td>ulong</td>
+<td>integer/string</td>
+</tr>
+<tr>
+<td>sint32</td>
+<td>使用变长编码，带符号的int类型，对负数编码比int32高效</td>
+<td style="text-align:left">int32</td>
+<td>int</td>
+<td>int</td>
+<td>int32</td>
+<td>Fixnum or Bignum (as required)</td>
+<td>int</td>
+<td>integer</td>
+</tr>
+<tr>
+<td>sint64</td>
+<td>使用变长编码，带符号的int类型，对负数编码比int64高效</td>
+<td style="text-align:left">int64</td>
+<td>long</td>
+<td>int/long</td>
+<td>int64</td>
+<td>Bignum</td>
+<td>long</td>
+<td>integer/string</td>
+</tr>
+<tr>
+<td>fixed32</td>
+<td>4字节编码， 如果变量经常大于228 的话，会比uint32高效</td>
+<td style="text-align:left">uint32</td>
+<td>int</td>
+<td>int</td>
+<td>int32</td>
+<td>Fixnum or Bignum (as required)</td>
+<td>uint</td>
+<td>integer</td>
+</tr>
+<tr>
+<td>fixed64</td>
+<td>8字节编码， 如果变量经常大于256 的话，会比uint64高效</td>
+<td style="text-align:left">uint64</td>
+<td>long</td>
+<td>int/long</td>
+<td>uint64</td>
+<td>Bignum</td>
+<td>ulong</td>
+<td>integer/string</td>
+</tr>
+<tr>
+<td>sfixed32</td>
+<td>4字节编码</td>
+<td style="text-align:left">int32</td>
+<td>int</td>
+<td>int</td>
+<td>int32</td>
+<td>Fixnum or Bignum (as required)</td>
+<td>int</td>
+<td>integer</td>
+</tr>
+<tr>
+<td>sfixed64</td>
+<td>8字节编码</td>
+<td style="text-align:left">int64</td>
+<td>long</td>
+<td>int/long</td>
+<td>int64</td>
+<td>Bignum</td>
+<td>long</td>
+<td>integer/string</td>
+</tr>
+<tr>
+<td>bool</td>
+<td></td>
+<td style="text-align:left">bool</td>
+<td>boolean</td>
+<td>bool</td>
+<td>bool</td>
+<td>TrueClass/FalseClass</td>
+<td>bool</td>
+<td>boolean</td>
+</tr>
+<tr>
+<td>string</td>
+<td>必须包含utf-8编码或者7-bit ASCII text</td>
+<td style="text-align:left">string</td>
+<td>String</td>
+<td>str/unicode</td>
+<td>string</td>
+<td>String (UTF-8)</td>
+<td>string</td>
+<td>string</td>
+</tr>
+<tr>
+<td>bytes</td>
+<td>任意的字节序列</td>
+<td style="text-align:left">string</td>
+<td>ByteString</td>
+<td>str</td>
+<td>[]byte</td>
+<td>String (ASCII-8BIT)</td>
+<td>ByteString</td>
+<td>string</td>
+</tr>
+</tbody>
+</table>
+<p>补充说明：</p>
+<ul>
+<li>In Java, unsigned 32-bit and 64-bit integers are represented using their signed counterparts, with the top bit simply being stored in the sign bit.</li>
+<li>In all cases, setting values to a field will perform type checking to make sure it is valid.</li>
+<li>64-bit or unsigned 32-bit integers are always represented as long when decoded, but can be an int if an int is given when setting the field. In all cases, the value must fit in the type represented when set. See <a href="https://developers.google.com/protocol-buffers/docs/proto" target="_blank" rel="noopener">2</a>.</li>
+<li>Python strings are represented as unicode on decode but can be str if an ASCII string is given (this is subject to change).</li>
+<li>Integer is used on 64-bit machines and string is used on 32-bit machines.</li>
+</ul>
+<p>关于标准值类型，还可以参考<a href="https://developers.google.com/protocol-buffers/docs/proto3#scalar" target="_blank" rel="noopener">Scalar Value Types</a></p>
+<p>如果你想了解这些数据是怎么序列化和反序列化的，可以点击 <a href="https://developers.google.com/protocol-buffers/docs/encoding" target="_blank" rel="noopener">Protocol Buffer Encoding</a> 了解更多关于protobuf编码内容。</p>
+<h3 id="分配Tag"><a href="#分配Tag" class="headerlink" title="分配Tag"></a>分配Tag</h3><p>每一个变量在message内都需要自定义一个<strong>唯一的数字Tag</strong>，protobuf会根据Tag从数据中查找变量对应的位置，具体原理跟protobuf的<a href="https://developers.google.com/protocol-buffers/docs/encoding" target="_blank" rel="noopener">二进制数据格式</a>有关。Tag一旦指定，以后更新协议的时候也不能修改，否则无法对旧版本兼容。</p>
+<p>Tag的取值范围最小是1，最大是229-1，但 19000~19999 是 protobuf 预留的，用户不能使用。</p>
+<p>虽然 Tag 的定义范围比较大，但不同 Tag 也会对 protobuf 编码带来一些影响：</p>
+<ul>
+<li>1 ~ 15：单字节编码</li>
+<li>16 ~ 2047：双字节编码</li>
+</ul>
+<p>使用频率高的变量最好设置为1 ~ 15，这样可以减少编码后的数据大小，但由于Tag一旦指定不能修改，所以为了以后扩展，也记得为未来保留一些 1 ~ 15 的 Tag</p>
+<h3 id="指定变量规则"><a href="#指定变量规则" class="headerlink" title="指定变量规则"></a>指定变量规则</h3><p>在 proto3 中，可以给变量指定以下两个规则：</p>
+<ul>
+<li><code>singular</code>：0或者1个，但不能多于1个</li>
+<li><code>repeated</code>：任意数量（包括0）</li>
+</ul>
+<p>当构建 message 的时候，build 数据的时候，会检测设置的数据跟规则是否匹配</p>
+<p>在proto2中，规则为：</p>
+<ul>
+<li>required：必须有一个</li>
+<li>optional：0或者1个</li>
+<li>repeated：任意数量（包括0）</li>
+</ul>
+<h3 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h3><p>用<code>//</code>表示注释开头，如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">message SearchRequest &#123;</span><br><span class="line">    string query = 1;</span><br><span class="line">    int32 page_number = 2; // Which page number do we want</span><br><span class="line">    int32 result_per_page = 3; // Number of results to return per page</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="保留变量不被使用"><a href="#保留变量不被使用" class="headerlink" title="保留变量不被使用"></a>保留变量不被使用</h3><p>上面我们说到，一旦 Tag 指定后就不能变更，这就会带来一个问题，假如在版本1的协议中，我们有个变量：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int32 number = 1；1</span><br></pre></td></tr></table></figure>
+<p>在版本2中，我们决定废弃对它的使用，那我们应该如何修改协议呢？注释掉它？删除掉它？如果把它删除了，后来者很可能在定义新变量的时候，使新的变量 Tag = 1 ，这样会导致协议不兼容。那有没有办法规避这个问题呢？我们可以用 <code>reserved</code> 关键字，当一个变量不再使用的时候，我们可以把它的变量名或 Tag 用 <code>reserved</code> 标注，这样，当这个 Tag 或者变量名字被重新使用的时候，编译器会报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">message Foo &#123;</span><br><span class="line">    // 注意，同一个 reserved 语句不能同时包含变量名和 Tag </span><br><span class="line">    reserved 2, 15, 9 to 11;</span><br><span class="line">    reserved &quot;foo&quot;, &quot;bar&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="默认值"><a href="#默认值" class="headerlink" title="默认值"></a>默认值</h3><p>当解析 message 时，如果被编码的 message 里没有包含某些变量，那么根据类型不同，他们会有不同的默认值：</p>
+<ul>
+<li>string：默认是空的字符串</li>
+<li>byte：默认是空的bytes</li>
+<li>bool：默认为false</li>
+<li>numeric：默认为0</li>
+<li>enums：定义在第一位的枚举值，也就是0</li>
+<li>messages：根据生成的不同语言有不同的表现，参考<a href="https://developers.google.com/protocol-buffers/docs/reference/overview" target="_blank" rel="noopener">generated code guide</a></li>
+</ul>
+<p>注意，收到数据后反序列化后，对于标准值类型的数据，比如bool，如果它的值是 false，那么我们无法判断这个值是对方设置的，还是对方压根就没给这个变量设置值。</p>
+<h3 id="定义枚举-Enumerations"><a href="#定义枚举-Enumerations" class="headerlink" title="定义枚举 Enumerations"></a>定义枚举 Enumerations</h3><p>在 protobuf 中，我们也可以定义枚举，并且使用该枚举类型，比如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">message SearchRequest &#123;</span><br><span class="line">    string query = 1;</span><br><span class="line">    int32 page_number = 2; // Which page number do we want</span><br><span class="line">    int32 result_per_page = 3; // Number of results to return per page</span><br><span class="line">    enum Corpus &#123;</span><br><span class="line">        UNIVERSAL = 0;</span><br><span class="line">        WEB = 1;</span><br><span class="line">        IMAGES = 2;</span><br><span class="line">        LOCAL = 3;</span><br><span class="line">        NEWS = 4;</span><br><span class="line">        PRODUCTS = 5;</span><br><span class="line">        VIDEO = 6;</span><br><span class="line">    &#125;</span><br><span class="line">    Corpus corpus = 4;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>枚举定义在一个消息内部或消息外部都是可以的，如果枚举是 定义在 message 内部，而其他 message 又想使用，那么可以通过 <code>MessageType.EnumType</code> 的方式引用。定义枚举的时候，我们要保证<strong>第一个枚举值必须是0</strong>，枚举值不能重复，除非使用 <code>option allow_alias = true</code> 选项来开启别名。如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">enum EnumAllowingAlias &#123;</span><br><span class="line">    option allow_alias = true;</span><br><span class="line">    UNKNOWN = 0;</span><br><span class="line">    STARTED = 1;</span><br><span class="line">    RUNNING = 1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>枚举值的范围是32-bit integer，但因为枚举值使用变长编码，所以不推荐使用负数作为枚举值，因为这会带来效率问题。</p>
+<h3 id="如何引用其他-proto-文件"><a href="#如何引用其他-proto-文件" class="headerlink" title="如何引用其他 proto 文件"></a>如何引用其他 proto 文件</h3><p>在proto语法中，有两种引用其他 proto 文件的方法： <code>import</code> 和 <code>import public</code>，这两者有什么区别呢？下面举个例子说明：<br><img src="http://img.blog.csdn.net/20170408181252896?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc2hlbnNreTcxMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"></p>
+<ul>
+<li>在情景1中， my.proto <strong>不能</strong>使用 second.proto 中定义的内容</li>
+<li>在情景2中， my.proto <strong>可以</strong>使用 second.proto 中定义的内容</li>
+<li>情景1和情景2中，my.proto 都可以使用 first.proto</li>
+<li>情景1和情景2中，first.proto 都可以使用 second.proto</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// my.proto</span><br><span class="line">import &quot;first.proto&quot;;12</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// first.proto</span><br><span class="line">//import &quot;second.proto&quot;;</span><br><span class="line">import public &quot;second.proto&quot;;123</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// second.proto</span><br><span class="line">...12</span><br></pre></td></tr></table></figure>
+<h3 id="升级-proto-文件正确的姿势"><a href="#升级-proto-文件正确的姿势" class="headerlink" title="升级 proto 文件正确的姿势"></a>升级 proto 文件正确的姿势</h3><p>升级更改 proto 需要遵循以下原则</p>
+<ul>
+<li>不要修改任何已存在的变量的 Tag</li>
+<li>如果你新增了变量，新生成的代码依然能解析旧的数据，但新增的变量将会变成默认值。相应的，新代码序列化的数据也能被旧的代码解析，但旧代码会自动忽略新增的变量。</li>
+<li>废弃不用的变量用 reserved 标注</li>
+<li>int32、 uint32、 int64、 uint64 和 bool 是相互兼容的，这意味你可以更改这些变量的类型而不会影响兼容性</li>
+<li>sint32 和 sint64 是兼容的，但跟其他类型不兼容</li>
+<li>string 和 bytes 可以兼容，前提是他们都是UTF-8编码的数据</li>
+<li>fixed32 和 sfixed32 是兼容的, fixed64 和 sfixed64是兼容的</li>
+</ul>
+<h3 id="Any-的使用"><a href="#Any-的使用" class="headerlink" title="Any 的使用"></a>Any 的使用</h3><p>Any可以让你在 proto 文件中使用未定义的类型，具体里面保存什么数据，是在上层业务代码使用的时候决定的，使用 Any 必须导入 <code>import google/protobuf/any.proto</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">import &quot;google/protobuf/any.proto&quot;;</span><br><span class="line"></span><br><span class="line">message ErrorStatus &#123;</span><br><span class="line">    string message = 1;</span><br><span class="line">    repeated google.protobuf.Any details = 2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Oneof-的使用"><a href="#Oneof-的使用" class="headerlink" title="Oneof 的使用"></a>Oneof 的使用</h3><p>Oneof 类似union，如果你的消息中有很多可选字段，而同一个时刻最多仅有其中的一个字段被设置的话，你可以使用oneof来强化这个特性并且节约存储空间，如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">message LoginReply &#123;</span><br><span class="line">    oneof test_oneof &#123;</span><br><span class="line">        string name = 3;</span><br><span class="line">        string age = 4;</span><br><span class="line">    &#125;</span><br><span class="line">    required string status = 1;</span><br><span class="line">    required string token = 2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样，name 和 age 都是 LoginReply 的成员，但不能给他们同时设置值（设置一个oneof字段会自动清理其他的oneof字段）。</p>
+<h3 id="Maps-的使用"><a href="#Maps-的使用" class="headerlink" title="Maps 的使用"></a>Maps 的使用</h3><p>protobuf 支持定义 map 类型的成员，如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">map&lt;key_type, value_type&gt; map_field = N;</span><br><span class="line">// 举例：map&lt;string, Project&gt; projects = 3;12</span><br></pre></td></tr></table></figure>
+<ul>
+<li>key_type:必须是string或者int</li>
+<li>value_type：任意类型</li>
+</ul>
+<p>使用 map 要注意：</p>
+<ul>
+<li>Map 类型不能使 repeated</li>
+<li>Map 是无序的</li>
+<li>以文本格式展示时，Map 以 key 来排序</li>
+<li>如果有相同的键会导致解析失败</li>
+</ul>
+<h3 id="Packages-的使用"><a href="#Packages-的使用" class="headerlink" title="Packages 的使用"></a>Packages 的使用</h3><p>为了防止不同消息之间的命名冲突，你可以对特定的.proto文件提指定 package 名字。在定义消息的成员的时候，可以指定包的名字：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">package foo.bar;</span><br><span class="line">message Open &#123; ... &#125;12</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">message Foo &#123;</span><br><span class="line">    ...</span><br><span class="line">    // 带上包名</span><br><span class="line">    foo.bar.Open open = 1;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Options"><a href="#Options" class="headerlink" title="Options"></a>Options</h2><p>Options 分为 file-level options（只能出现在最顶层，不能在消息、枚举、服务内部使用）、 message-level options（只能在消息内部使用）、field-level options（只能在变量定义时使用）</p>
+<ul>
+<li>java_package (file option)：指定生成类的包名，如果没有指定此选项，将由关键字package指定包名。此选项只在生成 java 代码时有效</li>
+<li>java_multiple_files (file option)：如果为 true， 定义在最外层的 message 、enum、service 将作为单独的类存在</li>
+<li>java_outer_classname (file option)：指定最外层class的类名，如果不指定，将会以文件名作为类名</li>
+<li>optimize_for (file option)：可选有 [SPEED|CODE_SIZE|LITE_RUNTIME] ，分别是效率优先、空间优先，第三个lite是兼顾效率和代码大小，但是运行时需要依赖 libprotobuf-lite</li>
+<li>cc_enable_arenas (file option):启动arena allocation，c++代码使用</li>
+<li>objc_class_prefix (file option)：Objective-C使用</li>
+<li>deprecated (field option)：提示变量已废弃、不建议使用</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">option java_package = &quot;com.example.foo&quot;;</span><br><span class="line">option java_multiple_files = true;</span><br><span class="line">option java_outer_classname = &quot;Ponycopter&quot;;</span><br><span class="line">option optimize_for = CODE_SIZE;</span><br><span class="line">int32 old_field = 6 [deprecated=true];12345</span><br></pre></td></tr></table></figure>
+<h2 id="定义-Services"><a href="#定义-Services" class="headerlink" title="定义 Services"></a>定义 Services</h2><p>这个其实和gRPC相关，详细可参考：<a href="http://www.grpc.io/" target="_blank" rel="noopener">gRPC</a>， 这里做一个简单的介绍<br>要定义一个服务，你必须在你的 .proto 文件中指定 <code>service</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">service RouteGuide &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后在我们的服务中定义 <code>rpc</code> 方法，指定它们的请求的和响应类型。<code>gRPC</code> 允许你定义4种类型的 service 方法</p>
+<h2 id="简单RPC"><a href="#简单RPC" class="headerlink" title="简单RPC"></a>简单RPC</h2><p>客户端使用 Stub 发送请求到服务器并等待响应返回，就像平常的函数调用一样，这是一个阻塞型的调用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// Obtains the feature at a given position.</span><br><span class="line">rpc GetFeature(Point) returns (Feature) &#123;&#125;12</span><br></pre></td></tr></table></figure>
+<h2 id="服务器端流式-RPC"><a href="#服务器端流式-RPC" class="headerlink" title="服务器端流式 RPC"></a>服务器端流式 RPC</h2><p>客户端发送请求到服务器，拿到一个流去读取返回的消息序列。客户端读取返回的流，直到里面没有任何消息。从例子中可以看出，通过在响应类型前插入 <code>stream</code> 关键字，可以指定一个服务器端的流方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// Obtains the Features available within the given Rectangle.  Results are</span><br><span class="line">// streamed rather than returned at once (e.g. in a response message with a</span><br><span class="line">// repeated field), as the rectangle may cover a large area and contain a</span><br><span class="line">// huge number of features.</span><br><span class="line">rpc ListFeatures(Rectangle) returns (stream Feature) &#123;&#125;12345</span><br></pre></td></tr></table></figure>
+<h2 id="客户端流式-RPC"><a href="#客户端流式-RPC" class="headerlink" title="客户端流式 RPC"></a>客户端流式 RPC</h2><p>客户端写入一个消息序列并将其发送到服务器，同样也是使用流。一旦客户端完成写入消息，它等待服务器完成读取返回它的响应。通过在请求类型前指定 <code>stream</code> 关键字来指定一个客户端的流方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// Accepts a stream of Points on a route being traversed, returning a</span><br><span class="line">// RouteSummary when traversal is completed.</span><br><span class="line">rpc RecordRoute(stream Point) returns (RouteSummary) &#123;&#125;123</span><br></pre></td></tr></table></figure>
+<h2 id="双向流式-RPC"><a href="#双向流式-RPC" class="headerlink" title="双向流式 RPC"></a>双向流式 RPC</h2><p>双方使用读写流去发送一个消息序列。两个流独立操作，因此客户端和服务器可以以任意喜欢的顺序读写：比如， 服务器可以在写入响应前等待接收所有的客户端消息，或者可以交替的读取和写入消息，或者其他读写的组合。每个流中的消息顺序被预留。你可以通过在请求和响应前加 <code>stream</code> 关键字去制定方法的类型</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// Accepts a stream of RouteNotes sent while a route is being traversed,</span><br><span class="line">// while receiving other RouteNotes (e.g. from other users).</span><br><span class="line">rpc RouteChat(stream RouteNote) returns (stream RouteNote) &#123;&#125;123</span><br></pre></td></tr></table></figure>
+<h2 id="代码生成"><a href="#代码生成" class="headerlink" title="代码生成"></a>代码生成</h2><p>使用 <code>protoc</code> 工具可以把编写好的 <code>proto</code> 文件“编译”为Java, Python, C++, Go, Ruby, JavaNano, Objective-C,或C#代码， <code>protoc</code> 可以从<a href="https://developers.google.com/protocol-buffers/docs/downloads" target="_blank" rel="noopener">点击这里</a>进行下载。<code>protoc</code> 的使用方式如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">protoc --proto_path=IMPORT_PATH --cpp_out=DST_DIR --java_out=DST_DIR --python_out=DST_DIR --go_out=DST_DIR --ruby_out=DST_DIR --javanano_out=DST_DIR --objc_out=DST_DIR --csharp_out=DST_DIR path/to/file.proto1</span><br></pre></td></tr></table></figure>
+<p>参数说明：</p>
+<ul>
+<li>IMPORT_PATH：指定 proto 文件的路径，如果没有指定， protoc 会从当前目录搜索对应的 proto 文件，如果有多个路径，那么可以指定多次<code>--proto_path</code></li>
+<li>指定各语言代码的输出路径<ul>
+<li>–cpp_out：生成c++代码</li>
+<li>java_out ：生成java代码</li>
+<li>python_out ：生成python代码</li>
+<li>go_out ：生成go代码</li>
+<li>ruby_out ：生成ruby代码</li>
+<li>javanano_out ：适合运行在有资源限制的平台（如Android）的java代码</li>
+<li>objc_out ：生成 Objective-C代码</li>
+<li>csharp_out ：生成C#代码</li>
+<li>php_out ：生成PHP代码</li>
+</ul>
+</li>
+</ul>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><ul>
+<li><a href="https://www.ibm.com/developerworks/cn/linux/l-cn-gpb/index.html" target="_blank" rel="noopener">IMB Google Protocol Buffer 的使用和原理</a></li>
+<li><a href="http://doc.oschina.net/grpc?t=57966" target="_blank" rel="noopener">osChina gRPC 官方文档翻译</a></li>
+<li><a href="https://www.cnblogs.com/shitouer/archive/2013/04/10/google-protocol-buffers-tutorial.html" target="_blank" rel="noopener">cnblogs Protocol Buffers</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+	
+    <div>    
+      
+      <ul class="post-copyright">
+         <li class="post-copyright-link">
+          <strong>本文作者：</strong>
+          <a href="/" title="欢迎访问 小峰同学 的个人博客">小峰同学</a>
+        </li>
+
+        <li class="post-copyright-link">
+          <strong>本文标题：</strong>
+          <a href="https://z201.github.io/2019/04/03/初探Grpc/" title="初探Grpc">初探Grpc</a>
+        </li>
+
+        <li class="post-copyright-link">
+          <strong>本文链接：</strong>
+          <a href="https://z201.github.io/2019/04/03/初探Grpc/" title="初探Grpc">https://z201.github.io/2019/04/03/初探Grpc/</a>
+        </li>
+
+        <li class="post-copyright-date">
+            <strong>发布时间：</strong>2019年4月3日 - 22时04分
+        </li>  
+        
+      </ul>
+		
+    </div>
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Grpc/" rel="tag"># Grpc</a>
+          
+            <a href="/tags/ProtoBuf/" rel="tag"># ProtoBuf</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/01/初探Arthas/" rel="next" title="初探Arthas">
+                <i class="fa fa-chevron-left"></i> 初探Arthas
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_fav">收藏夹</a>
+<a class="jiathis_button_copy">复制网址</a>
+<a class="jiathis_button_email">邮件</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_qzone">QQ空间</a>
+<a class="jiathis_button_tqq">腾讯微博</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a class="jiathis_button_share">一键分享</a>
+
+<a href="http://www.jiathis.com/share?uid=2140465" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config={
+  data_track_clickback:true,
+  summary:"",
+  shortUrl:false,
+  hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar-min.jpg" alt="小峰同学">
+            
+              <p class="site-author-name" itemprop="name">小峰同学</p>
+              <p class="site-description motion-element" itemprop="description">多听、多看、少说、多做。</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">88</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">82</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/z201" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:int_java_se@@163.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.journaldev.com/" title="journaldev" target="_blank">journaldev</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.geeksforgeeks.org/" title="geeksforgeeks" target="_blank">geeksforgeeks</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://redisdoc.com/index.html" title="redisdoc" target="_blank">redisdoc</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.spring4all.com/" title="spring4all 最专业的Spring民间组织" target="_blank">spring4all 最专业的Spring民间组织</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.sczyh30.com/" title="浮生若梦" target="_blank">浮生若梦</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://tengj.top/" title="嘟嘟独立博客" target="_blank">嘟嘟独立博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://indienova.com/" title="独立精神" target="_blank">独立精神</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.ityouknow.com/" title="纯洁的微笑" target="_blank">纯洁的微笑</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://sspai.com/" title="少数派" target="_blank">少数派</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://ifeve.com/" title="并发编程网" target="_blank">并发编程网</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://hacpai.com/" title="黑客派" target="_blank">黑客派</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.lintcode.com/" title="lintCode" target="_blank">lintCode</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://stackoverflow.com/" title="stackoverflow" target="_blank">stackoverflow</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.appinn.com" title="小众软件" target="_blank">小众软件</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.fontawesome.com.cn/" title="Font Awesome中文网" target="_blank">Font Awesome中文网</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#gRPC"><span class="nav-number">1.</span> <span class="nav-text">gRPC </span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#流程概念"><span class="nav-number">1.1.</span> <span class="nav-text">流程概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#性能对比"><span class="nav-number">1.2.</span> <span class="nav-text">性能对比</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#谁在使用"><span class="nav-number">1.3.</span> <span class="nav-text">谁在使用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ProtoBuf"><span class="nav-number">2.</span> <span class="nav-text">ProtoBuf</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#proto3语法"><span class="nav-number">3.</span> <span class="nav-text">proto3语法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#定义一个-Message"><span class="nav-number">3.1.</span> <span class="nav-text">定义一个 Message</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#定义多个-message-类型"><span class="nav-number">3.2.</span> <span class="nav-text">定义多个 message 类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#定义变量类型"><span class="nav-number">3.3.</span> <span class="nav-text">定义变量类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分配Tag"><span class="nav-number">3.4.</span> <span class="nav-text">分配Tag</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#指定变量规则"><span class="nav-number">3.5.</span> <span class="nav-text">指定变量规则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#注释"><span class="nav-number">3.6.</span> <span class="nav-text">注释</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#保留变量不被使用"><span class="nav-number">3.7.</span> <span class="nav-text">保留变量不被使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#默认值"><span class="nav-number">3.8.</span> <span class="nav-text">默认值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#定义枚举-Enumerations"><span class="nav-number">3.9.</span> <span class="nav-text">定义枚举 Enumerations</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何引用其他-proto-文件"><span class="nav-number">3.10.</span> <span class="nav-text">如何引用其他 proto 文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#升级-proto-文件正确的姿势"><span class="nav-number">3.11.</span> <span class="nav-text">升级 proto 文件正确的姿势</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Any-的使用"><span class="nav-number">3.12.</span> <span class="nav-text">Any 的使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Oneof-的使用"><span class="nav-number">3.13.</span> <span class="nav-text">Oneof 的使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Maps-的使用"><span class="nav-number">3.14.</span> <span class="nav-text">Maps 的使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Packages-的使用"><span class="nav-number">3.15.</span> <span class="nav-text">Packages 的使用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Options"><span class="nav-number">4.</span> <span class="nav-text">Options</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#定义-Services"><span class="nav-number">5.</span> <span class="nav-text">定义 Services</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#简单RPC"><span class="nav-number">6.</span> <span class="nav-text">简单RPC</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务器端流式-RPC"><span class="nav-number">7.</span> <span class="nav-text">服务器端流式 RPC</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#客户端流式-RPC"><span class="nav-number">8.</span> <span class="nav-text">客户端流式 RPC</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#双向流式-RPC"><span class="nav-number">9.</span> <span class="nav-text">双向流式 RPC</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码生成"><span class="nav-number">10.</span> <span class="nav-text">代码生成</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#参考文献"><span class="nav-number">10.1.</span> <span class="nav-text">参考文献</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小峰同学</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">112.3k</span>
+  
+</div>
+
+<!--
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+--> 
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
