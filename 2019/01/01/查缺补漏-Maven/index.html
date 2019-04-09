@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="枫叶的小博客">
 <meta property="og:description" content="本章是整理知识内容，为强化知识长期更新。  Mavan常用命令以及用法。  常用命令就要先了解Maven的生命周期  Maven的生命周期就是对所有的构建过程进行抽象和统一。包含了项目的清理、初始化、编译、测试、打包、集成测试、验证、部署和站点生成等几乎所有的构建步骤。 Maven的生命周期是抽象的，即生命周期不做任何实际的工作，实际任务由插件完成，类似于设计模式中的模板方法。所以必须有对应的插">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-03-24T06:59:29.525Z">
+<meta property="og:updated_time" content="2019-04-07T09:25:46.842Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="查缺补漏-Maven">
 <meta name="twitter:description" content="本章是整理知识内容，为强化知识长期更新。  Mavan常用命令以及用法。  常用命令就要先了解Maven的生命周期  Maven的生命周期就是对所有的构建过程进行抽象和统一。包含了项目的清理、初始化、编译、测试、打包、集成测试、验证、部署和站点生成等几乎所有的构建步骤。 Maven的生命周期是抽象的，即生命周期不做任何实际的工作，实际任务由插件完成，类似于设计模式中的模板方法。所以必须有对应的插">
@@ -557,7 +557,8 @@
 <li><p>mvn jetty:run -war </p>
 <ul>
 <li><p>使用内置jetty启动项目,需要配置jetty扩展插件。也可以使用tomcat来作为插件。</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 配置Maven插件(mvn jetty:run -war可以运行项目) --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.eclipse.jetty<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jetty-maven-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">version</span>&gt;</span>9.3.0.M1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- 指定访问端口 --&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">httpConnector</span>&gt;</span></span><br><span class="line">               <span class="tag">&lt;<span class="name">port</span>&gt;</span>80<span class="tag">&lt;/<span class="name">port</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">httpConnector</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- 间隔x扫描一次,实现热部署 </span></span><br><span class="line"><span class="comment">            &lt;scanIntervalSeconds&gt;0&lt;/scanIntervalSeconds&gt;</span></span><br><span class="line"><span class="comment">            --&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- 编写类文件之后，是否自动重启jetty；可选后面两个值[manual|automatic] </span></span><br><span class="line"><span class="comment">            &lt;reload&gt;manual&lt;/reload&gt;</span></span><br><span class="line"><span class="comment">            --&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- 指定关闭端口 --&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">stopPort</span>&gt;</span>9998<span class="tag">&lt;/<span class="name">stopPort</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">stopKey</span>&gt;</span>stop-jetty<span class="tag">&lt;/<span class="name">stopKey</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">webApp</span>&gt;</span></span><br><span class="line">               <span class="comment">&lt;!-- 配置&lt;contextPath&gt;/&lt;/contextPath&gt;，则访问路径为http://localhost:80 --&gt;</span></span><br><span class="line">               <span class="tag">&lt;<span class="name">contextPath</span>&gt;</span>/<span class="tag">&lt;/<span class="name">contextPath</span>&gt;</span></span><br><span class="line">               <span class="comment">&lt;!-- 更改jetty默认webdefault.xml文件，主要修改了useFileMappedBuffer属性为false，使其不锁定静态文件 --&gt;</span></span><br><span class="line">               <span class="comment">&lt;!-- 此文件在C盘\用户目录\.m2\repository\org\eclipse\jetty\jetty-webapp\9.1.0.RC1\找到jar包，打开jar包目录org\eclipse\jetty\webapp\目录中 --&gt;</span></span><br><span class="line">               <span class="comment">&lt;!-- &lt;defaultsDescriptor&gt;webdefault.xml&lt;/defaultsDescriptor&gt; --&gt;</span></span><br><span class="line">               <span class="tag">&lt;<span class="name">defaultsDescriptor</span>&gt;</span>src/main/resources/webdefault.xml<span class="tag">&lt;/<span class="name">defaultsDescriptor</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">webApp</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 配置Maven插件(mvn jetty:run -war可以运行项目) --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.eclipse.jetty<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jetty-maven-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">version</span>&gt;</span>9.3.0.M1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- 指定访问端口 --&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">httpConnector</span>&gt;</span></span><br><span class="line">               <span class="tag">&lt;<span class="name">port</span>&gt;</span>80<span class="tag">&lt;/<span class="name">port</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">httpConnector</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- 间隔x扫描一次,实现热部署 </span></span><br><span class="line"><span class="comment">            &lt;scanIntervalSeconds&gt;0&lt;/scanIntervalSeconds&gt;</span></span><br><span class="line"><span class="comment">            --&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- 编写类文件之后，是否自动重启jetty；可选后面两个值[manual|automatic] </span></span><br><span class="line"><span class="comment">            &lt;reload&gt;manual&lt;/reload&gt;</span></span><br><span class="line"><span class="comment">            --&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- 指定关闭端口 --&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">stopPort</span>&gt;</span>9998<span class="tag">&lt;/<span class="name">stopPort</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">stopKey</span>&gt;</span>stop-jetty<span class="tag">&lt;/<span class="name">stopKey</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">webApp</span>&gt;</span></span><br><span class="line">               <span class="comment">&lt;!-- 配置&lt;contextPath&gt;/&lt;/contextPath&gt;，则访问路径为http://localhost:80 --&gt;</span></span><br><span class="line">               <span class="tag">&lt;<span class="name">contextPath</span>&gt;</span>/<span class="tag">&lt;/<span class="name">contextPath</span>&gt;</span></span><br><span class="line">               <span class="comment">&lt;!-- 更改jetty默认webdefault.xml文件，主要修改了useFileMappedBuffer属性为false，使其不锁定静态文件 --&gt;</span></span><br><span class="line">               <span class="comment">&lt;!-- 此文件在C盘\用户目录\.m2\repository\org\eclipse\jetty\jetty-webapp\9.1.0.RC1\找到jar包，打开jar包目录org\eclipse\jetty\webapp\目录中 --&gt;</span></span><br><span class="line">               <span class="comment">&lt;!-- &lt;defaultsDescriptor&gt;webdefault.xml&lt;/defaultsDescriptor&gt; --&gt;</span></span><br><span class="line">               <span class="tag">&lt;<span class="name">defaultsDescriptor</span>&gt;</span>src/main/resources/webdefault.xml<span class="tag">&lt;/<span class="name">defaultsDescriptor</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">webApp</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 </li>
 </ul>
@@ -617,8 +618,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/01/01/查缺补漏-Mybatis/" rel="next" title="查缺补漏-Mybatis">
-                <i class="fa fa-chevron-left"></i> 查缺补漏-Mybatis
+              <a href="/2019/01/01/查缺补漏-MySQL/" rel="next" title="查缺补漏-MySQL">
+                <i class="fa fa-chevron-left"></i> 查缺补漏-MySQL
               </a>
             
           </div>
@@ -627,8 +628,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/01/01/查缺补漏-JavaServlet/" rel="prev" title="查缺补漏-JavaServlet">
-                查缺补漏-JavaServlet <i class="fa fa-chevron-right"></i>
+              <a href="/2019/01/01/查缺补漏-Jvm/" rel="prev" title="查缺补漏-Jvm">
+                查缺补漏-Jvm <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -725,7 +726,7 @@ var jiathis_config={
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">88</span>
+                  <span class="site-state-item-count">89</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -747,7 +748,7 @@ var jiathis_config={
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">82</span>
+                  <span class="site-state-item-count">83</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -884,7 +885,7 @@ var jiathis_config={
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">112.2k</span>
+    <span title="Site words total count">112.4k</span>
   
 </div>
 
