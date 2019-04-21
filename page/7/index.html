@@ -373,6 +373,206 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/02/爬虫入门/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/02/爬虫入门/" itemprop="url">爬虫入门</a></h1>
+        
+
+        <div class="post-meta">
+	  
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-02T12:03:21+08:00">
+                2019-03-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/爬虫/" itemprop="url" rel="index">
+                    <span itemprop="name">爬虫</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,015
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  6
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <blockquote>
+<p>既然sakila的数据不是很好用，干脆自己爬点数据吧。</p>
+</blockquote>
+<ul>
+<li>在 <a href="https://z201.cn/2019/02/28/%E5%AE%9E%E6%88%98-sakila%E6%95%B0%E6%8D%AE%E5%BA%93%E9%A1%B9%E7%9B%AE/" target="_blank" rel="noopener">实战-sakila数据库项目</a> 介绍了sakila数据开发应用，结果发现只有文字数据，而且影片数据也不理想，所以这里需要使用爬虫从万能的互联网上抓点数据。</li>
+</ul>
+<h3 id="目标选择"><a href="#目标选择" class="headerlink" title="目标选择"></a>目标选择</h3><ul>
+<li>腾讯视频</li>
+</ul>
+<h3 id="抓取类型"><a href="#抓取类型" class="headerlink" title="抓取类型"></a>抓取类型</h3><ul>
+<li>电影</li>
+</ul>
+<h3 id="技术选型"><a href="#技术选型" class="headerlink" title="技术选型"></a>技术选型</h3><ul>
+<li><code>jsoup</code></li>
+</ul>
+<h3 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h3><blockquote>
+<p>简单的单元测试入门。jsoup的用法可以直接查看官方文档。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String UA_PHONE = <span class="string">"Mozilla/5.0 (Linux; Android 4.3; Nexus 10 Build/JSS15Q) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.23 Safari/537.36"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String UA_PC = <span class="string">"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String QQ_PAGE_MOVIE = <span class="string">"http://v.qq.com/x/list/movie?itype=-1&amp;offset=1"</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">	Document document = Jsoup.connect(QQ_PAGE_MOVIE)</span><br><span class="line">            .userAgent(UA_PC)</span><br><span class="line">            .timeout(TIME_OUT)</span><br><span class="line">            .ignoreContentType(<span class="keyword">true</span>).get();</span><br><span class="line">      Elements elements = document.select(<span class="string">"li.list_item a.figure"</span>);</span><br><span class="line">        <span class="keyword">for</span> (Element element : elements) &#123;</span><br><span class="line">            String url = element.attr(<span class="string">"href"</span>);</span><br><span class="line">            String title = element.select(<span class="string">"img"</span>).attr(<span class="string">"alt"</span>);</span><br><span class="line">            String image = element.select(<span class="string">"img"</span>).attr(<span class="string">"r-lazyload"</span>);</span><br><span class="line">            System.out.println(<span class="string">"href  "</span> + url + <span class="string">"   title  "</span> + title + <span class="string">"  image  "</span> + image);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/03/02/爬虫入门/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+	
+    <div>    
+      
+    </div>
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/02/Redis基础（二）/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -798,221 +998,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/02/28/MySQL基础（三）/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/02/28/MySQL基础（三）/" itemprop="url">MySQL基础（三）</a></h1>
-        
-
-        <div class="post-meta">
-	  
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-28T00:40:49+08:00">
-                2019-02-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/实践/" itemprop="url" rel="index">
-                    <span itemprop="name">实践</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  689
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  3
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-<ul>
-<li>在 <a href="https://z201.cn/2018/04/29/MySQL%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%80%EF%BC%89/" target="_blank" rel="noopener">MySQL基础（一）</a> 和 <a href="https://z201.cn/2018/05/02/MySQL%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%8C%EF%BC%89/" target="_blank" rel="noopener">MySQL基础（二）</a>已经介绍了MYSQL最常用基础的操作，现在使用官方的示例数据库来做测试。</li>
-</ul>
-<h3 id="0x01-准备样本数据库"><a href="#0x01-准备样本数据库" class="headerlink" title="0x01 准备样本数据库"></a>0x01 准备样本数据库</h3><ul>
-<li><p>Sakila样本数据库介绍</p>
-<p>Sakila样本数据库是MySQL官方提供的一个模拟DVD租赁信息管理的数据库，提供了一个标准模式，可作为书中例子,教程、文章、样品,等等，对学习测试来说是个不错的选择。<a href="https://dev.mysql.com/doc/sakila/en/sakila-preface.html" target="_blank" rel="noopener">Sakila样本数据库官方文档介绍</a></p>
-</li>
-<li><p>下载数据文件</p>
-<ul>
-<li>MySQL :: Other MySQL Documentation <a href="https://dev.mysql.com/doc/index-other.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/index-other.html</a>Example Databases –&gt; sakila database –&gt; zip包或.tar.gz包均可）</li>
-</ul>
-</li>
-<li><p>解压后得到3个文件：</p>
-<ul>
-<li>sakila.mwb          workbench数据模型</li>
-<li><p>sakila-data.sql     表记录信息</p>
-</li>
-<li><p>sakila-schema.sql 表结构信息</p>
-</li>
-</ul>
-</li>
-<li><p>先倒入表结构在倒入数据。</p>
-</li>
-</ul>
-<h3 id="0x02-sakila样例数据库DVD租赁业务流程解读"><a href="#0x02-sakila样例数据库DVD租赁业务流程解读" class="headerlink" title="0x02 sakila样例数据库DVD租赁业务流程解读"></a>0x02 sakila样例数据库DVD租赁业务流程解读</h3><ul>
-<li>每个商店维护自己的租赁影片清单，当客户取走或归还DVD光盘时会有一个专门的店员对这个清单进行维护；</li>
-<li>影片描写的内容同样在维护信息范围之列，如分类（动作、冒险、喜剧等）、演员、等级、特殊分类（如被删除的情节和预告片）。这些信息可能被打印在DVD包装的标签上；</li>
-<li>必须在商店注册成为会员才可以租赁光盘；</li>
-<li>客户可以在任何一家商店租赁一张或多张光盘，同时商店希望在每张光盘对应的租赁期内规划之前租赁的光盘；</li>
-<li>顾客可以在任意时间对任何租赁的光盘付费；</li>
-</ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/02/28/MySQL基础（三）/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-	
-    <div>    
-      
-    </div>
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/02/28/Redis基础（一）/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1241,7 +1226,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/02/27/实践-mybatis+h2+logback单元测试/">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/02/28/MySQL基础（三）/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="小峰同学">
@@ -1260,7 +1245,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/02/27/实践-mybatis+h2+logback单元测试/" itemprop="url">实践-mybatis+h2+logback单元测试</a></h1>
+                <a class="post-title-link" href="/2019/02/28/MySQL基础（三）/" itemprop="url">MySQL基础（三）</a></h1>
         
 
         <div class="post-meta">
@@ -1273,8 +1258,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-27T14:16:34+08:00">
-                2019-02-27
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-28T00:40:49+08:00">
+                2019-02-28
               </time>
             
 
@@ -1327,7 +1312,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  759
+                  689
                 </span>
               
 
@@ -1343,7 +1328,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  4
+                  3
                 </span>
               
             </div>
@@ -1365,35 +1350,47 @@
 
       
         
-          
-            <blockquote>
-<p><a href="https://z201.cn/2019/02/26/mybatis%E5%B0%8F%E8%AF%95%E7%89%9B%E5%88%80/" target="_blank" rel="noopener">mybatis小试牛刀</a> 在此基础上添加log日志。</p>
+          <blockquote>
+<p>本章是整理知识内容，为强化知识长期更新。</p>
 </blockquote>
 <ul>
-<li><p>官方文档 ： <a href="http://www.mybatis.org/mybatis-3/zh/logging.html" target="_blank" rel="noopener">http://www.mybatis.org/mybatis-3/zh/logging.html</a></p>
+<li>在 <a href="https://z201.cn/2018/04/29/MySQL%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%80%EF%BC%89/" target="_blank" rel="noopener">MySQL基础（一）</a> 和 <a href="https://z201.cn/2018/05/02/MySQL%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%8C%EF%BC%89/" target="_blank" rel="noopener">MySQL基础（二）</a>已经介绍了MYSQL最常用基础的操作，现在使用官方的示例数据库来做测试。</li>
+</ul>
+<h3 id="0x01-准备样本数据库"><a href="#0x01-准备样本数据库" class="headerlink" title="0x01 准备样本数据库"></a>0x01 准备样本数据库</h3><ul>
+<li><p>Sakila样本数据库介绍</p>
+<p>Sakila样本数据库是MySQL官方提供的一个模拟DVD租赁信息管理的数据库，提供了一个标准模式，可作为书中例子,教程、文章、样品,等等，对学习测试来说是个不错的选择。<a href="https://dev.mysql.com/doc/sakila/en/sakila-preface.html" target="_blank" rel="noopener">Sakila样本数据库官方文档介绍</a></p>
 </li>
-<li><p>项目地址 ： <a href="https://github.com/z201/z201.github.io.code/tree/master/mybatis-learning/mybatis-learning-02" target="_blank" rel="noopener">mybatis-learning-02</a></p>
+<li><p>下载数据文件</p>
+<ul>
+<li>MySQL :: Other MySQL Documentation <a href="https://dev.mysql.com/doc/index-other.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/index-other.html</a>Example Databases –&gt; sakila database –&gt; zip包或.tar.gz包均可）</li>
+</ul>
+</li>
+<li><p>解压后得到3个文件：</p>
+<ul>
+<li>sakila.mwb          workbench数据模型</li>
+<li><p>sakila-data.sql     表记录信息</p>
+</li>
+<li><p>sakila-schema.sql 表结构信息</p>
 </li>
 </ul>
-<h3 id="0x01-测试控制台的显示内容"><a href="#0x01-测试控制台的显示内容" class="headerlink" title="0x01 测试控制台的显示内容"></a>0x01 测试控制台的显示内容</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">User(id=1, name=TOM, age=12, gender=0)</span><br><span class="line">User(id=2, name=JON, age=13, gender=1)</span><br><span class="line">User(id=3, name=King, age=11, gender=0)</span><br></pre></td></tr></table></figure>
-<h3 id="0x02-增加日志输出"><a href="#0x02-增加日志输出" class="headerlink" title="0x02 增加日志输出"></a>0x02 增加日志输出</h3><blockquote>
-<p>根据官方文档显示，支持的log有很多实现，这里使用Slf4j + Logback 多组合。</p>
-</blockquote>
-<ul>
-<li>根据之前的项目，这里偷懒重新创建一个项目并把之前的代码都复制过来。</li>
-<li>添加maven依赖。</li>
+</li>
+<li><p>先倒入表结构在倒入数据。</p>
+</li>
 </ul>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"> <span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">mybatis.version</span>&gt;</span>3.5.0<span class="tag">&lt;/<span class="name">mybatis.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">junit.version</span>&gt;</span>4.12<span class="tag">&lt;/<span class="name">junit.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">lmbok.version</span>&gt;</span>1.18.4<span class="tag">&lt;/<span class="name">lmbok.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">mysql.version</span>&gt;</span>5.1.47<span class="tag">&lt;/<span class="name">mysql.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">h2.version</span>&gt;</span>1.4.197<span class="tag">&lt;/<span class="name">h2.version</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 新增内容 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">slf4j.version</span>&gt;</span>1.7.25<span class="tag">&lt;/<span class="name">slf4j.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">logback.version</span>&gt;</span>1.2.3<span class="tag">&lt;/<span class="name">logback.version</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- pom文件需要指定打包编码集，[WARNING] File encoding has not been set, using platform encoding GBK, i.e. build is platform dependent!  --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">project.build.sourceEncoding</span>&gt;</span>UTF-8<span class="tag">&lt;/<span class="name">project.build.sourceEncoding</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.slf4j<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>slf4j-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;slf4j.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>ch.qos.logback<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>logback-classic<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;logback.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>添加logback配置文件</li>
+<h3 id="0x02-sakila样例数据库DVD租赁业务流程解读"><a href="#0x02-sakila样例数据库DVD租赁业务流程解读" class="headerlink" title="0x02 sakila样例数据库DVD租赁业务流程解读"></a>0x02 sakila样例数据库DVD租赁业务流程解读</h3><ul>
+<li>每个商店维护自己的租赁影片清单，当客户取走或归还DVD光盘时会有一个专门的店员对这个清单进行维护；</li>
+<li>影片描写的内容同样在维护信息范围之列，如分类（动作、冒险、喜剧等）、演员、等级、特殊分类（如被删除的情节和预告片）。这些信息可能被打印在DVD包装的标签上；</li>
+<li>必须在商店注册成为会员才可以租赁光盘；</li>
+<li>客户可以在任何一家商店租赁一张或多张光盘，同时商店希望在每张光盘对应的租赁期内规划之前租赁的光盘；</li>
+<li>顾客可以在任意时间对任何租赁的光盘付费；</li>
 </ul>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">appender</span> <span class="attr">name</span>=<span class="string">"STDOUT"</span> <span class="attr">class</span>=<span class="string">"ch.qos.logback.core.ConsoleAppender"</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- encoders are assigned the type</span></span><br><span class="line"><span class="comment">             ch.qos.logback.classic.encoder.PatternLayoutEncoder by default --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">encoder</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">pattern</span>&gt;</span>z201.github.cn %d&#123;HH:mm:ss.SSS&#125; [%thread] %-5level %logger&#123;36&#125; - %msg%n<span class="tag">&lt;/<span class="name">pattern</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">encoder</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">appender</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">root</span> <span class="attr">level</span>=<span class="string">"debug"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">appender-ref</span> <span class="attr">ref</span>=<span class="string">"STDOUT"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">root</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>再次运行单元测试。</li>
-</ul>
-<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.046</span> [main] DEBUG org<span class="variable">.apache</span><span class="variable">.ibatis</span><span class="variable">.logging</span><span class="variable">.LogFactory</span> - Logging initialized using '<span class="keyword">class</span> org<span class="variable">.apache</span><span class="variable">.ibatis</span><span class="variable">.logging</span><span class="variable">.slf4j</span><span class="variable">.Slf4jImpl</span>' adapter.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.049</span> [main] DEBUG org<span class="variable">.apache</span><span class="variable">.ibatis</span><span class="variable">.logging</span><span class="variable">.LogFactory</span> - Logging initialized using '<span class="keyword">class</span> org<span class="variable">.apache</span><span class="variable">.ibatis</span><span class="variable">.logging</span><span class="variable">.slf4j</span><span class="variable">.Slf4jImpl</span>' adapter.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.076</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - PooledDataSource forcefully closed/removed all connections.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.076</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - PooledDataSource forcefully closed/removed all connections.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.076</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - PooledDataSource forcefully closed/removed all connections.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.076</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - PooledDataSource forcefully closed/removed all connections.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.155</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.t</span><span class="variable">.jdbc</span><span class="variable">.JdbcTransaction</span> - Opening JDBC Connection</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.356</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - Created connection <span class="number">1839168128</span>.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.356</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.t</span><span class="variable">.jdbc</span><span class="variable">.JdbcTransaction</span> - Setting autocommit to false on JDBC Connection [conn0: url=jdbc:h2:mem:mybatis_learning_01_db user=ROOT]</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.358</span> [main] DEBUG c<span class="variable">.z201</span><span class="variable">.mybatis</span><span class="variable">.learning</span><span class="variable">.UserDao</span><span class="variable">.list</span> - ==&gt;  Preparing: SELECT * FROM <span class="meta">`user` </span></span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.384</span> [main] DEBUG c<span class="variable">.z201</span><span class="variable">.mybatis</span><span class="variable">.learning</span><span class="variable">.UserDao</span><span class="variable">.list</span> - ==&gt; Parameters: </span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.411</span> [main] DEBUG c<span class="variable">.z201</span><span class="variable">.mybatis</span><span class="variable">.learning</span><span class="variable">.UserDao</span><span class="variable">.list</span> - &lt;==      Total: <span class="number">3</span></span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.414</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.t</span><span class="variable">.jdbc</span><span class="variable">.JdbcTransaction</span> - Resetting autocommit to true on JDBC Connection [conn0: url=jdbc:h2:mem:mybatis_learning_01_db user=ROOT]</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.415</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.t</span><span class="variable">.jdbc</span><span class="variable">.JdbcTransaction</span> - Closing JDBC Connection [conn0: url=jdbc:h2:mem:mybatis_learning_01_db user=ROOT]</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.415</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - Returned connection <span class="number">1839168128</span> to pool.</span><br><span class="line">User(id=<span class="number">1</span>, name=TOM, age=<span class="number">12</span>, gender=<span class="number">0</span>)</span><br><span class="line">User(id=<span class="number">2</span>, name=JON, age=<span class="number">13</span>, gender=<span class="number">1</span>)</span><br><span class="line">User(id=<span class="number">3</span>, name=King, age=<span class="number">11</span>, gender=<span class="number">0</span>)</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.416</span> [main] DEBUG cn<span class="variable">.z201</span><span class="variable">.mybatis</span><span class="variable">.test</span><span class="variable">.MybatisTest01</span> - <span class="keyword">end</span>...</span><br></pre></td></tr></table></figure>
-
-          
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/02/28/MySQL基础（三）/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1483,7 +1480,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">91</span>
+                  <span class="site-state-item-count">92</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1494,7 +1491,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -1642,7 +1639,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">118.5k</span>
+    <span title="Site words total count">119.0k</span>
   
 </div>
 
