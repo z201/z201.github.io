@@ -373,7 +373,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/查缺补漏-SpringMvc/">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/查缺补漏-通讯协议/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="小峰同学">
@@ -392,7 +392,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/01/01/查缺补漏-SpringMvc/" itemprop="url">查缺补漏-SpringMvc</a></h1>
+                <a class="post-title-link" href="/2019/01/01/查缺补漏-通讯协议/" itemprop="url">查缺补漏-通讯协议</a></h1>
         
 
         <div class="post-meta">
@@ -459,7 +459,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1,079
+                  889
                 </span>
               
 
@@ -475,7 +475,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  4
+                  3
                 </span>
               
             </div>
@@ -501,53 +501,35 @@
             <blockquote>
 <p>本章是整理知识内容，为强化知识长期更新。</p>
 </blockquote>
-<h3 id="描述下Controller和RequestMapping注解。"><a href="#描述下Controller和RequestMapping注解。" class="headerlink" title="描述下Controller和RequestMapping注解。"></a>描述下Controller和RequestMapping注解。</h3><ul>
-<li><p>Controller</p>
-<ul>
-<li>声明在类上，该注解表明该类扮演控制器的角色，类似Action。</li>
+<h3 id="描述下GET与POST的区别。"><a href="#描述下GET与POST的区别。" class="headerlink" title="描述下GET与POST的区别。"></a>描述下GET与POST的区别。</h3><ul>
+<li>GET和POST是HTTP请求的两种基本方法。<ul>
+<li>GET：特定浏览器和服务器对URL长度有限制，例如 IE对URL长度的限制是2083字节(2K+35)。理论上没有长度限制，其限制取决于操作系 统的支持。所以GET提交时，传输数据就会受到URL长度的限制。</li>
+<li>POST：由于不是通过URL传值，理论上数据不受限。但实际各个WEB服务器会规定对post提交数据大小进行限制。</li>
 </ul>
 </li>
-<li><p>RequestMapping</p>
-<ul>
-<li>该注解是用来映射一个URL到一个类或一个特定的方处理法上。</li>
+<li>GET和POST本质上没有区别,只是在浏览器上直观体现方式不同。GET和POST本质上就是TCP链接，并无差别。但是由于HTTP的规定和浏览器/服务器的限制，导致他们在应用过程中体现出一些不同。</li>
+<li>GET产生一个TCP数据包;POST产生两个TCP数据包。<ul>
+<li>对于GET方式的请求，浏览器会把http header和data一并发送出去，服务器响应200(返回数据);</li>
+<li>而对于POST，浏览器先发送header，服务器响应100 continue，浏览器再发送data，服务器响应200 ok(返回数据)。</li>
+<li>在网络环境好的情况下，发一次包的时间和发两次包的时间差别基本可以无视。而在网络环境差的情况下，两次包的TCP在验证数据包完整性上，有非常大的优点，一般的浏览POST会发送两次，但是Firefox就发送一次。</li>
 </ul>
 </li>
-</ul>
-<h3 id="描述下Spring的作用域以及使用方法。"><a href="#描述下Spring的作用域以及使用方法。" class="headerlink" title="描述下Spring的作用域以及使用方法。"></a>描述下Spring的作用域以及使用方法。</h3><ul>
-<li>当定义一个Bean时，可以给这个Bean声明一个作用域。通过@Scope注解声明在类上。<ul>
-<li>Bean默认作用域是singleton 单例模式，在每个Spring Ioc容器中的一个Bean定义一个实例，也就是无状态Bean，也就是线程不安全的。这个单一实例会被存储到单例缓存（singleton cache）中，并且所有针对该bean的后续请求、访问和引用都将返回被缓存的对象实例。相当于一次创建多次使用。</li>
-<li>prototype 原型模式，在每个Spring Ioc容器中的一个Bean定义多实例，就相当与Java 中new 操作。通常作为有状态的Bean。Prototype作用域的bean会导致在每次对该bean请求（将其注入到另一个bean中，或者以程序的方式调用容器的getBean()方法）时都会创建一个新的bean实例。</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>其它作用域。</p>
-<ul>
-<li>request、session、global session 仅在基于web的应用中使用（不必关心你所采用的是什么web应用框架）。<ul>
-<li>如果不是在web下实现而是通过ApplicationContext这种实现，尝试使用这些作用域将抛出异常IllegalStateException未知作用域。</li>
-<li>request 对每一次HTTP请求都会产生一个新的bean。Spring容器会根据loginAction bean定义创建一个全新的LoginAction bean实例，且该loginAction bean实例仅在当前HTTP request内有效，因此可以根据需要放心的更改所建实例的内部状态，而其他请求中根据loginAction bean定义创建的实例，将不会看到这些特定于某个请求的状态变化。当处理请求结束，request作用域的bean实例将被销毁。</li>
-<li>session 对每一次HTTP请求都会产生一个新的bean，Spring容器会根据userPreferences bean定义创建一个全新的userPreferences bean实例，且该userPreferences bean仅在当前HTTP Session内有效。与request作用域一样，你可以根据需要放心的更改所创建实例的内部状态，而别的HTTP Session中根据userPreferences创建的实例，将不会看到这些特定于某个HTTP Session的状态变化。当HTTP Session最终被废弃的时候，在该HTTP Session作用域内的bean也会被废弃掉。</li>
-<li>‍global session 作用域类似于标准的HTTP Session作用域，不过它仅仅在基于portlet的web应用中才有意义。Portlet规范定义了全局Session的概念，它被所有构成某个portlet web应用的各种不同的portlet所共享。在global session作用域中定义的bean被限定于全局portlet Session的生命周期范围内。在一个标准的基于Servlet的web应用，并且定义了一个或多个具有global session作用域的bean，系统会使用标准的HTTP Session作用域，并且不会引起任何错误。</li>
-</ul>
-</li>
-<li>作用域依赖<ul>
-<li>Spring IoC容器除了管理对象（bean）的实例化，同时还负责协作者（或者叫依赖）的实例化。如果将一个Http request范围的bean注入到另一个bean中，那么需要注入一个AOP代理来替代被注入的作用域bean。也就是说需要注入一个代理对象，该对象具有与被代理对象一样的公共接口，而容器则可以足够智能的从相关作用域中（比如一个HTTP request）获取到真实的目标对象，并把方法调用委派给实际的对象。</li>
+<li>安全性<ul>
+<li>在没有加密的情况安全性是一样的,在浏览器调试模式下可以看到所有数据的。</li>
 </ul>
 </li>
 </ul>
-</li>
-</ul>
-<h3 id="SpringMVc中Restfull风格的使用。"><a href="#SpringMVc中Restfull风格的使用。" class="headerlink" title="SpringMVc中Restfull风格的使用。"></a>SpringMVc中Restfull风格的使用。</h3><ul>
-<li>restfull 支持的请求头GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS, TRACE 。</li>
-<li>通常情况下只使用 GET,PUT,POST,DELETE。<ul>
-<li>GET 通常用来获取数据。</li>
-<li>PUT 通常用来新增数据。</li>
-<li>POST 通常用来更新数据。</li>
-<li>DELETE 通常用来删除数据。</li>
+<h3 id="描述下HTTP-Cookie。"><a href="#描述下HTTP-Cookie。" class="headerlink" title="描述下HTTP Cookie。"></a>描述下HTTP Cookie。</h3><ul>
+<li>一个cookie就是存储在用户主机浏览器中的一小段文本文件。Cookies是纯文本形式，它们不包含任何可执行代码。一个Web页面或服务器告之浏览器来将这些信息存储并且基于一系列规则在之后的每个请求中都将该信息返回至服务器。Web服务器之后可以利用这些信息来标识用户。多数需要登录的站点通常会在你的认证信息通过后来设置一个cookie，之后只要这个cookie存在并且合法，就可以自由的浏览这个站点的所有部分。再次，cookie只是包含了数据。在后续的http 请求中，浏览器会将cookie带回给Web Server。同时在浏览器允许脚本执行的情况下，Cookie是可以被JavaScript等脚本设置的。</li>
+<li>Cookie的类别。<ul>
+<li>Session Cookie这个类型的cookie只在会话期间内有效，即当关闭浏览器的时候，它会被浏览器删除。设置session cookie的办法是：在创建cookie不设置Expires即可。</li>
+<li>Persistent Cookie持久型cookie顾名思义就是会长期在用户会话中生效。当你设置cookie的属性Max-Age为1个月的话，那么在这个月里每个相关URL的http请求中都会带有这个cookie。所以它可以记录很多用户初始化或自定义化的信息，比如什么时候第一次登录及弱登录态等。</li>
+<li>Secure cookie安全cookie是在https访问下的cookie形态，以确保cookie在从客户端传递到Server的过程中始终加密的。但是必须是在HTTPS的情况才有效果。</li>
+<li>HttpOnly 属性，这个数据设置为true后，客户端通过JS是无法获取到cookie信息的（暂时的）。</li>
 </ul>
 </li>
 </ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping</span>(value = <span class="string">"/get"</span>, method = RequestMethod.GET)</span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">get</span><span class="params">()</span></span>&#123;</span><br><span class="line">   <span class="keyword">return</span> <span class="string">"200"</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RequestMapping</span>(value = <span class="string">"/post"</span>, method = RequestMethod.POST)</span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">post</span><span class="params">()</span></span>&#123;</span><br><span class="line">   <span class="keyword">return</span> <span class="string">"200"</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RequestMapping</span>(value = <span class="string">"/delete"</span>, method = RequestMethod.DELETE)</span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">delete</span><span class="params">()</span></span>&#123;</span><br><span class="line">   <span class="keyword">return</span> <span class="string">"200"</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RequestMapping</span>(value = <span class="string">"/put"</span>, method = RequestMethod.PUT)</span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">put</span><span class="params">()</span></span>&#123;</span><br><span class="line">   <span class="keyword">return</span> <span class="string">"200"</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
           
         
       
