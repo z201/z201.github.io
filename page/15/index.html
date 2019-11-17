@@ -373,6 +373,461 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/07/23/MySQL进阶（二）/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/07/23/MySQL进阶（二）/" itemprop="url">MySQL进阶（二）</a></h1>
+        
+
+        <div class="post-meta">
+	  
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-23T12:02:46+08:00">
+                2018-07-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/基础理论/" itemprop="url" rel="index">
+                    <span itemprop="name">基础理论</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,008
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  7
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>MySQL基础知识</p>
+</blockquote>
+<h2 id="InnoDB架构"><a href="#InnoDB架构" class="headerlink" title="InnoDB架构"></a>InnoDB架构</h2><ul>
+<li>这是官方文档中的架构图</li>
+</ul>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/mysql/innodb-architecture.png" alt="innodb-architecture"></p>
+<h2 id="划重点"><a href="#划重点" class="headerlink" title="划重点"></a>划重点</h2><blockquote>
+<p>MySQL涉及到的知识太庞大了，对与业务开发人员来说掌握一部分经常使用的知识即可。</p>
+</blockquote>
+<ul>
+<li>索引</li>
+<li>数据库隔离</li>
+<li>锁</li>
+</ul>
+<h3 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h3><blockquote>
+<p>目前工作中主要使用的数据库引擎就是InnoDB，所以关于索引的知识必不可少。</p>
+</blockquote>
+<ul>
+<li><p>在了解索引之前，大概理解下mysql存储数据的大小划分<code>表空间 -&gt; 段 -&gt; 区 -&gt; 数据页</code> 。</p>
+</li>
+<li><p>索引的优点：1. 天生排序。2. 快速查找；索引的缺点：1. 占用空间。2. 降低更新表的速度。</p>
+</li>
+<li><p>注意点：</p>
+<ul>
+<li><p>小表使用全表扫描更快，中大表才使用索引。超级大表索引基本无效。</p>
+</li>
+<li><p>索引实现，分成 2 种：聚集索引和辅助索引（也叫二级索引或者非聚集索引）</p>
+</li>
+<li><p>功能区分，分为 6 种：普通索引，唯一索引，主键索引，复合索引，外键索引，全文索引。</p>
+<p>1、普通索引：最基本的索引，没有任何约束。<br>2、唯一索引：与普通索引类似，但具有唯一性约束。<br>3、主键索引：<strong>特殊的唯一索引，不允许有空值</strong>。<br>4、复合索引：将多个列组合在一起创建索引，可以覆盖多个列。<br>5、外键索引：只有InnoDB类型的表才可以使用外键索引，保证数据的一致性、完整性和实现级联操作。<br>6、全文索引：MySQL 自带的全文索引只能用于 InnoDB、MyISAM ，并且只能对英文进行全文检索，一般使用全文索引引擎（ES，Solr）。</p>
+</li>
+</ul>
+</li>
+<li><p><code>注意：主键就是唯一索引，但是唯一索引不一定是主键，唯一索引可以为空，但是空值只能有一个，主键不能为空。</code></p>
+</li>
+</ul>
+<h3 id="事物隔离"><a href="#事物隔离" class="headerlink" title="事物隔离"></a>事物隔离</h3><blockquote>
+<p>ACID模式是一组数据库设计原则强调的是，对于业务数据和关键任务应用重要的可靠性方面。MySQL包含诸如的组件<code>InnoDB</code>存储引擎与ACID模型紧密结合，因此数据不会损坏，并且不会因软件崩溃和硬件故障等特殊情况而导致结果失真。当您依赖符合ACID的功能时，您无需重新发明一致性检查和崩溃恢复机制。如果您有其他软件安全措施，超可靠硬件或可以容忍少量数据丢失或不一致的应用程序，您可以调整MySQL设置以交换一些ACID可靠性以获得更高的性能或吞吐量。</p>
+</blockquote>
+<ul>
+<li>原子性 Atomicity ：一个事务（transaction）中的所有操作，或者全部完成，或者全部不完成，不会结束在中间某个环节。事务在执行过程中发生错误，会被恢复（Rollback）到事务开始前的状态，就像这个事务从来没有执行过一样。即，事务不可分割、不可约简。</li>
+<li>一致性 Consistency ：在事务开始之前和事务结束以后，数据库的完整性没有被破坏。这表示写入的资料必须完全符合所有的预设约束、触发器、级联回滚等。</li>
+<li>隔离性 Isolation ：数据库允许多个并发事务同时对其数据进行读写和修改的能力，隔离性可以防止多个事务并发执行时由于交叉执行而导致数据的不一致。事务隔离分为不同级别，包括读未提交（Read uncommitted）、读提交（read committed）、可重复读（repeatable read）和串行化（Serializable）。</li>
+<li><p>持久性 Durability ：事务处理结束后，对数据的修改就是永久的，即便系统故障也不会丢失。</p>
+</li>
+<li><p>四个特性，最重要的就是一致性。而<strong>一致性</strong>由原子性，隔离性，持久性来保证。</p>
+<ul>
+<li>原子性由 Undo log 保证。Undo Log 会保存每次变更之前的记录，从而在发生错误时进行回滚。</li>
+<li>隔离性由 MVCC 和 Lock 保证。这个后面说。</li>
+<li>持久性由 Redo Log 保证。每次真正修改数据之前，都会将记录写到 Redo Log 中，只有 Redo Log 写入成功，才会真正的写入到 B+ 树中，如果提交之前断电，就可以通过 Redo Log 恢复记录。</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>事务隔离级别</th>
+<th>值</th>
+<th>脏读</th>
+<th>不可重复读</th>
+<th>幻读</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>读未提交（read-uncommitted）</td>
+<td>1</td>
+<td>是</td>
+<td>是</td>
+<td>是</td>
+</tr>
+<tr>
+<td>读已提交（read-committed）</td>
+<td>2</td>
+<td>否</td>
+<td>是</td>
+<td>是</td>
+</tr>
+<tr>
+<td>可重复读（repeatable-read）</td>
+<td>3</td>
+<td>否</td>
+<td>否</td>
+<td>是（x）</td>
+</tr>
+<tr>
+<td>串行化（serializable）</td>
+<td>4</td>
+<td>否</td>
+<td>否</td>
+<td>否</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>读未提交，一个事物未提交的时候，它做的数据变更就能被其它食物看到。</li>
+<li>读提交，一个事物提交后，它做的数据变更才能被其它事物看到。</li>
+<li>可重复读，一个事物执行的过程中看到的数据，总是跟这个事物在启动时候看的数据一致。</li>
+<li>串行化，对同一行数据 <code>写</code>会加<code>写锁</code>,<code>读</code>会加<code>读锁</code>。当出现读写冲突的时候，必须按数据执行事务。</li>
+</ul>
+<h4 id="并发事务的问题"><a href="#并发事务的问题" class="headerlink" title="并发事务的问题"></a>并发事务的问题</h4><h4 id="脏读"><a href="#脏读" class="headerlink" title="脏读"></a>脏读</h4><blockquote>
+<p>一个事务正在对一条记录进行修改，在这个事务完成并提交前，这条记录的数据就处于不一致状态。这时，另一个事务也来读取同一条记录，如果不加控制，第二个事务读取了这些“脏”数据，并据此做进一步的处理，就会产生未提交的数据依赖关系。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">时间</th>
+<th style="text-align:left">事务A</th>
+<th style="text-align:left">事务B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">T1</td>
+<td style="text-align:left">开启事务</td>
+<td style="text-align:left">开启事务</td>
+</tr>
+<tr>
+<td style="text-align:left">T2</td>
+<td style="text-align:left">查询账户余额为1000</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">T3</td>
+<td style="text-align:left">充值500，余额修改为1500</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">T4</td>
+<td style="text-align:left"></td>
+<td style="text-align:left">查询余额为<strong>1500</strong></td>
+</tr>
+<tr>
+<td style="text-align:left">T5</td>
+<td style="text-align:left">撤销事务，余额改回<strong>1000</strong></td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">T6</td>
+<td style="text-align:left"></td>
+<td style="text-align:left">汇入500，余额修改为<strong>2000</strong></td>
+</tr>
+<tr>
+<td style="text-align:left">T7</td>
+<td style="text-align:left"></td>
+<td style="text-align:left">提交事务</td>
+</tr>
+</tbody>
+</table>
+<h4 id="不可重复读"><a href="#不可重复读" class="headerlink" title="不可重复读"></a>不可重复读</h4><blockquote>
+<p>一个事务在读取某些数据后的某个时间，再次读取以前读过的数据，却发现其读出的数据已经发生了变更、或者某些记录已经被删除了。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>时间</th>
+<th>事务A</th>
+<th>事务B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T1</td>
+<td>开启事务</td>
+<td>开启事务</td>
+</tr>
+<tr>
+<td>T2</td>
+<td>select * from user where user_id=100 假设为小明的用户信息</td>
+<td></td>
+</tr>
+<tr>
+<td>T3</td>
+<td></td>
+<td>将user_id=100的用户信息对应的年龄修改为<strong>18</strong></td>
+</tr>
+<tr>
+<td>T4</td>
+<td></td>
+<td>提交事务</td>
+</tr>
+<tr>
+<td>T5</td>
+<td>再次查询发现用户的<strong>年龄变更</strong>了</td>
+<td></td>
+</tr>
+<tr>
+<td>T6</td>
+<td>…</td>
+<td></td>
+</tr>
+<tr>
+<td>T7</td>
+<td>提交事务</td>
+</tr>
+</tbody>
+</table>
+<h4 id="幻读"><a href="#幻读" class="headerlink" title="幻读"></a>幻读</h4><blockquote>
+<p>一个事务按相同的查询条件重新读取以前检索过的数据，却发现其它事务插入了满足其查询条件的新数据。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>时间</th>
+<th>事务A</th>
+<th>事务B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T1</td>
+<td>开启事务</td>
+<td>开启事务</td>
+</tr>
+<tr>
+<td>T2</td>
+<td>select * from user where age=18 假设得到两条记录</td>
+<td></td>
+</tr>
+<tr>
+<td>T3</td>
+<td></td>
+<td>向user表插入一条age=18的新记录</td>
+</tr>
+<tr>
+<td>T4</td>
+<td></td>
+<td>提交事务</td>
+</tr>
+<tr>
+<td>T5</td>
+<td><strong>再次查询得到三条记录</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>T6</td>
+<td>..</td>
+<td></td>
+</tr>
+<tr>
+<td>T7</td>
+<td>提交事务</td>
+</tr>
+</tbody>
+</table>
+<h4 id="幻读和不可重复读的区别"><a href="#幻读和不可重复读的区别" class="headerlink" title="幻读和不可重复读的区别"></a>幻读和不可重复读的区别</h4><ul>
+<li>不可重复读的重点是修改：在同一事务中，相同的条件，第一次和第二次读到的数据不一致（中间有其它事务提交了修改）。</li>
+<li>幻读的重点是新增或者删除：在同一事务中，相同的条件，第一次和第二次读到的记录数不一样（中间有其它事务提交了新增或者删除）。</li>
+</ul>
+<h3 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h3><blockquote>
+<p>这很重要不管是面试工作，还是排查异常，出现问题的时候需要发现、定位、解决能力。也是开发人员必须掌握的一项能力。</p>
+</blockquote>
+<h4 id="理解下锁几种维度"><a href="#理解下锁几种维度" class="headerlink" title="理解下锁几种维度"></a>理解下锁几种维度</h4><h4 id="1-类型维度"><a href="#1-类型维度" class="headerlink" title="1. 类型维度"></a>1. 类型维度</h4><ul>
+<li><p>共享锁（读锁 / S 锁）</p>
+</li>
+<li><p>排它锁（写锁 / X 锁）<br>类型细分：</p>
+</li>
+<li><ul>
+<li>意向共享锁</li>
+<li>意向排他（互斥）锁</li>
+</ul>
+</li>
+<li><p>悲观锁（使用锁，即 for update）</p>
+</li>
+<li><p>乐观锁（使用版本号字段，类似 CAS 机制，即用户自己控制。缺点：并发很高的时候，多了很多无用的重试）</p>
+</li>
+</ul>
+<h4 id="2-锁的粒度（粒度维度）"><a href="#2-锁的粒度（粒度维度）" class="headerlink" title="2. 锁的粒度（粒度维度）"></a>2. 锁的粒度（粒度维度）</h4><ul>
+<li>表锁</li>
+<li>页锁（Mysql BerkeleyDB 引擎）</li>
+<li>行锁（InnoDB）</li>
+</ul>
+<h4 id="3-锁的算法（算法维度）"><a href="#3-锁的算法（算法维度）" class="headerlink" title="3. 锁的算法（算法维度）"></a>3. 锁的算法（算法维度）</h4><ul>
+<li>Record Lock（单行记录）</li>
+<li>Gap Lock（间隙锁，锁定一个范围，但不包含锁定记录）</li>
+<li>Next-Key Lock（Record Lock + Gap Lock，锁定一个范围，并且锁定记录本身， MySql 防止幻读，就是使用此锁实现）</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+	
+    <div>    
+      
+    </div>
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/07/09/实践-Spring升级改造/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1138,236 +1593,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/05/14/Git常用命令（一）/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/05/14/Git常用命令（一）/" itemprop="url">Git常用命令（一）</a></h1>
-        
-
-        <div class="post-meta">
-	  
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-14T21:50:50+08:00">
-                2018-05-14
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/Git/" itemprop="url" rel="index">
-                    <span itemprop="name">Git</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,252
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  5
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-<ul>
-<li><p>阅读本文之前请确保已经安装好的git，如果兴趣可以先查看下git help相关信息。</p>
-</li>
-<li><p>git的命令其实挺多，但是工作要求不同团队要求不同。使用命令也不一样。这里简单记录下自己经常使用的命令。</p>
-</li>
-</ul>
-<h3 id="git的最小配置"><a href="#git的最小配置" class="headerlink" title="git的最小配置"></a>git的最小配置</h3><blockquote>
-<p>为什么要最小配置,每次提交代码需要告诉git。所以需要简单设置下user信息。</p>
-</blockquote>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.name <span class="string">'your name'</span></span><br><span class="line">git config --global user.email <span class="string">'your email'</span></span><br></pre></td></tr></table></figure>
-<p>这里需要注意config的三个作用域</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git config --<span class="built_in">local</span>  <span class="comment">#某个git本地仓库有效</span></span><br><span class="line">git config --global <span class="comment">#当前用户所有仓库有效，就是你系统的登陆用户。</span></span><br><span class="line">git config --system <span class="comment">#对系统所有的仓库都有效果。</span></span><br></pre></td></tr></table></figure>
-<p>我们一般只会使用local 和 global这两个配置。当我们配置好user.name user.email之后，我们可以检查下配置信息。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git config --list --<span class="built_in">local</span> <span class="comment"># 注意，必须在某个仓库里面才能看到。</span></span><br><span class="line">git config --list --global</span><br><span class="line">git config --list --system</span><br></pre></td></tr></table></figure>
-<h3 id="git创建一个本地仓库"><a href="#git创建一个本地仓库" class="headerlink" title="git创建一个本地仓库"></a>git创建一个本地仓库</h3><blockquote>
-<p>一般来说git仓库有两种情况，一种是没有仓库，另外一种就是已经有仓库了。这里对第一种情况演示，因为工作中习惯在web上创建仓库。这里还是了解下。</p>
-</blockquote>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git init git_learning</span><br></pre></td></tr></table></figure>
-<p>创建一个README文件。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">touch README.md</span><br></pre></td></tr></table></figure>
-<p>这里需要说明下，本地仓库创建完成后需要与远程仓库进行管理。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote add origin github.com:yourname/git_learning.git # 这里的yourname 是你的git账号</span><br></pre></td></tr></table></figure>
-<p>建议手动去github上面创建一个叫git_learning的仓库。上面的命令就是做下关联。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git add . <span class="comment"># 将当前文件添加至暂存区</span></span><br><span class="line">git commit -m <span class="string">"upload file"</span> <span class="comment"># 将暂存区的文件提交到本地仓库</span></span><br><span class="line">git push origin mastet <span class="comment"># 将本地仓库的改动信息推送到远程仓库中</span></span><br></pre></td></tr></table></figure>
-<h3 id="git-log日志查看"><a href="#git-log日志查看" class="headerlink" title="git log日志查看"></a>git log日志查看</h3><blockquote>
-<p>如果我们需要查看commit 提交日志可以使用log命令，这里简单介绍下log。</p>
-</blockquote>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">log</span> --oneline <span class="comment">#log信息一行显示</span></span><br></pre></td></tr></table></figure>
-<p>这里为了演示，模拟commit。比如现在commit了4次。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">log</span> --oneline -n2 <span class="comment">#log信息一行显示。且显示2条记录。</span></span><br></pre></td></tr></table></figure>
-<p>也可以用自带的图形化命令看提交记录。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">log</span> --oneline --graph</span><br></pre></td></tr></table></figure>
-<h3 id="commit的message"><a href="#commit的message" class="headerlink" title="commit的message"></a>commit的message</h3><blockquote>
-<p>如果发现message写错了，可以修改下。</p>
-</blockquote>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git commit --amend  <span class="comment"># 修改最新一次commit提交message。</span></span><br></pre></td></tr></table></figure>
-<p>如果想修改以往的commit的message。注意是不连续的commit。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># 首先查看log 里面的信息,然后获取commitid进行合并</span><br></pre></td></tr></table></figure>
-<h3 id="git-clone-www-git"><a href="#git-clone-www-git" class="headerlink" title="git clone www./.git"></a>git clone www.<strong>/</strong>.git</h3><blockquote>
-<p>从仓库克隆项目。</p>
-</blockquote>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/05/14/Git常用命令（一）/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-	
-    <div>    
-      
-    </div>
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/14/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/14/">14</a><span class="page-number current">15</span><a class="page-number" href="/page/16/">16</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/">20</a><a class="extend next" rel="next" href="/page/16/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/14/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/14/">14</a><span class="page-number current">15</span><a class="page-number" href="/page/16/">16</a><span class="space">&hellip;</span><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/16/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1415,7 +1645,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">100</span>
+                  <span class="site-state-item-count">101</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1574,7 +1804,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">129.1k</span>
+    <span title="Site words total count">129.5k</span>
   
 </div>
 
