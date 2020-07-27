@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"z201.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="本章内容阐述个人理解，以及使用方法。若有不正确的内容欢迎斧正。睡觉之前赶快记录下来免得有忘记了。  什么是Log? 日志记录的是什么？市面上流行的软件基本都有日志记录功能，作为开发人员的好帮手。日志可以有效的记录程序运行的状态以及运行的异常，比如说操作系统蓝屏了、手机死机了、软件卡死、程序崩溃、写了BUG等等都会有对应的日志留下。  如何利用log？ 笔者是一个Java开发人员，本章内容代码部分">
+<meta property="og:type" content="article">
+<meta property="og:title" content="实践-log4j的使用（一）">
+<meta property="og:url" content="https://z201.github.io/2018/06/12/%E5%AE%9E%E8%B7%B5-log4j%E7%9A%84%E4%BD%BF%E7%94%A8%EF%BC%88%E4%B8%80%EF%BC%89/index.html">
+<meta property="og:site_name" content="枫叶的小博客">
+<meta property="og:description" content="本章内容阐述个人理解，以及使用方法。若有不正确的内容欢迎斧正。睡觉之前赶快记录下来免得有忘记了。  什么是Log? 日志记录的是什么？市面上流行的软件基本都有日志记录功能，作为开发人员的好帮手。日志可以有效的记录程序运行的状态以及运行的异常，比如说操作系统蓝屏了、手机死机了、软件卡死、程序崩溃、写了BUG等等都会有对应的日志留下。  如何利用log？ 笔者是一个Java开发人员，本章内容代码部分">
+<meta property="article:published_time" content="2018-06-12T15:24:24.000Z">
+<meta property="article:modified_time" content="2019-04-10T15:43:54.445Z">
+<meta property="article:author" content="小峰同学">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Log4j">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://z201.github.io/2018/06/12/%E5%AE%9E%E8%B7%B5-log4j%E7%9A%84%E4%BD%BF%E7%94%A8%EF%BC%88%E4%B8%80%EF%BC%89/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>实践-log4j的使用（一） | 枫叶的小博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="枫叶的小博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">枫叶的小博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">先完成、在完美。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-存档">
+
+    <a href="/archives" rel="section"><i class="archive fa-fw"></i>存档</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories" rel="section"><i class="th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags" rel="section"><i class="tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-书架">
+
+    <a href="/books" rel="section"><i class="book fa-fw"></i>书架</a>
+
+  </li>
+        <li class="menu-item menu-item-电影">
+
+    <a href="/movie" rel="section"><i class="file-video-o fa-fw"></i>电影</a>
+
+  </li>
+        <li class="menu-item menu-item-学习java">
+
+    <a href="/tags/Java/" rel="section"><i class="graduation-cap fa-fw"></i>学习java</a>
+
+  </li>
+        <li class="menu-item menu-item-学习mysql">
+
+    <a href="/tags/Mysql/" rel="section"><i class="graduation-cap fa-fw"></i>学习mysql</a>
+
+  </li>
+        <li class="menu-item menu-item-学习git">
+
+    <a href="/tags/Git" rel="section"><i class="graduation-cap fa-fw"></i>学习git</a>
+
+  </li>
+        <li class="menu-item menu-item-学习spring">
+
+    <a href="/tags/Spring" rel="section"><i class="graduation-cap fa-fw"></i>学习spring</a>
+
+  </li>
+        <li class="menu-item menu-item-学习linux">
+
+    <a href="/tags/Linux" rel="section"><i class="graduation-cap fa-fw"></i>学习linux</a>
+
+  </li>
+        <li class="menu-item menu-item-学习docker">
+
+    <a href="/tags/Docker" rel="section"><i class="graduation-cap fa-fw"></i>学习docker</a>
+
+  </li>
+        <li class="menu-item menu-item-学习redis">
+
+    <a href="/tags/Redis" rel="section"><i class="graduation-cap fa-fw"></i>学习redis</a>
+
+  </li>
+        <li class="menu-item menu-item-学习mybatis">
+
+    <a href="/tags/Mybatis" rel="section"><i class="graduation-cap fa-fw"></i>学习mybatis</a>
+
+  </li>
+        <li class="menu-item menu-item-公益404">
+
+    <a href="/404.html" rel="section"><i class="heartbeat fa-fw"></i>公益404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/06/12/%E5%AE%9E%E8%B7%B5-log4j%E7%9A%84%E4%BD%BF%E7%94%A8%EF%BC%88%E4%B8%80%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          实践-log4j的使用（一）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-06-12 23:24:24" itemprop="dateCreated datePublished" datetime="2018-06-12T23:24:24+08:00">2018-06-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-04-10 23:43:54" itemprop="dateModified" datetime="2019-04-10T23:43:54+08:00">2019-04-10</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>本章内容阐述个人理解，以及使用方法。若有不正确的内容欢迎斧正。睡觉之前赶快记录下来免得有忘记了。</p>
+</blockquote>
+<h4 id="什么是Log"><a href="#什么是Log" class="headerlink" title="什么是Log?"></a>什么是Log?</h4><ul>
+<li>日志记录的是什么？市面上流行的软件基本都有日志记录功能，作为开发人员的好帮手。日志可以有效的记录程序运行的状态以及运行的异常，比如说操作系统蓝屏了、手机死机了、软件卡死、程序崩溃、写了BUG等等都会有对应的日志留下。</li>
+</ul>
+<h4 id="如何利用log？"><a href="#如何利用log？" class="headerlink" title="如何利用log？"></a>如何利用log？</h4><ul>
+<li>笔者是一个Java开发人员，本章内容代码部分已Java代码用例。大家都知道日志非常重要，但是经验不足的开发人员往往忽视了这个重要的手段，比如在控制台输出日志，所有输出信息都集中在一起。排除问题非常困难，一旦出现了线上异常信息首先要看的就是日志信息。所以有必要就日志手段多了解下。</li>
+</ul>
+<a id="more"></a>
+
+<h4 id="我是如何操作的？"><a href="#我是如何操作的？" class="headerlink" title="我是如何操作的？"></a>我是如何操作的？</h4><ul>
+<li>最在开发一个客户端应用，并不是GUI那种程序。功能不多但是日志信息却很多，循环监控数据，所以运行期产生的日志也有点多，开发的时候毕竟简单调试还能接受，运行起来日志过于集中眼睛疼，为了方便调试以及排除问题，考虑先将日志经拆分。不同业务或者类型使用不同的log文件来记录。</li>
+</ul>
+<h4 id="用例"><a href="#用例" class="headerlink" title="用例"></a>用例</h4><ul>
+<li><p>这里简单的演示下如何将日志信息拆分到不同的文件中。</p>
+<blockquote>
+<p>添加日志依赖</p>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.slf4j<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>slf4j-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.7.21<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.slf4j<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>slf4j-log4j12<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.7.21<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>log4j<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>log4j<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.2.17<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>这里解释下为什么是log4j而不是其他的日志框架，因为依赖的某个基础库是使用log4j我也懒的去折腾就用这个吧。</p>
+</blockquote>
+<ul>
+<li>log4j配置文件<code>Log4j配置文件（Configreation File）就是记录器级别、存放位置、布局等等。通过该配置文件我们可以创建log4j的运行环境</code>下面演示基础的配置信息。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">log4j.debug=<span class="keyword">false</span></span><br><span class="line">## 控制台输出</span><br><span class="line">log4j.appender.stdoutAppender=org.apache.log4j.ConsoleAppender</span><br><span class="line">log4j.appender.stdoutAppender.layout=org.apache.log4j.PatternLayout</span><br><span class="line">log4j.appender.stdoutAppender.layout.ConversionPattern=%d&#123;yyyy-MM-dd HH:mm:ss&#125; %-<span class="number">5</span>p %c&#123;<span class="number">3</span>&#125; - %m%n</span><br><span class="line"></span><br><span class="line">## The log level may be one of OFF, FATAL, ERROR, WARN, INFO,</span><br><span class="line">## DEBUG, or ALL. The default level is defined as the first</span><br><span class="line">## element in the list of values for the log4j.rootLogger</span><br><span class="line">## property.</span><br><span class="line">##</span><br><span class="line"># 指定package</span><br><span class="line">log4j.logger.z201.github.io.code.log.log4j = ALL , stdoutAppender</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>简单的解释下上面的配置信息</p>
+<ul>
+<li><code>log4j.appender.stdoutAppender=org.apache.log4j.ConsoleAppender</code>其中<code>stdoutAppender</code>简单的理解可以理解为日志<strong>Logger</strong> 的标识、<code>ConsoleAppender</code>就是日志的输出地方。</li>
+<li><code>log4j.appender.stdoutAppender.layout=org.apache.log4j.PatternLayout</code>其中layout是布局,使用<code>org.apache.log4j.PatternLayout</code>来做布局。</li>
+<li><code>log4j.appender.stdoutAppender.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss} %-5p %c{3} - %m%n</code>这个就是布局的输出格式了。</li>
+<li><code>log4j.logger.z201.github.io.code.log.log4j = ALL , stdoutAppender</code>指定程序package使用的log，并且指定日志级别ALL全部输出。  </li>
+<li>这里简单介绍下log4j日志级别</li>
+</ul>
+</li>
+<li><p>Java用例代码</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">package z201.github.io.code.log.log4j;</span><br><span class="line"></span><br><span class="line">import org.junit.Test;</span><br><span class="line">import org.slf4j.Logger;</span><br><span class="line">import org.slf4j.LoggerFactory;</span><br><span class="line"></span><br><span class="line">public class TestLog4j &#123;</span><br><span class="line"></span><br><span class="line">    private static Logger log &#x3D; LoggerFactory.getLogger(TestLog4j.class);</span><br><span class="line"></span><br><span class="line">    @Test</span><br><span class="line">    public void test01()&#123;</span><br><span class="line">        log.info(&quot;log info&quot;);</span><br><span class="line">        log.error(&quot;log error&quot;);</span><br><span class="line">        log.warn(&quot;log warn&quot;);</span><br><span class="line">        log.trace(&quot;log trace&quot;);</span><br><span class="line">        log.debug(&quot;log debug&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>由于日志级别是<code>ALL</code>所以都会输出。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">2018-06-13 00:05:13 INFO  log.log4j.TestLog4j - log info</span><br><span class="line">2018-06-13 00:05:13 ERROR log.log4j.TestLog4j - log error</span><br><span class="line">2018-06-13 00:05:13 WARN  log.log4j.TestLog4j - log warn</span><br><span class="line">2018-06-13 00:05:13 TRACE log.log4j.TestLog4j - log trace</span><br><span class="line">2018-06-13 00:05:13 DEBUG log.log4j.TestLog4j - log debug</span><br></pre></td></tr></table></figure>
+
+<h4 id="尝试改造拆分日志"><a href="#尝试改造拆分日志" class="headerlink" title="尝试改造拆分日志"></a>尝试改造拆分日志</h4><blockquote>
+<p>不同的日志级别输出到不同的日志文件中。简单介绍下日志级别LEVEL：OFF（关闭）FATAL（致命的） ERROR（错误）WARN（警告） INFO（信息）DEBUG （调试） ALL（所有） 输出日志的策略是由LEVEL决定的。</p>
+</blockquote>
+<ul>
+<li>修改log4j配置文件</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">log4j.debug&#x3D;false</span><br><span class="line">## 控制台输出</span><br><span class="line">log4j.appender.stdoutAppender&#x3D;org.apache.log4j.ConsoleAppender</span><br><span class="line">log4j.appender.stdoutAppender.layout&#x3D;org.apache.log4j.PatternLayout</span><br><span class="line">log4j.appender.stdoutAppender.layout.ConversionPattern&#x3D;%d&#123;yyyy-MM-dd HH:mm:ss&#125; %-5p %c&#123;3&#125; - %m%n</span><br><span class="line"></span><br><span class="line">#info日志信息</span><br><span class="line">log4j.logger.infoFile&#x3D;INFO,infoFile</span><br><span class="line">log4j.appender.infoFile&#x3D;org.apache.log4j.RollingFileAppender</span><br><span class="line">log4j.appender.infoFile.Append&#x3D;true</span><br><span class="line">log4j.appender.infoFile.File&#x3D;logs&#x2F;infoFile.log</span><br><span class="line">log4j.appender.infoFile.encoding&#x3D;UTF-8</span><br><span class="line">log4j.appender.infoFile.maxBackupIndex&#x3D;30</span><br><span class="line">log4j.appender.infoFile.MaxFileSize&#x3D;15MB</span><br><span class="line">log4j.appender.infoFile.Threshold&#x3D;INFO</span><br><span class="line">log4j.appender.infoFile.FILE.DatePattern&#x3D;&#39;.&#39;yyyy-MM-dd-HH-mm&#39;.log&#39;</span><br><span class="line">log4j.appender.infoFile.layout&#x3D;org.apache.log4j.PatternLayout</span><br><span class="line">log4j.appender.infoFile.layout.ConversionPattern&#x3D;%d&#123;yyyy-MM-dd HH:mm:ss&#125; [%5p] - %F(%L) - %m%n</span><br><span class="line"></span><br><span class="line">#error日志信息</span><br><span class="line">log4j.logger.errorFile&#x3D;ERROR,errorFile</span><br><span class="line">log4j.appender.errorFile&#x3D;org.apache.log4j.RollingFileAppender</span><br><span class="line">log4j.appender.errorFile.Append&#x3D;true</span><br><span class="line">log4j.appender.errorFile.File&#x3D;logs&#x2F;errorFile.log</span><br><span class="line">log4j.appender.errorFile.encoding&#x3D;UTF-8</span><br><span class="line">log4j.appender.errorFile.maxBackupIndex&#x3D;30</span><br><span class="line">log4j.appender.errorFile.MaxFileSize&#x3D;15MB</span><br><span class="line">log4j.appender.errorFile.Threshold&#x3D;ERROR</span><br><span class="line">log4j.appender.errorFile.FILE.DatePattern&#x3D;&#39;.&#39;yyyy-MM-dd&#39;.log&#39;</span><br><span class="line">log4j.appender.errorFile.layout&#x3D;org.apache.log4j.PatternLayout</span><br><span class="line">log4j.appender.errorFile.layout.ConversionPattern&#x3D;%d&#123;yyyy-MM-dd HH:mm:ss&#125; [%5p] | %m%n</span><br><span class="line"></span><br><span class="line">## The log level may be one of OFF, FATAL, ERROR, WARN, INFO,</span><br><span class="line">## DEBUG, or ALL. The default level is defined as the first</span><br><span class="line">## element in the list of values for the log4j.rootLogger</span><br><span class="line">## property.</span><br><span class="line">##</span><br><span class="line"># system logs</span><br><span class="line">log4j.logger.z201.github.io.code.log.log4j&#x3D;ALL , infoFile , errorFile ,  stdoutAppender</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>再次简单解释下配置的logger<code>errorFile 和 infoFile</code>这是两个文件输出。<ul>
+<li>Append 是否运行追加内容。</li>
+<li>File 文件存放地址</li>
+<li>encoding 日志编码集</li>
+<li>maxBackupIndex 最大存储文件个数</li>
+<li>MaxFileSize 单个文件最大大小</li>
+<li>Threshold 输出级别</li>
+<li>FILE.DatePattern 切割日志的时候文件名称格式化</li>
+</ul>
+</li>
+<li>依然是运行上面的Java代码，除了控制台会输出日志还会生成两个日志文件 infoFile、errorFile。依次看下日志文件中的内容。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 文件 infoFile.log</span><br><span class="line">2018-06-13 00:12:40 [ INFO] - TestLog4j.java(13) - log info</span><br><span class="line">2018-06-13 00:12:40 [ERROR] - TestLog4j.java(14) - log error</span><br><span class="line">2018-06-13 00:12:40 [ WARN] - TestLog4j.java(15) - log warn</span><br></pre></td></tr></table></figure>
+
+<hr>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 文件 errorFile.log</span><br><span class="line">2018-06-13 00:12:40 [ERROR] | log error</span><br></pre></td></tr></table></figure>
+
+<p>这里有一个疑问为什么infoFile里面输出的内容多点。这依然和日志的LEVEL有关系，由于INFO级别大小的问题，INFO级别的日志会输出别它大的级别日志。也就是设置成INFO的时候会输出 WARN 、ERROR、FATAL。而且log4j建议使用 DEBUG、INFO、WARN、ERROR这四种。</p>
+<h4 id="补充一点内容"><a href="#补充一点内容" class="headerlink" title="补充一点内容"></a>补充一点内容</h4><p>实际上日志的拆分我们已经大概目的了，现在补充下其他的<code>Appenders</code>便于参考业务场景使用。</p>
+<ul>
+<li>org.apache.log4j.ConsoleAppender（控制台） org.apache.log4j.FileAppender（文件） </li>
+<li>org.apache.log4j.DailyRollingFileAppender（每天产生一个日志文件） </li>
+<li>org.apache.log4j.RollingFileAppender（文件大小到达指定尺寸的时候产生一个新的文件） </li>
+<li>org.apache.log4j.WriterAppender（将日志信息以流格式发送到任意指定的地方） </li>
+</ul>
+<p>还有 <code>Layouts</code>的使用，列举下。</p>
+<ul>
+<li>org.apache.log4j.HTMLLayout（以HTML表格形式布局） </li>
+<li>org.apache.log4j.PatternLayout（可以灵活地指定布局模式） </li>
+<li>org.apache.log4j.SimpleLayout（包含日志信息的级别和信息字符串） </li>
+<li>org.apache.log4j.TTCCLayout（包含日志产生的时间、线程、类别等信息） </li>
+</ul>
+<p>简单的拆分日志就到这里了，log4j在日常开发中非常重要。确实不应该忽视它的存在，应该正确的使用。</p>
+<h4 id="END"><a href="#END" class="headerlink" title="END"></a>END</h4>
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>小峰同学
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://z201.github.io/2018/06/12/%E5%AE%9E%E8%B7%B5-log4j%E7%9A%84%E4%BD%BF%E7%94%A8%EF%BC%88%E4%B8%80%EF%BC%89/" title="实践-log4j的使用（一）">https://z201.github.io/2018/06/12/实践-log4j的使用（一）/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/Log4j/" rel="tag"># Log4j</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/05/14/Git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%EF%BC%88%E4%B8%80%EF%BC%89/" rel="prev" title="Git常用命令（一）">
+      <i class="fa fa-chevron-left"></i> Git常用命令（一）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/06/20/MySQL%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%80%EF%BC%89/" rel="next" title="MySQL进阶（一）">
+      MySQL进阶（一） <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#什么是Log"><span class="nav-number">1.</span> <span class="nav-text">什么是Log?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#如何利用log？"><span class="nav-number">2.</span> <span class="nav-text">如何利用log？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#我是如何操作的？"><span class="nav-number">3.</span> <span class="nav-text">我是如何操作的？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#用例"><span class="nav-number">4.</span> <span class="nav-text">用例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#尝试改造拆分日志"><span class="nav-number">5.</span> <span class="nav-text">尝试改造拆分日志</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#补充一点内容"><span class="nav-number">6.</span> <span class="nav-text">补充一点内容</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#END"><span class="nav-number">7.</span> <span class="nav-text">END</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小峰同学"
+      src="/images/avatar-min.jpg">
+  <p class="site-author-name" itemprop="name">小峰同学</p>
+  <div class="site-description" itemprop="description">多听、多看、少说、多做。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">105</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">96</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/z201" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;z201" rel="noopener" target="_blank"><i class="github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:int_java_se@@163.com" title="E-Mail → mailto:int_java_se@@163.com" rel="noopener" target="_blank"><i class="envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.journaldev.com/" title="https:&#x2F;&#x2F;www.journaldev.com&#x2F;" rel="noopener" target="_blank">journaldev</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.geeksforgeeks.org/" title="https:&#x2F;&#x2F;www.geeksforgeeks.org&#x2F;" rel="noopener" target="_blank">geeksforgeeks</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://redisdoc.com/index.html" title="http:&#x2F;&#x2F;redisdoc.com&#x2F;index.html" rel="noopener" target="_blank">redisdoc</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.spring4all.com/" title="http:&#x2F;&#x2F;www.spring4all.com&#x2F;" rel="noopener" target="_blank">spring4all 最专业的Spring民间组织</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.sczyh30.com/" title="http:&#x2F;&#x2F;www.sczyh30.com&#x2F;" rel="noopener" target="_blank">浮生若梦</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://tengj.top/" title="http:&#x2F;&#x2F;tengj.top&#x2F;" rel="noopener" target="_blank">嘟嘟独立博客</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://indienova.com/" title="https:&#x2F;&#x2F;indienova.com&#x2F;" rel="noopener" target="_blank">独立精神</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.ityouknow.com/" title="http:&#x2F;&#x2F;www.ityouknow.com&#x2F;" rel="noopener" target="_blank">纯洁的微笑</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://sspai.com/" title="https:&#x2F;&#x2F;sspai.com&#x2F;" rel="noopener" target="_blank">少数派</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://ifeve.com/" title="http:&#x2F;&#x2F;ifeve.com&#x2F;" rel="noopener" target="_blank">并发编程网</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://hacpai.com/" title="https:&#x2F;&#x2F;hacpai.com&#x2F;" rel="noopener" target="_blank">黑客派</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.lintcode.com/" title="https:&#x2F;&#x2F;www.lintcode.com&#x2F;" rel="noopener" target="_blank">lintCode</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://stackoverflow.com/" title="https:&#x2F;&#x2F;stackoverflow.com&#x2F;" rel="noopener" target="_blank">stackoverflow</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.appinn.com/" title="https:&#x2F;&#x2F;www.appinn.com" rel="noopener" target="_blank">小众软件</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.fontawesome.com.cn/" title="http:&#x2F;&#x2F;www.fontawesome.com.cn&#x2F;" rel="noopener" target="_blank">Font Awesome中文网</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小峰同学</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

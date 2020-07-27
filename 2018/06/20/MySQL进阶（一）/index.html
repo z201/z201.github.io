@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"z201.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="之前已经介绍了最基础的操作，那么这里开始从mysql自身理解。  Mysql基础架构图 简单介绍上图相关模块功能 连接器：管理连接，权限验证  查询缓存：命中缓存则直接返回结果  语法解析：词法分析，语法分析  查询优化：执行计划生成，索引选择  执行器：操作引擎，返回结果  存储引擎：存储数据，提供读写结构。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL进阶（一）">
+<meta property="og:url" content="https://z201.github.io/2018/06/20/MySQL%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%80%EF%BC%89/index.html">
+<meta property="og:site_name" content="枫叶的小博客">
+<meta property="og:description" content="之前已经介绍了最基础的操作，那么这里开始从mysql自身理解。  Mysql基础架构图 简单介绍上图相关模块功能 连接器：管理连接，权限验证  查询缓存：命中缓存则直接返回结果  语法解析：词法分析，语法分析  查询优化：执行计划生成，索引选择  执行器：操作引擎，返回结果  存储引擎：存储数据，提供读写结构。">
+<meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/mysql/mysql%E6%9E%B6%E6%9E%84.svg">
+<meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/mysql/SHOW_PROCESSLIST.png">
+<meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/mysql/SHOW_ENGINES.png">
+<meta property="article:published_time" content="2018-06-20T01:02:46.000Z">
+<meta property="article:modified_time" content="2019-03-25T16:04:23.835Z">
+<meta property="article:author" content="小峰同学">
+<meta property="article:tag" content="Mysql">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/mysql/mysql%E6%9E%B6%E6%9E%84.svg">
+
+<link rel="canonical" href="https://z201.github.io/2018/06/20/MySQL%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%80%EF%BC%89/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>MySQL进阶（一） | 枫叶的小博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="枫叶的小博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">枫叶的小博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">先完成、在完美。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-存档">
+
+    <a href="/archives" rel="section"><i class="archive fa-fw"></i>存档</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories" rel="section"><i class="th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags" rel="section"><i class="tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-书架">
+
+    <a href="/books" rel="section"><i class="book fa-fw"></i>书架</a>
+
+  </li>
+        <li class="menu-item menu-item-电影">
+
+    <a href="/movie" rel="section"><i class="file-video-o fa-fw"></i>电影</a>
+
+  </li>
+        <li class="menu-item menu-item-学习java">
+
+    <a href="/tags/Java/" rel="section"><i class="graduation-cap fa-fw"></i>学习java</a>
+
+  </li>
+        <li class="menu-item menu-item-学习mysql">
+
+    <a href="/tags/Mysql/" rel="section"><i class="graduation-cap fa-fw"></i>学习mysql</a>
+
+  </li>
+        <li class="menu-item menu-item-学习git">
+
+    <a href="/tags/Git" rel="section"><i class="graduation-cap fa-fw"></i>学习git</a>
+
+  </li>
+        <li class="menu-item menu-item-学习spring">
+
+    <a href="/tags/Spring" rel="section"><i class="graduation-cap fa-fw"></i>学习spring</a>
+
+  </li>
+        <li class="menu-item menu-item-学习linux">
+
+    <a href="/tags/Linux" rel="section"><i class="graduation-cap fa-fw"></i>学习linux</a>
+
+  </li>
+        <li class="menu-item menu-item-学习docker">
+
+    <a href="/tags/Docker" rel="section"><i class="graduation-cap fa-fw"></i>学习docker</a>
+
+  </li>
+        <li class="menu-item menu-item-学习redis">
+
+    <a href="/tags/Redis" rel="section"><i class="graduation-cap fa-fw"></i>学习redis</a>
+
+  </li>
+        <li class="menu-item menu-item-学习mybatis">
+
+    <a href="/tags/Mybatis" rel="section"><i class="graduation-cap fa-fw"></i>学习mybatis</a>
+
+  </li>
+        <li class="menu-item menu-item-公益404">
+
+    <a href="/404.html" rel="section"><i class="heartbeat fa-fw"></i>公益404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/06/20/MySQL%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%80%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MySQL进阶（一）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-06-20 09:02:46" itemprop="dateCreated datePublished" datetime="2018-06-20T09:02:46+08:00">2018-06-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-03-26 00:04:23" itemprop="dateModified" datetime="2019-03-26T00:04:23+08:00">2019-03-26</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA/" itemprop="url" rel="index"><span itemprop="name">基础理论</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>之前已经介绍了最基础的操作，那么这里开始从mysql自身理解。</p>
+</blockquote>
+<h3 id="Mysql基础架构图"><a href="#Mysql基础架构图" class="headerlink" title="Mysql基础架构图"></a>Mysql基础架构图</h3><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/mysql/mysql%E6%9E%B6%E6%9E%84.svg" alt="mysql基础架构图"></p>
+<h4 id="简单介绍上图相关模块功能"><a href="#简单介绍上图相关模块功能" class="headerlink" title="简单介绍上图相关模块功能"></a>简单介绍上图相关模块功能</h4><ul>
+<li><p>连接器：管理连接，权限验证</p>
+</li>
+<li><p>查询缓存：命中缓存则直接返回结果</p>
+</li>
+<li><p>语法解析：词法分析，语法分析</p>
+</li>
+<li><p>查询优化：执行计划生成，索引选择</p>
+</li>
+<li><p>执行器：操作引擎，返回结果</p>
+</li>
+<li><p>存储引擎：存储数据，提供读写结构。</p>
+</li>
+</ul>
+<a id="more"></a>
+
+<h4 id="连接器"><a href="#连接器" class="headerlink" title="连接器"></a>连接器</h4><blockquote>
+<p>我们需要连接到mysql服务端才能进行各种操作。</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用密码登录到时候我们会使用这种格式。</span></span><br><span class="line">mysql -h<span class="variable">$ip</span> -P<span class="variable">$port</span> -u<span class="variable">$user</span> -p</span><br></pre></td></tr></table></figure>
+
+<p>执行上述命令会提示输入密码。输入完密码后就进入了mysql。</p>
+<ul>
+<li><p>如果用户名或者密码输入错误，会提示一个<code>Access denied for user</code>到错误，然后客户端程序结束执行。</p>
+</li>
+<li><p>如果用户名和密码认证通过，连接器会去权限表中查询该用户拥有的所有权限。此后该连接里面的权限逻辑判断都会依赖认证成功时候读取到的权限。</p>
+</li>
+</ul>
+<blockquote>
+<p>因此当修改用户的权限之后，如果被修改用户的在登录状态是不会修改已经连接的权限。需要让被修改权限用户从新登录。</p>
+</blockquote>
+<ul>
+<li>实际上连接的方式有多种，上面通过密码的方式只是其中的一种方式。当客户端与服务端mysql进程进程建立连接，服务器的进程就会创建一个单独的线程来专门处理与这个客户端的交互，当该客户断开与服务端连接时，服务端并不会马上销毁对应的交互线程，而是缓存起来。当另一个新的客户端连接进来的时候，在把这个缓存的线程分配给新的客户端。这样就避免的频繁创建和修改线程，节省系统的开销。但是连接线程多了也会影响服务端，所以也有默认的参数限制客户端的连接数量。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 这里是查询服务端存在的连接。</span><br><span class="line">SHOW PROCESSLIST;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>我使用的阿里云的数据库，这里展示下结果集。这里需要注意，登录的账号需要有PROCESS的权限否则只能看到自己的连接信息（线程），我这里采用的root所以看到全部到。</p>
+</blockquote>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/mysql/SHOW_PROCESSLIST.png"></p>
+<ul>
+<li><a href="https://dev.mysql.com/doc/refman/5.7/en/processlist-table.html" target="_blank" rel="noopener">MySQL PROCESSLIST 官方文档</a></li>
+</ul>
+<blockquote>
+<p>连接完成后如果没有执行后续操作则 Command会显示Sleep的状态，长时间Sleep会导致连接自动断开。默认的时间是8小时，也就是参数 <code>wait_timeout</code>。当客户端连接断开后，若客户端再次发出请求就会提示一个</p>
+<p><code>Lost connection to MySQL server during query</code>，此时就只能重新建立连接了。</p>
+</blockquote>
+<h5 id="半双工"><a href="#半双工" class="headerlink" title="半双工"></a>半双工</h5><ul>
+<li>MySQL客户端/服务端通信协议是<code>“半双工”</code>的：在任一时刻，要么是服务器向客户端发送数据，要么是客户端向服务器发送数据，这两个动作不能同时发生。一旦一端开始发送消息，另一端要接收完整个消息才能响应它，所以我们无法也无须将一个消息切成小块独立发送，也没有办法进行流量控制。</li>
+<li>服务器响应给用户的数据通常会很多，由多个数据包组成。但是当服务器响应客户端请求时，客户端必须完整的接收整个返回结果，而不能简单的只取前面几条结果，然后让服务器停止发送。因而在实际开发中，尽量保持查询简单且只返回必需的数据，减小通信间数据包的大小和数量是一个非常好的习惯，这也是查询中尽量避免使用<code>SELECT *</code>以及加上<code>LIMIT</code>限制的原因之一。</li>
+</ul>
+<h5 id="长连接与短连接"><a href="#长连接与短连接" class="headerlink" title="长连接与短连接"></a>长连接与短连接</h5><ul>
+<li><p>在数据库里面，长连接是指数据库建立连接，如果客户端有持续的请求则使用同一个连接，短连接是指每次执行几次短的查询就断开连接，下次查询再次创建连接。由于创建的过程复杂，一般来说尽量减少创建连接的动作，尽可能使用长连接。特别是在开发的时候出现大伙突然连接不上测试库，此时就检查下连接是不是太多了。因为连接多了会导致内存消耗特别快。</p>
+<ul>
+<li>mysql的执行过程中临时使用的内存管理是在连接线程对象里面，服务端断开的时候才会释放，为了避免内存消耗过大，每次执行较大的操作之后，可以通过<code>mysql_reset_connection</code>来重新初始化连接资源。这个操作是不需要重新做权限，只是恢复到创建的初始状态。</li>
+</ul>
+</li>
+<li><p><a href="https://dev.mysql.com/doc/refman/5.7/en/mysql-reset-connection.html" target="_blank" rel="noopener">MySQL mysql_reset_connection 官方文档</a></p>
+</li>
+</ul>
+<h4 id="查询缓存"><a href="#查询缓存" class="headerlink" title="查询缓存"></a>查询缓存</h4><blockquote>
+<p> 一个不被建议使用的功能，在新版的8.0中已经被删除了。总结就是弊大于利。</p>
+</blockquote>
+<ul>
+<li>建立完成后，假设执行一次<code>SELECT</code>语句，执行逻辑就会到第二部查询缓存。mysql拿到一个查询之后，会先到缓存中寻找释放有完全对应的，因为之前执行的查询语句和结果集会直接被缓存起来，以<code>Keys-value</code>的形式。keys是查询语句-value是查询结果集。如果能命中这个key则直接返回value。咋一看挺有用的，但实际上查询缓存的实效的太频繁。并且keys的命中条件太不聪明了，<code>如果两次查询语句在任何的字符上存在不通（空格、大小写）</code>都不会缓存命中。为什么会频繁失效，因为如果对查询语句中的表进行更新，就会导致缓存失效。比如<code>INSERT、UPDATE 、DELETE 、TRUNCATE TABLE 、ALTER TABLE </code>等等就会导致缓存失效。</li>
+</ul>
+<h4 id="语法解析"><a href="#语法解析" class="headerlink" title="语法解析"></a>语法解析</h4><blockquote>
+<p>如果没有命中查询缓存，就要开始执行sql语句了。mysql需要做什么，因此需要对sql进行解析。MySQL通过关键字将SQL语句进行解析，并生成一颗对应的解析树。这个过程解析器主要通过语法规则来验证和解析。比如SQL中是否使用了错误的关键字或者关键字的顺序是否正确等等。预处理则会根据MySQL规则进一步检查解析树是否合法。比如检查要查询的数据表和数据列是否存在等等。</p>
+</blockquote>
+<ul>
+<li>本质上发送过来的是一个文本信息，这里就需要对该文本信息进行编译，涉及到<code>词法解析</code>、<code>语法解析</code>、<code>语义解析</code>等阶段。需要注意的是，这里会对sql语句进行一些检查，比如设计的相关表、表字段。这里检查通过的才会进入查询优化模块。</li>
+</ul>
+<h4 id="查询优化"><a href="#查询优化" class="headerlink" title="查询优化"></a>查询优化</h4><blockquote>
+<p>通过之前的语法解析，基本可以判定语法树是合法的，此时mysql就知道文本内容要做什么。</p>
+</blockquote>
+<ul>
+<li>mysql会对查询语句进行优化，优化的结果就是生成一个执行计划，这个计划会表明使用了那些查询索引，表之间的连接是什么样子的。有时候出现多种执行方式，只是效率不通，优化器会决定使用哪一个执行方案，这个时候就涉及到<code>EXPLAIN</code>语句，该语句可以查看sql到执行计划，这将涉及到查询优化。</li>
+<li>MySQL的查询优化器是一个非常复杂的部件，它使用了非常多的优化策略来生成一个最优的执行计划：<ul>
+<li>重新定义表的关联顺序（多张表关联查询时，并不一定按照SQL中指定的顺序进行，但有一些技巧可以指定关联顺序）</li>
+<li>优化函数</li>
+<li>提前终止查询（比如：使用Limit时，查找到满足数量的结果集后会立即终止查询）</li>
+<li>优化排序（在老版本MySQL会使用两次传输排序，即先读取行指针和需要排序的字段在内存中对其排序，然后再根据排序结果去读取数据行，而新版本采用的是单次传输排序，也就是一次读取所有的数据行，然后根据给定的列排序。对于<code>I/O</code>密集型应用，效率会高很多。</li>
+</ul>
+</li>
+</ul>
+<h4 id="执行器"><a href="#执行器" class="headerlink" title="执行器"></a>执行器</h4><blockquote>
+<p>进入到执行sql到环节。</p>
+</blockquote>
+<ul>
+<li>通过之前到查询优化，进入执行阶段，此时会先判断该连接用户是否有相关表的权限，如果没有会返回权限错误。如果有权限就会打开表，执行器会根据表定义的引擎去使用这个引擎提供的接口完成流程。</li>
+</ul>
+<h4 id="存储引擎"><a href="#存储引擎" class="headerlink" title="存储引擎"></a>存储引擎</h4><blockquote>
+<p> 关于存储引擎，这里明确提醒。不是三种也不是四种。而是多种因为随时可能出现新的引擎。</p>
+</blockquote>
+<ul>
+<li>我们常用的就是<code>InnoDB</code>和<code>MyISAM</code>，其它的不常见就不做过多介绍。mysql现在默认的引擎是<code>InnoDB</code>所以主要也是了解<code>InnoDB</code></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看当前服务支持的存储引擎</span></span><br><span class="line">SHOW ENGINES;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/mysql/SHOW_ENGINES.png"></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>小峰同学
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://z201.github.io/2018/06/20/MySQL%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%80%EF%BC%89/" title="MySQL进阶（一）">https://z201.github.io/2018/06/20/MySQL进阶（一）/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Mysql/" rel="tag"># Mysql</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/06/12/%E5%AE%9E%E8%B7%B5-log4j%E7%9A%84%E4%BD%BF%E7%94%A8%EF%BC%88%E4%B8%80%EF%BC%89/" rel="prev" title="实践-log4j的使用（一）">
+      <i class="fa fa-chevron-left"></i> 实践-log4j的使用（一）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/06/24/Mac%E4%B8%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/" rel="next" title="Mac下开发环境">
+      Mac下开发环境 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Mysql基础架构图"><span class="nav-number">1.</span> <span class="nav-text">Mysql基础架构图</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#简单介绍上图相关模块功能"><span class="nav-number">1.1.</span> <span class="nav-text">简单介绍上图相关模块功能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#连接器"><span class="nav-number">1.2.</span> <span class="nav-text">连接器</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#半双工"><span class="nav-number">1.2.1.</span> <span class="nav-text">半双工</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#长连接与短连接"><span class="nav-number">1.2.2.</span> <span class="nav-text">长连接与短连接</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查询缓存"><span class="nav-number">1.3.</span> <span class="nav-text">查询缓存</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#语法解析"><span class="nav-number">1.4.</span> <span class="nav-text">语法解析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查询优化"><span class="nav-number">1.5.</span> <span class="nav-text">查询优化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#执行器"><span class="nav-number">1.6.</span> <span class="nav-text">执行器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#存储引擎"><span class="nav-number">1.7.</span> <span class="nav-text">存储引擎</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小峰同学"
+      src="/images/avatar-min.jpg">
+  <p class="site-author-name" itemprop="name">小峰同学</p>
+  <div class="site-description" itemprop="description">多听、多看、少说、多做。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">105</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">96</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/z201" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;z201" rel="noopener" target="_blank"><i class="github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:int_java_se@@163.com" title="E-Mail → mailto:int_java_se@@163.com" rel="noopener" target="_blank"><i class="envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.journaldev.com/" title="https:&#x2F;&#x2F;www.journaldev.com&#x2F;" rel="noopener" target="_blank">journaldev</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.geeksforgeeks.org/" title="https:&#x2F;&#x2F;www.geeksforgeeks.org&#x2F;" rel="noopener" target="_blank">geeksforgeeks</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://redisdoc.com/index.html" title="http:&#x2F;&#x2F;redisdoc.com&#x2F;index.html" rel="noopener" target="_blank">redisdoc</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.spring4all.com/" title="http:&#x2F;&#x2F;www.spring4all.com&#x2F;" rel="noopener" target="_blank">spring4all 最专业的Spring民间组织</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.sczyh30.com/" title="http:&#x2F;&#x2F;www.sczyh30.com&#x2F;" rel="noopener" target="_blank">浮生若梦</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://tengj.top/" title="http:&#x2F;&#x2F;tengj.top&#x2F;" rel="noopener" target="_blank">嘟嘟独立博客</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://indienova.com/" title="https:&#x2F;&#x2F;indienova.com&#x2F;" rel="noopener" target="_blank">独立精神</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.ityouknow.com/" title="http:&#x2F;&#x2F;www.ityouknow.com&#x2F;" rel="noopener" target="_blank">纯洁的微笑</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://sspai.com/" title="https:&#x2F;&#x2F;sspai.com&#x2F;" rel="noopener" target="_blank">少数派</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://ifeve.com/" title="http:&#x2F;&#x2F;ifeve.com&#x2F;" rel="noopener" target="_blank">并发编程网</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://hacpai.com/" title="https:&#x2F;&#x2F;hacpai.com&#x2F;" rel="noopener" target="_blank">黑客派</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.lintcode.com/" title="https:&#x2F;&#x2F;www.lintcode.com&#x2F;" rel="noopener" target="_blank">lintCode</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://stackoverflow.com/" title="https:&#x2F;&#x2F;stackoverflow.com&#x2F;" rel="noopener" target="_blank">stackoverflow</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.appinn.com/" title="https:&#x2F;&#x2F;www.appinn.com" rel="noopener" target="_blank">小众软件</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.fontawesome.com.cn/" title="http:&#x2F;&#x2F;www.fontawesome.com.cn&#x2F;" rel="noopener" target="_blank">Font Awesome中文网</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小峰同学</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

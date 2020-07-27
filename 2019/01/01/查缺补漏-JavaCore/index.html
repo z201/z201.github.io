@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"z201.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="本章是整理知识内容，为强化知识长期更新。  什么是面向对象？ 面向对象是一个思想，时间万物皆可以被看做一个对象。  介绍下 Java 基本数据类型 Java中存在8个原生数据类型，同时又分成四种：整形、浮点型、char、Boolean。它们之间存在自动类型转换，规则是从小到大。并且都存在自动装箱拆箱特性，但是这种操作是隐式操作而且在某些情况会导致CG压力增大。     类型 存储需求 取值范围">
+<meta property="og:type" content="article">
+<meta property="og:title" content="查缺补漏-JavaCore">
+<meta property="og:url" content="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCore/index.html">
+<meta property="og:site_name" content="枫叶的小博客">
+<meta property="og:description" content="本章是整理知识内容，为强化知识长期更新。  什么是面向对象？ 面向对象是一个思想，时间万物皆可以被看做一个对象。  介绍下 Java 基本数据类型 Java中存在8个原生数据类型，同时又分成四种：整形、浮点型、char、Boolean。它们之间存在自动类型转换，规则是从小到大。并且都存在自动装箱拆箱特性，但是这种操作是隐式操作而且在某些情况会导致CG压力增大。     类型 存储需求 取值范围">
+<meta property="article:published_time" content="2018-12-31T16:00:01.000Z">
+<meta property="article:modified_time" content="2019-03-30T17:04:16.456Z">
+<meta property="article:author" content="小峰同学">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCore/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>查缺补漏-JavaCore | 枫叶的小博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="枫叶的小博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">枫叶的小博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">先完成、在完美。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-存档">
+
+    <a href="/archives" rel="section"><i class="archive fa-fw"></i>存档</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories" rel="section"><i class="th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags" rel="section"><i class="tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-书架">
+
+    <a href="/books" rel="section"><i class="book fa-fw"></i>书架</a>
+
+  </li>
+        <li class="menu-item menu-item-电影">
+
+    <a href="/movie" rel="section"><i class="file-video-o fa-fw"></i>电影</a>
+
+  </li>
+        <li class="menu-item menu-item-学习java">
+
+    <a href="/tags/Java/" rel="section"><i class="graduation-cap fa-fw"></i>学习java</a>
+
+  </li>
+        <li class="menu-item menu-item-学习mysql">
+
+    <a href="/tags/Mysql/" rel="section"><i class="graduation-cap fa-fw"></i>学习mysql</a>
+
+  </li>
+        <li class="menu-item menu-item-学习git">
+
+    <a href="/tags/Git" rel="section"><i class="graduation-cap fa-fw"></i>学习git</a>
+
+  </li>
+        <li class="menu-item menu-item-学习spring">
+
+    <a href="/tags/Spring" rel="section"><i class="graduation-cap fa-fw"></i>学习spring</a>
+
+  </li>
+        <li class="menu-item menu-item-学习linux">
+
+    <a href="/tags/Linux" rel="section"><i class="graduation-cap fa-fw"></i>学习linux</a>
+
+  </li>
+        <li class="menu-item menu-item-学习docker">
+
+    <a href="/tags/Docker" rel="section"><i class="graduation-cap fa-fw"></i>学习docker</a>
+
+  </li>
+        <li class="menu-item menu-item-学习redis">
+
+    <a href="/tags/Redis" rel="section"><i class="graduation-cap fa-fw"></i>学习redis</a>
+
+  </li>
+        <li class="menu-item menu-item-学习mybatis">
+
+    <a href="/tags/Mybatis" rel="section"><i class="graduation-cap fa-fw"></i>学习mybatis</a>
+
+  </li>
+        <li class="menu-item menu-item-公益404">
+
+    <a href="/404.html" rel="section"><i class="heartbeat fa-fw"></i>公益404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCore/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          查缺补漏-JavaCore
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-03-31 01:04:16" itemprop="dateModified" datetime="2019-03-31T01:04:16+08:00">2019-03-31</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index"><span itemprop="name">知识点</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>本章是整理知识内容，为强化知识长期更新。</p>
+</blockquote>
+<h3 id="什么是面向对象？"><a href="#什么是面向对象？" class="headerlink" title="什么是面向对象？"></a>什么是面向对象？</h3><ul>
+<li>面向对象是一个思想，时间万物皆可以被看做一个对象。</li>
+</ul>
+<h3 id="介绍下-Java-基本数据类型"><a href="#介绍下-Java-基本数据类型" class="headerlink" title="介绍下 Java 基本数据类型"></a>介绍下 Java 基本数据类型</h3><ul>
+<li>Java中存在8个原生数据类型，同时又分成四种：整形、浮点型、char、Boolean。它们之间存在自动类型转换，规则是从小到大。并且都存在自动装箱拆箱特性，但是这种操作是隐式操作而且在某些情况会导致CG压力增大。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">类型</th>
+<th align="center">存储需求</th>
+<th align="center">取值范围</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">int</td>
+<td align="center">4字节</td>
+<td align="center">-2 147 483 638 ～ 2 147 483 637</td>
+</tr>
+<tr>
+<td align="center">short</td>
+<td align="center">2字节</td>
+<td align="center">-32 768 ～ 32 767</td>
+</tr>
+<tr>
+<td align="center">long</td>
+<td align="center">8字节</td>
+<td align="center">-9 223 372 036 854 775 808 ～ 9 223 372 036 854 775 807</td>
+</tr>
+<tr>
+<td align="center">byte</td>
+<td align="center">1字节</td>
+<td align="center">- 128 ～ 127</td>
+</tr>
+</tbody></table>
+<ul>
+<li>整型的范围与运行Java运行的硬件没有关系，所有的数据类型所占的字节数量与平台无关。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">类型</th>
+<th align="center">存储需求</th>
+<th align="center">取值范围</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">float</td>
+<td align="center">4字节</td>
+<td align="center">大约 $\pm$ 3.402 823 37F + 38F (有效位数为7～8位)</td>
+</tr>
+<tr>
+<td align="center">double</td>
+<td align="center">8字节</td>
+<td align="center">大约 $\pm$ 1.797 693 134 862 315 70E + 308 （有效位数为15位）</td>
+</tr>
+</tbody></table>
+<a id="more"></a>
+
+<ul>
+<li><p>double这种类型的精度是float的两倍。</p>
+</li>
+<li><p>所有浮点数值计算都遵循IEEE 754规范，下面是溢出和出错的情况的三种特殊的浮点数值。</p>
+<ul>
+<li>正无穷大</li>
+<li>负无穷大</li>
+<li>NaN ( 不是一个数字 )</li>
+<li>一个整整数除以0的结果为正无穷大，计算0/0或者负数的平方根结果为NaN。</li>
+</ul>
+</li>
+<li><p>char类型</p>
+<ul>
+<li>char类型表示单个字符，属于Unicode编码表。因为历史原因，不建议在程序中使用。除非确实要对UTF-16代码单元进行操作。</li>
+<li>char字节大小<ul>
+<li>Java中无论是汉字还是英文字母都是用Unicode编码来表示的，一个Unicode是16位，每字节是8位，所以一个Unicode码占两字节。但是英文字母比较特殊，源自于8位（1字节）的ASCII吗，于是在Unicode码仅使用了低8位（1字节）就可以表示。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>boolean类型</p>
+<ul>
+<li>布尔类型，只有两个值false、true。基本用于判定条件。</li>
+<li>boolean字节大小<ul>
+<li>Java规范中并未明确规定boolean类型的大小。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>自动类型转换</p>
+<ul>
+<li><p><strong>整型、实型（常量）、字符型数据可以混合运算。运算中，不同类型的数据先转化为同一类型，然后进行运算。</strong></p>
+<p>转换从低级到高级。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">byte</span>,<span class="keyword">short</span>,<span class="keyword">char</span>—&gt; <span class="keyword">int</span> —&gt; <span class="keyword">long</span>—&gt; <span class="keyword">float</span> —&gt; <span class="keyword">double</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>不能对boolean进行类型转换、不能把对象类型转换成不相关的对象、把大容量的对象转换成小容量对象时需要强制类型转换、转换过程中间可能出现精度损失。</p>
+</li>
+</ul>
+</li>
+<li><p>装箱和拆箱<strong>boxing or unboxing</strong></p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">原语</th>
+<th align="center">对应的JDK类</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">int</td>
+<td align="center">java.lang.Integer</td>
+</tr>
+<tr>
+<td align="center">short</td>
+<td align="center">java.lang.Short</td>
+</tr>
+<tr>
+<td align="center">long</td>
+<td align="center">java.lang.Long</td>
+</tr>
+<tr>
+<td align="center">byte</td>
+<td align="center">java.lang.Byte</td>
+</tr>
+<tr>
+<td align="center">char</td>
+<td align="center">java.lang.Character</td>
+</tr>
+<tr>
+<td align="center">double</td>
+<td align="center">java.lang.Double</td>
+</tr>
+<tr>
+<td align="center">float</td>
+<td align="center">java.lang.Float</td>
+</tr>
+<tr>
+<td align="center">boolean</td>
+<td align="center">java.lang.Boolean</td>
+</tr>
+</tbody></table>
+<ul>
+<li><p>Java中只有原生数据类型是特殊的，它们不是对象。其它的都是对象。那么就一个尴尬的问题，集合类都是存放的对象，JDK5之后考虑到这个问题就自动进行逆行拆箱装箱的操作。</p>
+<ul>
+<li><pre><code class="java">//比如所在泛型中是不能存放原生数据类型的，如要要存放原生数据类型的数据，需要装箱。
+Collection&lt;int&gt; c = new ArrayList&lt;int&gt;(); //这是无法编译成功的。
+Collection&lt;Integer&gt; cc = new ArrayList&lt;Integer&gt;(); //这样才行。
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 每个 JDK 类都提供了相应方法来解析它的内部表示，并将其转换为相应的原语类型。</span><br><span class="line"></span><br><span class="line">- 但是注意装箱拆箱操作其实是非常消耗内存的举动，在该过程中可能会生成生成无用对象增加GC压力。所以尽量避免这中操作。</span><br><span class="line"></span><br><span class="line">  &#96;&#96;&#96;java</span><br><span class="line">    Integer sum &#x3D; 0;</span><br><span class="line">    for(int index  &#x3D; 1000; index &lt; 5000; index ++)&#123;</span><br><span class="line">     sum+&#x3D;index;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+比如这种，每次sum都需要自动拆箱。
+</code></pre>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>默认情况下整数的类型都是int、浮点型的数都是double。</p>
+<ul>
+<li><p>隐式强制类型转换</p>
+</li>
+<li><pre><code class="java">     float d = 1.1f; //在后面添加f,大小写不区分。
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">### 声明一个Double变量赋值 0.001会编译错误吗 ？</span><br><span class="line"></span><br><span class="line">- 不会，double 数据类型是双精度、64 位、标准的浮点数。</span><br><span class="line"></span><br><span class="line">### Java是纯粹的面向对象语言吗？</span><br><span class="line"></span><br><span class="line">- Java不是存粹的面向对象语言，因为它包含了原生数据类型，比如int 、double。</span><br><span class="line"></span><br><span class="line">### Java面向对象的特征？</span><br><span class="line"></span><br><span class="line">- 继承、封装、多态、抽象。</span><br><span class="line"></span><br><span class="line">### int 和 Integer 有什么区别。</span><br><span class="line"></span><br><span class="line">- Integer是int的包装类，它有一个int类型字段存储数据，并提供了基础的操作。关于Integer的缓存值，jdk5之后引入了一个静态工厂方法&#96;valueOf&#96;，在调用它的时候会有明显的性能提升，内部是一个缓存机制&#96;IntegerCache&#96;默认的长度是-128~127之间。</span><br><span class="line">  - 这种缓存行为不仅适用于Integer对象。我们针对所有整数类型的类都有类似的缓存机制。</span><br><span class="line">    - 有 ByteCache 用于缓存 Byte 对象。</span><br><span class="line">    - 有 ShortCache 用于缓存 Short 对象。</span><br><span class="line">    - 有 LongCache 用于缓存 Long 对象。</span><br><span class="line">    - 有 CharacterCache 用于缓存 Character 对象。</span><br><span class="line">    - Byte，Short，Long 有固定范围: -128 到 127。对于 Character, 范围是 0 到 127。除了 Integer 可以通过参数改变范围外，其它的都不行。</span><br><span class="line"></span><br><span class="line">### Java中访问类型有哪几种</span><br><span class="line"></span><br><span class="line">| 访问类型  | 同一个类 | 同一个包 | 不同包的子类 | 不同包的非子类 |</span><br><span class="line">| --------- | -------- | -------- | ------------ | -------------- |</span><br><span class="line">| public    | Y        | Y        | Y            | Y              |</span><br><span class="line">| protected | Y        | Y        | Y            |                |</span><br><span class="line">| default   | Y        | Y        |              |                |</span><br><span class="line">| private   | Y        |          |              |                |</span><br><span class="line"></span><br><span class="line">### Java中重载和重写的区别</span><br><span class="line"></span><br><span class="line">- 重写(override) </span><br><span class="line">  - 存在父类和子类之间。</span><br><span class="line">  - 方法名、参数、返回值相同。</span><br><span class="line">  - 方法被&#96;final&#96;修饰不能被重写。</span><br><span class="line">  - 子类重写父类方法后，不能抛出比父类方法的异常。子类不能缩写父类的方法&#96;访问权限&#96;。</span><br><span class="line">- 重载(overload)</span><br><span class="line">  - 参数类型、个数、顺序至少有一个不相同。</span><br><span class="line">  - 不能重载只有返回值不同的方法名。</span><br><span class="line">  - 存在于父类和子类、同类中。</span><br><span class="line"></span><br><span class="line">### Java值传递和引用传递的区别</span><br><span class="line"></span><br><span class="line">- 其实只有传值</span><br><span class="line"></span><br><span class="line">- 值传递(call by value)，对于基本型变量，传递的是该变量的副本，改变副本不影响变量。</span><br><span class="line">- 传递引用(call by reference)，对于对象型变量，传递的该对象的地址的一个副本，并不是原对象本身。</span><br><span class="line"></span><br><span class="line">### String、StringBuffer、StringBuilder的区别</span><br><span class="line"></span><br><span class="line">- 可变性</span><br><span class="line">  - String 是不可变的，StringBuffer\StringBuilder是可变的。</span><br><span class="line">  - String 类中使用 final 关键字字符数组保存字符串，&#96;private　final　char　value[]&#96;，所以 String 对象是不可变的。而StringBuilder 与 StringBuffer 都继承自 AbstractStringBuilder 类，在 AbstractStringBuilder 中也是使用字符数组保存字符串&#96;char[]value&#96; 但是没有用 final 关键字修饰，所以这两种对象都是可变的。</span><br><span class="line">- 线程安全方面</span><br><span class="line">  - String 中的对象是不可变的，也就可以理解为常量，线程安全。&#96;AbstractStringBuilder&#96; 是 &#96;StringBuilder&#96; 与 &#96;StringBuffer&#96; 的公共父类，但是StringBuffer 对方法加了同步锁或者对调用的方法加了同步锁，所以是线程安全的。StringBuilder 并没有对方法进行加同步锁，所以是非线程安全的。 </span><br><span class="line">- 性能</span><br><span class="line">  - 操作少量的数据 &#x3D; String</span><br><span class="line">  - 单线程操作字符串缓冲区下操作大量数据 &#x3D; StringBuilder</span><br><span class="line">  - 多线程操作字符串缓冲区下操作大量数据 &#x3D; StringBuffer</span><br><span class="line"></span><br><span class="line">### &#x3D;&#x3D; 和 equals</span><br><span class="line"></span><br><span class="line">- **&#x3D;&#x3D;** : 它的作用是判断两个对象的地址是不是相等。即，判断两个对象是不是同一个对象。(基本数据类型&#x3D;&#x3D;比较的是值，引用数据类型&#x3D;&#x3D;比较的是内存地址)</span><br><span class="line">- **equals()** : 它的作用也是判断两个对象是否相等。但它一般有两种使用情况：</span><br><span class="line"></span><br><span class="line">  - 情况1：类没有覆盖 equals() 方法。则通过 equals() 比较该类的两个对象时，等价于通过“&#x3D;&#x3D;”比较这两个对象。</span><br><span class="line">  - 情况2：类覆盖了 equals() 方法。一般，我们都覆盖 equals() 方法来两个对象的内容相等；若它们的内容相等，则返回 true (即，认为这两个对象相等)。</span><br><span class="line">  - String 中的 equals 方法是被重写过的，因为 object 的 equals 方法是比较的对象的内存地址，而 String 的 equals 方法比较的是对象的值。</span><br><span class="line">  - 当创建 String 类型的对象时，虚拟机会在常量池中查找有没有已经存在的值和要创建的值相同的对象，如果有就把它赋给当前引用。如果没有就在常量池中重新创建一个 String 对象。</span><br><span class="line"></span><br><span class="line">### 为什么要重写equals和hashcode方法</span><br><span class="line"></span><br><span class="line">- equals是Object的成员方法，默认不重写（*override*）情况下判断等价性。</span><br><span class="line">  - 类没有覆盖 equals() 方法。则通过 equals() 比较该类的两个对象时，等价于通过“&#x3D;&#x3D;”比较这两个对象。</span><br><span class="line">  - 类覆盖了 equals() 方法。一般，我们都覆盖 equals() 方法来两个对象的内容相等；若它们的内容相等，则返回 true (即，认为这两个对象相等)。</span><br><span class="line"></span><br><span class="line">&#96;&#96;&#96;java</span><br><span class="line">public class test &#123;</span><br><span class="line">    public void test() &#123;</span><br><span class="line">        String a &#x3D; new String(&quot;ab&quot;); &#x2F;&#x2F; a 为一个引用</span><br><span class="line">        String b &#x3D; new String(&quot;ab&quot;); &#x2F;&#x2F; b为另一个引用,对象的内容一样</span><br><span class="line">        String aa &#x3D; &quot;ab&quot;; &#x2F;&#x2F; 放在常量池中</span><br><span class="line">        String bb &#x3D; &quot;ab&quot;; &#x2F;&#x2F; 从常量池中查找</span><br><span class="line">        if (aa &#x3D;&#x3D; bb) &#x2F;&#x2F; true</span><br><span class="line">            System.out.println(&quot;aa&#x3D;&#x3D;bb&quot;);</span><br><span class="line">        if (a &#x3D;&#x3D; b) &#x2F;&#x2F; false，非同一对象</span><br><span class="line">            System.out.println(&quot;a&#x3D;&#x3D;b&quot;);</span><br><span class="line">        if (a.equals(b)) &#x2F;&#x2F; true</span><br><span class="line">            System.out.println(&quot;aEQb&quot;);</span><br><span class="line">        if (42 &#x3D;&#x3D; 42.0) &#123; &#x2F;&#x2F; true</span><br><span class="line">            System.out.println(&quot;true&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></code></pre>
+</li>
+</ul>
+</li>
+<li><p>hashCode hashCode() 的作用是获取哈希码，也称为散列码；它实际上是返回一个int整数。这个哈希码的作用是确定该对象在哈希表中的索引位置。hashCode() 定义在JDK的Object.java中，这就意味着Java中的任何类都包含有hashCode() 函数。</p>
+<ul>
+<li>集合中使用场景。<ul>
+<li>将对象放入到集合中时，首先判断要放入对象的 hashCode 值与集合中的任意一个元素的 hashCode 值是否相等，如果不相等直接将该对象放入集合中。</li>
+<li>如果 hashCode 值相等，然后再通过 equals 方法判断要放入对象与集合中的任意一个对象是否相等，如果 equals 判断不相等，直接将该元素放入到集合中，否则不放入。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>hashCode（）与equals（）的相关规定</p>
+<ol>
+<li>如果两个对象相等，则hashcode一定也是相同的。</li>
+<li>两个对象相等,对两个对象分别调用equals方法都返回true。</li>
+<li>两个对象有相同的hashcode值，它们也不一定是相等的。</li>
+<li><strong>因此，equals 方法被覆盖过，则 hashCode 方法也必须被覆盖</strong>。</li>
+<li>hashCode() 的默认行为是对堆上的对象产生独特值。如果没有重写 hashCode()，则该 class 的两个对象无论如何都不会相等（即使这两个对象指向相同的数据）。</li>
+</ol>
+</li>
+</ul>
+<h3 id="描述下final-与-finally、finalize的区别。"><a href="#描述下final-与-finally、finalize的区别。" class="headerlink" title="描述下final 与 finally、finalize的区别。"></a>描述下final 与 finally、finalize的区别。</h3><ul>
+<li><p><code>final</code> ，是修饰符关键字。</p>
+<ul>
+<li><p>如果一个类被声明为final，意味着它不能再派生出新的子类，不能作为父类被继承。因此一个类不能既被声明为 abstract的，又被声明为final的。将变量或方法声明为final，可以保证它们在使用中不被改变。被声明为final的变量必须在new一个对象时初始化（即只能在声明变量或构造器或代码块内初始化），而在以后的引用中只能读取，不可修改。被声明为final的方法也同样只能使用，不能覆盖(重写)。</p>
+<ul>
+<li><p>父类的private成员方法是不能被子类覆盖的，因为被private修饰的方法默认是final类型的。</p>
+</li>
+<li><p>final类</p>
+<ul>
+<li>final类不能被继承，因此final类的成员方法没有机会被覆盖，默认都是final的。如果这个类不需要有子类，类的实现细节不允许改变，并且确信这个类不会载被扩展，那么就设计为final类。</li>
+</ul>
+</li>
+<li><p>final方法</p>
+<ul>
+<li>如果一个类不允许其子类覆盖某个方法，则可以把这个方法声明为final方法。</li>
+</ul>
+</li>
+<li><p>final变量（常量）</p>
+<ul>
+<li>用final修饰的成员变量表示常量，值一旦给定就无法改变！</li>
+<li>final修饰的变量有三种：静态变量、实例变量和局部变量，分别表示三种类型的常量。</li>
+<li>final变量定义的时候，可以先声明，而不给初值，这中变量也称为final空白，无论什么情况，编译器都确保空白final在使用之前必须被初始化。类中的final数据成员就可以根据依赖对象而有所不同，并保持其恒定不变的特征。</li>
+</ul>
+</li>
+<li><p>final参数</p>
+<ul>
+<li>当函数参数为final类型时，你可以读取使用该参数，但是无法改变该参数的值。</li>
+</ul>
+</li>
+<li><p><strong>注意final 不是immutable的</strong></p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p><code>finally</code>在异常处理时提供 <code>finally</code> 块来执行任何清除操作。如果抛出一个异常，那么相匹配的 <code>catch</code> 子句就会执行，然后控制就会进入 <code>finally</code> 块（如果有的话）。</p>
+<ul>
+<li>在异常处理时提供 finally 块来执行任何清除操作。只有在与 finally 相对应的 try 语句块得到执行的情况下，finally 语句块才会执行。如果抛出一个异常，那么相匹配的 catch 子句就会执行，然后控制就会进入 finally 块（如果有的话）。</li>
+<li>finally 语句块可能是要执行的。<ul>
+<li>当try流程中出现程序中断情况是不会在执行finally语句的。也就是说一个线程在执行 try 语句块或者 catch 语句块时被打断（interrupted）或者被终止（killed），与其相对应的 finally 语句块可能不会执行。还有更极端的情况，就是在线程运行 try 语句块或者 catch 语句块时，突然死机或者断电，finally 语句块肯定不会执行了。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><code>finalize</code> ，是方法名。</p>
+<ul>
+<li>Java 允许使用 <code>#finalize()</code> 方法，在垃圾收集器将对象从内存中清除出去之前做必要的清理工作。这个方法是由垃圾收集器在确定这个对象没有被引用时对这个对象调用的。</li>
+</ul>
+</li>
+</ul>
+<h3 id="finally对应的try-catch语句流程"><a href="#finally对应的try-catch语句流程" class="headerlink" title="finally对应的try catch语句流程"></a>finally对应的try catch语句流程</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span>  </span>&#123;</span><br><span class="line">       <span class="keyword">try</span> &#123;  </span><br><span class="line">           System.out.println(<span class="string">"try block"</span>);  </span><br><span class="line">           <span class="keyword">return</span> ;  </span><br><span class="line">       &#125; <span class="keyword">finally</span> &#123;  </span><br><span class="line">           System.out.println(<span class="string">"finally block"</span>);  </span><br><span class="line">       &#125;  </span><br><span class="line">    &#125; </span><br><span class="line"><span class="comment">//运行结果</span></span><br><span class="line"><span class="comment">//try block </span></span><br><span class="line"><span class="comment">//finally block</span></span><br></pre></td></tr></table></figure>
+<p>从结果看finally语句会在return之前执行。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span>  </span>&#123;</span><br><span class="line">    System.out.println(<span class="string">"return value of test(): "</span> + test()); </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">test</span><span class="params">()</span> </span>&#123; </span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">1</span>;</span><br><span class="line"> <span class="keyword">try</span> &#123;  </span><br><span class="line">    System.out.println(<span class="string">"try block"</span>);</span><br><span class="line">        i = <span class="number">1</span> / <span class="number">0</span>; <span class="comment">//抛一个异常进catch</span></span><br><span class="line">     <span class="keyword">return</span> i;  </span><br><span class="line"> &#125;<span class="keyword">catch</span> (Exception e)&#123; </span><br><span class="line">    System.out.println(<span class="string">"exception block"</span>); </span><br><span class="line">    <span class="keyword">return</span> <span class="number">2</span>; </span><br><span class="line"> &#125;<span class="keyword">finally</span> &#123;  </span><br><span class="line">    System.out.println(<span class="string">"finally block"</span>);  </span><br><span class="line"> &#125; </span><br><span class="line">&#125;  </span><br><span class="line"><span class="comment">//运行结果</span></span><br><span class="line"><span class="comment">//try block</span></span><br><span class="line"><span class="comment">//exception block</span></span><br><span class="line"><span class="comment">//finally block</span></span><br><span class="line"><span class="comment">//return value of test(): 2</span></span><br></pre></td></tr></table></figure>
+<p> 从结果看finally 语句块在 catch 语句块中的 return 语句之前执行。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span>  </span>&#123;</span><br><span class="line">    System.out.println(<span class="string">"return value of test(): "</span> + test()); </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@SuppressWarnings</span>(<span class="string">"finally"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">test</span><span class="params">()</span> </span>&#123; </span><br><span class="line">  <span class="keyword">int</span> i = <span class="number">1</span>; </span><br><span class="line">      <span class="keyword">try</span> &#123; </span><br><span class="line">         i = <span class="number">4</span>; </span><br><span class="line">         <span class="keyword">return</span> i;</span><br><span class="line">      &#125; <span class="keyword">finally</span> &#123; </span><br><span class="line">         i++; </span><br><span class="line">         <span class="keyword">return</span> i; </span><br><span class="line">      &#125;  </span><br><span class="line">&#125; </span><br><span class="line"><span class="comment">//运行结果</span></span><br><span class="line"><span class="comment">//return value of test(): 5</span></span><br></pre></td></tr></table></figure>
+
+<p>从结果看 finally 语句块中如果出现return那么该流程就结束了。其实是finally块中的return语句会覆盖try块中的return返回。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span>  </span>&#123;</span><br><span class="line">    System.out.println(<span class="string">"return value of test3(): "</span> + test()); </span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">test3</span><span class="params">()</span> </span>&#123;</span><br><span class="line">     <span class="keyword">int</span> b = <span class="number">20</span>;</span><br><span class="line">     <span class="keyword">try</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">"try block"</span>);</span><br><span class="line">        b += <span class="number">80</span>;</span><br><span class="line">        <span class="keyword">return</span> b; </span><br><span class="line">     &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        System.out.println(<span class="string">"catch block"</span>);</span><br><span class="line">     &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">"finally block"</span>);</span><br><span class="line">        <span class="keyword">if</span> (b &gt; <span class="number">25</span>) &#123;</span><br><span class="line">           b += <span class="number">100</span>;</span><br><span class="line">           System.out.println(<span class="string">"b&gt;25 and b = "</span> + b);</span><br><span class="line">        &#125;</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="keyword">return</span> b;</span><br><span class="line"> &#125; </span><br><span class="line"><span class="comment">// 运行结果</span></span><br><span class="line"><span class="comment">//try block</span></span><br><span class="line"><span class="comment">//finally block</span></span><br><span class="line"><span class="comment">//b&gt;25 and b = 200</span></span><br><span class="line"><span class="comment">//return value of test(): 100</span></span><br></pre></td></tr></table></figure>
+
+<p>从结果看:weary:为什么不返回200！为什么finally里面的修改没有效果？因为finally语句中没有return语句覆盖返回值，那么原来的返回值可能因为finally里的修改而改变也可能不变。那什么情况下会改变呢？</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span>  </span>&#123;</span><br><span class="line">   System.out.println(<span class="string">"return value of test3(): "</span> + test()); </span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">test3</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       <span class="keyword">int</span> b = <span class="number">20</span>;</span><br><span class="line">       <span class="keyword">try</span> &#123;</span><br><span class="line">           System.out.println(<span class="string">"try block"</span>);</span><br><span class="line">           b += <span class="number">80</span>;</span><br><span class="line">           b = b / <span class="number">0</span>; <span class="comment">//抛异常</span></span><br><span class="line">           <span class="keyword">return</span> b; </span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">           System.out.println(<span class="string">"catch block"</span>);</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">finally</span> &#123;</span><br><span class="line">           System.out.println(<span class="string">"finally block"</span>);</span><br><span class="line">           <span class="keyword">if</span> (b &gt; <span class="number">25</span>) &#123;</span><br><span class="line">            b += <span class="number">100</span>;</span><br><span class="line">               System.out.println(<span class="string">"b&gt;25 and b = "</span> + b);</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">return</span> b;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//运行结果</span></span><br><span class="line"><span class="comment">//try block</span></span><br><span class="line"><span class="comment">//catch block</span></span><br><span class="line"><span class="comment">//finally block</span></span><br><span class="line"><span class="comment">//b&gt;25 and b = 200</span></span><br><span class="line"><span class="comment">//return value of test(): 200</span></span><br></pre></td></tr></table></figure>
+<p>从结果看finally里面的修改启效果了，因为抛出了异常所以没有执行try代码块里面的return。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span>  </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"return value of test3(): "</span> + test()); </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">test3</span><span class="params">()</span> </span>&#123;</span><br><span class="line">     <span class="keyword">int</span> b = <span class="number">20</span>;</span><br><span class="line">         <span class="keyword">try</span> &#123;</span><br><span class="line">             System.out.println(<span class="string">"try block"</span>);</span><br><span class="line">             b += <span class="number">80</span>;</span><br><span class="line">             b = b / <span class="number">0</span>;</span><br><span class="line">             <span class="keyword">return</span> b; </span><br><span class="line">         &#125;</span><br><span class="line">         <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">             System.out.println(<span class="string">"catch block"</span>);</span><br><span class="line">             <span class="keyword">return</span> b += <span class="number">10</span>;</span><br><span class="line">         &#125;</span><br><span class="line">         <span class="keyword">finally</span> &#123;</span><br><span class="line">             System.out.println(<span class="string">"finally block"</span>);</span><br><span class="line">             <span class="keyword">if</span> (b &gt; <span class="number">25</span>) &#123;</span><br><span class="line">                b += <span class="number">100</span>;</span><br><span class="line">                 System.out.println(<span class="string">"b&gt;25 and b = "</span> + b);</span><br><span class="line">             &#125;</span><br><span class="line">         &#125;</span><br><span class="line">   &#125;</span><br><span class="line"><span class="comment">// 运行结果</span></span><br><span class="line"><span class="comment">// try block</span></span><br><span class="line"><span class="comment">// catch block</span></span><br><span class="line"><span class="comment">// finally block</span></span><br><span class="line"><span class="comment">// b&gt;25 and b = 210</span></span><br><span class="line"><span class="comment">// return value of test(): 110</span></span><br><span class="line"><span class="comment">// 从结果来看，抛出异常后return 方法执行之前，也运行了finally代码块，但是并未影响catch代码块中的返回值。</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>finally块的语句在try或catch中的return语句执行之后返回之前执行，finally里的修改语句可能影响也可能不影响try或catch中 return已经确定的返回值，若finally里也有return语句则覆盖try或catch中的return语句直接返回。没有进入try代码块就不会执行finally代码块。</li>
+</ul>
+<h3 id="介绍下异常类型"><a href="#介绍下异常类型" class="headerlink" title="介绍下异常类型"></a>介绍下异常类型</h3><ul>
+<li>Throwable <ul>
+<li>Error</li>
+<li>Exception<ul>
+<li>RuntimeException</li>
+<li>IOException</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>超类Throwable ，有两个子类Error和Exception，分别表示错误和异常。<ul>
+<li>Error是程序无法处理的错误，比如OutOfMemoryError等。这些异常发生时，Java虚拟机（JVM）一般会选择线程终止。</li>
+<li>Exception是程序本身可以处理的异常，这种异常分两大类运行时异常和非运行时异常。程序中应当尽可能去处理这些异常。<ul>
+<li>运行时异常(RuntimeException)和非运行时异常也称之为不检查异常（Unchecked Exception）和检查异常（Checked Exception）,这两种异常有很大的区别。</li>
+<li>RuntimeException(运行时异常)，表示无法让程序恢复的异常，导致的原因通常是因为执行了错误的操作，建议终止逻辑，因此，编译器不检查这些异常。</li>
+<li>CheckedException(受检查异常)，是表示程序可以处理的异常，也即表示程序可以修复（由程序自己接受异常并且做出处理），所以称之为受检查异常。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="描述下异常处理方式"><a href="#描述下异常处理方式" class="headerlink" title="描述下异常处理方式"></a>描述下异常处理方式</h3><ul>
+<li>使用System.out.println是高代价的，这这做会降低系统吞吐量。</li>
+<li>在生成环境中避免使用printStackTrace()方法，printStackTrace默认会把调用的堆栈打印到控制台上，在生产环境中访问控制台是不现实的。</li>
+<li>如果不能处理异常，就不要捕获该异常，</li>
+<li>如果要捕获异常，应在最近的地方捕获它。</li>
+<li>不要吃掉你的捕捉的异常信息，就是捕获了啥也不做，建议LOG记录。</li>
+<li>不要将异常处理用于正常的控制流（设计良好的 API 不应该强迫它的调用者为了正常的控制流而使用异常）。</li>
+<li>对可以恢复的情况使用受检异常，对编程错误使用运行时异常。</li>
+<li>避免不必要的使用受检异常（可以通过一些状态检测手段来避免异常的发生）。</li>
+<li>优先使用标准的异常。</li>
+<li>每个方法抛出的异常都要有文档。</li>
+<li>保持异常的原子性</li>
+<li>不要在 <code>catch</code> 中忽略掉捕获到的异常。</li>
+</ul>
+<h3 id="throw-与-throws-的区别"><a href="#throw-与-throws-的区别" class="headerlink" title="throw 与 throws 的区别"></a>throw 与 throws 的区别</h3><ul>
+<li><code>throw</code> ，用于在程序中显式地抛出一个异常。</li>
+<li><code>throws</code> ，用于指出在该方法中没有处理的异常。<strong>每个方法必须显式指明哪些异常没有处理，以便该方法的调用者可以预防可能发生的异常</strong>。最后，多个异常用逗号分隔。</li>
+</ul>
+<h3 id="常见的几种异常"><a href="#常见的几种异常" class="headerlink" title="常见的几种异常"></a>常见的几种异常</h3><ul>
+<li>NullPointerException</li>
+<li>IndexOutOfBoundsException</li>
+<li>ClassCastException</li>
+<li>ArrayStoreException</li>
+<li>BufferOverflowException</li>
+</ul>
+<h3 id="如何正确的在一个循环中删除ArrayList中的元素。"><a href="#如何正确的在一个循环中删除ArrayList中的元素。" class="headerlink" title="如何正确的在一个循环中删除ArrayList中的元素。"></a>如何正确的在一个循环中删除ArrayList中的元素。</h3><ul>
+<li><p>如果使用普通for循环直接删除会出现IndexOutOfBoundsException异常，非法索引。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">ArrayList&lt;String&gt; list = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line">list.add(<span class="string">"1"</span>);</span><br><span class="line">list.add(<span class="string">"2"</span>);</span><br><span class="line">list.add(<span class="string">"2"</span>);</span><br><span class="line">list.add(<span class="string">"2"</span>);</span><br><span class="line">list.add(<span class="string">"3"</span>);</span><br><span class="line">list.add(<span class="string">"4"</span>);</span><br><span class="line">list.add(<span class="string">"5"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 这样做肯定抛异常，非法访问数据越界</span></span><br><span class="line"><span class="keyword">int</span> len = list.size();</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; len; i++) &#123;</span><br><span class="line"> <span class="keyword">if</span>(<span class="string">"1"</span>.equals(list.get(i)))&#123;</span><br><span class="line">    list.remove(i);</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//Exception in thread "main" java.lang.IndexOutOfBoundsException: Index: 4, Size: 4</span></span><br><span class="line"><span class="comment">//改进后,删除元素后更新List长度，更新循环下标。但是这样的可读性很差。而且不适用于多线程场景</span></span><br><span class="line"><span class="keyword">int</span> len = list.size();</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; len; i++) &#123;</span><br><span class="line"> <span class="keyword">if</span>(<span class="string">"1"</span>.equals(list.get(i)))&#123;</span><br><span class="line">    list.remove(i);</span><br><span class="line">    --len;</span><br><span class="line">    --i;</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//另外一种方式，这种看起来好读多了。。。</span></span><br><span class="line">Iterator&lt;String&gt; sListIterator = list.iterator();  </span><br><span class="line"><span class="keyword">while</span>(sListIterator.hasNext())&#123;  </span><br><span class="line">  String e = sListIterator.next();  <span class="comment">//注意了</span></span><br><span class="line">  <span class="keyword">if</span>(e.equals(<span class="string">"1"</span>))&#123;  </span><br><span class="line">  sListIterator.remove();  </span><br><span class="line">  &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="什么是-Java-序列化？"><a href="#什么是-Java-序列化？" class="headerlink" title="什么是 Java 序列化？"></a>什么是 Java 序列化？</h3><ul>
+<li>序列化就是一种用来处理对象流的机制，所谓对象流也就是将对象的内容进行流化。</li>
+<li>反序列化的过程，则是和序列化相反的过程。</li>
+<li>对于不想进行序列化的变量，使用transient关键字修饰。<ul>
+<li>transient关键字的作用是：阻止实例中那些用此关键字修饰的的变量序列化；当对象被反序列化时，被transient修饰的变量值不会被持久化和恢复。transient只能修饰变量，不能修饰类和方法。</li>
+</ul>
+</li>
+</ul>
+<h3 id="介绍Java-反射"><a href="#介绍Java-反射" class="headerlink" title="介绍Java 反射"></a>介绍Java 反射</h3><ul>
+<li>反射(Reflection)是 Java 程序开发语言的特征之一，它允许运行中的 Java 程序获取自身的信息，并且可以操作类或对象的内部属性。</li>
+<li>通过反射，可以在程序运行时访问Java对象的成员变量、方法、构造方法。</li>
+<li>反射的缺点<ul>
+<li><strong>性能开销</strong> - 由于反射涉及动态解析的类型，因此无法执行某些 Java 虚拟机优化。因此，反射操作的性能要比非反射操作的性能要差，应该在性能敏感的应用程序中频繁调用的代码段中避免。</li>
+<li><strong>破坏封装性</strong> - 反射调用方法时可以忽略权限检查，因此可能会破坏封装性而导致安全问题。</li>
+<li><strong>内部曝光</strong> - 由于反射允许代码执行在非反射代码中非法的操作，例如访问私有字段和方法，所以反射的使用可能会导致意想不到的副作用，这可能会导致代码功能失常并可能破坏可移植性。反射代码打破了抽象，因此可能会随着平台的升级而改变行为。</li>
+</ul>
+</li>
+</ul>
+<h3 id="Sleep-和-wait的区别"><a href="#Sleep-和-wait的区别" class="headerlink" title="Sleep 和 wait的区别"></a>Sleep 和 wait的区别</h3><ul>
+<li>sleep是Thread的成员方法，睡眠时保持对象锁，仍然占有该锁。<ul>
+<li>sleep()使当前线程进入停滞状态（阻塞当前线程），让出CUP的使用、目的是不让当前线程独自霸占该进程所获的CPU资源，以留一定时间给其他线程执行的机会;<br>　　 sleep()是Thread类的Static(静态)的方法；因此他不能改变对象的机锁，所以当在一个Synchronized块中调用Sleep()方法是，线程虽然休眠了，但是对象的机锁并木有被释放，其他线程无法访问这个对象（即使睡着也持有对象锁）。<br>　　在sleep()休眠时间期满后，该线程不一定会立即执行，这是因为其它线程可能正在运行而且没有被调度为放弃执行，除非此线程具有更高的优先级。 </li>
+</ul>
+</li>
+<li>wait是Object的成员方法睡眠时，释放对象锁。<ul>
+<li>wait()方法是Object类里的方法；当一个线程执行到wait()方法时，它就进入到一个和该对象相关的等待池中，同时失去（释放）了对象的机锁（暂时失去机锁，wait(long timeout)超时时间到后还需要返还对象锁）；其他线程可以访问；<br>　　wait()使用notify或者notifyAlll或者指定睡眠时间来唤醒当前等待池中的线程。<br>　　wiat()必须放在synchronized block中，否则会在program runtime时扔出”java.lang.IllegalMonitorStateException“异常。</li>
+</ul>
+</li>
+</ul>
+<h3 id="notify与notifyAll的区别"><a href="#notify与notifyAll的区别" class="headerlink" title="notify与notifyAll的区别"></a>notify与notifyAll的区别</h3><blockquote>
+<p>尽量使用notifyAll。</p>
+</blockquote>
+<ul>
+<li>调用 notify() 方法导致解除阻塞的线程是从因调用该对象的 wait() 方法而阻塞的线程中随机选取的，我们无法预料哪一个线程将会被选择，所以编程时要特别小心，避免因这种不确定性而产生问题。</li>
+<li>notifyAll() 也可起到类似作用，唯一的区别在于，调用 notifyAll() 方法将把因调用该对象的 wait() 方法而阻塞的所有线程一次性全部解除阻塞。当然，只有获得锁的那一个线程才能进入可执行状态。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>小峰同学
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCore/" title="查缺补漏-JavaCore">https://z201.github.io/2019/01/01/查缺补漏-JavaCore/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-MySQL/" rel="prev" title="查缺补漏-MySQL">
+      <i class="fa fa-chevron-left"></i> 查缺补漏-MySQL
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-SpringMvc/" rel="next" title="查缺补漏-SpringMvc">
+      查缺补漏-SpringMvc <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是面向对象？"><span class="nav-number">1.</span> <span class="nav-text">什么是面向对象？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#介绍下-Java-基本数据类型"><span class="nav-number">2.</span> <span class="nav-text">介绍下 Java 基本数据类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#描述下final-与-finally、finalize的区别。"><span class="nav-number">3.</span> <span class="nav-text">描述下final 与 finally、finalize的区别。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#finally对应的try-catch语句流程"><span class="nav-number">4.</span> <span class="nav-text">finally对应的try catch语句流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#介绍下异常类型"><span class="nav-number">5.</span> <span class="nav-text">介绍下异常类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#描述下异常处理方式"><span class="nav-number">6.</span> <span class="nav-text">描述下异常处理方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#throw-与-throws-的区别"><span class="nav-number">7.</span> <span class="nav-text">throw 与 throws 的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常见的几种异常"><span class="nav-number">8.</span> <span class="nav-text">常见的几种异常</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何正确的在一个循环中删除ArrayList中的元素。"><span class="nav-number">9.</span> <span class="nav-text">如何正确的在一个循环中删除ArrayList中的元素。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是-Java-序列化？"><span class="nav-number">10.</span> <span class="nav-text">什么是 Java 序列化？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#介绍Java-反射"><span class="nav-number">11.</span> <span class="nav-text">介绍Java 反射</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Sleep-和-wait的区别"><span class="nav-number">12.</span> <span class="nav-text">Sleep 和 wait的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#notify与notifyAll的区别"><span class="nav-number">13.</span> <span class="nav-text">notify与notifyAll的区别</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="小峰同学"
+      src="/images/avatar-min.jpg">
+  <p class="site-author-name" itemprop="name">小峰同学</p>
+  <div class="site-description" itemprop="description">多听、多看、少说、多做。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">105</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">96</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/z201" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;z201" rel="noopener" target="_blank"><i class="github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:int_java_se@@163.com" title="E-Mail → mailto:int_java_se@@163.com" rel="noopener" target="_blank"><i class="envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.journaldev.com/" title="https:&#x2F;&#x2F;www.journaldev.com&#x2F;" rel="noopener" target="_blank">journaldev</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.geeksforgeeks.org/" title="https:&#x2F;&#x2F;www.geeksforgeeks.org&#x2F;" rel="noopener" target="_blank">geeksforgeeks</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://redisdoc.com/index.html" title="http:&#x2F;&#x2F;redisdoc.com&#x2F;index.html" rel="noopener" target="_blank">redisdoc</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.spring4all.com/" title="http:&#x2F;&#x2F;www.spring4all.com&#x2F;" rel="noopener" target="_blank">spring4all 最专业的Spring民间组织</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.sczyh30.com/" title="http:&#x2F;&#x2F;www.sczyh30.com&#x2F;" rel="noopener" target="_blank">浮生若梦</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://tengj.top/" title="http:&#x2F;&#x2F;tengj.top&#x2F;" rel="noopener" target="_blank">嘟嘟独立博客</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://indienova.com/" title="https:&#x2F;&#x2F;indienova.com&#x2F;" rel="noopener" target="_blank">独立精神</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.ityouknow.com/" title="http:&#x2F;&#x2F;www.ityouknow.com&#x2F;" rel="noopener" target="_blank">纯洁的微笑</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://sspai.com/" title="https:&#x2F;&#x2F;sspai.com&#x2F;" rel="noopener" target="_blank">少数派</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://ifeve.com/" title="http:&#x2F;&#x2F;ifeve.com&#x2F;" rel="noopener" target="_blank">并发编程网</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://hacpai.com/" title="https:&#x2F;&#x2F;hacpai.com&#x2F;" rel="noopener" target="_blank">黑客派</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.lintcode.com/" title="https:&#x2F;&#x2F;www.lintcode.com&#x2F;" rel="noopener" target="_blank">lintCode</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://stackoverflow.com/" title="https:&#x2F;&#x2F;stackoverflow.com&#x2F;" rel="noopener" target="_blank">stackoverflow</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.appinn.com/" title="https:&#x2F;&#x2F;www.appinn.com" rel="noopener" target="_blank">小众软件</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.fontawesome.com.cn/" title="http:&#x2F;&#x2F;www.fontawesome.com.cn&#x2F;" rel="noopener" target="_blank">Font Awesome中文网</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小峰同学</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
