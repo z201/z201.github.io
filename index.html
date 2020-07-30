@@ -270,7 +270,7 @@
       
           <h2 id="关于本人"><a href="#关于本人" class="headerlink" title="关于本人"></a>关于本人</h2><ul>
 <li>15年自学几个月开始了码农之旅，目前坐标杭州。</li>
-<li>个人邮箱<a href="mailto:&#122;&#x32;&#x30;&#x31;&#x2e;&#99;&#x6f;&#x64;&#105;&#110;&#103;&#x40;&#103;&#x6d;&#x61;&#105;&#x6c;&#46;&#99;&#111;&#x6d;">&#122;&#x32;&#x30;&#x31;&#x2e;&#99;&#x6f;&#x64;&#105;&#110;&#103;&#x40;&#103;&#x6d;&#x61;&#105;&#x6c;&#46;&#99;&#111;&#x6d;</a></li>
+<li>个人邮箱<a href="mailto:&#122;&#50;&#48;&#49;&#x2e;&#x63;&#111;&#x64;&#x69;&#110;&#103;&#64;&#103;&#109;&#x61;&#105;&#108;&#x2e;&#99;&#x6f;&#x6d;">&#122;&#50;&#48;&#49;&#x2e;&#x63;&#111;&#x64;&#x69;&#110;&#103;&#64;&#103;&#109;&#x61;&#105;&#108;&#x2e;&#99;&#x6f;&#x6d;</a></li>
 </ul>
 <h2 id="关于博客"><a href="#关于博客" class="headerlink" title="关于博客"></a>关于博客</h2><ul>
 <li>博客建立只是为了监督个人学习，记录生活点滴，个人水平有限欢迎斧正。</li>
@@ -334,7 +334,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-07-31 01:35:30" itemprop="dateModified" datetime="2020-07-31T01:35:30+08:00">2020-07-31</time>
+                <time title="Modified: 2020-07-31 01:49:37" itemprop="dateModified" datetime="2020-07-31T01:49:37+08:00">2020-07-31</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -436,12 +436,39 @@
 <p>⽅法调⽤，还是在主线程⾥执⾏。</p>
 </li>
 </ul>
-<h2 id="7、notify与notifyAll的区别"><a href="#7、notify与notifyAll的区别" class="headerlink" title="7、notify与notifyAll的区别"></a>7、notify与notifyAll的区别</h2><blockquote>
+<h3 id="7、notify与notifyAll的区别"><a href="#7、notify与notifyAll的区别" class="headerlink" title="7、notify与notifyAll的区别"></a>7、notify与notifyAll的区别</h3><blockquote>
 <p>尽量使用notifyAll。</p>
 </blockquote>
 <ul>
 <li>调用 notify() 方法导致解除阻塞的线程是从因调用该对象的 wait() 方法而阻塞的线程中随机选取的，我们无法预料哪一个线程将会被选择，所以编程时要特别小心，避免因这种不确定性而产生问题。</li>
 <li>notifyAll() 也可起到类似作用，唯一的区别在于，调用 notifyAll() 方法将把因调用该对象的 wait() 方法而阻塞的所有线程一次性全部解除阻塞。当然，只有获得锁的那一个线程才能进入可执行状态。</li>
+</ul>
+<h3 id="8、说说-synchronized-关键字和-volatile-关键字的区别"><a href="#8、说说-synchronized-关键字和-volatile-关键字的区别" class="headerlink" title="8、说说 synchronized 关键字和 volatile 关键字的区别"></a>8、说说 synchronized 关键字和 volatile 关键字的区别</h3><h3 id="9、在多线程中，什么是上下文切换-context-switching-？"><a href="#9、在多线程中，什么是上下文切换-context-switching-？" class="headerlink" title="9、在多线程中，什么是上下文切换(context-switching)？"></a>9、<strong>在多线程中，什么是上下文切换(context-switching)？</strong></h3><ul>
+<li>上下文切换是存储和恢复CPU状态的过程，它使得线程执行能够从中断点恢复执行。上下文切换是多任务操作系统和多线程环境的基本特征。</li>
+</ul>
+<h3 id="10、为什么线程通信的方法wait-notify-和notifyAll-被定义在Object类里？"><a href="#10、为什么线程通信的方法wait-notify-和notifyAll-被定义在Object类里？" class="headerlink" title="10、为什么线程通信的方法wait(), notify()和notifyAll()被定义在Object类里？"></a>10、<strong>为什么线程通信的方法wait(), notify()和notifyAll()被定义在Object类里</strong>？</h3><ul>
+<li>Java的每个对象中都有一个锁(monitor，也可以成为监视器) 并且wait()，notify()等方法用于等待对象的锁或者通知其他线程对象的监视器可用。在Java的线程中并没有可供任何对象使用的锁和同步器。这就是为什么这些方法是Object类的一部分，这样Java的每一个类都有用于线程间通信的基本方法。</li>
+</ul>
+<h3 id="11、为什么wait-notify-和notifyAll-必须在同步方法或者同步块中被调用？"><a href="#11、为什么wait-notify-和notifyAll-必须在同步方法或者同步块中被调用？" class="headerlink" title="11、为什么wait(), notify()和notifyAll()必须在同步方法或者同步块中被调用？"></a>11、<strong>为什么wait(), notify()和notifyAll()必须在同步方法或者同步块中被调用？</strong></h3><ul>
+<li>当一个线程需要调用对象的wait()方法的时候，这个线程必须拥有该对象的锁，接着它就会释放这个对象锁并进入等待状态直到其他线程调用这个对象上的notify()方法。同样的，当一个线程需要调用对象的notify()方法时，它会释放这个对象的锁，以便其他在等待的线程就可以得到这个对象锁。由于所有的这些方法都需要线程持有对象的锁，这样就只能通过同步来实现，所以他们只能在同步方法或者同步块中被调用。</li>
+</ul>
+<h3 id="12、为什么Thread类的sleep-和yield-方法是静态的？"><a href="#12、为什么Thread类的sleep-和yield-方法是静态的？" class="headerlink" title="12、为什么Thread类的sleep()和yield()方法是静态的？"></a>12、<strong>为什么Thread类的sleep()和yield()方法是静态的？</strong></h3><ul>
+<li>Thread类的sleep()和yield()方法将在当前正在执行的线程上运行。所以在其他处于等待状态的线程上调用这些方法是没有意义的。这就是为什么这些方法是静态的。它们可以在当前正在执行的线程中工作，并避免程序员错误的认为可以在其他非运行线程调用这些方法。</li>
+</ul>
+<h3 id="13、什么是ThreadLocal"><a href="#13、什么是ThreadLocal" class="headerlink" title="13、什么是ThreadLocal?"></a>13、<strong>什么是ThreadLocal?</strong></h3><ul>
+<li>ThreadLocal用于创建线程的本地变量，我们知道一个对象的所有线程会共享它的全局变量，所以这些变量不是线程安全的，我们可以使用同步技术。但是当我们不想使用同步的时候，我们可以选择ThreadLocal变量。</li>
+<li>每个线程都会拥有他们自己的Thread变量，它们可以使用get()set()方法去获取他们的默认值或者在线程内部改变他们的值。ThreadLocal实例通常是希望它们同线程状态关联起来是private static属性。在ThreadLocal例子这篇文章中你可以看到一个关于ThreadLocal的小程序。</li>
+</ul>
+<h3 id="14、什么是Java线程转储-Thread-Dump-，如何得到它？"><a href="#14、什么是Java线程转储-Thread-Dump-，如何得到它？" class="headerlink" title="14、什么是Java线程转储(Thread Dump)，如何得到它？"></a>14、<strong>什么是Java线程转储(Thread Dump)，如何得到它？</strong></h3><ul>
+<li>线程转储是一个JVM活动线程的列表，它对于分析系统瓶颈和死锁非常有用。有很多方法可以获取线程转储——使用Profiler，Kill -3命令，jstack工具等等。我更喜欢jstack工具，因为它容易使用并且是JDK自带的。由于它是一个基于终端的工具，所以我们可以编写一些脚本去定时的产生线程转储以待分析。</li>
+</ul>
+<h3 id="15、什么是死锁-Deadlock-？如何分析和避免死锁？"><a href="#15、什么是死锁-Deadlock-？如何分析和避免死锁？" class="headerlink" title="15、什么是死锁(Deadlock)？如何分析和避免死锁？"></a>15、<strong>什么是死锁(Deadlock)？如何分析和避免死锁？</strong></h3><ul>
+<li><p>死锁是指两个以上的线程永远阻塞的情况，这种情况产生至少需要两个以上的线程和两个以上的资源。</p>
+</li>
+<li><p>分析死锁，我们需要查看Java应用程序的线程转储。我们需要找出那些状态为BLOCKED的线程和他们等待的资源。每个资源都有一个唯一的id，用这个id我们可以找出哪些线程已经拥有了它的对象锁。</p>
+</li>
+<li><p>避免嵌套锁，只在需要的地方使用锁和避免无限期等待是避免死锁的通常办法，阅读这篇文章去学习如何分析死锁。</p>
+</li>
 </ul>
 
       
