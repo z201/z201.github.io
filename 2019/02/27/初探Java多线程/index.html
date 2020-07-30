@@ -27,8 +27,9 @@
 <meta property="og:site_name" content="枫叶的小博客">
 <meta property="og:description" content="基础理论篇学习笔记  1.什么是进程 进程是程序运行和资源分配的基本单位，一个程序至少一个进程，一个进程至少一个线程。  多个进程的*内部数据和状态是完全独立的*，而多个线程是共享一个内存空间和一组系统资源，有可能互相影响。    2.什么是线程 线程是程序内部的控制流，只能使用分配给线程 的资源和环境。 线程本身的数据通常只有寄存器数据，以及一个程序执行时使用的堆栈，所以线程的切换比进程切换负">
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/%E5%A4%9A%E7%BA%BF%E7%A8%8B/%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%8A%B6%E6%80%81.svg">
+<meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/volatile%E5%86%85%E5%AD%98.png">
 <meta property="article:published_time" content="2019-02-27T04:34:08.000Z">
-<meta property="article:modified_time" content="2020-07-29T18:20:09.018Z">
+<meta property="article:modified_time" content="2020-07-30T17:34:47.448Z">
 <meta property="article:author" content="小峰同学">
 <meta property="article:tag" content="Java">
 <meta property="article:tag" content="Java多线程">
@@ -250,7 +251,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-07-30 02:20:09" itemprop="dateModified" datetime="2020-07-30T02:20:09+08:00">2020-07-30</time>
+                <time title="Modified: 2020-07-31 01:34:47" itemprop="dateModified" datetime="2020-07-31T01:34:47+08:00">2020-07-31</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -325,74 +326,97 @@
 </li>
 </ul>
 <hr>
-<h2 id="5-线程的生命周期"><a href="#5-线程的生命周期" class="headerlink" title="5.线程的生命周期"></a>5.线程的生命周期</h2><h3 id="线程的生命周期"><a href="#线程的生命周期" class="headerlink" title="线程的生命周期"></a>线程的生命周期</h3><ul>
-<li><p>一个线程的消亡过程。</p>
-</li>
-<li><p>线程的生命周期状态。</p>
+<h2 id="5-线程的生命周期"><a href="#5-线程的生命周期" class="headerlink" title="5.线程的生命周期"></a>5.线程的生命周期</h2><blockquote>
+<p>一个线程的消亡过程。</p>
+</blockquote>
 <ul>
-<li>创建状态</li>
-<li>可运行状态。</li>
-<li>运行状态</li>
-<li>不可运行状态（阻塞状态）。</li>
-<li>消亡状态。</li>
+<li><h4 id="新建（New）"><a href="#新建（New）" class="headerlink" title="新建（New）"></a>新建（New）</h4><ul>
+<li>创建后尚未启动。</li>
+</ul>
+</li>
+<li><h4 id="可运行（Runnable）"><a href="#可运行（Runnable）" class="headerlink" title="可运行（Runnable）"></a>可运行（Runnable）</h4><ul>
+<li>可能正在运行，也可能正在等待 CPU 时间片。</li>
+<li>包含了操作系统线程状态中的 运行（Running ） 和 就绪（Ready）。</li>
+</ul>
+</li>
+<li><h4 id="无限期等待（Waiting）"><a href="#无限期等待（Waiting）" class="headerlink" title="无限期等待（Waiting）"></a>无限期等待（Waiting）</h4><ul>
+<li><p>等待其它线程显式地唤醒，否则不会被分配 CPU 时间片。</p>
+<table>
+<thead>
+<tr>
+<th>进入方法</th>
+<th>退出方法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>没有设置 Timeout 参数的 Object.wait() 方法</td>
+<td>Object.notify() / Object.notifyAll()</td>
+</tr>
+<tr>
+<td>没有设置 Timeout 参数的 Thread.join() 方法</td>
+<td>被调用的线程执行完毕</td>
+</tr>
+<tr>
+<td>LockSupport.park() 方法</td>
+<td>-</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+</li>
+<li><h4 id="限期等待（Timed-Waiting）"><a href="#限期等待（Timed-Waiting）" class="headerlink" title="限期等待（Timed Waiting）"></a>限期等待（Timed Waiting）</h4><ul>
+<li><p>无需等待其它线程显式地唤醒，在一定时间之后会被系统自动唤醒。</p>
+</li>
+<li><p>调用 Thread.sleep() 方法使线程进入限期等待状态时，常常用 “<strong>使一个线程睡眠</strong>” 进行描述。</p>
+</li>
+<li><p>调用 Object.wait() 方法使线程进入限期等待或者无限期等待时，常常用 “<strong>挂起一个线程</strong>” 进行描述。</p>
+</li>
+<li><p><strong>睡眠和挂起</strong>是用来描述<strong>行为</strong>，而<strong>阻塞</strong>和等待用来描述<strong>状态</strong>。</p>
+</li>
+<li><p>阻塞和等待的区别在于，阻塞是被动的，它是在等待获取一个排它锁。而等待是主动的，通过调用 Thread.sleep() 和 Object.wait() 等方法进入。</p>
+<table>
+<thead>
+<tr>
+<th>进入方法</th>
+<th>退出方法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Thread.sleep() 方法</td>
+<td>时间结束</td>
+</tr>
+<tr>
+<td>设置了 Timeout 参数的 Object.wait() 方法</td>
+<td>时间结束 / Object.notify() / Object.notifyAll()</td>
+</tr>
+<tr>
+<td>设置了 Timeout 参数的 Thread.join() 方法</td>
+<td>时间结束 / 被调用的线程执行完毕</td>
+</tr>
+<tr>
+<td>LockSupport.parkNanos() 方法</td>
+<td>-</td>
+</tr>
+<tr>
+<td>LockSupport.parkUntil() 方法</td>
+<td>-</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+</li>
+<li><h4 id="阻塞（Blocking）"><a href="#阻塞（Blocking）" class="headerlink" title="阻塞（Blocking）"></a>阻塞（Blocking）</h4><ul>
+<li>这个状态下，是在多个线程有同步操作的场景，比如正在等待另一个线程的 synchronized 块的执行释放，或者可重入的 synchronized 块里别人调用 wait() 方法，也就是线程在等待进入临界区。</li>
+<li>阻塞可以分为：等待阻塞，同步阻塞，其他阻塞</li>
+</ul>
+</li>
+<li><h4 id="死亡（Terminated）"><a href="#死亡（Terminated）" class="headerlink" title="死亡（Terminated）"></a>死亡（Terminated）</h4><ul>
+<li>线程因为 run 方法正常退出而自然死亡。</li>
+<li>因为一个没有捕获的异常终止了 run 方法而意外死亡。</li>
 </ul>
 </li>
 </ul>
 <p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/%E5%A4%9A%E7%BA%BF%E7%A8%8B/%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%8A%B6%E6%80%81.svg" alt="线程的状态"></p>
-<h3 id="创建状态"><a href="#创建状态" class="headerlink" title="创建状态"></a>创建状态</h3><ul>
-<li>当用new操作创建一个新的线程对象的时候，该线程处于创建状态。</li>
-<li>处于创建状态的线程只是一个空洞线程对象，系统不为它分配资源。</li>
-</ul>
-<h3 id="可运行状态"><a href="#可运行状态" class="headerlink" title="可运行状态"></a>可运行状态</h3><ul>
-<li>执行线程的start()方法将为线程分配必须的系统资源，安排其运行。并调用线程体run()方法。这样就使得该线程处于可运行（Runnable）状态。</li>
-<li>这一状态并不是运行中状态（Runnable），因为线程也许实际上并未真正运行。</li>
-</ul>
-<h3 id="运行状态"><a href="#运行状态" class="headerlink" title="运行状态"></a>运行状态</h3><ul>
-<li>如果就绪的状态线程获取cpu资源，就可以run，此时线程便是运行状态，处于运行状态的线程可以变为阻塞状态、就绪状态、和死亡状态。</li>
-</ul>
-<h3 id="不可运行状态"><a href="#不可运行状态" class="headerlink" title="不可运行状态"></a>不可运行状态</h3><ul>
-<li><p>当发生以下事件时，处于运行状态的线程进入到不可运行的状态。</p>
-<ul>
-<li><p>调用线程类sleep（）方法。</p>
-<ul>
-<li><pre><code class="java">    /**
-     * Causes the currently executing thread to sleep (temporarily cease
-     * execution) for the specified number of milliseconds, subject to
-     * the precision and accuracy of system timers and schedulers. The thread
-     * does not lose ownership of any monitors.
-     *
-     * @param  millis
-     *         the length of time to sleep in milliseconds 睡眠的时间,以毫秒为单位
-     *
-     * @throws  IllegalArgumentException
-     *          if the value of {@code millis} is negative 如果millis是负数
-     *
-     * @throws  InterruptedException
-     *          if any thread has interrupted the current thread. The
-     *          &lt;i&gt;interrupted status&lt;/i&gt; of the current thread is
-     *          cleared when this exception is thrown.
-     */
-    public static native void sleep(long millis) throws InterruptedException;</code></pre>
-</li>
-</ul>
-</li>
-<li><p>线程调用wait方法等待特定条件的满足。</p>
-</li>
-<li><p>线程输入/线程阻塞。</p>
-</li>
-<li><p>返回可运行状态</p>
-<ul>
-<li>处于睡眠的线程在指定时间后</li>
-<li>如果线程在等待某一个条件，另一个对象必须通过notify()或则notifyAll()方法通知等待线程条件的改变。</li>
-<li>如果线程是因为输入/阻塞，等待输入/输出完成。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="消亡状态"><a href="#消亡状态" class="headerlink" title="消亡状态"></a>消亡状态</h3><ul>
-<li>当线程的run方法执行完成之后，该线程就自然消亡了。</li>
-</ul>
 <h2 id="6-线程优先级"><a href="#6-线程优先级" class="headerlink" title="6.线程优先级"></a>6.线程优先级</h2><ul>
 <li><p>设置优先级是为了在多线程环境中便于系统对线程调度，优先级高的线程将优先执行。</p>
 <ul>
@@ -440,7 +464,72 @@
 </ul>
 </li>
 </ul>
-<h2 id="8、volatile关键字"><a href="#8、volatile关键字" class="headerlink" title="8、volatile关键字"></a>8、volatile关键字</h2>
+<h2 id="8、volatile关键字"><a href="#8、volatile关键字" class="headerlink" title="8、volatile关键字"></a>8、volatile关键字</h2><blockquote>
+<p><strong>volatile</strong> 关键字的主要作⽤就是保证变量的可⻅性然后还有⼀个作⽤是防⽌指令重排序。</p>
+</blockquote>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/volatile%E5%86%85%E5%AD%98.png"></p>
+<ul>
+<li><p>并发编程的三个重要特性</p>
+<ul>
+<li><p>原⼦性 : ⼀个的操作或者多次操作，要么所有的操作全部都得到执⾏并且不会收到任何因素的</p>
+<p>⼲扰⽽中断，要么所有的操作都执⾏，要么都不执⾏。 synchronized 可以保证代码⽚段的原</p>
+<p>⼦性。</p>
+</li>
+<li><p>可⻅性 ：当⼀个变量对共享变量进⾏了修改，那么另外的线程都是⽴即可以看到修改后的最新</p>
+<p>值。 volatile 关键字可以保证共享变量的可⻅性。</p>
+</li>
+<li><p>有序性 ：代码在执⾏的过程中的先后顺序，Java 在编译器以及运⾏期间的优化，代码的执⾏顺</p>
+<p>序未必就是编写代码时候的顺序。 volatile 关键字可以禁⽌指令进⾏重排序优化。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h3><ul>
+<li><p>读写锁</p>
+<ul>
+<li>如果需要实现一个读写锁，每次只能一个线程去写数据，但是有多个线程来读数据，就synchronize同步锁来对set方法加锁，get方法不加锁， 使用volatile来修饰变量，保证内存可见性，不然多个线程可能会在变量修改后还读到一个旧值。</li>
+</ul>
+</li>
+<li><p>状态位</p>
+<ul>
+<li><p>用于做状态位标志，如果多个线程去需要根据一个状态位来执行一些操作，使用volatile修饰可以保证内存可见性。</p>
+<p>用于单例模式用于保证内存可见性，以及防止指令重排序。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="9、Java实现多线程的方式"><a href="#9、Java实现多线程的方式" class="headerlink" title="9、Java实现多线程的方式"></a>9、Java实现多线程的方式</h2><p>有三种使用线程的方法：</p>
+<ul>
+<li>实现 Runnable 接口；</li>
+<li>实现 Callable 接口；</li>
+<li>继承 Thread 类。</li>
+</ul>
+<p>实现 Runnable 和 Callable 接口的类只能当做一个可以在线程中运行的任务，不是真正意义上的线程，因此最后还需要通过 Thread 来调用。可以说任务是通过线程驱动从而执行的。</p>
+<h3 id="实现-Runnable-接口"><a href="#实现-Runnable-接口" class="headerlink" title="实现 Runnable 接口"></a>实现 Runnable 接口</h3><p>需要实现 run() 方法。</p>
+<p>通过 Thread 调用 start() 方法来启动线程。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class MyRunnable implements Runnable &#123;</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        &#x2F;&#x2F; ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    MyRunnable instance &#x3D; new MyRunnable();</span><br><span class="line">    Thread thread &#x3D; new Thread(instance);</span><br><span class="line">    thread.start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="实现-Callable-接口"><a href="#实现-Callable-接口" class="headerlink" title="实现 Callable 接口"></a>实现 Callable 接口</h3><p>与 Runnable 相比，Callable 可以有返回值，返回值通过 FutureTask 进行封装。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public class MyCallable implements Callable&lt;Integer&gt; &#123;</span><br><span class="line">    public Integer call() &#123;</span><br><span class="line">        return 123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">public static void main(String[] args) throws ExecutionException, InterruptedException &#123;</span><br><span class="line">    MyCallable mc &#x3D; new MyCallable();</span><br><span class="line">    FutureTask&lt;Integer&gt; ft &#x3D; new FutureTask&lt;&gt;(mc);</span><br><span class="line">    Thread thread &#x3D; new Thread(ft);</span><br><span class="line">    thread.start();</span><br><span class="line">    System.out.println(ft.get());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="继承-Thread-类"><a href="#继承-Thread-类" class="headerlink" title="继承 Thread 类"></a>继承 Thread 类</h3><p>同样也是需要实现 run() 方法，因为 Thread 类也实现了 Runable 接口。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public class MyThread extends Thread &#123;</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        &#x2F;&#x2F; ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    MyThread mt &#x3D; new MyThread();</span><br><span class="line">    mt.start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="实现接口-VS-继承-Thread"><a href="#实现接口-VS-继承-Thread" class="headerlink" title="实现接口 VS 继承 Thread"></a>实现接口 VS 继承 Thread</h3><p>实现接口会更好一些，因为：</p>
+<ul>
+<li>Java 不支持多重继承，因此继承了 Thread 类就无法继承其它类，但是可以实现多个接口；</li>
+<li>类可能只要求可执行就行，继承整个 Thread 类开销过大。</li>
+</ul>
+<h3 id="三种方式的区别"><a href="#三种方式的区别" class="headerlink" title="三种方式的区别"></a>三种方式的区别</h3><ul>
+<li><p>实现 Runnable 接口可以避免 Java 单继承特性而带来的局限；增强程序的健壮性，代码能够被多个线程共享，代码与数据是独立的；适合多个相同程序代码的线程区处理同一资源的情况。</p>
+</li>
+<li><p>继承 Thread 类和实现 Runnable 方法启动线程都是使用 start() 方法，然后 JVM 虚拟机将此线程放到就绪队列中，如果有处理机可用，则执行 run() 方法。</p>
+</li>
+<li><p>实现 Callable 接口要实现 call() 方法，并且线程执行完毕后会有返回值。其他的两种都是重写 run() 方法，没有返回值。</p>
+</li>
+<li></li>
+</ul>
+
     </div>
 
     
@@ -541,7 +630,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-什么是进程"><span class="nav-number">1.</span> <span class="nav-text">1.什么是进程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-什么是线程"><span class="nav-number">2.</span> <span class="nav-text">2.什么是线程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-多线程编程的目的"><span class="nav-number">3.</span> <span class="nav-text">3.多线程编程的目的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-多线程概念介绍"><span class="nav-number">4.</span> <span class="nav-text">4.多线程概念介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-线程的生命周期"><span class="nav-number">5.</span> <span class="nav-text">5.线程的生命周期</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#线程的生命周期"><span class="nav-number">5.1.</span> <span class="nav-text">线程的生命周期</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建状态"><span class="nav-number">5.2.</span> <span class="nav-text">创建状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#可运行状态"><span class="nav-number">5.3.</span> <span class="nav-text">可运行状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行状态"><span class="nav-number">5.4.</span> <span class="nav-text">运行状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#不可运行状态"><span class="nav-number">5.5.</span> <span class="nav-text">不可运行状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#消亡状态"><span class="nav-number">5.6.</span> <span class="nav-text">消亡状态</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-线程优先级"><span class="nav-number">6.</span> <span class="nav-text">6.线程优先级</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-线程的同步"><span class="nav-number">7.</span> <span class="nav-text">7.线程的同步</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8、volatile关键字"><span class="nav-number">8.</span> <span class="nav-text">8、volatile关键字</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-什么是进程"><span class="nav-number">1.</span> <span class="nav-text">1.什么是进程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-什么是线程"><span class="nav-number">2.</span> <span class="nav-text">2.什么是线程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-多线程编程的目的"><span class="nav-number">3.</span> <span class="nav-text">3.多线程编程的目的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-多线程概念介绍"><span class="nav-number">4.</span> <span class="nav-text">4.多线程概念介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-线程的生命周期"><span class="nav-number">5.</span> <span class="nav-text">5.线程的生命周期</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#新建（New）"><span class="nav-number">5.0.1.</span> <span class="nav-text">新建（New）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#可运行（Runnable）"><span class="nav-number">5.0.2.</span> <span class="nav-text">可运行（Runnable）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#无限期等待（Waiting）"><span class="nav-number">5.0.3.</span> <span class="nav-text">无限期等待（Waiting）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#限期等待（Timed-Waiting）"><span class="nav-number">5.0.4.</span> <span class="nav-text">限期等待（Timed Waiting）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#阻塞（Blocking）"><span class="nav-number">5.0.5.</span> <span class="nav-text">阻塞（Blocking）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#死亡（Terminated）"><span class="nav-number">5.0.6.</span> <span class="nav-text">死亡（Terminated）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-线程优先级"><span class="nav-number">6.</span> <span class="nav-text">6.线程优先级</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-线程的同步"><span class="nav-number">7.</span> <span class="nav-text">7.线程的同步</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8、volatile关键字"><span class="nav-number">8.</span> <span class="nav-text">8、volatile关键字</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用场景"><span class="nav-number">8.1.</span> <span class="nav-text">使用场景</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9、Java实现多线程的方式"><span class="nav-number">9.</span> <span class="nav-text">9、Java实现多线程的方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#实现-Runnable-接口"><span class="nav-number">9.1.</span> <span class="nav-text">实现 Runnable 接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实现-Callable-接口"><span class="nav-number">9.2.</span> <span class="nav-text">实现 Callable 接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#继承-Thread-类"><span class="nav-number">9.3.</span> <span class="nav-text">继承 Thread 类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实现接口-VS-继承-Thread"><span class="nav-number">9.4.</span> <span class="nav-text">实现接口 VS 继承 Thread</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三种方式的区别"><span class="nav-number">9.5.</span> <span class="nav-text">三种方式的区别</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 

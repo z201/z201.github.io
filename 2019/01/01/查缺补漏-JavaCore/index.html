@@ -28,7 +28,7 @@
 <meta property="og:description" content="本章是整理知识内容，为强化知识长期更新。  什么是面向对象？ 面向对象是一个思想，时间万物皆可以被看做一个对象。  介绍下 Java 基本数据类型 Java中存在8个原生数据类型，同时又分成四种：整形、浮点型、char、Boolean。它们之间存在自动类型转换，规则是从小到大。并且都存在自动装箱拆箱特性，但是这种操作是隐式操作而且在某些情况会导致CG压力增大。     类型 存储需求 取值范围">
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/String%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%B8%B8%E9%87%8F%E6%B1%A0.png">
 <meta property="article:published_time" content="2018-12-31T16:00:01.000Z">
-<meta property="article:modified_time" content="2020-07-29T18:34:54.205Z">
+<meta property="article:modified_time" content="2020-07-30T17:34:53.117Z">
 <meta property="article:author" content="小峰同学">
 <meta property="article:tag" content="Java">
 <meta name="twitter:card" content="summary">
@@ -249,7 +249,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-07-30 02:34:54" itemprop="dateModified" datetime="2020-07-30T02:34:54+08:00">2020-07-30</time>
+                <time title="Modified: 2020-07-31 01:34:53" itemprop="dateModified" datetime="2020-07-31T01:34:53+08:00">2020-07-31</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -462,27 +462,22 @@ Collection&lt;Integer&gt; cc = new ArrayList&lt;Integer&gt;(); //这样才行。
 </li>
 </ul>
 <h3 id="i-和-i有什么区别"><a href="#i-和-i有什么区别" class="headerlink" title="i++和++i有什么区别"></a>i++和++i有什么区别</h3><ul>
-<li><p>i++ 是在程序执行完毕后进行自增，而 ++i 是在程序开始执行前进行自增。</p>
-<ul>
-<li><p><strong>i++ 的操作分三步</strong></p>
-<ul>
+<li>i++ 是在程序执行完毕后进行自增，而 ++i 是在程序开始执行前进行自增。<ul>
+<li><strong>i++ 的操作分三步</strong><ul>
 <li>栈中取出 i</li>
 <li>i 自增 1</li>
 <li>将 i 存到栈</li>
+<li>三个阶段：内存到寄存器，寄存器自增，写回内存（这三个阶段中间都可以被中断分离开）</li>
+<li>所以 i++ 不是原子操作，上面的三个步骤中任何一个步骤同时操作，都可能导致 i 的值不正确自增。</li>
 </ul>
 </li>
-<li><p>三个阶段：内存到寄存器，寄存器自增，写回内存（这三个阶段中间都可以被中断分离开）</p>
-</li>
-<li><p>所以 i++ 不是原子操作，上面的三个步骤中任何一个步骤同时操作，都可能导致 i 的值不正确自增。</p>
-</li>
-</ul>
-</li>
-<li><p><strong>++i</strong></p>
-<ul>
+<li><strong>++i</strong><ul>
 <li>在多核的机器上，CPU 在读取内存 i 时也会可能发生同时读取到同一值，这就导致两次自增，实际只增加了一次。</li>
-<li>i++ 和 ++i 都不是原子操作</li>
+<li>i++ 和 ++i 都不是原子操作。</li>
 </ul>
-<p><strong>原子性</strong>：指的是一个操作是不可中断的。即使是在多个线程一起执行的时候，一个操作一旦开始，就不会被其他线程打断。</p>
+</li>
+<li><strong>原子性</strong>：指的是一个操作是不可中断的。即使是在多个线程一起执行的时候，一个操作一旦开始，就不会被其他线程打断。</li>
+</ul>
 </li>
 </ul>
 <h3 id="为什么要重写equals和hashcode方法"><a href="#为什么要重写equals和hashcode方法" class="headerlink" title="为什么要重写equals和hashcode方法"></a>为什么要重写equals和hashcode方法</h3><ul>
@@ -758,23 +753,6 @@ Collection&lt;Integer&gt; cc = new ArrayList&lt;Integer&gt;(); //这样才行。
 </ul>
 </li>
 </ul>
-<h3 id="Sleep-和-wait的区别"><a href="#Sleep-和-wait的区别" class="headerlink" title="Sleep 和 wait的区别"></a>Sleep 和 wait的区别</h3><ul>
-<li>sleep是Thread的成员方法，睡眠时保持对象锁，仍然占有该锁。<ul>
-<li>sleep()使当前线程进入停滞状态（阻塞当前线程），让出CUP的使用、目的是不让当前线程独自霸占该进程所获的CPU资源，以留一定时间给其他线程执行的机会;<br>　　 sleep()是Thread类的Static(静态)的方法；因此他不能改变对象的机锁，所以当在一个Synchronized块中调用Sleep()方法是，线程虽然休眠了，但是对象的机锁并木有被释放，其他线程无法访问这个对象（即使睡着也持有对象锁）。<br>  　　在sleep()休眠时间期满后，该线程不一定会立即执行，这是因为其它线程可能正在运行而且没有被调度为放弃执行，除非此线程具有更高的优先级。 </li>
-</ul>
-</li>
-<li>wait是Object的成员方法睡眠时，释放对象锁。<ul>
-<li>wait()方法是Object类里的方法；当一个线程执行到wait()方法时，它就进入到一个和该对象相关的等待池中，同时失去（释放）了对象的机锁（暂时失去机锁，wait(long timeout)超时时间到后还需要返还对象锁）；其他线程可以访问；<br>　　wait()使用notify或者notifyAlll或者指定睡眠时间来唤醒当前等待池中的线程。<br>  　　wiat()必须放在synchronized block中，否则会在program runtime时扔出”java.lang.IllegalMonitorStateException“异常。</li>
-</ul>
-</li>
-</ul>
-<h3 id="notify与notifyAll的区别"><a href="#notify与notifyAll的区别" class="headerlink" title="notify与notifyAll的区别"></a>notify与notifyAll的区别</h3><blockquote>
-<p>尽量使用notifyAll。</p>
-</blockquote>
-<ul>
-<li>调用 notify() 方法导致解除阻塞的线程是从因调用该对象的 wait() 方法而阻塞的线程中随机选取的，我们无法预料哪一个线程将会被选择，所以编程时要特别小心，避免因这种不确定性而产生问题。</li>
-<li>notifyAll() 也可起到类似作用，唯一的区别在于，调用 notifyAll() 方法将把因调用该对象的 wait() 方法而阻塞的所有线程一次性全部解除阻塞。当然，只有获得锁的那一个线程才能进入可执行状态。</li>
-</ul>
 
     </div>
 
@@ -810,12 +788,12 @@ Collection&lt;Integer&gt; cc = new ArrayList&lt;Integer&gt;(); //这样才行。
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaJdbc/" rel="prev" title="查缺补漏-JavaJdbc">
-      <i class="fa fa-chevron-left"></i> 查缺补漏-JavaJdbc
+    <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Git/" rel="prev" title="查缺补漏-Git">
+      <i class="fa fa-chevron-left"></i> 查缺补漏-Git
     </a></div>
       <div class="post-nav-item">
-    <a href="/2019/02/07/2019-02-07-%E6%96%B0%E5%B9%B4%E7%AB%8Bflag/" rel="next" title="2019-02-07-新年立flag">
-      2019-02-07-新年立flag <i class="fa fa-chevron-right"></i>
+    <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-MySQL/" rel="next" title="查缺补漏-MySQL">
+      查缺补漏-MySQL <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -875,7 +853,7 @@ Collection&lt;Integer&gt; cc = new ArrayList&lt;Integer&gt;(); //这样才行。
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是面向对象？"><span class="nav-number">1.</span> <span class="nav-text">什么是面向对象？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#介绍下-Java-基本数据类型"><span class="nav-number">2.</span> <span class="nav-text">介绍下 Java 基本数据类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#和-equals"><span class="nav-number">3.</span> <span class="nav-text">&#x3D;&#x3D; 和 equals</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#i-和-i有什么区别"><span class="nav-number">4.</span> <span class="nav-text">i++和++i有什么区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么要重写equals和hashcode方法"><span class="nav-number">5.</span> <span class="nav-text">为什么要重写equals和hashcode方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#描述下final-与-finally、finalize的区别。"><span class="nav-number">6.</span> <span class="nav-text">描述下final 与 finally、finalize的区别。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#finally对应的try-catch语句流程"><span class="nav-number">7.</span> <span class="nav-text">finally对应的try catch语句流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#static-this-super-关键字总结"><span class="nav-number">8.</span> <span class="nav-text">static,this,super 关键字总结</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#static-关键字"><span class="nav-number">8.1.</span> <span class="nav-text">static 关键字</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#修饰成员变量和成员方法-常用"><span class="nav-number">8.1.1.</span> <span class="nav-text">修饰成员变量和成员方法(常用)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#静态代码块"><span class="nav-number">8.1.2.</span> <span class="nav-text">静态代码块</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#静态内部类"><span class="nav-number">8.1.3.</span> <span class="nav-text">静态内部类</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#静态导包"><span class="nav-number">8.1.4.</span> <span class="nav-text">静态导包</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#静态方法与非静态方法"><span class="nav-number">8.1.5.</span> <span class="nav-text">静态方法与非静态方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#static-静态代码块与-非静态代码块-构造代码块"><span class="nav-number">8.1.6.</span> <span class="nav-text">static{}静态代码块与{}非静态代码块(构造代码块)</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#this-关键字"><span class="nav-number">8.2.</span> <span class="nav-text">this 关键字</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#super-关键字"><span class="nav-number">8.3.</span> <span class="nav-text">super 关键字</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用-this-和-super-要注意的问题："><span class="nav-number">9.</span> <span class="nav-text">使用 this 和 super 要注意的问题：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java程序初始化的顺序是怎么样的"><span class="nav-number">10.</span> <span class="nav-text">Java程序初始化的顺序是怎么样的</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#介绍下异常类型"><span class="nav-number">11.</span> <span class="nav-text">介绍下异常类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#描述下异常处理方式"><span class="nav-number">12.</span> <span class="nav-text">描述下异常处理方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#throw-与-throws-的区别"><span class="nav-number">13.</span> <span class="nav-text">throw 与 throws 的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常见的几种异常"><span class="nav-number">14.</span> <span class="nav-text">常见的几种异常</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何正确的在一个循环中删除ArrayList中的元素。"><span class="nav-number">15.</span> <span class="nav-text">如何正确的在一个循环中删除ArrayList中的元素。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是-Java-序列化？"><span class="nav-number">16.</span> <span class="nav-text">什么是 Java 序列化？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#介绍Java-反射"><span class="nav-number">17.</span> <span class="nav-text">介绍Java 反射</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Sleep-和-wait的区别"><span class="nav-number">18.</span> <span class="nav-text">Sleep 和 wait的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#notify与notifyAll的区别"><span class="nav-number">19.</span> <span class="nav-text">notify与notifyAll的区别</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是面向对象？"><span class="nav-number">1.</span> <span class="nav-text">什么是面向对象？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#介绍下-Java-基本数据类型"><span class="nav-number">2.</span> <span class="nav-text">介绍下 Java 基本数据类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#和-equals"><span class="nav-number">3.</span> <span class="nav-text">&#x3D;&#x3D; 和 equals</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#i-和-i有什么区别"><span class="nav-number">4.</span> <span class="nav-text">i++和++i有什么区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么要重写equals和hashcode方法"><span class="nav-number">5.</span> <span class="nav-text">为什么要重写equals和hashcode方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#描述下final-与-finally、finalize的区别。"><span class="nav-number">6.</span> <span class="nav-text">描述下final 与 finally、finalize的区别。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#finally对应的try-catch语句流程"><span class="nav-number">7.</span> <span class="nav-text">finally对应的try catch语句流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#static-this-super-关键字总结"><span class="nav-number">8.</span> <span class="nav-text">static,this,super 关键字总结</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#static-关键字"><span class="nav-number">8.1.</span> <span class="nav-text">static 关键字</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#修饰成员变量和成员方法-常用"><span class="nav-number">8.1.1.</span> <span class="nav-text">修饰成员变量和成员方法(常用)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#静态代码块"><span class="nav-number">8.1.2.</span> <span class="nav-text">静态代码块</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#静态内部类"><span class="nav-number">8.1.3.</span> <span class="nav-text">静态内部类</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#静态导包"><span class="nav-number">8.1.4.</span> <span class="nav-text">静态导包</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#静态方法与非静态方法"><span class="nav-number">8.1.5.</span> <span class="nav-text">静态方法与非静态方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#static-静态代码块与-非静态代码块-构造代码块"><span class="nav-number">8.1.6.</span> <span class="nav-text">static{}静态代码块与{}非静态代码块(构造代码块)</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#this-关键字"><span class="nav-number">8.2.</span> <span class="nav-text">this 关键字</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#super-关键字"><span class="nav-number">8.3.</span> <span class="nav-text">super 关键字</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用-this-和-super-要注意的问题："><span class="nav-number">9.</span> <span class="nav-text">使用 this 和 super 要注意的问题：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java程序初始化的顺序是怎么样的"><span class="nav-number">10.</span> <span class="nav-text">Java程序初始化的顺序是怎么样的</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#介绍下异常类型"><span class="nav-number">11.</span> <span class="nav-text">介绍下异常类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#描述下异常处理方式"><span class="nav-number">12.</span> <span class="nav-text">描述下异常处理方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#throw-与-throws-的区别"><span class="nav-number">13.</span> <span class="nav-text">throw 与 throws 的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常见的几种异常"><span class="nav-number">14.</span> <span class="nav-text">常见的几种异常</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何正确的在一个循环中删除ArrayList中的元素。"><span class="nav-number">15.</span> <span class="nav-text">如何正确的在一个循环中删除ArrayList中的元素。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是-Java-序列化？"><span class="nav-number">16.</span> <span class="nav-text">什么是 Java 序列化？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#介绍Java-反射"><span class="nav-number">17.</span> <span class="nav-text">介绍Java 反射</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

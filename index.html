@@ -270,7 +270,7 @@
       
           <h2 id="关于本人"><a href="#关于本人" class="headerlink" title="关于本人"></a>关于本人</h2><ul>
 <li>15年自学几个月开始了码农之旅，目前坐标杭州。</li>
-<li>个人邮箱<a href="mailto:&#122;&#x32;&#48;&#x31;&#46;&#99;&#111;&#x64;&#105;&#x6e;&#x67;&#x40;&#x67;&#109;&#x61;&#105;&#108;&#x2e;&#x63;&#111;&#x6d;">&#122;&#x32;&#48;&#x31;&#46;&#99;&#111;&#x64;&#105;&#x6e;&#x67;&#x40;&#x67;&#109;&#x61;&#105;&#108;&#x2e;&#x63;&#111;&#x6d;</a></li>
+<li>个人邮箱<a href="mailto:&#122;&#x32;&#x30;&#x31;&#x2e;&#99;&#x6f;&#x64;&#105;&#110;&#103;&#x40;&#103;&#x6d;&#x61;&#105;&#x6c;&#46;&#99;&#111;&#x6d;">&#122;&#x32;&#x30;&#x31;&#x2e;&#99;&#x6f;&#x64;&#105;&#110;&#103;&#x40;&#103;&#x6d;&#x61;&#105;&#x6c;&#46;&#99;&#111;&#x6d;</a></li>
 </ul>
 <h2 id="关于博客"><a href="#关于博客" class="headerlink" title="关于博客"></a>关于博客</h2><ul>
 <li>博客建立只是为了监督个人学习，记录生活点滴，个人水平有限欢迎斧正。</li>
@@ -326,10 +326,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2020-07-30 00:41:13 / Modified: 15:16:55" itemprop="dateCreated datePublished" datetime="2020-07-30T00:41:13+08:00">2020-07-30</time>
+              <time title="Created: 2020-07-30 00:41:13" itemprop="dateCreated datePublished" datetime="2020-07-30T00:41:13+08:00">2020-07-30</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-07-31 01:35:30" itemprop="dateModified" datetime="2020-07-31T01:35:30+08:00">2020-07-31</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -400,6 +406,16 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">setPriority</span><span class="params">(<span class="keyword">int</span> newPriority)</span> </span>&#123;</span><br><span class="line">    ThreadGroup g;</span><br><span class="line">    checkAccess();</span><br><span class="line">    <span class="comment">// 先验证优先级的合理性</span></span><br><span class="line">    <span class="keyword">if</span> (newPriority &gt; MAX_PRIORITY || newPriority &lt; MIN_PRIORITY) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>((g = getThreadGroup()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">// 优先级如果超过线程组的最高优先级，则把优先级设置为线程组的最高优先级</span></span><br><span class="line">        <span class="keyword">if</span> (newPriority &gt; g.getMaxPriority()) &#123;</span><br><span class="line">            newPriority = g.getMaxPriority();</span><br><span class="line">        &#125;</span><br><span class="line">        setPriority0(priority = newPriority);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h3 id="5、sleep-和wait-的区别"><a href="#5、sleep-和wait-的区别" class="headerlink" title="5、sleep() 和wait()的区别"></a>5、sleep() 和wait()的区别</h3><ul>
+<li><p>sleep是Thread的成员方法，睡眠时保持对象锁，仍然占有该锁。</p>
+<ul>
+<li>sleep()使当前线程进入停滞状态（阻塞当前线程），让出CUP的使用、目的是不让当前线程独自霸占该进程所获的CPU资源，以留一定时间给其他线程执行的机会;<br>sleep()是Thread类的Static(静态)的方法；因此他不能改变对象的机锁，所以当在一个Synchronized块中调用Sleep()方法是，线程虽然休眠了，但是对象的机锁并木有被释放，其他线程无法访问这个对象（即使睡着也持有对象锁）。<br>  　　在sleep()休眠时间期满后，该线程不一定会立即执行，这是因为其它线程可能正在运行而且没有被调度为放弃执行，除非此线程具有更高的优先级。 </li>
+</ul>
+</li>
+<li><p>wait是Object的成员方法睡眠时，释放对象锁。</p>
+<ul>
+<li>wait()方法是Object类里的方法；当一个线程执行到wait()方法时，它就进入到一个和该对象相关的等待池中，同时失去（释放）了对象的机锁（暂时失去机锁，wait(long timeout)超时时间到后还需要返还对象锁）；其他线程可以访问；<br>wait()使用notify或者notifyAlll或者指定睡眠时间来唤醒当前等待池中的线程。<br>  　　wiat()必须放在synchronized block中，否则会在program runtime时扔出”java.lang.IllegalMonitorStateException“异常。</li>
+</ul>
+</li>
 <li><p>两者最主要的区别在于：<strong>sleep</strong> ⽅法没有释放锁，⽽ <strong>wait</strong> ⽅法释放了锁 。</p>
 </li>
 <li><p>wait 通常被⽤于线程间交互/通信，sleep 通常被⽤于暂停执⾏。</p>
@@ -419,6 +435,13 @@
 <p>总结： 调⽤ <strong>start</strong> ⽅法⽅可启动线程并使线程进⼊就绪状态，⽽ <strong>run</strong> ⽅法只是 <strong>thread</strong> 的⼀个普通</p>
 <p>⽅法调⽤，还是在主线程⾥执⾏。</p>
 </li>
+</ul>
+<h2 id="7、notify与notifyAll的区别"><a href="#7、notify与notifyAll的区别" class="headerlink" title="7、notify与notifyAll的区别"></a>7、notify与notifyAll的区别</h2><blockquote>
+<p>尽量使用notifyAll。</p>
+</blockquote>
+<ul>
+<li>调用 notify() 方法导致解除阻塞的线程是从因调用该对象的 wait() 方法而阻塞的线程中随机选取的，我们无法预料哪一个线程将会被选择，所以编程时要特别小心，避免因这种不确定性而产生问题。</li>
+<li>notifyAll() 也可起到类似作用，唯一的区别在于，调用 notifyAll() 方法将把因调用该对象的 wait() 方法而阻塞的所有线程一次性全部解除阻塞。当然，只有获得锁的那一个线程才能进入可执行状态。</li>
 </ul>
 
       
