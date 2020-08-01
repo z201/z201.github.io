@@ -219,6 +219,134 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/02/27/%E5%88%9D%E6%8E%A2Java%E5%A4%9A%E7%BA%BF%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/02/27/%E5%88%9D%E6%8E%A2Java%E5%A4%9A%E7%BA%BF%E7%A8%8B/" class="post-title-link" itemprop="url">初探Java多线程</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-02-27 12:34:08" itemprop="dateCreated datePublished" datetime="2019-02-27T12:34:08+08:00">2019-02-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-01 17:54:03" itemprop="dateModified" datetime="2020-08-01T17:54:03+08:00">2020-08-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA/" itemprop="url" rel="index"><span itemprop="name">基础理论</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>基础理论篇学习笔记</p>
+</blockquote>
+<h2 id="什么是进程"><a href="#什么是进程" class="headerlink" title="什么是进程"></a>什么是进程</h2><ul>
+<li><p>进程是程序运行和资源分配的基本单位，一个程序至少一个进程，一个进程至少一个线程。</p>
+</li>
+<li><p>多个进程的*<code>内部数据和状态是完全独立的</code>*，<code>而多个线程是共享一个内存空间和一组系统资源，有可能互相影响</code>。</p>
+</li>
+</ul>
+<hr>
+<h2 id="什么是线程"><a href="#什么是线程" class="headerlink" title="什么是线程"></a>什么是线程</h2><ul>
+<li>线程是程序内部的控制流，<code>只能使用分配给线程 的资源和环境</code>。</li>
+<li><code>线程本身的数据通常只有寄存器数据，以及一个程序执行时使用的堆栈</code>，所以线程的切换比进程切换负担要小。</li>
+<li>线程是进程的一个实体，是cpu调度和分派的基本单位，是比程序更小能独立运行的基本单位。</li>
+</ul>
+<hr>
+<h2 id="多线程编程的目的"><a href="#多线程编程的目的" class="headerlink" title="多线程编程的目的"></a>多线程编程的目的</h2><ul>
+<li>多线程编程的目的，就是 最大限度地利用CPU资源，当某一线程的处理不需要占用CPC而和I/O等资源打交道时，让需要占用CPU资源的其他线程有机会获得CPU资源，从根本上，这就是多线程编程的最终目的。</li>
+<li>线程(Thread)也是程序的最小单元，它依托进程而存在。</li>
+<li>多个线程可以共享一块内存空间和一组系统资源因此线程之前的切换更加节省资源、更加轻量化，也因此被称为轻量级的进程。</li>
+</ul>
+<h2 id="多线程概念介绍"><a href="#多线程概念介绍" class="headerlink" title="多线程概念介绍"></a>多线程概念介绍</h2><ul>
+<li>一个进程可以包含多个线程。</li>
+<li>一个程序实现多个代码同时交替运行就需要产生多个线程。</li>
+<li>CPU随机的抽出时间，让我们的程序一会做这件事情，一会做另外一件事情。</li>
+<li>同期其他大多数编程语言不同，Java内置支持多线程编程(multithreaded progranmming)。多线程程序包包含两个或两条以上并发运作的部分，吧程序中每个这种的部分都叫做一个线程（thread)，每个线程都独立的执行路经，因此多线程是多任务处理的一种特殊形式。</li>
+<li>多任务处理被所有的现代操作系统所支持。然后，多任务处理有两种截然不同的类型，基于进程和基于线程。<ul>
+<li>基于进程<ul>
+<li>基于进程的多任务处理是更熟悉的形式，进程（process）本质上是一个执行的程序。因此基于进程的多线程任务处理的特点是允许你的计算机同时运行两个或更多的程序。</li>
+</ul>
+</li>
+<li>基于线程<ul>
+<li>基于线程（thread-based)的多任务处理环境中，线程是最小的执行单位。这意味着一个程序可以执行两个或则多个任务的功能。</li>
+</ul>
+</li>
+<li>多线程程序比多进程程序需要更少的管理资源。<ul>
+<li>进程是重量级的任务，需要分配给他们的独立空间地址。进程之间通信是昂贵和受限的。进程之间的转换也是很需要花费的。另一方面，线程是轻量级的选手，它们共享相同的地址空间并且共享同一进程，线程之间通信是轻量级的，线程的转换也是轻量级的。</li>
+</ul>
+</li>
+<li>线程的实现<ul>
+<li>1.两种方法均需要执行线程start方法作为线程分配必须的系统资源、调度线程运行并执行线程的run方法。</li>
+<li>2.在具体应用中，采用哪种方法来构造线程体要试情况而定。通常，当一个线程继承了另一个类，应该应该使用第二种方法，即使实现runnable接口。</li>
+<li>3.线程的消亡不能通过调用一个Trread.stop方法，而是让线程自然消亡。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/02/27/%E5%88%9D%E6%8E%A2Java%E5%A4%9A%E7%BA%BF%E7%A8%8B/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/02/26/%E5%AE%9E%E8%B7%B5-mybatis+h2%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -494,7 +622,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-MySQL/">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCollecionsFramework/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -508,7 +636,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-MySQL/" class="post-title-link" itemprop="url">查缺补漏-MySQL</a>
+            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCollecionsFramework/" class="post-title-link" itemprop="url">查缺补漏-JavaCollecionsFramework</a>
         </h2>
 
         <div class="post-meta">
@@ -525,7 +653,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-05-06 09:27:59" itemprop="dateModified" datetime="2019-05-06T09:27:59+08:00">2019-05-06</time>
+                <time title="Modified: 2020-07-30 02:42:29" itemprop="dateModified" datetime="2020-07-30T02:42:29+08:00">2020-07-30</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -551,266 +679,28 @@
           <blockquote>
 <p>本章是整理知识内容，为强化知识长期更新。</p>
 </blockquote>
-<h3 id="说下mysql有几种数据库引擎"><a href="#说下mysql有几种数据库引擎" class="headerlink" title="说下mysql有几种数据库引擎"></a>说下mysql有几种数据库引擎</h3><blockquote>
-<p>不清楚，因为每个版本发布都会新增一些。但是我最熟悉是的innodb。</p>
-</blockquote>
-<h3 id="说下mysql-Master-slave-的原理"><a href="#说下mysql-Master-slave-的原理" class="headerlink" title="说下mysql Master slave 的原理"></a>说下mysql Master slave 的原理</h3><blockquote>
-<p><strong>主</strong>：binlog线程——记录下所有改变了数据库数据的语句，放进master上的binlog中；</p>
-<p><strong>从</strong>：io线程——在使用start slave 之后，负责从master上拉取 binlog 内容，放进 自己的relay log中；</p>
-<p><strong>从</strong>：sql执行线程——执行relay log中的语句；</p>
-</blockquote>
-<h3 id="MySQL中myisam与innodb的区别，至少5点"><a href="#MySQL中myisam与innodb的区别，至少5点" class="headerlink" title="MySQL中myisam与innodb的区别，至少5点"></a>MySQL中myisam与innodb的区别，至少5点</h3><h5 id="1-、问5点不同；"><a href="#1-、问5点不同；" class="headerlink" title="(1)、问5点不同；"></a>(1)、问5点不同；</h5><ul>
-<li>1&gt;.InnoDB支持事物，而MyISAM不支持事物</li>
-<li>2&gt;.InnoDB支持行级锁，而MyISAM支持表级锁</li>
-<li>3&gt;.InnoDB支持MVCC, 而MyISAM不支持</li>
-<li>4&gt;.InnoDB支持外键，而MyISAM不支持</li>
-<li>5&gt;.InnoDB不支持全文索引，而MyISAM支持。</li>
+<p><a href="https://z201.cn/2018/04/05/%E5%88%9D%E6%8E%A2Java-Collecions-Framework/" target="_blank" rel="noopener">初探Java-Collecions-Framework</a></p>
+<h3 id="介绍下Java-集合框架的基础接口"><a href="#介绍下Java-集合框架的基础接口" class="headerlink" title="介绍下Java 集合框架的基础接口"></a>介绍下Java 集合框架的基础接口</h3><h2 id="Collection"><a href="#Collection" class="headerlink" title="Collection"></a>Collection</h2><h3 id="1-Set"><a href="#1-Set" class="headerlink" title="1. Set"></a>1. Set</h3><ul>
+<li>TreeSet：基于红黑树实现，支持有序性操作，例如根据一个范围查找元素的操作。但是查找效率不如 HashSet，HashSet 查找的时间复杂度为 O(1)，TreeSet 则为 O(logN)。</li>
+<li>HashSet：基于哈希表实现，支持快速查找，但不支持有序性操作。并且失去了元素的插入顺序信息，也就是说使用 Iterator 遍历 HashSet 得到的结果是不确定的。</li>
+<li>LinkedHashSet：具有 HashSet 的查找效率，并且内部使用双向链表维护元素的插入顺序。</li>
 </ul>
-<h5 id="2-、innodb引擎的4大特性"><a href="#2-、innodb引擎的4大特性" class="headerlink" title="(2)、innodb引擎的4大特性"></a>(2)、innodb引擎的4大特性</h5><p>插入缓冲（insert buffer),二次写(double write),自适应哈希索引(ahi),预读(read ahead)</p>
-<h5 id="3-、2者SELECT-COUNT-哪个更快，为什么"><a href="#3-、2者SELECT-COUNT-哪个更快，为什么" class="headerlink" title="(3)、2者SELECT COUNT(*)哪个更快，为什么"></a>(3)、2者SELECT COUNT(*)哪个更快，为什么</h5><p>myisam更快，因为myisam内部维护了一个计数器，可以直接调取。</p>
-<h3 id="MySQL中varchar与char的区别以及varchar-50-中的50代表的涵义"><a href="#MySQL中varchar与char的区别以及varchar-50-中的50代表的涵义" class="headerlink" title="MySQL中varchar与char的区别以及varchar(50)中的50代表的涵义"></a>MySQL中varchar与char的区别以及varchar(50)中的50代表的涵义</h3><h5 id="1-、varchar与char的区别"><a href="#1-、varchar与char的区别" class="headerlink" title="(1)、varchar与char的区别"></a>(1)、varchar与char的区别</h5><p>char是一种固定长度的类型，varchar则是一种可变长度的类型</p>
-<h5 id="2-、varchar-50-中50的涵义"><a href="#2-、varchar-50-中50的涵义" class="headerlink" title="(2)、varchar(50)中50的涵义"></a>(2)、varchar(50)中50的涵义</h5><p>最多存放50个字符，varchar(50)和(200)存储hello所占空间一样，但后者在排序时会消耗更多内存，因为order by col采用fixed_length计算col长度(memory引擎也一样)</p>
-<h5 id="3-、int（20）中20的涵义"><a href="#3-、int（20）中20的涵义" class="headerlink" title="(3)、int（20）中20的涵义"></a>(3)、int（20）中20的涵义</h5><p>是指显示字符的长度</p>
-<p>但要加参数的，最大为255，比如它是记录行数的id,插入10笔资料，它就显示00000000001 <del>~</del>00000000010，当字符的位数超过11,它也只显示11位，如果你没有加那个让它未满11位就前面加0的参数，它不会在前面加0</p>
-<p>20表示最大显示宽度为20，但仍占4字节存储，存储范围不变。</p>
-<h5 id="4-、mysql为什么这么设计"><a href="#4-、mysql为什么这么设计" class="headerlink" title="(4)、mysql为什么这么设计"></a>(4)、mysql为什么这么设计</h5><p>对大多数应用没有意义，只是规定一些工具用来显示字符的个数；int(1)和int(20)存储和计算均一样。</p>
-<h3 id="问了innodb的事务与日志的实现方式"><a href="#问了innodb的事务与日志的实现方式" class="headerlink" title="问了innodb的事务与日志的实现方式"></a>问了innodb的事务与日志的实现方式</h3><h5 id="1-、有多少种日志；"><a href="#1-、有多少种日志；" class="headerlink" title="(1)、有多少种日志；"></a>(1)、有多少种日志；</h5><p><strong>错误日志</strong>：记录出错信息，也记录一些警告信息或者正确的信息。</p>
-<p><strong>查询日志</strong>：记录所有对数据库请求的信息，不论这些请求是否得到了正确的执行。</p>
-<p><strong>慢查询日志</strong>：设置一个阈值，将运行时间超过该值的所有SQL语句都记录到慢查询的日志文件中。</p>
-<p><strong>二进制日志</strong>：记录对数据库执行更改的所有操作。</p>
-<p><strong>中继日志</strong>：中继日志也是二进制日志，用来给slave 库恢复</p>
-<p><strong>事务日志</strong>：重做日志redo和回滚日志undo</p>
-<h5 id="2-、事物的4种隔离级别"><a href="#2-、事物的4种隔离级别" class="headerlink" title="(2)、事物的4种隔离级别"></a>(2)、事物的4种隔离级别</h5><p><strong>隔离级别</strong></p>
-<ul>
-<li>读未提交(RU)</li>
-<li>读已提交(RC)</li>
-<li>可重复读(RR)</li>
-<li>串行</li>
+<h3 id="2-List"><a href="#2-List" class="headerlink" title="2. List"></a>2. List</h3><ul>
+<li>ArrayList：基于动态数组实现，支持随机访问。</li>
+<li>Vector：和 ArrayList 类似，但它是线程安全的。</li>
+<li>LinkedList：基于双向链表实现，只能顺序访问，但是可以快速地在链表中间插入和删除元素。不仅如此，LinkedList 还可以用作栈、队列和双向队列。</li>
 </ul>
-<h5 id="3-、事务是如何通过日志来实现的，说得越深入越好。"><a href="#3-、事务是如何通过日志来实现的，说得越深入越好。" class="headerlink" title="(3)、事务是如何通过日志来实现的，说得越深入越好。"></a>(3)、事务是如何通过日志来实现的，说得越深入越好。</h5><p>事务日志是通过redo和innodb的存储引擎日志缓冲（Innodb log buffer）来实现的，当开始一个事务的时候，会记录该事务的lsn(log sequence number)号; 当事务执行时，会往InnoDB存储引擎的日志的日志缓存里面插入事务日志；当事务提交时，必须将存储引擎的日志缓冲写入磁盘（通过innodb_flush_log_at_trx_commit来控制），也就是写数据前，需要先写日志。这种方式称为“预写日志方式”。</p>
-<h3 id="MySQL-binlog的几种日志录入格式以及区别"><a href="#MySQL-binlog的几种日志录入格式以及区别" class="headerlink" title="MySQL binlog的几种日志录入格式以及区别"></a>MySQL binlog的几种日志录入格式以及区别</h3><p><strong>Statement</strong>：每一条会修改数据的sql都会记录在binlog中。</p>
-<p><strong>优点</strong>：不需要记录每一行的变化，减少了binlog日志量，节约了IO，提高性能。(相比row能节约多少性能 与日志量，这个取决于应用的SQL情况，正常同一条记录修改或者插入row格式所产生的日志量还小于Statement产生的日志量，但是考虑到如果带条 件的update操作，以及整表删除，alter表等操作，ROW格式会产生大量日志，因此在考虑是否使用ROW格式日志时应该跟据应用的实际情况，其所 产生的日志量会增加多少，以及带来的IO性能问题。)</p>
-<p><strong>缺点</strong>：由于记录的只是执行语句，为了这些语句能在slave上正确运行，因此还必须记录每条语句在执行的时候的 一些相关信息，以保证所有语句能在slave得到和在master端执行时候相同 的结果。另外mysql 的复制,像一些特定函数功能，slave可与master上要保持一致会有很多相关问题(如sleep()函数， last_insert_id()，以及user-defined functions(udf)会出现问题).</p>
-<p><strong>使用以下函数的语句也无法被复制</strong>：</p>
-<ul>
-<li>LOAD_FILE()</li>
-<li>UUID()</li>
-<li>USER()</li>
-<li>FOUND_ROWS()</li>
-<li>SYSDATE() (除非启动时启用了 –sysdate-is-now 选项)</li>
+<h3 id="3-Queue"><a href="#3-Queue" class="headerlink" title="3. Queue"></a>3. Queue</h3><ul>
+<li>LinkedList：可以用它来实现双向队列。</li>
+<li>PriorityQueue：基于堆结构实现，可以用它来实现优先队列。</li>
 </ul>
-<p>同时在INSERT …SELECT 会产生比 RBR 更多的行级锁</p>
-<p><strong>Row</strong>:不记录sql语句上下文相关信息，仅保存哪条记录被修改。</p>
-<p><strong>优点</strong>： binlog中可以不记录执行的sql语句的上下文相关的信息，仅需要记录那一条记录被修改成什么了。所以rowlevel的日志内容会非常清楚的记录下 每一行数据修改的细节。而且不会出现某些特定情况下的存储过程，或function，以及trigger的调用和触发无法被正确复制的问题</p>
-<p><strong>缺点</strong>:所有的执行的语句当记录到日志中的时候，都将以每行记录的修改来记录，这样可能会产生大量的日志内容,比 如一条update语句，修改多条记录，则binlog中每一条修改都会有记录，这样造成binlog日志量会很大，特别是当执行alter table之类的语句的时候，由于表结构修改，每条记录都发生改变，那么该表每一条记录都会记录到日志中。</p>
-<p><strong>Mixedlevel</strong>: 是以上两种level的混合使用，一般的语句修改使用statment格式保存binlog，如一些函数，statement无法完成主从复制的操作，则 采用row格式保存binlog,MySQL会根据执行的每一条具体的sql语句来区分对待记录的日志形式，也就是在Statement和Row之间选择 一种.新版本的MySQL中队row level模式也被做了优化，并不是所有的修改都会以row level来记录，像遇到表结构变更的时候就会以statement模式来记录。至于update或者delete等修改数据的语句，还是会记录所有行的变更。</p>
-<h3 id="MySQL数据库cpu飙升到500-的话他怎么处理？"><a href="#MySQL数据库cpu飙升到500-的话他怎么处理？" class="headerlink" title="MySQL数据库cpu飙升到500%的话他怎么处理？"></a>MySQL数据库cpu飙升到500%的话他怎么处理？</h3><ul>
-<li>1、列出所有进程 show processlist,观察所有进程 ,多秒没有状态变化的(干掉)</li>
-<li>2、查看超时日志或者错误日志 (做了几年开发,一般会是查询以及大批量的插入会导致cpu与i/o上涨,当然不排除网络状态突然断了,导致一个请求服务器只接受到一半，比如where子句或分页子句没有发送,,当然的一次被坑经历)。</li>
+<h2 id="Map"><a href="#Map" class="headerlink" title="Map"></a>Map</h2><ul>
+<li>TreeMap：基于红黑树实现。</li>
+<li>HashMap：基于哈希表实现。</li>
+<li>HashTable：和 HashMap 类似，但它是线程安全的，这意味着同一时刻多个线程同时写入 HashTable 不会导致数据不一致。它是遗留类，不应该去使用它，而是使用 ConcurrentHashMap 来支持线程安全，ConcurrentHashMap 的效率会更高，因为 ConcurrentHashMap 引入了分段锁。</li>
+<li>LinkedHashMap：使用双向链表来维护元素的顺序，顺序为插入顺序或者最近最少使用（LRU）顺序。</li>
 </ul>
-<h3 id="sql优化各种方法"><a href="#sql优化各种方法" class="headerlink" title="sql优化各种方法"></a>sql优化各种方法</h3><h5 id="1-、explain出来的各种item的意义；"><a href="#1-、explain出来的各种item的意义；" class="headerlink" title="(1)、explain出来的各种item的意义；"></a>(1)、explain出来的各种item的意义；</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select_type</span><br></pre></td></tr></table></figure>
-
-<p>表示查询中每个select子句的类型</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">type</span><br></pre></td></tr></table></figure>
-
-<p>表示MySQL在表中找到所需行的方式，又称“访问类型”</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">possible_keys</span><br></pre></td></tr></table></figure>
-
-<p>指出MySQL能使用哪个索引在表中找到行，查询涉及到的字段上若存在索引，则该索引将被列出，但不一定被查询使用</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">key</span><br></pre></td></tr></table></figure>
-
-<p>显示MySQL在查询中实际使用的索引，若没有使用索引，显示为NULL</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">key_len</span><br></pre></td></tr></table></figure>
-
-<p>表示索引中使用的字节数，可通过该列计算查询中使用的索引的长度</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ref</span><br></pre></td></tr></table></figure>
-
-<p>表示上述表的连接匹配条件，即哪些列或常量被用于查找索引列上的值</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Extra</span><br></pre></td></tr></table></figure>
-
-<p>包含不适合在其他列中显示但十分重要的额外信息</p>
-<h5 id="2-、profile的意义以及使用场景；"><a href="#2-、profile的意义以及使用场景；" class="headerlink" title="(2)、profile的意义以及使用场景；"></a>(2)、profile的意义以及使用场景；</h5><p>查询到 SQL 会执行多少时间, 并看出 CPU/Memory 使用量, 执行过程中 Systemlock, Table lock 花多少时间等等。</p>
-<h3 id="备份计划，mysqldump以及xtranbackup的实现原理"><a href="#备份计划，mysqldump以及xtranbackup的实现原理" class="headerlink" title="备份计划，mysqldump以及xtranbackup的实现原理"></a>备份计划，mysqldump以及xtranbackup的实现原理</h3><h5 id="1-、备份计划；"><a href="#1-、备份计划；" class="headerlink" title="(1)、备份计划；"></a>(1)、备份计划；</h5><p>这里每个公司都不一样，您别说那种1小时1全备什么的就行</p>
-<h5 id="2-、备份恢复时间；"><a href="#2-、备份恢复时间；" class="headerlink" title="(2)、备份恢复时间；"></a>(2)、备份恢复时间；</h5><p>这里跟机器，尤其是硬盘的速率有关系，以下列举几个仅供参考</p>
-<p>20G的2分钟（mysqldump）</p>
-<p>80G的30分钟(mysqldump)</p>
-<p>111G的30分钟（mysqldump)</p>
-<p>288G的3小时（xtra)</p>
-<p>3T的4小时（xtra)</p>
-<p>逻辑导入时间一般是备份时间的5倍以上</p>
-<h5 id="3-、xtrabackup实现原理"><a href="#3-、xtrabackup实现原理" class="headerlink" title="(3)、xtrabackup实现原理"></a>(3)、xtrabackup实现原理</h5><p>在InnoDB内部会维护一个redo日志文件，我们也可以叫做事务日志文件。事务日志会存储每一个InnoDB表数据的记录修改。当InnoDB启动时，InnoDB会检查数据文件和事务日志，并执行两个步骤：它应用（前滚）已经提交的事务日志到数据文件，并将修改过但没有提交的数据进行回滚操作。</p>
-<h3 id="mysqldump中备份出来的sql，如果我想sql文件中，一行只有一个insert…-value-的话，怎么办？如果备份需要带上master的复制点信息怎么办？"><a href="#mysqldump中备份出来的sql，如果我想sql文件中，一行只有一个insert…-value-的话，怎么办？如果备份需要带上master的复制点信息怎么办？" class="headerlink" title="mysqldump中备份出来的sql，如果我想sql文件中，一行只有一个insert….value()的话，怎么办？如果备份需要带上master的复制点信息怎么办？"></a>mysqldump中备份出来的sql，如果我想sql文件中，一行只有一个insert….value()的话，怎么办？如果备份需要带上master的复制点信息怎么办？</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">--skip-extended-insert</span><br><span class="line"></span><br><span class="line">[root@helei-zhuanshu ~]# mysqldump -uroot -p helei --skip-extended-insert</span><br><span class="line"></span><br><span class="line">Enter password:</span><br><span class="line"></span><br><span class="line">KEY &#96;idx_c1&#96; (&#96;c1&#96;),</span><br><span class="line"></span><br><span class="line">KEY &#96;idx_c2&#96; (&#96;c2&#96;)</span><br><span class="line"></span><br><span class="line">) ENGINE&#x3D;InnoDB AUTO_INCREMENT&#x3D;51 DEFAULT CHARSET&#x3D;latin1;</span><br><span class="line"></span><br><span class="line">&#x2F;*!40101 SET character_set_client &#x3D; @saved_cs_client *&#x2F;;</span><br><span class="line"></span><br><span class="line">--</span><br><span class="line"></span><br><span class="line">-- Dumping data for table &#96;helei&#96;</span><br><span class="line"></span><br><span class="line">--</span><br><span class="line"></span><br><span class="line">LOCK TABLES &#96;helei&#96; WRITE;</span><br><span class="line"></span><br><span class="line">&#x2F;*!40000 ALTER TABLE &#96;helei&#96; DISABLE KEYS *&#x2F;;</span><br><span class="line"></span><br><span class="line">INSERT INTO &#96;helei&#96; VALUES (1,32,37,38,&#39;2016-10-18 06:19:24&#39;,&#39;susususususususususususu&#39;);</span><br><span class="line"></span><br><span class="line">INSERT INTO &#96;helei&#96; VALUES (2,37,46,21,&#39;2016-10-18 06:19:24&#39;,&#39;susususususu&#39;);</span><br><span class="line"></span><br><span class="line">INSERT INTO &#96;helei&#96; VALUES (3,21,5,14,&#39;2016-10-18 06:19:24&#39;,&#39;susu&#39;);</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="innodb的读写参数优化"><a href="#innodb的读写参数优化" class="headerlink" title="innodb的读写参数优化"></a>innodb的读写参数优化</h3><h5 id="1-、读取参数"><a href="#1-、读取参数" class="headerlink" title="(1)、读取参数"></a>(1)、读取参数</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">global buffer pool以及 <span class="built_in">local</span> buffer；</span><br></pre></td></tr></table></figure>
-
-<h5 id="2-、写入参数；"><a href="#2-、写入参数；" class="headerlink" title="(2)、写入参数；"></a>(2)、写入参数；</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">innodb_flush_log_at_trx_commit</span><br><span class="line"></span><br><span class="line">innodb_buffer_pool_size</span><br></pre></td></tr></table></figure>
-
-<h5 id="3-、与IO相关的参数；"><a href="#3-、与IO相关的参数；" class="headerlink" title="(3)、与IO相关的参数；"></a>(3)、与IO相关的参数；</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">innodb_write_io_threads = 8</span><br><span class="line"></span><br><span class="line">innodb_read_io_threads = 8</span><br><span class="line"></span><br><span class="line">innodb_thread_concurrency = 0</span><br></pre></td></tr></table></figure>
-
-<h5 id="4-、缓存参数以及缓存的适用场景。"><a href="#4-、缓存参数以及缓存的适用场景。" class="headerlink" title="(4)、缓存参数以及缓存的适用场景。"></a>(4)、缓存参数以及缓存的适用场景。</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">query cache/query_cache_type</span><br></pre></td></tr></table></figure>
-
-<p>并不是所有表都适合使用query cache。造成query cache失效的原因主要是相应的table发生了变更</p>
-<p><strong>第一个</strong>：读操作多的话看看比例，简单来说，如果是用户清单表，或者说是数据比例比较固定，比如说商品列表，是可以打开的，前提是这些库比较集中，数据库中的实务比较小。</p>
-<p><strong>第二个</strong>：我们“行骗”的时候，比如说我们竞标的时候压测，把query cache打开，还是能收到qps激增的效果，当然前提示前端的连接池什么的都配置一样。大部分情况下如果写入的居多，访问量并不多，那么就不要打开，例如社交网站的，10%的人产生内容，其余的90%都在消费，打开还是效果很好的，但是你如果是qq消息，或者聊天，那就很要命。</p>
-<p><strong>第三个</strong>：小网站或者没有高并发的无所谓，高并发下，会看到 很多 qcache 锁 等待，所以一般高并发下，不建议打开query cache。</p>
-<h3 id="你是否做过主从一致性校验，如果有，怎么做的，如果没有，你打算怎么做？"><a href="#你是否做过主从一致性校验，如果有，怎么做的，如果没有，你打算怎么做？" class="headerlink" title="你是否做过主从一致性校验，如果有，怎么做的，如果没有，你打算怎么做？"></a>你是否做过主从一致性校验，如果有，怎么做的，如果没有，你打算怎么做？</h3><p>主从一致性校验有多种工具 例如checksum、mysqldiff、pt-table-checksum等。</p>
-<h3 id="你们数据库是否支持emoji表情，如果不支持，如何操作？"><a href="#你们数据库是否支持emoji表情，如果不支持，如何操作？" class="headerlink" title="你们数据库是否支持emoji表情，如果不支持，如何操作？"></a>你们数据库是否支持emoji表情，如果不支持，如何操作？</h3><p>如果是utf8字符集的话，需要升级至utf8_mb4方可支持。</p>
-<h3 id="表中有大字段X-例如：text类型-，且字段X不会经常更新，以读为为主，请问"><a href="#表中有大字段X-例如：text类型-，且字段X不会经常更新，以读为为主，请问" class="headerlink" title="表中有大字段X(例如：text类型)，且字段X不会经常更新，以读为为主，请问"></a>表中有大字段X(例如：text类型)，且字段X不会经常更新，以读为为主，请问</h3><p>拆带来的问题：连接消耗 + 存储拆分空间；不拆可能带来的问题：查询性能；</p>
-<ul>
-<li>1、如果能容忍拆分带来的空间问题,拆的话最好和经常要查询的表的主键在物理结构上放置在一起(分区) 顺序IO,减少连接消耗,最后这是一个文本列再加上一个全文索引来尽量抵消连接消耗</li>
-<li>2、如果能容忍不拆分带来的查询性能损失的话:上面的方案在某个极致条件下肯定会出现问题,那么不拆就是最好的选择。</li>
-</ul>
-<h3 id="MySQL中InnoDB引擎的行锁是通过加在什么上完成-或称实现-的？为什么是这样子的？"><a href="#MySQL中InnoDB引擎的行锁是通过加在什么上完成-或称实现-的？为什么是这样子的？" class="headerlink" title="MySQL中InnoDB引擎的行锁是通过加在什么上完成(或称实现)的？为什么是这样子的？"></a>MySQL中InnoDB引擎的行锁是通过加在什么上完成(或称实现)的？为什么是这样子的？</h3><p>InnoDB是基于索引来完成行锁</p>
-<p>例: select * from tab_with_index where id = 1 for update;</p>
-<p>for update 可以根据条件来完成行锁锁定,并且 id 是有索引键的列,</p>
-<p>如果 id 不是索引键那么InnoDB将完成表锁,,并发将无从谈起</p>
-<h3 id="开放性问题"><a href="#开放性问题" class="headerlink" title="开放性问题"></a>开放性问题</h3><p>一个6亿的表a，一个3亿的表b，通过外间tid关联，你如何最快的查询出满足条件的第50000到第50200中的这200条数据记录。</p>
-<ul>
-<li>1、如果A表TID是自增长,并且是连续的,B表的ID为索引</li>
-</ul>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> a,b <span class="keyword">where</span> a.tid = b.id <span class="keyword">and</span> a.tid&gt;<span class="number">500000</span> <span class="keyword">limit</span> <span class="number">200</span>;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>2、如果A表的TID不是连续的,那么就需要使用覆盖索引.TID要么是主键,要么是辅助索引,B表ID也需要有索引。</li>
-</ul>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> b , (<span class="keyword">select</span> tid <span class="keyword">from</span> a <span class="keyword">limit</span> <span class="number">50000</span>,<span class="number">200</span>) a <span class="keyword">where</span> b.id = a .tid;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="什么是存储过程？有哪些优缺点？"><a href="#什么是存储过程？有哪些优缺点？" class="headerlink" title="什么是存储过程？有哪些优缺点？"></a>什么是存储过程？有哪些优缺点？</h3><p>存储过程是一些预编译的SQL语句。</p>
-<ul>
-<li>1、更加直白的理解：存储过程可以说是一个记录集，它是由一些T-SQL语句组成的代码块，这些T-SQL语句代码像一个方法一样实现一些功能（对单表或多表的增删改查），然后再给这个代码块取一个名字，在用到这个功能的时候调用他就行了。</li>
-<li>2、存储过程是一个预编译的代码块，执行效率比较高,一个存储过程替代大量T_SQL语句 ，可以降低网络通信量，提高通信速率,可以一定程度上确保数据安全。</li>
-</ul>
-<h3 id="索引是什么？有什么作用以及优缺点？"><a href="#索引是什么？有什么作用以及优缺点？" class="headerlink" title="索引是什么？有什么作用以及优缺点？"></a>索引是什么？有什么作用以及优缺点？</h3><ul>
-<li>1、索引是对数据库表中一或多个列的值进行排序的结构，是帮助MySQL高效获取数据的数据结构</li>
-<li>2、索引就是加快检索表中数据的方法。数据库的索引类似于书籍的索引。在书籍中，索引允许用户不必翻阅完整个书就能迅速地找到所需要的信息。在数据库中，索引也允许数据库程序迅速地找到表中的数据，而不必扫描整个数据库。</li>
-</ul>
-<p>MySQL数据库几个基本的索引类型：普通索引、唯一索引、主键索引、全文索引</p>
-<ul>
-<li>1、索引加快数据库的检索速度。</li>
-<li>2、索引降低了插入、删除、修改等维护任务的速度。</li>
-<li>3、唯一索引可以确保每一行数据的唯一性。</li>
-<li>4、通过使用索引，可以在查询的过程中使用优化隐藏器，提高系统的性能。</li>
-<li>5、索引需要占物理和数据空间。</li>
-</ul>
-<h3 id="什么是事务？"><a href="#什么是事务？" class="headerlink" title="什么是事务？"></a>什么是事务？</h3><p>事务（Transaction）是并发控制的基本单位。所谓的事务，它是一个操作序列，这些操作要么都执行，要么都不执行，它是一个不可分割的工作单位。事务是数据库维护数据一致性的单位，在每个事务结束时，都能保持数据一致性。</p>
-<h3 id="使用索引查询一定能提高查询的性能吗？为什么"><a href="#使用索引查询一定能提高查询的性能吗？为什么" class="headerlink" title="使用索引查询一定能提高查询的性能吗？为什么"></a>使用索引查询一定能提高查询的性能吗？为什么</h3><p>通常,通过索引查询数据比全表扫描要快.但是我们也必须注意到它的代价.</p>
-<ul>
-<li>1、索引需要空间来存储,也需要定期维护, 每当有记录在表中增减或索引列被修改时,索引本身也会被修改. 这意味着每条记录的INSERT,DELETE,UPDATE将为此多付出4,5 次的磁盘I/O. 因为索引需要额外的存储空间和处理,那些不必要的索引反而会使查询反应时间变慢.使用索引查询不一定能提高查询性能,索引范围查询(INDEX RANGE SCAN)适用于两种情况:</li>
-<li>2、基于一个范围的检索,一般查询返回结果集小于表中记录数的30%</li>
-<li>3、基于非唯一性索引的检索</li>
-</ul>
-<h3 id="简单说一说drop、delete与truncate的区"><a href="#简单说一说drop、delete与truncate的区" class="headerlink" title="简单说一说drop、delete与truncate的区"></a>简单说一说drop、delete与truncate的区</h3><p>SQL中的drop、delete、truncate都表示删除，但是三者有一些差别</p>
-<ul>
-<li>1、delete和truncate只删除表的数据不删除表的结构</li>
-<li>2、速度,一般来说: drop&gt; truncate &gt;delete</li>
-<li>3、delete语句是dml,这个操作会放到rollback segement中,事务提交之后才生效;</li>
-<li>4、如果有相应的trigger,执行的时候将被触发. truncate,drop是ddl, 操作立即生效,原数据不放到rollback segment中,不能回滚. 操作不触发trigger。</li>
-</ul>
-<h3 id="drop、delete与truncate分别在什么场景之下使用？"><a href="#drop、delete与truncate分别在什么场景之下使用？" class="headerlink" title="drop、delete与truncate分别在什么场景之下使用？"></a>drop、delete与truncate分别在什么场景之下使用？</h3><ul>
-<li>1、不再需要一张表的时候，用drop</li>
-<li>2、想删除部分数据行时候，用delete，并且带上where子句</li>
-<li>3、保留表而删除所有数据的时候用truncate</li>
-</ul>
-<h3 id="超键、候选键、主键、外键分别是什么？"><a href="#超键、候选键、主键、外键分别是什么？" class="headerlink" title="超键、候选键、主键、外键分别是什么？"></a>超键、候选键、主键、外键分别是什么？</h3><ul>
-<li>1、超键：在关系中能唯一标识元组的属性集称为关系模式的超键。一个属性可以为作为一个超键，多个属性组合在一起也可以作为一个超键。超键包含候选键和主键。</li>
-<li>2、候选键：是最小超键，即没有冗余元素的超键。</li>
-<li>3、主键：数据库表中对储存数据对象予以唯一和完整标识的数据列或属性的组合。一个数据列只能有一个主键，且主键的取值不能缺失，即不能为空值（Null）。</li>
-<li>4、外键：在一个表中存在的另一个表的主键称此表的外键。</li>
-</ul>
-<h3 id="什么是视图？以及视图的使用场景有哪些？"><a href="#什么是视图？以及视图的使用场景有哪些？" class="headerlink" title="什么是视图？以及视图的使用场景有哪些？"></a>什么是视图？以及视图的使用场景有哪些？</h3><ul>
-<li>1、视图是一种虚拟的表，具有和物理表相同的功能。可以对视图进行增，改，查，操作，试图通常是有一个表或者多个表的行或列的子集。对视图的修改不影响基本表。它使得我们获取数据更容易，相比多表查询。</li>
-<li>2、只暴露部分字段给访问者，所以就建一个虚表，就是视图。</li>
-<li>3、查询的数据来源于不同的表，而查询者希望以统一的方式查询，这样也可以建立一个视图，把多个表查询结果联合起来，查询者只需要直接从视图中获取数据，不必考虑数据来源于不同表所带来的差异。</li>
-</ul>
-<h3 id="说一说数据库设计的三个范式。"><a href="#说一说数据库设计的三个范式。" class="headerlink" title="说一说数据库设计的三个范式。"></a>说一说数据库设计的三个范式。</h3><ul>
-<li>第一范式（1NF）：数据库表中的字段都是单一属性的，不可再分。这个单一属性由基本类型构成，包括整型、实数、字符型、逻辑型、日期型等。</li>
-<li>第二范式（2NF）：数据库表中不存在非关键字段对任一候选关键字段的部分函数依赖（部分函数依赖指的是存在组合关键字中的某些字段决定非关键字段的情况），也即所有非关键字段都完全依赖于任意一组候选关键字。</li>
-<li>第三范式（3NF）：在第二范式的基础上，数据表中如果不存在非关键字段对任一候选关键字段的传递函数依赖则符合第三范式。所谓传递函数依赖，指的是如 果存在”A → B → C”的决定关系，则C传递函数依赖于A。因此，满足第三范式的数据库表应该不存在如下依赖关系： 关键字段 → 非关键字段 x → 非关键字段y</li>
-</ul>
-<h3 id="数据库的乐观锁和悲观锁是什么？"><a href="#数据库的乐观锁和悲观锁是什么？" class="headerlink" title="数据库的乐观锁和悲观锁是什么？"></a>数据库的乐观锁和悲观锁是什么？</h3><p>数据库管理系统（DBMS）中的并发控制的任务是确保在多个事务同时存取数据库中同一数据时不破坏事务的隔离性和统一性以及数据库的统一性。乐观并发控制(乐观锁)和悲观并发控制（悲观锁）是并发控制主要采用的技术手段。</p>
-<p><strong>悲观锁</strong>：假定会发生并发冲突，屏蔽一切可能违反数据完整性的操作</p>
-<p><strong>乐观锁</strong>：假设不会发生并发冲突，只在提交操作时检查是否违反数据完整性。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Jvm/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Jvm/" class="post-title-link" itemprop="url">查缺补漏-Jvm</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-03-24 13:02:33" itemprop="dateModified" datetime="2019-03-24T13:02:33+08:00">2019-03-24</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index"><span itemprop="name">知识点</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-
+<h3 id=""><a href="#" class="headerlink" title=""></a></h3>
       
     </div>
 
@@ -895,7 +785,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">108</span>
+          <span class="site-state-item-count">109</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
