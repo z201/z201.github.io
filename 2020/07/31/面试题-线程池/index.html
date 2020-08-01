@@ -28,7 +28,7 @@
 <meta property="og:description" content="本章属于持续学习、长期更修。   初探Java多线程  面试题-多线程    为避免线程频繁创建和销毁带来的性能问题，而池化的一种方案。   利用线程池管理并复用线程、控制最大并发数等。  实现任务线程队列缓存策略和拒绝机制。  实现某些与时间相关的功能，如定时执行、周期执行等。  隔离线程环境。比如，交易服务和搜索服务在同一台服务器上，分别开启两个线程池，交易线程的资源消耗明显要大；因此，通过">
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%B8%BB%E8%A6%81%E6%B5%81%E7%A8%8B.png">
 <meta property="article:published_time" content="2020-07-30T18:12:50.000Z">
-<meta property="article:modified_time" content="2020-08-01T13:14:49.357Z">
+<meta property="article:modified_time" content="2020-08-01T16:09:11.842Z">
 <meta property="article:author" content="小峰同学">
 <meta property="article:tag" content="Java">
 <meta property="article:tag" content="Java多线程">
@@ -255,7 +255,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-01 21:14:49" itemprop="dateModified" datetime="2020-08-01T21:14:49+08:00">2020-08-01</time>
+                <time title="Modified: 2020-08-02 00:09:11" itemprop="dateModified" datetime="2020-08-02T00:09:11+08:00">2020-08-02</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -303,6 +303,12 @@
 <blockquote>
 <p>这里直接参考阿里巴巴的手册。线程池不允许使用 Executors 去创建，而是通过 ThreadPoolExecutor 的方式，这样的处理方式让写的读者更加明确线程池的运行规则，规避资源耗尽的风险。</p>
 </blockquote>
+<h3 id="常⽤线程池：ExecutorService-是主要的实现类"><a href="#常⽤线程池：ExecutorService-是主要的实现类" class="headerlink" title="常⽤线程池：ExecutorService 是主要的实现类"></a>常⽤线程池：ExecutorService 是主要的实现类</h3><ul>
+<li>Executors.newSingleT hreadPool()</li>
+<li>newFixedThreadPool()</li>
+<li>newcachedTheadPool()</li>
+<li>newScheduledThreadPool()</li>
+</ul>
 <h3 id="Executors-返回的线程池对象的弊端"><a href="#Executors-返回的线程池对象的弊端" class="headerlink" title="Executors 返回的线程池对象的弊端"></a>Executors 返回的线程池对象的弊端</h3><ul>
 <li>FixedThreadPool 和 SingleThreadPool：允许的请求队列长度为 Integer.MAX_VALUE，可能会堆积大量的请求，从而导致 OOM。</li>
 <li>CachedThreadPool 和 ScheduledThreadPool：允许的创建线程数量为 Integer.MAX_VALUE，可能会创建大量的线程，从而导致 OOM。</li>
@@ -311,19 +317,22 @@
 <h3 id="ThreadPoolExecutor的核心参数"><a href="#ThreadPoolExecutor的核心参数" class="headerlink" title="ThreadPoolExecutor的核心参数"></a>ThreadPoolExecutor的核心参数</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ThreadPoolExecutor</span><span class="params">(<span class="keyword">int</span> corePoolSize,</span></span></span><br><span class="line"><span class="function"><span class="params">                          <span class="keyword">int</span> maximumPoolSize,</span></span></span><br><span class="line"><span class="function"><span class="params">                          <span class="keyword">long</span> keepAliveTime,</span></span></span><br><span class="line"><span class="function"><span class="params">                          TimeUnit unit,</span></span></span><br><span class="line"><span class="function"><span class="params">                          BlockingQueue&lt;Runnable&gt; workQueue,</span></span></span><br><span class="line"><span class="function"><span class="params">                          ThreadFactory threadFactory,</span></span></span><br><span class="line"><span class="function"><span class="params">                          RejectedExecutionHandler handler)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (corePoolSize &lt; <span class="number">0</span> ||</span><br><span class="line">        <span class="comment">// maximumPoolSize 必须大于 0，且必须大于 corePoolSize</span></span><br><span class="line">        maximumPoolSize &lt;= <span class="number">0</span> ||</span><br><span class="line">        maximumPoolSize &lt; corePoolSize ||</span><br><span class="line">        keepAliveTime &lt; <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException();</span><br><span class="line">    <span class="keyword">if</span> (workQueue == <span class="keyword">null</span> || threadFactory == <span class="keyword">null</span> || handler == <span class="keyword">null</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br><span class="line">    <span class="keyword">this</span>.acc = System.getSecurityManager() == <span class="keyword">null</span> ?</span><br><span class="line">            <span class="keyword">null</span> :</span><br><span class="line">            AccessController.getContext();</span><br><span class="line">    <span class="keyword">this</span>.corePoolSize = corePoolSize;</span><br><span class="line">    <span class="keyword">this</span>.maximumPoolSize = maximumPoolSize;</span><br><span class="line">    <span class="keyword">this</span>.workQueue = workQueue;</span><br><span class="line">    <span class="keyword">this</span>.keepAliveTime = unit.toNanos(keepAliveTime);</span><br><span class="line">    <span class="keyword">this</span>.threadFactory = threadFactory;</span><br><span class="line">    <span class="keyword">this</span>.handler = handler;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <ul>
-<li><p>第 1 个参数：corePoolSize 表示线程池的常驻核心线程数。如果设置为 0，则表示在没有任何任务时，销毁线程池；如果大于 0，即使没有任务时也会保证线程池的线程数量等于此值。但需要注意，此值如果设置的比较小，则会频繁的创建和销毁线程（创建和销毁的原因会在本课时的下半部分讲到）；如果设置的比较大，则会浪费系统资源，所以开发者需要根据自己的实际业务来调整此值。</p>
+<li>第 1 个参数：corePoolSize 表示线程池的常驻核心线程数。如果设置为 0，则表示在没有任何任务时，销毁线程池；如果大于 0，即使没有任务时也会保证线程池的线程数量等于此值。但需要注意，此值如果设置的比较小，则会频繁的创建和销毁线程（创建和销毁的原因会在本课时的下半部分讲到）；如果设置的比较大，则会浪费系统资源，所以开发者需要根据自己的实际业务来调整此值。</li>
+<li>第 2 个参数：maximumPoolSize 表示线程池在任务最多时，最大可以创建的线程数。官方规定此值必须大于 0，也必须大于等于 corePoolSize，此值只有在任务比较多，且不能存放在任务队列时，才会用到。</li>
+<li>第 3 个参数：keepAliveTime 表示线程的存活时间，当线程池空闲时并且超过了此时间，多余的线程就会销毁，直到线程池中的线程数量销毁的等于 corePoolSize 为止，如果 maximumPoolSize 等于 corePoolSize，那么线程池在空闲的时候也不会销毁任何线程。</li>
+<li>第 4 个参数：unit 表示存活时间的单位，它是配合 keepAliveTime 参数共同使用的。</li>
+<li>第 5 个参数：workQueue 表示线程池执行的任务队列，当线程池的所有线程都在处理任务时，如果来了新任务就会缓存到此任务队列中排队等待执行。</li>
+<li>第 6 个参数：threadFactory 表示线程的创建工厂，此参数一般用的比较少，我们通常在创建线程池时不指定此参数，它会使用默认的线程创建工厂的方法来创建线程。</li>
+<li>第 7 个参数：RejectedExecutionHandler 表示指定线程池的拒绝策略，当线程池的任务已经在缓存队列 workQueue 中存储满了之后，并且不能创建新的线程来执行此任务时，就会用到此拒绝策略，它属于一种限流保护的机制。</li>
+<li>原理<ul>
+<li>如果当前池⼤⼩ poolSize ⼩于 corePoolSize，则创建新线程执⾏任务。</li>
+<li>如果当前池⼤⼩poolSize⼤于corePoolSize，且等待队列未满，则进⼊等待队列。</li>
+<li>如果当前池⼤⼩ poolSize ⼤于 corePoolSize 且⼩于 maximumPoolSize ，且等待队列已满，则创建新线程执⾏任务。</li>
+<li>如果当前池⼤⼩ poolSize ⼤于 corePoolSize 且⼤于 maximumPoolSize ，且等待队列已满，则调⽤拒绝策略来处理该任务。<ul>
+<li>线程池⾥的每个线程执⾏完任务后不会⽴刻退出，⽽是会去检查下等待队列⾥是否还有线程任务需要执⾏，如果在 keepAliveTime ⾥等不到新的任务了，那么线程就会退出。</li>
+</ul>
 </li>
-<li><p>第 2 个参数：maximumPoolSize 表示线程池在任务最多时，最大可以创建的线程数。官方规定此值必须大于 0，也必须大于等于 corePoolSize，此值只有在任务比较多，且不能存放在任务队列时，才会用到。</p>
-</li>
-<li><p>第 3 个参数：keepAliveTime 表示线程的存活时间，当线程池空闲时并且超过了此时间，多余的线程就会销毁，直到线程池中的线程数量销毁的等于 corePoolSize 为止，如果 maximumPoolSize 等于 corePoolSize，那么线程池在空闲的时候也不会销毁任何线程。</p>
-</li>
-<li><p>第 4 个参数：unit 表示存活时间的单位，它是配合 keepAliveTime 参数共同使用的。</p>
-</li>
-<li><p>第 5 个参数：workQueue 表示线程池执行的任务队列，当线程池的所有线程都在处理任务时，如果来了新任务就会缓存到此任务队列中排队等待执行。</p>
-</li>
-<li><p>第 6 个参数：threadFactory 表示线程的创建工厂，此参数一般用的比较少，我们通常在创建线程池时不指定此参数，它会使用默认的线程创建工厂的方法来创建线程。</p>
-</li>
-<li><p>第 7 个参数：RejectedExecutionHandler 表示指定线程池的拒绝策略，当线程池的任务已经在缓存队列 workQueue 中存储满了之后，并且不能创建新的线程来执行此任务时，就会用到此拒绝策略，它属于一种限流保护的机制。</p>
+</ul>
 </li>
 </ul>
 <a id="more"></a>
@@ -360,6 +369,22 @@
 
 <ul>
 <li>第 6 个任务来的时候，线程池则执行了 AbortPolicy  拒绝策略，抛出了异常。因为队列最多存储 2 个任务，最大可以创建 3 个线程来执行任务（2+3=5），所以当第 6 个任务来的时候，此线程池就“忙”不过来了。</li>
+</ul>
+<h3 id="如果你提交任务时，线程池队列已满。会时发会⽣什么？"><a href="#如果你提交任务时，线程池队列已满。会时发会⽣什么？" class="headerlink" title="如果你提交任务时，线程池队列已满。会时发会⽣什么？"></a>如果你提交任务时，线程池队列已满。会时发会⽣什么？</h3><ul>
+<li>⼀个任务不能被调度执⾏那么ThreadPoolExecutor’s submit()⽅法将会抛出⼀个RejectedExecutionException异常。</li>
+</ul>
+<h3 id="Java线程池中submit-和-execute-⽅法有什么区别？"><a href="#Java线程池中submit-和-execute-⽅法有什么区别？" class="headerlink" title="Java线程池中submit() 和 **execute()**⽅法有什么区别？"></a><strong>Java</strong>线程池中<strong>submit()</strong> 和 **execute()**⽅法有什么区别？</h3><ul>
+<li>两个⽅法都可以向线程池提交任务，execute()⽅法的返回类型是void，它定义在Executor接⼝中, ⽽submit()⽅法可以返回持有计算结果的Future对象，它定义在ExecutorService接⼝中，它扩展了Executor接⼝，其它线程池类像ThreadPoolExecutor和ScheduledThreadPoolExecutor都有这些⽅法。</li>
+</ul>
+<h3 id="如何合理的配置java线程池？"><a href="#如何合理的配置java线程池？" class="headerlink" title="如何合理的配置java线程池？"></a>如何合理的配置<strong>java</strong>线程池？</h3><ul>
+<li><p>如CPU密集型的任务，基本线程池应该配置多⼤？IO密集型的任务，基本线程池应该配置多⼤？⽤有界队列好还是⽆界队列好？任务⾮常多的时候，使⽤什么阻塞队列能获取最好的吞吐量？</p>
+<ul>
+<li>配置线程池时CPU密集型任务可以少配置线程数，⼤概和机器的cpu核数相当，可以使得每个线程都在执⾏任务</li>
+<li>IO密集型时，⼤部分线程都阻塞，故需要多配置线程数，2*cpu核数</li>
+<li>有界队列和⽆界队列的配置需区分业务场景，⼀般情况下配置有界队列，在⼀些可能会有爆发性增⻓的情况下使⽤⽆界队列。</li>
+<li>任务⾮常多时，使⽤⾮阻塞队列使⽤CAS操作替代锁可以获得好的吞吐量。</li>
+</ul>
+</li>
 </ul>
 
     </div>
@@ -462,7 +487,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Executors-返回的线程池对象的弊端"><span class="nav-number">1.</span> <span class="nav-text">Executors 返回的线程池对象的弊端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ThreadPoolExecutor的核心参数"><span class="nav-number">2.</span> <span class="nav-text">ThreadPoolExecutor的核心参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线程池任务执行的主要流程"><span class="nav-number">3.</span> <span class="nav-text">线程池任务执行的主要流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#execute-VS-submit"><span class="nav-number">4.</span> <span class="nav-text">execute() VS submit()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线程池的拒绝策略"><span class="nav-number">5.</span> <span class="nav-text">线程池的拒绝策略</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#常⽤线程池：ExecutorService-是主要的实现类"><span class="nav-number">1.</span> <span class="nav-text">常⽤线程池：ExecutorService 是主要的实现类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Executors-返回的线程池对象的弊端"><span class="nav-number">2.</span> <span class="nav-text">Executors 返回的线程池对象的弊端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ThreadPoolExecutor的核心参数"><span class="nav-number">3.</span> <span class="nav-text">ThreadPoolExecutor的核心参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线程池任务执行的主要流程"><span class="nav-number">4.</span> <span class="nav-text">线程池任务执行的主要流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#execute-VS-submit"><span class="nav-number">5.</span> <span class="nav-text">execute() VS submit()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线程池的拒绝策略"><span class="nav-number">6.</span> <span class="nav-text">线程池的拒绝策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如果你提交任务时，线程池队列已满。会时发会⽣什么？"><span class="nav-number">7.</span> <span class="nav-text">如果你提交任务时，线程池队列已满。会时发会⽣什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java线程池中submit-和-execute-⽅法有什么区别？"><span class="nav-number">8.</span> <span class="nav-text">Java线程池中submit() 和 **execute()**⽅法有什么区别？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何合理的配置java线程池？"><span class="nav-number">9.</span> <span class="nav-text">如何合理的配置java线程池？</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

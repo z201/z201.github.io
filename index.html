@@ -275,7 +275,7 @@
       
           <h2 id="关于本人"><a href="#关于本人" class="headerlink" title="关于本人"></a>关于本人</h2><ul>
 <li>15年自学几个月开始了码农之旅，目前坐标杭州。</li>
-<li>个人邮箱<a href="mailto:&#x7a;&#x32;&#x30;&#49;&#x2e;&#99;&#111;&#100;&#x69;&#110;&#x67;&#64;&#x67;&#x6d;&#97;&#105;&#108;&#x2e;&#99;&#111;&#109;">&#x7a;&#x32;&#x30;&#49;&#x2e;&#99;&#111;&#100;&#x69;&#110;&#x67;&#64;&#x67;&#x6d;&#97;&#105;&#108;&#x2e;&#99;&#111;&#109;</a></li>
+<li>个人邮箱<a href="mailto:&#122;&#x32;&#x30;&#x31;&#46;&#99;&#111;&#x64;&#105;&#110;&#103;&#64;&#103;&#x6d;&#x61;&#x69;&#108;&#46;&#x63;&#111;&#x6d;">&#122;&#x32;&#x30;&#x31;&#46;&#99;&#111;&#x64;&#105;&#110;&#103;&#64;&#103;&#x6d;&#x61;&#x69;&#108;&#46;&#x63;&#111;&#x6d;</a></li>
 </ul>
 <h2 id="关于博客"><a href="#关于博客" class="headerlink" title="关于博客"></a>关于博客</h2><ul>
 <li>博客建立只是为了监督个人学习，记录生活点滴，个人水平有限欢迎斧正。</li>
@@ -339,7 +339,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-01 21:14:58" itemprop="dateModified" datetime="2020-08-01T21:14:58+08:00">2020-08-01</time>
+                <time title="Modified: 2020-08-02 01:44:46" itemprop="dateModified" datetime="2020-08-02T01:44:46+08:00">2020-08-02</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -452,7 +452,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-01 21:14:49" itemprop="dateModified" datetime="2020-08-01T21:14:49+08:00">2020-08-01</time>
+                <time title="Modified: 2020-08-02 00:09:11" itemprop="dateModified" datetime="2020-08-02T00:09:11+08:00">2020-08-02</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -500,6 +500,12 @@
 <blockquote>
 <p>这里直接参考阿里巴巴的手册。线程池不允许使用 Executors 去创建，而是通过 ThreadPoolExecutor 的方式，这样的处理方式让写的读者更加明确线程池的运行规则，规避资源耗尽的风险。</p>
 </blockquote>
+<h3 id="常⽤线程池：ExecutorService-是主要的实现类"><a href="#常⽤线程池：ExecutorService-是主要的实现类" class="headerlink" title="常⽤线程池：ExecutorService 是主要的实现类"></a>常⽤线程池：ExecutorService 是主要的实现类</h3><ul>
+<li>Executors.newSingleT hreadPool()</li>
+<li>newFixedThreadPool()</li>
+<li>newcachedTheadPool()</li>
+<li>newScheduledThreadPool()</li>
+</ul>
 <h3 id="Executors-返回的线程池对象的弊端"><a href="#Executors-返回的线程池对象的弊端" class="headerlink" title="Executors 返回的线程池对象的弊端"></a>Executors 返回的线程池对象的弊端</h3><ul>
 <li>FixedThreadPool 和 SingleThreadPool：允许的请求队列长度为 Integer.MAX_VALUE，可能会堆积大量的请求，从而导致 OOM。</li>
 <li>CachedThreadPool 和 ScheduledThreadPool：允许的创建线程数量为 Integer.MAX_VALUE，可能会创建大量的线程，从而导致 OOM。</li>
@@ -508,19 +514,22 @@
 <h3 id="ThreadPoolExecutor的核心参数"><a href="#ThreadPoolExecutor的核心参数" class="headerlink" title="ThreadPoolExecutor的核心参数"></a>ThreadPoolExecutor的核心参数</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ThreadPoolExecutor</span><span class="params">(<span class="keyword">int</span> corePoolSize,</span></span></span><br><span class="line"><span class="function"><span class="params">                          <span class="keyword">int</span> maximumPoolSize,</span></span></span><br><span class="line"><span class="function"><span class="params">                          <span class="keyword">long</span> keepAliveTime,</span></span></span><br><span class="line"><span class="function"><span class="params">                          TimeUnit unit,</span></span></span><br><span class="line"><span class="function"><span class="params">                          BlockingQueue&lt;Runnable&gt; workQueue,</span></span></span><br><span class="line"><span class="function"><span class="params">                          ThreadFactory threadFactory,</span></span></span><br><span class="line"><span class="function"><span class="params">                          RejectedExecutionHandler handler)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (corePoolSize &lt; <span class="number">0</span> ||</span><br><span class="line">        <span class="comment">// maximumPoolSize 必须大于 0，且必须大于 corePoolSize</span></span><br><span class="line">        maximumPoolSize &lt;= <span class="number">0</span> ||</span><br><span class="line">        maximumPoolSize &lt; corePoolSize ||</span><br><span class="line">        keepAliveTime &lt; <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException();</span><br><span class="line">    <span class="keyword">if</span> (workQueue == <span class="keyword">null</span> || threadFactory == <span class="keyword">null</span> || handler == <span class="keyword">null</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br><span class="line">    <span class="keyword">this</span>.acc = System.getSecurityManager() == <span class="keyword">null</span> ?</span><br><span class="line">            <span class="keyword">null</span> :</span><br><span class="line">            AccessController.getContext();</span><br><span class="line">    <span class="keyword">this</span>.corePoolSize = corePoolSize;</span><br><span class="line">    <span class="keyword">this</span>.maximumPoolSize = maximumPoolSize;</span><br><span class="line">    <span class="keyword">this</span>.workQueue = workQueue;</span><br><span class="line">    <span class="keyword">this</span>.keepAliveTime = unit.toNanos(keepAliveTime);</span><br><span class="line">    <span class="keyword">this</span>.threadFactory = threadFactory;</span><br><span class="line">    <span class="keyword">this</span>.handler = handler;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <ul>
-<li><p>第 1 个参数：corePoolSize 表示线程池的常驻核心线程数。如果设置为 0，则表示在没有任何任务时，销毁线程池；如果大于 0，即使没有任务时也会保证线程池的线程数量等于此值。但需要注意，此值如果设置的比较小，则会频繁的创建和销毁线程（创建和销毁的原因会在本课时的下半部分讲到）；如果设置的比较大，则会浪费系统资源，所以开发者需要根据自己的实际业务来调整此值。</p>
+<li>第 1 个参数：corePoolSize 表示线程池的常驻核心线程数。如果设置为 0，则表示在没有任何任务时，销毁线程池；如果大于 0，即使没有任务时也会保证线程池的线程数量等于此值。但需要注意，此值如果设置的比较小，则会频繁的创建和销毁线程（创建和销毁的原因会在本课时的下半部分讲到）；如果设置的比较大，则会浪费系统资源，所以开发者需要根据自己的实际业务来调整此值。</li>
+<li>第 2 个参数：maximumPoolSize 表示线程池在任务最多时，最大可以创建的线程数。官方规定此值必须大于 0，也必须大于等于 corePoolSize，此值只有在任务比较多，且不能存放在任务队列时，才会用到。</li>
+<li>第 3 个参数：keepAliveTime 表示线程的存活时间，当线程池空闲时并且超过了此时间，多余的线程就会销毁，直到线程池中的线程数量销毁的等于 corePoolSize 为止，如果 maximumPoolSize 等于 corePoolSize，那么线程池在空闲的时候也不会销毁任何线程。</li>
+<li>第 4 个参数：unit 表示存活时间的单位，它是配合 keepAliveTime 参数共同使用的。</li>
+<li>第 5 个参数：workQueue 表示线程池执行的任务队列，当线程池的所有线程都在处理任务时，如果来了新任务就会缓存到此任务队列中排队等待执行。</li>
+<li>第 6 个参数：threadFactory 表示线程的创建工厂，此参数一般用的比较少，我们通常在创建线程池时不指定此参数，它会使用默认的线程创建工厂的方法来创建线程。</li>
+<li>第 7 个参数：RejectedExecutionHandler 表示指定线程池的拒绝策略，当线程池的任务已经在缓存队列 workQueue 中存储满了之后，并且不能创建新的线程来执行此任务时，就会用到此拒绝策略，它属于一种限流保护的机制。</li>
+<li>原理<ul>
+<li>如果当前池⼤⼩ poolSize ⼩于 corePoolSize，则创建新线程执⾏任务。</li>
+<li>如果当前池⼤⼩poolSize⼤于corePoolSize，且等待队列未满，则进⼊等待队列。</li>
+<li>如果当前池⼤⼩ poolSize ⼤于 corePoolSize 且⼩于 maximumPoolSize ，且等待队列已满，则创建新线程执⾏任务。</li>
+<li>如果当前池⼤⼩ poolSize ⼤于 corePoolSize 且⼤于 maximumPoolSize ，且等待队列已满，则调⽤拒绝策略来处理该任务。<ul>
+<li>线程池⾥的每个线程执⾏完任务后不会⽴刻退出，⽽是会去检查下等待队列⾥是否还有线程任务需要执⾏，如果在 keepAliveTime ⾥等不到新的任务了，那么线程就会退出。</li>
+</ul>
 </li>
-<li><p>第 2 个参数：maximumPoolSize 表示线程池在任务最多时，最大可以创建的线程数。官方规定此值必须大于 0，也必须大于等于 corePoolSize，此值只有在任务比较多，且不能存放在任务队列时，才会用到。</p>
-</li>
-<li><p>第 3 个参数：keepAliveTime 表示线程的存活时间，当线程池空闲时并且超过了此时间，多余的线程就会销毁，直到线程池中的线程数量销毁的等于 corePoolSize 为止，如果 maximumPoolSize 等于 corePoolSize，那么线程池在空闲的时候也不会销毁任何线程。</p>
-</li>
-<li><p>第 4 个参数：unit 表示存活时间的单位，它是配合 keepAliveTime 参数共同使用的。</p>
-</li>
-<li><p>第 5 个参数：workQueue 表示线程池执行的任务队列，当线程池的所有线程都在处理任务时，如果来了新任务就会缓存到此任务队列中排队等待执行。</p>
-</li>
-<li><p>第 6 个参数：threadFactory 表示线程的创建工厂，此参数一般用的比较少，我们通常在创建线程池时不指定此参数，它会使用默认的线程创建工厂的方法来创建线程。</p>
-</li>
-<li><p>第 7 个参数：RejectedExecutionHandler 表示指定线程池的拒绝策略，当线程池的任务已经在缓存队列 workQueue 中存储满了之后，并且不能创建新的线程来执行此任务时，就会用到此拒绝策略，它属于一种限流保护的机制。</p>
+</ul>
 </li>
 </ul>
           <!--noindex-->
@@ -580,7 +589,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-01 01:10:57" itemprop="dateModified" datetime="2020-08-01T01:10:57+08:00">2020-08-01</time>
+                <time title="Modified: 2020-08-01 22:03:15" itemprop="dateModified" datetime="2020-08-01T22:03:15+08:00">2020-08-01</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
