@@ -219,6 +219,105 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/06/04/%E5%AE%9E%E8%B7%B5nginx%E6%97%A5%E5%BF%97%E7%AE%80%E5%8D%95%E7%9A%84%E7%BB%9F%E8%AE%A1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/06/04/%E5%AE%9E%E8%B7%B5nginx%E6%97%A5%E5%BF%97%E7%AE%80%E5%8D%95%E7%9A%84%E7%BB%9F%E8%AE%A1/" class="post-title-link" itemprop="url">实践nginx日志简单的统计</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2019-06-04 11:21:21 / Modified: 23:30:17" itemprop="dateCreated datePublished" datetime="2019-06-04T11:21:21+08:00">2019-06-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/nginx/" itemprop="url" rel="index"><span itemprop="name">nginx</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>公司没有日志采集平台，又不太可能在业务系统里面搞事情。好在之前有玩过elk日志分析组合。直接从服务器上面撸出日志简单的用linux命令分析下吧。</p>
+</blockquote>
+<p>Nginx日志统计（简单的）</p>
+<p>（日志文件叫access.log 在当前目录下）</p>
+<p><strong>统计 PV，就是日志行数</strong></p>
+<p><code>cat access.log |wc -l</code></p>
+<p><strong>UV, 即是统计 IP 数</strong></p>
+<p><code>cat access.log |awk &#39;{print $1}&#39; |sort |uniq -c |wc -l</code></p>
+<p><strong>使用linux grep 进行统计</strong></p>
+<p><code>grep -E &quot;POST|GET&quot; access.log | awk -F &#39;&quot;&#39; &#39;{print $2,$3}&#39; | awk &#39;{print $2}&#39;| sort | uniq -c | sort -k1nr | head -100</code></p>
+<p><strong>耗时的请求发生时间、所请求的 URI 和耗时</strong></p>
+<p><code>cat access.log | awk &#39;{print $4,$7,$10,$NF}&#39; | sort -k3 -nr | head -100</code></p>
+<p><strong>统计</strong>nginx<strong>访问频次最高的</strong>100<strong>个</strong>Ip**</p>
+<p><code>grep -E &quot;POST|GET&quot; access.log | awk -F &#39;&quot;&#39; &#39;{print $(NF-1)}&#39; | sort | uniq -c | sort -k1nr | head -100</code></p>
+<p><strong>统计</strong>nginx<strong>访问不正常（状态码</strong>400+<strong>）的前</strong>100<strong>个</strong>url<strong>和频次</strong></p>
+<p><code>grep -E &quot;POST|GET&quot; access.log | awk -F &#39;&quot;&#39; &#39;{print $2,$3}&#39; | awk &#39;{if ($4&gt;=&quot;400&quot;) {print $4,$1,$2}}&#39; | sort | uniq -c | sort -k1nr | head -100</code></p>
+<p><strong>统计nginx访问状态码非200的前100个</strong>url<strong>和频次**</strong></p>
+<p><code>grep -E &quot;POST|GET&quot; access.log | awk -F &#39;&quot;&#39; &#39;{print $2,$3}&#39; | awk &#39;{if ($4!=200) {print $4,$1,$2}}&#39; | sort | uniq -c | sort -k1nr | head -100</code></p>
+<p><strong>不同 URI 的平均耗时</strong></p>
+<p><code>grep -E &quot;POST|GET&quot; access.log  | awk &#39;{s[$10] += $NF;c[$10]++}END{for(i in s){print i,s[i]/c[i]}}&#39; |sort -k2 -nr | head</code></p>
+<p><strong>每秒请求量统计</strong></p>
+<p>统计每秒的请求数,top100的时间点(精确到秒)</p>
+<p><code>grep -E &quot;POST|GET&quot; access.log |  awk &#39;{print $4}&#39; access.log |cut -c 14-21|sort|uniq -c|sort -nr|head -n 100</code></p>
+<p><strong>每分钟请求量统计</strong></p>
+<p>统计每分钟的请求数,top100的时间点(精确到分钟)</p>
+<p><code>grep -E &quot;POST|GET&quot; access.log |  awk &#39;{print $4}&#39; access.log |cut -c 14-18|sort|uniq -c|sort -nr|head -n 100</code></p>
+<p><strong>每小时请求量统计</strong></p>
+<p>统计每小时的请求数,top100的时间点(精确到小时)</p>
+<p><code>grep -E &quot;POST|GET&quot; access.log |  awk &#39;{print $4}&#39; access.log |cut -c 14-15|sort|uniq -c|sort -nr|head -n 100</code></p>
+<p><strong>统计蜘蛛抓取次数</strong></p>
+<p><code>grep &#39;Baiduspider&#39; access.log |wc -l</code></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/05/27/%E6%80%BB%E7%BB%93%E4%BB%A3%E7%A0%81%E9%A3%8E%E6%A0%BC/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -603,105 +702,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/04/10/%E5%85%B3%E4%BA%8Espring-redis-timeout-0%E4%BE%9D%E7%84%B6%E8%B6%85%E6%97%B6%E7%9A%84%E9%97%AE%E9%A2%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/04/10/%E5%85%B3%E4%BA%8Espring-redis-timeout-0%E4%BE%9D%E7%84%B6%E8%B6%85%E6%97%B6%E7%9A%84%E9%97%AE%E9%A2%98/" class="post-title-link" itemprop="url">关于spring.redis.timeout=0依然超时的问题</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-04-10 22:16:10" itemprop="dateCreated datePublished" datetime="2019-04-10T22:16:10+08:00">2019-04-10</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-04-11 01:08:41" itemprop="dateModified" datetime="2019-04-11T01:08:41+08:00">2019-04-11</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>最近在看项目的时候发现一个临时问题，就是redis.timeout设置0依然超时的问题。</p>
-</blockquote>
-<ul>
-<li>代码适用版本 <code>jedis:2.9.0</code> , <code>org.springframework.data.redis:1.8.1</code></li>
-</ul>
-<h3 id="timeout设置0的问题"><a href="#timeout设置0的问题" class="headerlink" title="timeout设置0的问题"></a>timeout设置0的问题</h3><blockquote>
-<p>spring.redis.timeout =0 如果设置成0 redis默认超时时间就是2秒. </p>
-</blockquote>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Jedis/jedis-timeout-1.jpg"></p>
-<blockquote>
-<p>根据debug发现设置0点时候依然是2000毫秒。</p>
-</blockquote>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Jedis/jedis-timeout-2.jpg"></p>
-<blockquote>
-<p>根据初始化方法找到的原因。</p>
-</blockquote>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Jedis/jedis-timeout-3.png"></p>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Jedis/jedis-timeout-4.png"></p>
-<blockquote>
-<p>这里可以看到，当timeout设置0点时候不会被赋值。</p>
-</blockquote>
-<h3 id="END"><a href="#END" class="headerlink" title="END"></a>END</h3>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -768,7 +772,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">105</span>
+          <span class="site-state-item-count">106</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
