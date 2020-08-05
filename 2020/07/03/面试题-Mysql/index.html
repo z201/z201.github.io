@@ -27,7 +27,7 @@
 <meta property="og:site_name" content="枫叶的小博客">
 <meta property="og:description" content="本章属于持续学习、长期更修。  数据库的三范式是什么 第一范式：列不可再分  第二范式：行可以唯一区分，主键约束  第三范式：表的非主属性不能依赖与其他表的非主属性 外键约束  且三大范式是一级一级依赖的，第二范式建立在第一范式上，第三范式建立第一第二范式上。  第一范式（1NF）：数据库表中的字段都是单一属性的，不可再分。这个单一属性由基本类型构成，包括整型、实数、字符型、逻辑型、日期型等。">
 <meta property="article:published_time" content="2020-07-02T20:33:01.000Z">
-<meta property="article:modified_time" content="2020-08-04T20:46:14.921Z">
+<meta property="article:modified_time" content="2020-08-05T10:32:38.692Z">
 <meta property="article:author" content="小峰同学">
 <meta property="article:tag" content="Mysql">
 <meta name="twitter:card" content="summary">
@@ -252,7 +252,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-05 04:46:14" itemprop="dateModified" datetime="2020-08-05T04:46:14+08:00">2020-08-05</time>
+                <time title="Modified: 2020-08-05 18:32:38" itemprop="dateModified" datetime="2020-08-05T18:32:38+08:00">2020-08-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -309,11 +309,39 @@
 <li>InnoDB支持外键，而MyISAM不支持</li>
 <li>InnoDB不支持全文索引，而MyISAM支持。</li>
 </ul>
-<h5 id="2-、innodb引擎的4大特性"><a href="#2-、innodb引擎的4大特性" class="headerlink" title="(2)、innodb引擎的4大特性"></a>(2)、innodb引擎的4大特性</h5><ul>
+<h3 id="innodb引擎的4大特性"><a href="#innodb引擎的4大特性" class="headerlink" title="innodb引擎的4大特性"></a>innodb引擎的4大特性</h3><ul>
 <li>插入缓冲（insert buffer),</li>
 <li>二次写(double write),</li>
 <li>自适应哈希索引(ahi),</li>
 <li>预读(read ahead)</li>
+<li>支持事务操作，具有事务 ACID 隔离特性，默认的隔离级别是<code>可重复读(repetable-read)</code>、通过MVCC（并发版本控制）来实现的。能够解决<code>脏读</code>和<code>不可重复读</code>的问题。</li>
+<li>InnoDB 支持外键操作。</li>
+<li>InnoDB 默认的锁粒度<code>行级锁</code>，并发性能比较好，会发生死锁的情况。</li>
+<li>和 MyISAM 一样的是，InnoDB 存储引擎也有 <code>.frm文件存储表结构</code> 定义，但是不同的是，InnoDB 的表数据与索引数据是存储在一起的，都位于 B+ 数的叶子节点上，而 MyISAM 的表数据和索引数据是分开的。</li>
+<li>InnoDB 有安全的日志文件，这个日志文件用于恢复因数据库崩溃或其他情况导致的数据丢失问题，保证数据的一致性。</li>
+<li>InnoDB 和 MyISAM 支持的索引类型相同，但具体实现因为文件结构的不同有很大差异。</li>
+<li>增删改查性能方面，如果执行大量的增删改操作，推荐使用 InnoDB 存储引擎，它在删除操作时是对行删除，不会重建表。</li>
+</ul>
+<h3 id="什么是事务？"><a href="#什么是事务？" class="headerlink" title="什么是事务？"></a>什么是事务？</h3><ul>
+<li>事务（Transaction）是并发控制的基本单位。所谓的事务，它是一个操作序列，这些操作要么都执行，要么都不执行，它是一个不可分割的工作单位。事务是数据库维护数据一致性的单位，在每个事务结束时，都能保持数据一致性。</li>
+</ul>
+<h3 id="MySQL-事务四大特性"><a href="#MySQL-事务四大特性" class="headerlink" title="MySQL 事务四大特性"></a>MySQL 事务四大特性</h3><blockquote>
+<p>一说到 MySQL 事务，你肯定能想起来四大特性：<code>原子性</code>、<code>一致性</code>、<code>隔离性</code>、<code>持久性</code>。什么是 MySQL 中的事务？</p>
+<p>事务是一组操作，组成这组操作的各个单元，要不全都成功要不全都失败，这个特性就是事务。</p>
+<p>在 MySQL 中，事务是在引擎层实现的，只有使用 <code>innodb</code> 引擎的数据库或表才支持事务。</p>
+</blockquote>
+<ul>
+<li><code>原子性(Atomicity)</code>: 原子性指的就是 MySQL 中的包含事务的操作要么<code>全部成功</code>、要么全部<code>失败回滚</code>，因此事务的操作如果成功就必须要全部应用到数据库，如果操作失败则不能对数据库有任何影响。</li>
+<li><code>一致性(Consistency)</code>：一致性指的是一个事务在执行前后其状态一致。比如 A 和 B 加起来的钱一共是 1000 元，那么不管 A 和 B 之间如何转账，转多少次，事务结束后两个用户的钱加起来还得是 1000，这就是事务的一致性。</li>
+<li><code>持久性(Durability)</code>: 持久性指的是一旦事务提交，那么发生的改变就是永久性的，即使数据库遇到特殊情况比如故障的时候也不会产生干扰。</li>
+<li><code>隔离性(Isolation)</code>：当多个事务同时进行时，就有可能出现<code>脏读(dirty read)</code>、<code>不可重复读(non-repeatable read)</code>、<code>幻读(phantom read)</code> 的情况，为了解决这些并发问题，提出了隔离性的概念。<ul>
+<li>重点说下隔离性它们分别是<code>读未提交(read uncommitted)</code>、<code>读已提交(read committed)</code>、<code>可重复读(repetable read)</code> 和 <code>串行化(serializable)</code>。下面分别来解释一下。</li>
+<li><code>读未提交</code>：读未提交指的是一个事务在提交之前，它所做的修改就能够被其他事务所看到。</li>
+<li><code>读已提交</code>：读已提交指的是一个事务在提交之后，它所做的变更才能够让其他事务看到。</li>
+<li><code>可重复读</code>：可重复读指的是一个事务在执行的过程中，看到的数据是和启动时看到的数据是一致的。未提交的变更对其他事务不可见。</li>
+<li><code>串行化</code>：顾名思义是对于同一行记录，<code>写</code>会加<code>写锁</code>，<code>读</code>会加<code>读锁</code>。当出现读写锁冲突的时候，后访问的事务必须等前一个事务执行完成，才能继续执行。</li>
+</ul>
+</li>
 </ul>
 <h3 id="介绍下InnoDB存储引擎的B-树索引"><a href="#介绍下InnoDB存储引擎的B-树索引" class="headerlink" title="介绍下InnoDB存储引擎的B+树索引"></a>介绍下InnoDB存储引擎的B+树索引</h3><ul>
 <li>每个索引都对应一棵B+树，B+树分为好多层，最下边一层是叶子节点，其余的是内节点。所有用户记录都存储在B+树的叶子节点，所有目录项记录都存储在内节点。</li>
@@ -321,9 +349,10 @@
 <li>我们可以为自己感兴趣的列建立二级索引，二级索引的叶子节点包含的用户记录由索引列 + 主键组成，所以如果想通过二级索引来查找完整的用户记录的话，需要通过回表操作，也就是在通过二级索引找到主键值之后再到聚簇索引中查找完整的用户记录。</li>
 <li>B+树中每层节点都是按照索引列值从小到大的顺序排序而组成了双向链表，而且每个页内的记录（不论是用户记录还是目录项记录）都是按照索引列的值从小到大的顺序而形成了一个单链表。如果是联合索引的话，则页面和记录先按照联合索引前边的列排序，如果该列值相同，再按照联合索引后边的列排序。</li>
 <li>通过索引查找记录是从B+树的根节点开始，一层一层向下搜索。由于每个页面都按照索引列的值建立了Page Directory（页目录），所以在这些页面中的查找非常快。</li>
-</ul>
-<h5 id="3-、2者SELECT-COUNT-哪个更快，为什么"><a href="#3-、2者SELECT-COUNT-哪个更快，为什么" class="headerlink" title="(3)、2者SELECT COUNT(*)哪个更快，为什么"></a>(3)、2者SELECT COUNT(*)哪个更快，为什么</h5><ul>
+<li>二者SELECT COUNT(*)哪个更快，为什么<ul>
 <li>myisam更快，因为myisam内部维护了一个计数器，可以直接调取。</li>
+</ul>
+</li>
 </ul>
 <a id="more"></a>
 
@@ -337,60 +366,42 @@
 <li>3、主键：数据库表中对储存数据对象予以唯一和完整标识的数据列或属性的组合。一个数据列只能有一个主键，且主键的取值不能缺失，即不能为空值（Null）。</li>
 <li>4、外键：在一个表中存在的另一个表的主键称此表的外键。</li>
 </ul>
-<h3 id="MySQL中varchar与char的区别以及varchar-50-中的50代表的涵义"><a href="#MySQL中varchar与char的区别以及varchar-50-中的50代表的涵义" class="headerlink" title="MySQL中varchar与char的区别以及varchar(50)中的50代表的涵义"></a>MySQL中varchar与char的区别以及varchar(50)中的50代表的涵义</h3><h5 id="1-、varchar与char的区别"><a href="#1-、varchar与char的区别" class="headerlink" title="(1)、varchar与char的区别"></a>(1)、varchar与char的区别</h5><ul>
+<h3 id="MySQL中varchar与char的区别以及varchar-50-中的50代表的涵义"><a href="#MySQL中varchar与char的区别以及varchar-50-中的50代表的涵义" class="headerlink" title="MySQL中varchar与char的区别以及varchar(50)中的50代表的涵义"></a>MySQL中varchar与char的区别以及varchar(50)中的50代表的涵义</h3><ul>
+<li>varchar与char的区别<ul>
 <li>CHAR和VARCHAR类型在存储和检索方面有所不同，CHAR是一种固定长度的类型，VARCHAR则是一种可变长度的类型。</li>
 <li>CHAR列长度固定为创建表时声明的长度，长度值范围是1到255当CHAR值被存储时，它们被用空格填充到特定长度，检索CHAR值时需删除尾随空格。</li>
 </ul>
-<h5 id="2-、varchar-50-中50的涵义"><a href="#2-、varchar-50-中50的涵义" class="headerlink" title="(2)、varchar(50)中50的涵义"></a>(2)、varchar(50)中50的涵义</h5><ul>
+</li>
+<li>varchar(50)中50的涵义<ul>
 <li>最多存放50个字符，varchar(50)和(200)存储hello所占空间一样，但后者在排序时会消耗更多内存，因为order by col采用fixed_length计算col长度(memory引擎也一样)</li>
 </ul>
-<h5 id="3-、int（20）中20的涵义"><a href="#3-、int（20）中20的涵义" class="headerlink" title="(3)、int（20）中20的涵义"></a>(3)、int（20）中20的涵义</h5><blockquote>
-<p>是指显示字符的长度</p>
-</blockquote>
-<ul>
-<li><p>但要加参数的，最大为255，比如它是记录行数的id,插入10笔资料，它就显示00000000001 <del>~</del>00000000010，当字符的位数超过11,它也只显示11位，如果你没有加那个让它未满11位就前面加0的参数，它不会在前面加0</p>
 </li>
-<li><p>20表示最大显示宽度为20，但仍占4字节存储，存储范围不变。</p>
-</li>
+<li>int（20）中20的涵义<ul>
+<li>是指显示字符的长度但要加参数的，最大为255，比如它是记录行数的id,插入10笔资料，它就显示00000000001 <del>~</del>00000000010，当字符的位数超过11,它也只显示11位，如果你没有加那个让它未满11位就前面加0的参数，它不会在前面加0</li>
+<li>20表示最大显示宽度为20，但仍占4字节存储，存储范围不变。</li>
 </ul>
-<h5 id="4-、mysql为什么这么设计"><a href="#4-、mysql为什么这么设计" class="headerlink" title="(4)、mysql为什么这么设计"></a>(4)、mysql为什么这么设计</h5><ul>
+</li>
+<li>mysql为什么这么设计<ul>
 <li>对大多数应用没有意义，只是规定一些工具用来显示字符的个数；int(1)和int(20)存储和计算均一样。</li>
 </ul>
+</li>
+</ul>
 <h3 id="问了innodb的事务与日志的实现方式"><a href="#问了innodb的事务与日志的实现方式" class="headerlink" title="问了innodb的事务与日志的实现方式"></a>问了innodb的事务与日志的实现方式</h3><ol>
-<li><h5 id="有多少种日志"><a href="#有多少种日志" class="headerlink" title="有多少种日志"></a>有多少种日志</h5></li>
+<li><h5 id="有多少种日志？"><a href="#有多少种日志？" class="headerlink" title="有多少种日志？"></a>有多少种日志？</h5><ol>
+<li><strong>错误日志</strong>：记录出错信息，也记录一些警告信息或者正确的信息。</li>
+<li><strong>查询日志</strong>：记录所有对数据库请求的信息，不论这些请求是否得到了正确的执行。</li>
+<li><strong>慢查询日志</strong>：设置一个阈值，将运行时间超过该值的所有SQL语句都记录到慢查询的日志文件中。</li>
+<li><strong>二进制日志</strong>：记录对数据库执行更改的所有操作。</li>
+<li><strong>中继日志</strong>：中继日志也是二进制日志，用来给slave 库恢复</li>
+<li><strong>事务日志</strong>：重做日志redo和回滚日志undo</li>
 </ol>
-<ul>
-<li><p><strong>错误日志</strong>：记录出错信息，也记录一些警告信息或者正确的信息。</p>
 </li>
-<li><p><strong>查询日志</strong>：记录所有对数据库请求的信息，不论这些请求是否得到了正确的执行。</p>
-</li>
-<li><p><strong>慢查询日志</strong>：设置一个阈值，将运行时间超过该值的所有SQL语句都记录到慢查询的日志文件中。</p>
-</li>
-<li><p><strong>二进制日志</strong>：记录对数据库执行更改的所有操作。</p>
-</li>
-<li><p><strong>中继日志</strong>：中继日志也是二进制日志，用来给slave 库恢复</p>
-</li>
-<li><p><strong>事务日志</strong>：重做日志redo和回滚日志undo</p>
-</li>
-</ul>
-<ol start="2">
-<li><h5 id="事物的4种隔离级别"><a href="#事物的4种隔离级别" class="headerlink" title="事物的4种隔离级别"></a>事物的4种隔离级别</h5></li>
-</ol>
-<ul>
-<li><strong>隔离级别</strong><ul>
-<li>读未提交(RU)</li>
-<li>读已提交(RC)</li>
-<li>可重复读(RR)</li>
-<li>串行</li>
-</ul>
-</li>
-</ul>
-<ol start="3">
-<li><h5 id="事务是如何通过日志来实现的。"><a href="#事务是如何通过日志来实现的。" class="headerlink" title="事务是如何通过日志来实现的。"></a>事务是如何通过日志来实现的。</h5></li>
-</ol>
-<ul>
+<li><p>事务是如何通过日志来实现的。</p>
+<ol>
 <li>事务日志是通过redo和innodb的存储引擎日志缓冲（Innodb log buffer）来实现的，当开始一个事务的时候，会记录该事务的lsn(log sequence number)号; 当事务执行时，会往InnoDB存储引擎的日志的日志缓存里面插入事务日志；当事务提交时，必须将存储引擎的日志缓冲写入磁盘（通过innodb_flush_log_at_trx_commit来控制），也就是写数据前，需要先写日志。这种方式称为“预写日志方式”。</li>
-</ul>
+</ol>
+</li>
+</ol>
 <h3 id="MySQL-binlog的几种日志录入格式以及区别"><a href="#MySQL-binlog的几种日志录入格式以及区别" class="headerlink" title="MySQL binlog的几种日志录入格式以及区别"></a>MySQL binlog的几种日志录入格式以及区别</h3><blockquote>
 <p><strong>Statement</strong>：每一条会修改数据的sql都会记录在binlog中。</p>
 </blockquote>
@@ -419,10 +430,13 @@
 </li>
 </ul>
 <h3 id="MySQL数据库cpu飙升到500-的话他怎么处理？"><a href="#MySQL数据库cpu飙升到500-的话他怎么处理？" class="headerlink" title="MySQL数据库cpu飙升到500%的话他怎么处理？"></a>MySQL数据库cpu飙升到500%的话他怎么处理？</h3><ul>
-<li>1、列出所有进程 show processlist,观察所有进程 ,多秒没有状态变化的(干掉)</li>
-<li>2、查看超时日志或者错误日志 (一般会是查询以及大批量的插入会导致cpu与i/o上涨,当然不排除网络状态突然断了,导致一个请求服务器只接受到一半，比如where子句或分页子句没有发送,,当然的一次被坑经历)。</li>
+<li>列出所有进程 show processlist,观察所有进程 ,多秒没有状态变化的(干掉)</li>
+<li>查看超时日志或者错误日志 (一般会是查询以及大批量的插入会导致cpu与i/o上涨,当然不排除网络状态突然断了,导致一个请求服务器只接受到一半，比如where子句或分页子句没有发送,,当然的一次被坑经历)。</li>
 </ul>
-<h3 id="sql优化各种方法"><a href="#sql优化各种方法" class="headerlink" title="sql优化各种方法"></a>sql优化各种方法</h3><h5 id="1-、explain出来的各种item的意义；"><a href="#1-、explain出来的各种item的意义；" class="headerlink" title="(1)、explain出来的各种item的意义；"></a>(1)、explain出来的各种item的意义；</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select_type</span><br></pre></td></tr></table></figure>
+<h3 id="sql优化各种方法"><a href="#sql优化各种方法" class="headerlink" title="sql优化各种方法"></a>sql优化各种方法</h3><ul>
+<li>explain出来的各种item的意义；</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select_type</span><br></pre></td></tr></table></figure>
 
 <p>表示查询中每个select子句的类型</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">type</span><br></pre></td></tr></table></figure>
@@ -443,14 +457,33 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Extra</span><br></pre></td></tr></table></figure>
 
 <p>包含不适合在其他列中显示但十分重要的额外信息</p>
-<h5 id="2-、profile的意义以及使用场景；"><a href="#2-、profile的意义以及使用场景；" class="headerlink" title="(2)、profile的意义以及使用场景；"></a>(2)、profile的意义以及使用场景；</h5><p>查询到 SQL 会执行多少时间, 并看出 CPU/Memory 使用量, 执行过程中 Systemlock, Table lock 花多少时间等等。</p>
-<h3 id="备份计划，mysqldump以及xtranbackup的实现原理"><a href="#备份计划，mysqldump以及xtranbackup的实现原理" class="headerlink" title="备份计划，mysqldump以及xtranbackup的实现原理"></a>备份计划，mysqldump以及xtranbackup的实现原理</h3><h5 id="1-、备份计划；"><a href="#1-、备份计划；" class="headerlink" title="(1)、备份计划；"></a>(1)、备份计划；</h5><p>这里每个公司都不一样，您别说那种1小时1全备什么的就行</p>
-<h5 id="2-、备份恢复时间；"><a href="#2-、备份恢复时间；" class="headerlink" title="(2)、备份恢复时间；"></a>(2)、备份恢复时间；</h5><p>这里跟机器，尤其是硬盘的速率有关系，以下列举几个仅供参考</p>
-<p>20G的2分钟（mysqldump）</p>
-<p>80G的30分钟(mysqldump)</p>
-<p>111G的30分钟（mysqldump)</p>
-<p>288G的3小时（xtra)</p>
-<p>3T的4小时（xtra)</p>
+<ul>
+<li>profile的意义以及使用场景；</li>
+</ul>
+<blockquote>
+<p>查询到 SQL 会执行多少时间, 并看出 CPU/Memory 使用量, 执行过程中 Systemlock, Table lock 花多少时间等等。</p>
+</blockquote>
+<h3 id="备份计划，mysqldump以及xtranbackup的实现原理"><a href="#备份计划，mysqldump以及xtranbackup的实现原理" class="headerlink" title="备份计划，mysqldump以及xtranbackup的实现原理"></a>备份计划，mysqldump以及xtranbackup的实现原理</h3><ul>
+<li><p>备份计划</p>
+<ul>
+<li>这里每个公司都不一样</li>
+</ul>
+</li>
+<li><p>备份恢复时间,这里跟机器，尤其是硬盘的速率有关系，以下列举几个仅供参考</p>
+<ul>
+<li><p>20G的2分钟（mysqldump）</p>
+</li>
+<li><p>80G的30分钟(mysqldump)</p>
+</li>
+<li><p>111G的30分钟（mysqldump)</p>
+</li>
+<li><p>288G的3小时（xtra)</p>
+</li>
+<li><p>3T的4小时（xtra)</p>
+</li>
+</ul>
+</li>
+</ul>
 <p>逻辑导入时间一般是备份时间的5倍以上</p>
 <h5 id="3-、xtrabackup实现原理"><a href="#3-、xtrabackup实现原理" class="headerlink" title="(3)、xtrabackup实现原理"></a>(3)、xtrabackup实现原理</h5><p>在InnoDB内部会维护一个redo日志文件，我们也可以叫做事务日志文件。事务日志会存储每一个InnoDB表数据的记录修改。当InnoDB启动时，InnoDB会检查数据文件和事务日志，并执行两个步骤：它应用（前滚）已经提交的事务日志到数据文件，并将修改过但没有提交的数据进行回滚操作。</p>
 <h3 id="mysqldump中备份出来的sql，如果我想sql文件中，一行只有一个insert…-value-的话，怎么办？如果备份需要带上master的复制点信息怎么办？"><a href="#mysqldump中备份出来的sql，如果我想sql文件中，一行只有一个insert…-value-的话，怎么办？如果备份需要带上master的复制点信息怎么办？" class="headerlink" title="mysqldump中备份出来的sql，如果我想sql文件中，一行只有一个insert….value()的话，怎么办？如果备份需要带上master的复制点信息怎么办？"></a>mysqldump中备份出来的sql，如果我想sql文件中，一行只有一个insert….value()的话，怎么办？如果备份需要带上master的复制点信息怎么办？</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">--skip-extended-insert</span><br><span class="line"></span><br><span class="line">[root@helei-zhuanshu ~]# mysqldump -uroot -p helei --skip-extended-insert</span><br><span class="line"></span><br><span class="line">Enter password:</span><br><span class="line"></span><br><span class="line">KEY &#96;idx_c1&#96; (&#96;c1&#96;),</span><br><span class="line"></span><br><span class="line">KEY &#96;idx_c2&#96; (&#96;c2&#96;)</span><br><span class="line"></span><br><span class="line">) ENGINE&#x3D;InnoDB AUTO_INCREMENT&#x3D;51 DEFAULT CHARSET&#x3D;latin1;</span><br><span class="line"></span><br><span class="line">&#x2F;*!40101 SET character_set_client &#x3D; @saved_cs_client *&#x2F;;</span><br><span class="line"></span><br><span class="line">--</span><br><span class="line"></span><br><span class="line">-- Dumping data for table &#96;helei&#96;</span><br><span class="line"></span><br><span class="line">--</span><br><span class="line"></span><br><span class="line">LOCK TABLES &#96;helei&#96; WRITE;</span><br><span class="line"></span><br><span class="line">&#x2F;*!40000 ALTER TABLE &#96;helei&#96; DISABLE KEYS *&#x2F;;</span><br><span class="line"></span><br><span class="line">INSERT INTO &#96;helei&#96; VALUES (1,32,37,38,&#39;2016-10-18 06:19:24&#39;,&#39;susususususususususususu&#39;);</span><br><span class="line"></span><br><span class="line">INSERT INTO &#96;helei&#96; VALUES (2,37,46,21,&#39;2016-10-18 06:19:24&#39;,&#39;susususususu&#39;);</span><br><span class="line"></span><br><span class="line">INSERT INTO &#96;helei&#96; VALUES (3,21,5,14,&#39;2016-10-18 06:19:24&#39;,&#39;susu&#39;);</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
@@ -510,9 +543,6 @@
 <li>3、唯一索引可以确保每一行数据的唯一性。</li>
 <li>4、通过使用索引，可以在查询的过程中使用优化隐藏器，提高系统的性能。</li>
 <li>5、索引需要占物理和数据空间。</li>
-</ul>
-<h3 id="什么是事务？"><a href="#什么是事务？" class="headerlink" title="什么是事务？"></a>什么是事务？</h3><ul>
-<li>事务（Transaction）是并发控制的基本单位。所谓的事务，它是一个操作序列，这些操作要么都执行，要么都不执行，它是一个不可分割的工作单位。事务是数据库维护数据一致性的单位，在每个事务结束时，都能保持数据一致性。</li>
 </ul>
 <h3 id="使用索引查询一定能提高查询的性能吗？为什么"><a href="#使用索引查询一定能提高查询的性能吗？为什么" class="headerlink" title="使用索引查询一定能提高查询的性能吗？为什么"></a>使用索引查询一定能提高查询的性能吗？为什么</h3><p>通常,通过索引查询数据比全表扫描要快.但是我们也必须注意到它的代价.</p>
 <ul>
@@ -646,7 +676,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库的三范式是什么"><span class="nav-number">1.</span> <span class="nav-text">数据库的三范式是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#说下mysql有几种数据库引擎"><span class="nav-number">2.</span> <span class="nav-text">说下mysql有几种数据库引擎</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#说下mysql-Master-slave-的原理"><span class="nav-number">3.</span> <span class="nav-text">说下mysql Master slave 的原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL中myisam与innodb的区别"><span class="nav-number">4.</span> <span class="nav-text">MySQL中myisam与innodb的区别</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#2-、innodb引擎的4大特性"><span class="nav-number">4.0.1.</span> <span class="nav-text">(2)、innodb引擎的4大特性</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#介绍下InnoDB存储引擎的B-树索引"><span class="nav-number">5.</span> <span class="nav-text">介绍下InnoDB存储引擎的B+树索引</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#3-、2者SELECT-COUNT-哪个更快，为什么"><span class="nav-number">5.0.1.</span> <span class="nav-text">(3)、2者SELECT COUNT(*)哪个更快，为什么</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#主键和候选键有什么区别？"><span class="nav-number">6.</span> <span class="nav-text">主键和候选键有什么区别？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#超键、候选键、主键、外键分别是什么？"><span class="nav-number">7.</span> <span class="nav-text">超键、候选键、主键、外键分别是什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL中varchar与char的区别以及varchar-50-中的50代表的涵义"><span class="nav-number">8.</span> <span class="nav-text">MySQL中varchar与char的区别以及varchar(50)中的50代表的涵义</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-、varchar与char的区别"><span class="nav-number">8.0.1.</span> <span class="nav-text">(1)、varchar与char的区别</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-、varchar-50-中50的涵义"><span class="nav-number">8.0.2.</span> <span class="nav-text">(2)、varchar(50)中50的涵义</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-、int（20）中20的涵义"><span class="nav-number">8.0.3.</span> <span class="nav-text">(3)、int（20）中20的涵义</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-、mysql为什么这么设计"><span class="nav-number">8.0.4.</span> <span class="nav-text">(4)、mysql为什么这么设计</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问了innodb的事务与日志的实现方式"><span class="nav-number">9.</span> <span class="nav-text">问了innodb的事务与日志的实现方式</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#有多少种日志"><span class="nav-number">9.0.1.</span> <span class="nav-text">有多少种日志</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#事物的4种隔离级别"><span class="nav-number">9.0.2.</span> <span class="nav-text">事物的4种隔离级别</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#事务是如何通过日志来实现的。"><span class="nav-number">9.0.3.</span> <span class="nav-text">事务是如何通过日志来实现的。</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL-binlog的几种日志录入格式以及区别"><span class="nav-number">10.</span> <span class="nav-text">MySQL binlog的几种日志录入格式以及区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL数据库cpu飙升到500-的话他怎么处理？"><span class="nav-number">11.</span> <span class="nav-text">MySQL数据库cpu飙升到500%的话他怎么处理？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sql优化各种方法"><span class="nav-number">12.</span> <span class="nav-text">sql优化各种方法</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-、explain出来的各种item的意义；"><span class="nav-number">12.0.1.</span> <span class="nav-text">(1)、explain出来的各种item的意义；</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-、profile的意义以及使用场景；"><span class="nav-number">12.0.2.</span> <span class="nav-text">(2)、profile的意义以及使用场景；</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#备份计划，mysqldump以及xtranbackup的实现原理"><span class="nav-number">13.</span> <span class="nav-text">备份计划，mysqldump以及xtranbackup的实现原理</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-、备份计划；"><span class="nav-number">13.0.1.</span> <span class="nav-text">(1)、备份计划；</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-、备份恢复时间；"><span class="nav-number">13.0.2.</span> <span class="nav-text">(2)、备份恢复时间；</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-、xtrabackup实现原理"><span class="nav-number">13.0.3.</span> <span class="nav-text">(3)、xtrabackup实现原理</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mysqldump中备份出来的sql，如果我想sql文件中，一行只有一个insert…-value-的话，怎么办？如果备份需要带上master的复制点信息怎么办？"><span class="nav-number">14.</span> <span class="nav-text">mysqldump中备份出来的sql，如果我想sql文件中，一行只有一个insert….value()的话，怎么办？如果备份需要带上master的复制点信息怎么办？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#innodb的读写参数优化"><span class="nav-number">15.</span> <span class="nav-text">innodb的读写参数优化</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-、读取参数"><span class="nav-number">15.0.1.</span> <span class="nav-text">(1)、读取参数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-、写入参数；"><span class="nav-number">15.0.2.</span> <span class="nav-text">(2)、写入参数；</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-、与IO相关的参数；"><span class="nav-number">15.0.3.</span> <span class="nav-text">(3)、与IO相关的参数；</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-、缓存参数以及缓存的适用场景。"><span class="nav-number">15.0.4.</span> <span class="nav-text">(4)、缓存参数以及缓存的适用场景。</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#你是否做过主从一致性校验，如果有，怎么做的，如果没有，你打算怎么做？"><span class="nav-number">16.</span> <span class="nav-text">你是否做过主从一致性校验，如果有，怎么做的，如果没有，你打算怎么做？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#你们数据库是否支持emoji表情，如果不支持，如何操作？"><span class="nav-number">17.</span> <span class="nav-text">你们数据库是否支持emoji表情，如果不支持，如何操作？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#表中有大字段X-例如：text类型-，且字段X不会经常更新，以读为为主，请问"><span class="nav-number">18.</span> <span class="nav-text">表中有大字段X(例如：text类型)，且字段X不会经常更新，以读为为主，请问</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL中InnoDB引擎的行锁是通过加在什么上完成-或称实现-的？为什么是这样子的？"><span class="nav-number">19.</span> <span class="nav-text">MySQL中InnoDB引擎的行锁是通过加在什么上完成(或称实现)的？为什么是这样子的？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开放性问题"><span class="nav-number">20.</span> <span class="nav-text">开放性问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是存储过程？有哪些优缺点？"><span class="nav-number">21.</span> <span class="nav-text">什么是存储过程？有哪些优缺点？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#索引是什么？有什么作用以及优缺点？"><span class="nav-number">22.</span> <span class="nav-text">索引是什么？有什么作用以及优缺点？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是事务？"><span class="nav-number">23.</span> <span class="nav-text">什么是事务？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用索引查询一定能提高查询的性能吗？为什么"><span class="nav-number">24.</span> <span class="nav-text">使用索引查询一定能提高查询的性能吗？为什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#简单说一说drop、delete与truncate的区"><span class="nav-number">25.</span> <span class="nav-text">简单说一说drop、delete与truncate的区</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#drop、delete与truncate分别在什么场景之下使用？"><span class="nav-number">26.</span> <span class="nav-text">drop、delete与truncate分别在什么场景之下使用？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是视图？以及视图的使用场景有哪些？"><span class="nav-number">27.</span> <span class="nav-text">什么是视图？以及视图的使用场景有哪些？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库的乐观锁和悲观锁是什么？"><span class="nav-number">28.</span> <span class="nav-text">数据库的乐观锁和悲观锁是什么？</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库的三范式是什么"><span class="nav-number">1.</span> <span class="nav-text">数据库的三范式是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#说下mysql有几种数据库引擎"><span class="nav-number">2.</span> <span class="nav-text">说下mysql有几种数据库引擎</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#说下mysql-Master-slave-的原理"><span class="nav-number">3.</span> <span class="nav-text">说下mysql Master slave 的原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL中myisam与innodb的区别"><span class="nav-number">4.</span> <span class="nav-text">MySQL中myisam与innodb的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#innodb引擎的4大特性"><span class="nav-number">5.</span> <span class="nav-text">innodb引擎的4大特性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是事务？"><span class="nav-number">6.</span> <span class="nav-text">什么是事务？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL-事务四大特性"><span class="nav-number">7.</span> <span class="nav-text">MySQL 事务四大特性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#介绍下InnoDB存储引擎的B-树索引"><span class="nav-number">8.</span> <span class="nav-text">介绍下InnoDB存储引擎的B+树索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#主键和候选键有什么区别？"><span class="nav-number">9.</span> <span class="nav-text">主键和候选键有什么区别？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#超键、候选键、主键、外键分别是什么？"><span class="nav-number">10.</span> <span class="nav-text">超键、候选键、主键、外键分别是什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL中varchar与char的区别以及varchar-50-中的50代表的涵义"><span class="nav-number">11.</span> <span class="nav-text">MySQL中varchar与char的区别以及varchar(50)中的50代表的涵义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问了innodb的事务与日志的实现方式"><span class="nav-number">12.</span> <span class="nav-text">问了innodb的事务与日志的实现方式</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#有多少种日志？"><span class="nav-number">12.0.1.</span> <span class="nav-text">有多少种日志？</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL-binlog的几种日志录入格式以及区别"><span class="nav-number">13.</span> <span class="nav-text">MySQL binlog的几种日志录入格式以及区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL数据库cpu飙升到500-的话他怎么处理？"><span class="nav-number">14.</span> <span class="nav-text">MySQL数据库cpu飙升到500%的话他怎么处理？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sql优化各种方法"><span class="nav-number">15.</span> <span class="nav-text">sql优化各种方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#备份计划，mysqldump以及xtranbackup的实现原理"><span class="nav-number">16.</span> <span class="nav-text">备份计划，mysqldump以及xtranbackup的实现原理</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#3-、xtrabackup实现原理"><span class="nav-number">16.0.1.</span> <span class="nav-text">(3)、xtrabackup实现原理</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mysqldump中备份出来的sql，如果我想sql文件中，一行只有一个insert…-value-的话，怎么办？如果备份需要带上master的复制点信息怎么办？"><span class="nav-number">17.</span> <span class="nav-text">mysqldump中备份出来的sql，如果我想sql文件中，一行只有一个insert….value()的话，怎么办？如果备份需要带上master的复制点信息怎么办？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#innodb的读写参数优化"><span class="nav-number">18.</span> <span class="nav-text">innodb的读写参数优化</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-、读取参数"><span class="nav-number">18.0.1.</span> <span class="nav-text">(1)、读取参数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-、写入参数；"><span class="nav-number">18.0.2.</span> <span class="nav-text">(2)、写入参数；</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-、与IO相关的参数；"><span class="nav-number">18.0.3.</span> <span class="nav-text">(3)、与IO相关的参数；</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-、缓存参数以及缓存的适用场景。"><span class="nav-number">18.0.4.</span> <span class="nav-text">(4)、缓存参数以及缓存的适用场景。</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#你是否做过主从一致性校验，如果有，怎么做的，如果没有，你打算怎么做？"><span class="nav-number">19.</span> <span class="nav-text">你是否做过主从一致性校验，如果有，怎么做的，如果没有，你打算怎么做？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#你们数据库是否支持emoji表情，如果不支持，如何操作？"><span class="nav-number">20.</span> <span class="nav-text">你们数据库是否支持emoji表情，如果不支持，如何操作？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#表中有大字段X-例如：text类型-，且字段X不会经常更新，以读为为主，请问"><span class="nav-number">21.</span> <span class="nav-text">表中有大字段X(例如：text类型)，且字段X不会经常更新，以读为为主，请问</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL中InnoDB引擎的行锁是通过加在什么上完成-或称实现-的？为什么是这样子的？"><span class="nav-number">22.</span> <span class="nav-text">MySQL中InnoDB引擎的行锁是通过加在什么上完成(或称实现)的？为什么是这样子的？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开放性问题"><span class="nav-number">23.</span> <span class="nav-text">开放性问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是存储过程？有哪些优缺点？"><span class="nav-number">24.</span> <span class="nav-text">什么是存储过程？有哪些优缺点？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#索引是什么？有什么作用以及优缺点？"><span class="nav-number">25.</span> <span class="nav-text">索引是什么？有什么作用以及优缺点？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用索引查询一定能提高查询的性能吗？为什么"><span class="nav-number">26.</span> <span class="nav-text">使用索引查询一定能提高查询的性能吗？为什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#简单说一说drop、delete与truncate的区"><span class="nav-number">27.</span> <span class="nav-text">简单说一说drop、delete与truncate的区</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#drop、delete与truncate分别在什么场景之下使用？"><span class="nav-number">28.</span> <span class="nav-text">drop、delete与truncate分别在什么场景之下使用？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是视图？以及视图的使用场景有哪些？"><span class="nav-number">29.</span> <span class="nav-text">什么是视图？以及视图的使用场景有哪些？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库的乐观锁和悲观锁是什么？"><span class="nav-number">30.</span> <span class="nav-text">数据库的乐观锁和悲观锁是什么？</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

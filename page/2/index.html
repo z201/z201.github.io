@@ -326,7 +326,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-05 04:46:14" itemprop="dateModified" datetime="2020-08-05T04:46:14+08:00">2020-08-05</time>
+                <time title="Modified: 2020-08-05 18:32:38" itemprop="dateModified" datetime="2020-08-05T18:32:38+08:00">2020-08-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -383,11 +383,39 @@
 <li>InnoDB支持外键，而MyISAM不支持</li>
 <li>InnoDB不支持全文索引，而MyISAM支持。</li>
 </ul>
-<h5 id="2-、innodb引擎的4大特性"><a href="#2-、innodb引擎的4大特性" class="headerlink" title="(2)、innodb引擎的4大特性"></a>(2)、innodb引擎的4大特性</h5><ul>
+<h3 id="innodb引擎的4大特性"><a href="#innodb引擎的4大特性" class="headerlink" title="innodb引擎的4大特性"></a>innodb引擎的4大特性</h3><ul>
 <li>插入缓冲（insert buffer),</li>
 <li>二次写(double write),</li>
 <li>自适应哈希索引(ahi),</li>
 <li>预读(read ahead)</li>
+<li>支持事务操作，具有事务 ACID 隔离特性，默认的隔离级别是<code>可重复读(repetable-read)</code>、通过MVCC（并发版本控制）来实现的。能够解决<code>脏读</code>和<code>不可重复读</code>的问题。</li>
+<li>InnoDB 支持外键操作。</li>
+<li>InnoDB 默认的锁粒度<code>行级锁</code>，并发性能比较好，会发生死锁的情况。</li>
+<li>和 MyISAM 一样的是，InnoDB 存储引擎也有 <code>.frm文件存储表结构</code> 定义，但是不同的是，InnoDB 的表数据与索引数据是存储在一起的，都位于 B+ 数的叶子节点上，而 MyISAM 的表数据和索引数据是分开的。</li>
+<li>InnoDB 有安全的日志文件，这个日志文件用于恢复因数据库崩溃或其他情况导致的数据丢失问题，保证数据的一致性。</li>
+<li>InnoDB 和 MyISAM 支持的索引类型相同，但具体实现因为文件结构的不同有很大差异。</li>
+<li>增删改查性能方面，如果执行大量的增删改操作，推荐使用 InnoDB 存储引擎，它在删除操作时是对行删除，不会重建表。</li>
+</ul>
+<h3 id="什么是事务？"><a href="#什么是事务？" class="headerlink" title="什么是事务？"></a>什么是事务？</h3><ul>
+<li>事务（Transaction）是并发控制的基本单位。所谓的事务，它是一个操作序列，这些操作要么都执行，要么都不执行，它是一个不可分割的工作单位。事务是数据库维护数据一致性的单位，在每个事务结束时，都能保持数据一致性。</li>
+</ul>
+<h3 id="MySQL-事务四大特性"><a href="#MySQL-事务四大特性" class="headerlink" title="MySQL 事务四大特性"></a>MySQL 事务四大特性</h3><blockquote>
+<p>一说到 MySQL 事务，你肯定能想起来四大特性：<code>原子性</code>、<code>一致性</code>、<code>隔离性</code>、<code>持久性</code>。什么是 MySQL 中的事务？</p>
+<p>事务是一组操作，组成这组操作的各个单元，要不全都成功要不全都失败，这个特性就是事务。</p>
+<p>在 MySQL 中，事务是在引擎层实现的，只有使用 <code>innodb</code> 引擎的数据库或表才支持事务。</p>
+</blockquote>
+<ul>
+<li><code>原子性(Atomicity)</code>: 原子性指的就是 MySQL 中的包含事务的操作要么<code>全部成功</code>、要么全部<code>失败回滚</code>，因此事务的操作如果成功就必须要全部应用到数据库，如果操作失败则不能对数据库有任何影响。</li>
+<li><code>一致性(Consistency)</code>：一致性指的是一个事务在执行前后其状态一致。比如 A 和 B 加起来的钱一共是 1000 元，那么不管 A 和 B 之间如何转账，转多少次，事务结束后两个用户的钱加起来还得是 1000，这就是事务的一致性。</li>
+<li><code>持久性(Durability)</code>: 持久性指的是一旦事务提交，那么发生的改变就是永久性的，即使数据库遇到特殊情况比如故障的时候也不会产生干扰。</li>
+<li><code>隔离性(Isolation)</code>：当多个事务同时进行时，就有可能出现<code>脏读(dirty read)</code>、<code>不可重复读(non-repeatable read)</code>、<code>幻读(phantom read)</code> 的情况，为了解决这些并发问题，提出了隔离性的概念。<ul>
+<li>重点说下隔离性它们分别是<code>读未提交(read uncommitted)</code>、<code>读已提交(read committed)</code>、<code>可重复读(repetable read)</code> 和 <code>串行化(serializable)</code>。下面分别来解释一下。</li>
+<li><code>读未提交</code>：读未提交指的是一个事务在提交之前，它所做的修改就能够被其他事务所看到。</li>
+<li><code>读已提交</code>：读已提交指的是一个事务在提交之后，它所做的变更才能够让其他事务看到。</li>
+<li><code>可重复读</code>：可重复读指的是一个事务在执行的过程中，看到的数据是和启动时看到的数据是一致的。未提交的变更对其他事务不可见。</li>
+<li><code>串行化</code>：顾名思义是对于同一行记录，<code>写</code>会加<code>写锁</code>，<code>读</code>会加<code>读锁</code>。当出现读写锁冲突的时候，后访问的事务必须等前一个事务执行完成，才能继续执行。</li>
+</ul>
+</li>
 </ul>
 <h3 id="介绍下InnoDB存储引擎的B-树索引"><a href="#介绍下InnoDB存储引擎的B-树索引" class="headerlink" title="介绍下InnoDB存储引擎的B+树索引"></a>介绍下InnoDB存储引擎的B+树索引</h3><ul>
 <li>每个索引都对应一棵B+树，B+树分为好多层，最下边一层是叶子节点，其余的是内节点。所有用户记录都存储在B+树的叶子节点，所有目录项记录都存储在内节点。</li>
@@ -395,9 +423,10 @@
 <li>我们可以为自己感兴趣的列建立二级索引，二级索引的叶子节点包含的用户记录由索引列 + 主键组成，所以如果想通过二级索引来查找完整的用户记录的话，需要通过回表操作，也就是在通过二级索引找到主键值之后再到聚簇索引中查找完整的用户记录。</li>
 <li>B+树中每层节点都是按照索引列值从小到大的顺序排序而组成了双向链表，而且每个页内的记录（不论是用户记录还是目录项记录）都是按照索引列的值从小到大的顺序而形成了一个单链表。如果是联合索引的话，则页面和记录先按照联合索引前边的列排序，如果该列值相同，再按照联合索引后边的列排序。</li>
 <li>通过索引查找记录是从B+树的根节点开始，一层一层向下搜索。由于每个页面都按照索引列的值建立了Page Directory（页目录），所以在这些页面中的查找非常快。</li>
-</ul>
-<h5 id="3-、2者SELECT-COUNT-哪个更快，为什么"><a href="#3-、2者SELECT-COUNT-哪个更快，为什么" class="headerlink" title="(3)、2者SELECT COUNT(*)哪个更快，为什么"></a>(3)、2者SELECT COUNT(*)哪个更快，为什么</h5><ul>
+<li>二者SELECT COUNT(*)哪个更快，为什么<ul>
 <li>myisam更快，因为myisam内部维护了一个计数器，可以直接调取。</li>
+</ul>
+</li>
 </ul>
           <!--noindex-->
             <div class="post-button">
