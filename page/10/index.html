@@ -646,7 +646,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/02/28/Redis%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%80%EF%BC%89/">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/02/28/MySQL%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%89%EF%BC%89/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -660,7 +660,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2019/02/28/Redis%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%80%EF%BC%89/" class="post-title-link" itemprop="url">Redis基础（一）</a>
+            <a href="/2019/02/28/MySQL%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%89%EF%BC%89/" class="post-title-link" itemprop="url">MySQL基础（三）</a>
         </h2>
 
         <div class="post-meta">
@@ -677,7 +677,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-04-01 05:33:13" itemprop="dateModified" datetime="2019-04-01T05:33:13+08:00">2019-04-01</time>
+                <time title="Modified: 2019-03-09 03:12:08" itemprop="dateModified" datetime="2019-03-09T03:12:08+08:00">2019-03-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -685,7 +685,7 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA/" itemprop="url" rel="index"><span itemprop="name">基础理论</span></a>
+                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
                 </span>
             </span>
 
@@ -701,53 +701,43 @@
 
       
           <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。 </p>
+<p>本章是整理知识内容，为强化知识长期更新。</p>
 </blockquote>
-<h2 id="一、初认Redis"><a href="#一、初认Redis" class="headerlink" title="一、初认Redis"></a>一、初认Redis</h2><ul>
-<li>Redis是一个速度非常快的<code>非关系型数据库(non-relationl databases)</code>,它可以是存储键对值（key-vakue）方式存储数据。它拥有5中数据类型。同时可以将存储在内存中的数据持久化到因硬盘中。</li>
-<li>Redis所有的数据都是以唯一的key字符串为名称，然后可以通过这个key来获取对应的value。</li>
+<ul>
+<li>在 <a href="https://z201.cn/2018/04/29/MySQL%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%80%EF%BC%89/" target="_blank" rel="noopener">MySQL基础（一）</a> 和 <a href="https://z201.cn/2018/05/02/MySQL%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%8C%EF%BC%89/" target="_blank" rel="noopener">MySQL基础（二）</a>已经介绍了MYSQL最常用基础的操作，现在使用官方的示例数据库来做测试。</li>
 </ul>
-<table>
-<thead>
-<tr>
-<th>结构类型</th>
-<th>结构存储的值</th>
-<th>结构的读写能力</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>STRING</td>
-<td>可以是字符串、整数或者浮点类型</td>
-<td>对整个字符串或者字符串的其中一部分执行操作；对整数和浮点数据执行<code>自动</code>或者<code>自减</code>操作</td>
-</tr>
-<tr>
-<td>LIST</td>
-<td>一个链表、链表每个节点上都包含了一个字符串</td>
-<td>从链表的两端推入或者弹出元素；根据偏移量对链表记性修剪<code>trim</code>；读取单个或者多个元素；根据值查询或者移除元素。</td>
-</tr>
-<tr>
-<td>SET</td>
-<td>包含字符串的无序集合，并且每个被包含的字符串都是唯一约束</td>
-<td>添加、查询、移除单个元素；检查一个元素是否存在于集合中；计算交集、并集、差集；从集合里面随机获取元素。</td>
-</tr>
-<tr>
-<td>HASH</td>
-<td>包含键值对的无序散列表</td>
-<td>添加、查询、移除单个键值对；获取全部键对值。</td>
-</tr>
-<tr>
-<td>ZSET（有序集合）</td>
-<td>字符串与浮点分数之间的有序映射，元素的排列顺序由分值大决定。</td>
-<td>添加、查询、移除单个元素；根据分值范围或者成员来获取元素。</td>
-</tr>
-</tbody></table>
-<h3 id="String"><a href="#String" class="headerlink" title="String"></a>String</h3><ul>
-<li>字符串是Redis当中最简单的数据结构。Redis的字符串是动态的字符串，可以被反复修改。内部实现类似Java的ArrayList，采用预分配空间的方式来减少内存频繁分配。预分配大小方式根据字符串的大小决定，字符串小于1m则扩容空间是加倍。若字符串超过1m，扩容一次只会多扩1m的空间。字符串最大长度是512m。</li>
+<h3 id="0x01-准备样本数据库"><a href="#0x01-准备样本数据库" class="headerlink" title="0x01 准备样本数据库"></a>0x01 准备样本数据库</h3><ul>
+<li><p>Sakila样本数据库介绍</p>
+<p>Sakila样本数据库是MySQL官方提供的一个模拟DVD租赁信息管理的数据库，提供了一个标准模式，可作为书中例子,教程、文章、样品,等等，对学习测试来说是个不错的选择。<a href="https://dev.mysql.com/doc/sakila/en/sakila-preface.html" target="_blank" rel="noopener">Sakila样本数据库官方文档介绍</a></p>
+</li>
+<li><p>下载数据文件</p>
+<ul>
+<li>MySQL :: Other MySQL Documentation <a href="https://dev.mysql.com/doc/index-other.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/index-other.html</a>Example Databases –&gt; sakila database –&gt; zip包或.tar.gz包均可）</li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">192.168.31.7:6379&gt; keys * <span class="comment"># 检查当前空间key</span></span><br><span class="line">(empty list or <span class="built_in">set</span>) <span class="comment"># 空的</span></span><br><span class="line"><span class="comment"># 当个字符串读写</span></span><br><span class="line">192.168.31.7:6379&gt; <span class="built_in">set</span> redis-name redis:latest</span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; keys *</span><br><span class="line">1) <span class="string">"redis-name"</span></span><br><span class="line">192.168.31.7:6379&gt; get redis-name</span><br><span class="line"><span class="string">"redis:latest"</span></span><br><span class="line">192.168.31.7:6379&gt; <span class="built_in">set</span> redis-version 5.0.3</span><br><span class="line">OK</span><br><span class="line"><span class="comment"># 批量获取字符串</span></span><br><span class="line">192.168.31.7:6379&gt; mget redis-name redis-version</span><br><span class="line">1) <span class="string">"redis:latest"</span></span><br><span class="line">2) <span class="string">"5.0.3"</span></span><br><span class="line"><span class="comment"># 批量写入字符串</span></span><br><span class="line">192.168.31.7:6379&gt; mset os mac language Chinese</span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; keys *</span><br><span class="line">1) <span class="string">"redis-version"</span></span><br><span class="line">2) <span class="string">"language"</span></span><br><span class="line">3) <span class="string">"os"</span></span><br><span class="line">4) <span class="string">"redis-name"</span></span><br><span class="line">192.168.31.7:6379&gt; mget redis-name redis-version os language </span><br><span class="line">1) <span class="string">"redis:latest"</span></span><br><span class="line">2) <span class="string">"5.0.3"</span></span><br><span class="line">3) <span class="string">"mac"</span></span><br><span class="line">4) <span class="string">"Chinese"</span></span><br><span class="line">192.168.31.7:6379&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>解压后得到3个文件：</p>
+<ul>
+<li><p>sakila.mwb          workbench数据模型</p>
+</li>
+<li><p>sakila-data.sql     表记录信息</p>
+</li>
+<li><p>sakila-schema.sql 表结构信息</p>
+</li>
+</ul>
+</li>
+<li><p>先倒入表结构在倒入数据。</p>
+</li>
+</ul>
+<h3 id="0x02-sakila样例数据库DVD租赁业务流程解读"><a href="#0x02-sakila样例数据库DVD租赁业务流程解读" class="headerlink" title="0x02 sakila样例数据库DVD租赁业务流程解读"></a>0x02 sakila样例数据库DVD租赁业务流程解读</h3><ul>
+<li>每个商店维护自己的租赁影片清单，当客户取走或归还DVD光盘时会有一个专门的店员对这个清单进行维护；</li>
+<li>影片描写的内容同样在维护信息范围之列，如分类（动作、冒险、喜剧等）、演员、等级、特殊分类（如被删除的情节和预告片）。这些信息可能被打印在DVD包装的标签上；</li>
+<li>必须在商店注册成为会员才可以租赁光盘；</li>
+<li>客户可以在任何一家商店租赁一张或多张光盘，同时商店希望在每张光盘对应的租赁期内规划之前租赁的光盘；</li>
+<li>顾客可以在任意时间对任何租赁的光盘付费；</li>
+</ul>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2019/02/28/Redis%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%80%EF%BC%89/#more" rel="contents">
+              <a class="btn" href="/2019/02/28/MySQL%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%89%EF%BC%89/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
