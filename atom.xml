@@ -85,7 +85,7 @@
     <link href="https://z201.github.io/2020/07/16/%E5%AE%9E%E8%B7%B5-eureka%E9%92%89%E9%92%89%E5%91%8A%E8%AD%A6%E9%80%9A%E7%9F%A5/"/>
     <id>https://z201.github.io/2020/07/16/%E5%AE%9E%E8%B7%B5-eureka%E9%92%89%E9%92%89%E5%91%8A%E8%AD%A6%E9%80%9A%E7%9F%A5/</id>
     <published>2020-07-16T09:04:36.000Z</published>
-    <updated>2020-07-28T18:20:36.700Z</updated>
+    <updated>2020-08-06T21:53:50.242Z</updated>
     
     <content type="html"><![CDATA[<blockquote><p>本篇幅只是回顾使用eureka的时候如何钉钉告警。</p></blockquote><h3 id="eureka如何快速实现钉钉告警"><a href="#eureka如何快速实现钉钉告警" class="headerlink" title="eureka如何快速实现钉钉告警"></a>eureka如何快速实现钉钉告警</h3><p><a href="https://z201.cn/2020/07/15/%E5%AE%9E%E8%B7%B5-spring-boot%E5%BC%82%E5%B8%B8%E9%92%89%E9%92%89%E9%80%9A%E7%9F%A5/" target="_blank" rel="noopener">实践-spring-boot异常钉钉通知</a></p><p>​        上面实践了springboot全局异常钉钉告警机制。这篇主要回顾eureka监听机制钉钉告警。在日常维护工作中，如果出现网络抖动或者其它问题导致应用不可用，需要第一件发出告警提醒相关人员尽快处理。</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">eureka -&gt;&gt; eventListener : event</span><br><span class="line">eventListener -&gt;&gt;  钉钉 : alarmNoticeSend</span><br><span class="line">钉钉 -&gt;&gt; 开发人员  : eurekaInstanceInfo</span><br></pre></td></tr></table></figure><ul><li>实例图</li></ul><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/eureka%E5%AE%9E%E4%BE%8B%E9%92%89%E9%92%89%E5%91%8A%E8%AD%A6.png"></p><p>​        关键代码</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@EventListener</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">listen</span><span class="params">(EurekaInstanceCanceledEvent event)</span> </span>&#123;</span><br><span class="line">        log.error(<span class="string">"告警通知 [&#123;&#125;] 服务注销 timestamp [&#123;&#125;] serverId [&#123;&#125;]"</span>,</span><br><span class="line">                event.getAppName(),</span><br><span class="line">                event.getTimestamp(),</span><br><span class="line">                event.getServerId());</span><br><span class="line">        <span class="keyword">if</span> (!event.isReplication()) &#123;</span><br><span class="line">            ServiceNotice serviceNotice = <span class="keyword">new</span> ServiceNotice();</span><br><span class="line">            serviceNotice.setTitle(<span class="string">"告警通知 服务下线"</span>);</span><br><span class="line">            serviceNotice.setAppName(event.getAppName());</span><br><span class="line">            serviceNotice.setTimestamp(event.getTimestamp());</span><br><span class="line">            serviceNotice.setServerId(event.getServerId());</span><br><span class="line">            serviceNotice.setProfiles(active);</span><br><span class="line">            alarmNoticeManage.createNotice(serviceNotice, <span class="string">""</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@EventListener</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">listen</span><span class="params">(EurekaInstanceRegisteredEvent event)</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">"告警通知 [&#123;&#125;] 服务注册 timestamp [&#123;&#125;] id [&#123;&#125;] ipAddr [&#123;&#125;] "</span>,</span><br><span class="line">                event.getInstanceInfo().getAppName(),</span><br><span class="line">                event.getTimestamp(),</span><br><span class="line">                event.getInstanceInfo().getId(),</span><br><span class="line">                event.getInstanceInfo().getIPAddr()</span><br><span class="line">        );</span><br><span class="line">        <span class="keyword">if</span> (!event.isReplication()) &#123;</span><br><span class="line">            ServiceNotice serviceNotice = <span class="keyword">new</span> ServiceNotice();</span><br><span class="line">            serviceNotice.setTitle(<span class="string">"告警通知 服务上线"</span>);</span><br><span class="line">            serviceNotice.setAppName(event.getInstanceInfo().getAppName());</span><br><span class="line">            serviceNotice.setTimestamp(event.getTimestamp());</span><br><span class="line">            serviceNotice.setServerId(event.getInstanceInfo().getId());</span><br><span class="line">            serviceNotice.setProfiles(active);</span><br><span class="line">            alarmNoticeManage.createNotice(serviceNotice, <span class="string">""</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure><ul><li>效果如下</li></ul><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">告警通知 服务下线</span><br><span class="line">2020-07-16 16:03:20 Z-GATEWAY 192.168.31.7:z-gateway:9000 profiles dev1</span><br><span class="line">@xxx</span><br></pre></td></tr></table></figure><ul><li>eureka查看源码得知有五个事件。</li></ul><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">EurekaServerStartedEvent - Eureka服务端启动事件</span><br><span class="line">EurekaRegistryAvailableEvent - Eureka服务端可用事件</span><br><span class="line">EurekaInstanceRegisteredEvent - Eureka客户端服务注册事件</span><br><span class="line">EurekaInstanceRenewedEvent - Eureka客户端续约事件</span><br><span class="line">EurekaInstanceCanceledEvent - Eureka客户端下线事件</span><br></pre></td></tr></table></figure><p>这里就比较简单了。</p>]]></content>
     
@@ -110,6 +110,8 @@
       <category term="Eureka" scheme="https://z201.github.io/tags/Eureka/"/>
     
       <category term="钉钉" scheme="https://z201.github.io/tags/%E9%92%89%E9%92%89/"/>
+    
+      <category term="微服务" scheme="https://z201.github.io/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/"/>
     
   </entry>
   
@@ -647,6 +649,37 @@
   </entry>
   
   <entry>
+    <title>面试题-Jvm</title>
+    <link href="https://z201.github.io/2020/06/30/%E9%9D%A2%E8%AF%95%E9%A2%98-Jvm/"/>
+    <id>https://z201.github.io/2020/06/30/%E9%9D%A2%E8%AF%95%E9%A2%98-Jvm/</id>
+    <published>2020-06-29T16:41:13.000Z</published>
+    <updated>2020-08-06T21:54:40.291Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote><p>本章属于持续学习、长期更修。</p></blockquote>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;blockquote&gt;
+&lt;p&gt;本章属于持续学习、长期更修。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+      
+    
+    </summary>
+    
+    
+      <category term="面试" scheme="https://z201.github.io/categories/%E9%9D%A2%E8%AF%95/"/>
+    
+    
+      <category term="Java" scheme="https://z201.github.io/tags/Java/"/>
+    
+      <category term="Jvm" scheme="https://z201.github.io/tags/Jvm/"/>
+    
+  </entry>
+  
+  <entry>
     <title>面试题-Java-Collecions-Framework</title>
     <link href="https://z201.github.io/2020/06/29/%E9%9D%A2%E8%AF%95%E9%A2%98-Java-Collecions-Framework/"/>
     <id>https://z201.github.io/2020/06/29/%E9%9D%A2%E8%AF%95%E9%A2%98-Java-Collecions-Framework/</id>
@@ -780,11 +813,11 @@
   </entry>
   
   <entry>
-    <title>实践nginx日志简单的统计</title>
-    <link href="https://z201.github.io/2019/06/04/%E5%AE%9E%E8%B7%B5nginx%E6%97%A5%E5%BF%97%E7%AE%80%E5%8D%95%E7%9A%84%E7%BB%9F%E8%AE%A1/"/>
-    <id>https://z201.github.io/2019/06/04/%E5%AE%9E%E8%B7%B5nginx%E6%97%A5%E5%BF%97%E7%AE%80%E5%8D%95%E7%9A%84%E7%BB%9F%E8%AE%A1/</id>
+    <title>实践Nginx日志简单的统计</title>
+    <link href="https://z201.github.io/2019/06/04/%E5%AE%9E%E8%B7%B5-nginx%E6%97%A5%E5%BF%97%E7%AE%80%E5%8D%95%E7%9A%84%E7%BB%9F%E8%AE%A1/"/>
+    <id>https://z201.github.io/2019/06/04/%E5%AE%9E%E8%B7%B5-nginx%E6%97%A5%E5%BF%97%E7%AE%80%E5%8D%95%E7%9A%84%E7%BB%9F%E8%AE%A1/</id>
     <published>2019-06-04T03:21:21.000Z</published>
-    <updated>2019-06-04T15:30:17.712Z</updated>
+    <updated>2020-08-06T21:52:32.671Z</updated>
     
     <content type="html"><![CDATA[<blockquote><p>公司没有日志采集平台，又不太可能在业务系统里面搞事情。好在之前有玩过elk日志分析组合。直接从服务器上面撸出日志简单的用linux命令分析下吧。</p></blockquote><p>Nginx日志统计（简单的）</p><p>（日志文件叫access.log 在当前目录下）</p><p><strong>统计 PV，就是日志行数</strong></p><p><code>cat access.log |wc -l</code></p><p><strong>UV, 即是统计 IP 数</strong></p><p><code>cat access.log |awk &#39;{print $1}&#39; |sort |uniq -c |wc -l</code></p><p><strong>使用linux grep 进行统计</strong></p><p><code>grep -E &quot;POST|GET&quot; access.log | awk -F &#39;&quot;&#39; &#39;{print $2,$3}&#39; | awk &#39;{print $2}&#39;| sort | uniq -c | sort -k1nr | head -100</code></p><p><strong>耗时的请求发生时间、所请求的 URI 和耗时</strong></p><p><code>cat access.log | awk &#39;{print $4,$7,$10,$NF}&#39; | sort -k3 -nr | head -100</code></p><p><strong>统计</strong>nginx<strong>访问频次最高的</strong>100<strong>个</strong>Ip**</p><p><code>grep -E &quot;POST|GET&quot; access.log | awk -F &#39;&quot;&#39; &#39;{print $(NF-1)}&#39; | sort | uniq -c | sort -k1nr | head -100</code></p><p><strong>统计</strong>nginx<strong>访问不正常（状态码</strong>400+<strong>）的前</strong>100<strong>个</strong>url<strong>和频次</strong></p><p><code>grep -E &quot;POST|GET&quot; access.log | awk -F &#39;&quot;&#39; &#39;{print $2,$3}&#39; | awk &#39;{if ($4&gt;=&quot;400&quot;) {print $4,$1,$2}}&#39; | sort | uniq -c | sort -k1nr | head -100</code></p><p><strong>统计nginx访问状态码非200的前100个</strong>url<strong>和频次**</strong></p><p><code>grep -E &quot;POST|GET&quot; access.log | awk -F &#39;&quot;&#39; &#39;{print $2,$3}&#39; | awk &#39;{if ($4!=200) {print $4,$1,$2}}&#39; | sort | uniq -c | sort -k1nr | head -100</code></p><p><strong>不同 URI 的平均耗时</strong></p><p><code>grep -E &quot;POST|GET&quot; access.log  | awk &#39;{s[$10] += $NF;c[$10]++}END{for(i in s){print i,s[i]/c[i]}}&#39; |sort -k2 -nr | head</code></p><p><strong>每秒请求量统计</strong></p><p>统计每秒的请求数,top100的时间点(精确到秒)</p><p><code>grep -E &quot;POST|GET&quot; access.log |  awk &#39;{print $4}&#39; access.log |cut -c 14-21|sort|uniq -c|sort -nr|head -n 100</code></p><p><strong>每分钟请求量统计</strong></p><p>统计每分钟的请求数,top100的时间点(精确到分钟)</p><p><code>grep -E &quot;POST|GET&quot; access.log |  awk &#39;{print $4}&#39; access.log |cut -c 14-18|sort|uniq -c|sort -nr|head -n 100</code></p><p><strong>每小时请求量统计</strong></p><p>统计每小时的请求数,top100的时间点(精确到小时)</p><p><code>grep -E &quot;POST|GET&quot; access.log |  awk &#39;{print $4}&#39; access.log |cut -c 14-15|sort|uniq -c|sort -nr|head -n 100</code></p><p><strong>统计蜘蛛抓取次数</strong></p><p><code>grep &#39;Baiduspider&#39; access.log |wc -l</code></p>]]></content>
     
@@ -802,7 +835,7 @@
     </summary>
     
     
-      <category term="nginx" scheme="https://z201.github.io/categories/nginx/"/>
+      <category term="Nginx" scheme="https://z201.github.io/categories/Nginx/"/>
     
     
       <category term="nginx" scheme="https://z201.github.io/tags/nginx/"/>
@@ -942,40 +975,6 @@
     
       <category term="源码分析" scheme="https://z201.github.io/categories/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/"/>
     
-    
-  </entry>
-  
-  <entry>
-    <title>关于spring.redis.timeout=0依然超时的问题</title>
-    <link href="https://z201.github.io/2019/04/10/%E5%85%B3%E4%BA%8Espring-redis-timeout-0%E4%BE%9D%E7%84%B6%E8%B6%85%E6%97%B6%E7%9A%84%E9%97%AE%E9%A2%98/"/>
-    <id>https://z201.github.io/2019/04/10/%E5%85%B3%E4%BA%8Espring-redis-timeout-0%E4%BE%9D%E7%84%B6%E8%B6%85%E6%97%B6%E7%9A%84%E9%97%AE%E9%A2%98/</id>
-    <published>2019-04-10T14:16:10.000Z</published>
-    <updated>2020-08-02T20:44:31.681Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote><p>最近在看项目的时候发现一个临时问题，就是redis.timeout设置0依然超时的问题。</p></blockquote><ul><li>代码适用版本 <code>jedis:2.9.0</code> , <code>org.springframework.data.redis:1.8.1</code></li></ul><h3 id="timeout设置0的问题"><a href="#timeout设置0的问题" class="headerlink" title="timeout设置0的问题"></a>timeout设置0的问题</h3><blockquote><p>spring.redis.timeout =0 如果设置成0 redis默认超时时间就是2秒. </p></blockquote><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Jedis/jedis-timeout-1.jpg"></p><blockquote><p>根据debug发现设置0点时候依然是2000毫秒。</p></blockquote><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Jedis/jedis-timeout-2.jpg"></p><blockquote><p>根据初始化方法找到的原因。</p></blockquote><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Jedis/jedis-timeout-3.png"></p><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Jedis/jedis-timeout-4.png"></p><blockquote><p>这里可以看到，当timeout设置0点时候不会被赋值。</p></blockquote><h3 id="END"><a href="#END" class="headerlink" title="END"></a>END</h3>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;blockquote&gt;
-&lt;p&gt;最近在看项目的时候发现一个临时问题，就是redis.timeout设置0依然超时的问题。&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;ul&gt;
-&lt;li&gt;代码适用版本 &lt;code&gt;jedis:2.9.0&lt;/code&gt; , &lt;code&gt;org.springfr
-      
-    
-    </summary>
-    
-    
-      <category term="实践" scheme="https://z201.github.io/categories/%E5%AE%9E%E8%B7%B5/"/>
-    
-    
-      <category term="Redis" scheme="https://z201.github.io/tags/Redis/"/>
-    
-      <category term="Java" scheme="https://z201.github.io/tags/Java/"/>
-    
-      <category term="Spring" scheme="https://z201.github.io/tags/Spring/"/>
     
   </entry>
   
