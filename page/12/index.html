@@ -309,7 +309,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Spring/">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Dubbo/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -323,7 +323,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Spring/" class="post-title-link" itemprop="url">查缺补漏-Spring</a>
+            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Dubbo/" class="post-title-link" itemprop="url">查缺补漏-Dubbo</a>
         </h2>
 
         <div class="post-meta">
@@ -340,7 +340,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-03 02:31:43" itemprop="dateModified" datetime="2020-08-03T02:31:43+08:00">2020-08-03</time>
+                <time title="Modified: 2020-08-07 05:03:35" itemprop="dateModified" datetime="2020-08-07T05:03:35+08:00">2020-08-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -366,122 +366,170 @@
           <blockquote>
 <p>本章是整理知识内容，为强化知识长期更新。</p>
 </blockquote>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/SpringFrameworkRutime.png"></p>
-<h3 id="Spring-Ioc"><a href="#Spring-Ioc" class="headerlink" title="Spring Ioc"></a>Spring Ioc</h3><h4 id="1-描述下依赖注入。"><a href="#1-描述下依赖注入。" class="headerlink" title="1.描述下依赖注入。"></a>1.描述下依赖注入。</h4><ul>
-<li>平常的Java开发中，程序员在某个类中需要依赖其它类的方法。通常是new一个依赖类再调用类实例的方法，这种开发存在的问题是new的类实例不好统一管理。 Spring提出了依赖注入的思想，即依赖类不由程序员实例化，而是通过Spring容器帮我们new指定实例并且将实例注入到需要该对象的类中。依赖注入的另一种说法是”控制反转”。通俗的理解是：平常我们new一个实例，这个实例的控制权是我们程序员。而控制反转是指new实例工作不由我们程序员来做而是交给Spring容器来做。</li>
-<li>IOC对于Spring框架来说，就是由Spring来负责控制对象的生命周期和对象间的关系。</li>
-<li>所谓依赖注入，就是由IOC容器在运行期间，动态地将某种依赖关系注入到对象之中，所以，以来注入DI 和控制反转IOC 是从不同的角度描述的同一间事情，就是值通过引用IOC容器，利用以来关系注入的方式，实现对象之间的解耦。</li>
-</ul>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/SpringIoc%E5%88%9D%E5%A7%8B%E5%8C%96%E8%BF%87%E7%A8%8B.png"></p>
-<h4 id="2-注入的几种方式？"><a href="#2-注入的几种方式？" class="headerlink" title="2. 注入的几种方式？"></a>2. 注入的几种方式？</h4><ul>
-<li>Set注入。</li>
-<li>构造方法注入。</li>
-<li>工厂的方法注入。</li>
-</ul>
-<h3 id="Spring-AOP"><a href="#Spring-AOP" class="headerlink" title="Spring AOP"></a>Spring AOP</h3><ul>
-<li><p>AOP(Aspect-Oriented Programming:⾯向切⾯编程)能够将那些与业务⽆关，却为业务模块所共同调⽤的逻辑或责任（例如事务处理、⽇志管理、权限控制等）封装起来，便于减少系统的重复代码，降低模块间的耦合度，并有利于未来的可拓展性和可维护性。</p>
-<ul>
-<li><strong>Spring AOP</strong>就是基于动态代理的，如果要代理的对象，实现了某个接⼝，那么Spring AOP会使⽤<strong>JDK</strong> Proxy，去创建代理对象，⽽对于没有实现接⼝的对象，就⽆法使⽤ JDK Proxy 去进⾏代理了，这时候Spring AOP会使⽤<strong>Cglib</strong> ，这时候Spring AOP会使⽤ <strong>Cglib</strong> ⽣成⼀个被代理对象的⼦类来作为代理。</li>
-</ul>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/SpringAopProcess.png"></p>
-<ul>
-<li>Spring Aop是运行时增强。</li>
-<li>Cglib Aop是编译器增强。</li>
+<h3 id="Dubbo概述"><a href="#Dubbo概述" class="headerlink" title="Dubbo概述"></a>Dubbo概述</h3><ul>
+<li>服务治理（SOA）治理框架</li>
+<li>Duboo是一个分布式服务框架<ul>
+<li>远程通讯：提供多种基于长链接的NIO框架抽象封装,包括多种线程模型、序列化“请求-响应”的信息交换方案。</li>
+<li>集群容错：提供基于接口方法的透明远程调用过程，包括多协议支持、软负载均衡、失败容错、地址路由、动态配置等集群支持。</li>
+<li>自动发现：基于注册中心目录服务，使服务消费方能动态地查找提供方，使地址透明，使服务提供方可以平滑增或减少机器。</li>
+<li>介绍：</li>
+<li>致力于提供高性能和透明化的RPC远程服务调用方案，以及SOA服务治理方案。</li>
+<li>Dubbo的命名：澳大利亚达博市</li>
+<li>同类型框架：<ul>
+<li>Apache Thrift、Hessian、RMI、WebService（原生）、HSF（淘宝，不开源）、JSF（京东，不开源）。</li>
 </ul>
 </li>
-<li><p>AOP专门用于处理系统中分布于各个模块中交叉关注点的问题，在JavaEE应用中，常常通过AOP来处理一些横切性质的系统级服务，如事物管理、安全检查、缓存对象池管理。</p>
-<ul>
-<li>1.）切面 -Aspect 切面类 比如日志类</li>
-<li>2.） 连接点 - Join Point 加入切点的那个点</li>
-<li>3.）通知 -Advice 是在切面某个特定的连接点上的动作。</li>
-<li>4.）切入点 - Point Cut 匹配连接点的断点</li>
-<li>5.）引入 - Introduction </li>
-<li>6.）目标对象 - Target Object 被一个或多个通知对象，永远被代理的对象。</li>
-<li>7.） AOP代理 - AOP Proxy AOP创建的对象用来实现切面对象。</li>
-<li>8.）织入 - Weaving </li>
-<li>9.）AOP通俗的理解：<ul>
-<li>一个组建A，不关心其他常用的服务组件B，但是这个组件A使用组件B的时候不是组建A自身去调用，而是通过配置等其他方式，比如Spring中可以通过XML配置文件。这样就使的A压根不需要知道服务组件B是怎么样的，A只关心自己的业务逻辑，具体A使用B的时候，配置文件去做，与具体的A组件无关。</li>
+<li>Dubbo涉及的基础知识<ul>
+<li>远程调用方面：RMI、Hassion、WebService、Thrift进行底层调用。</li>
+<li>通讯交互：HTTP、Mian、netty。</li>
+<li>序列化：Hession2、Java、Json。</li>
+<li>容器：Jetty、Spring。</li>
+<li>负载均衡：zookeeper、Redis。（大部分都是zookeeper）</li>
+</ul>
+</li>
+<li>简单的使用场景<ul>
+<li>作为对内提供服务应用的容器。</li>
+<li>拆分负载Web应用到服务容器。</li>
+<li>应用负载均和协调。</li>
+<li>引用服务处理。</li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-SpringBoot/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-SpringBoot/" class="post-title-link" itemprop="url">查缺补漏-SpringBoot</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-07 05:08:28" itemprop="dateModified" datetime="2020-08-07T05:08:28+08:00">2020-08-07</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index"><span itemprop="name">知识点</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
+<h3 id="架构节点（抽象概念）"><a href="#架构节点（抽象概念）" class="headerlink" title="架构节点（抽象概念）"></a>架构节点（抽象概念）</h3><ul>
+<li>Provider:暴露服务的服务提供方。</li>
+<li>Consumer：调用远程服务的服务消费方。</li>
+<li>Registry：服务注册于发现服务</li>
+<li>Monitor:统计服务的调用次调用时间监控中心</li>
+<li>Container:服务运行容器<ul>
+<li>节点调用关系</li>
+<li>服务提供-服务提供者在启动的时候,向注册中心提供自己提供的服务。</li>
+<li>服务消费-服务消费者在启动的时候,向注册中心订阅自己所需要的服务。<ul>
+<li>注册中心异步返回服务提供者地址列表给消费者,如果有变动,注册中心将给予长连接推送变更数据给消费者。</li>
+</ul>
+</li>
+<li>服务统计-服务者和消费者,在内存中累计调用次数和调用时间,定时每分钟发送一次统计数据到监控中心。<ul>
+<li>异步方式</li>
+</ul>
+</li>
+<li>服务调用关系<ul>
+<li>服务消费者,从提供者地址列表中,基于[软负载均衡算法],选一台提供者进行调用,如果调用失败,在选另一台调用。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="Dubbo源码相关"><a href="#Dubbo源码相关" class="headerlink" title="Dubbo源码相关"></a>Dubbo源码相关</h3><ul>
+<li>源码地址<code>git clone https://github.com/alibaba/dubbo</code></li>
+<li>初次编码不执行Test <code>mvn clean install -Dmaven.test.skip=true</code></li>
+<li>JS错误不修改,请自行忽视。</li>
+<li>修复mavan的警告<br>* 地址：<code>dubbo-parent pom.xml</code><br>* maven-jar-plugin version:2.4<br>* maven-surefire-plugin Version 2.19.1<br>* maven-deploy-plugin Version 3.3.9</li>
+<li>项目导入后修复Dubbo XML校验错误提示</li>
+<li>需要导入dubbo.xsd文件</li>
+<li>下载dubbo-2.5.3.jar 版本尽量保持源码同步,解压dt后导入eclipse中。<ul>
+<li>Preferences-XML-XML Catalog 添加一个自定义的：<ul>
+<li>Location: D:\xsd\dubbo.xsd</li>
+<li>Key: <a href="http://code.alibabatech.com/schema/dubbo/dubbo.xsd" target="_blank" rel="noopener">http://code.alibabatech.com/schema/dubbo/dubbo.xsd</a> （默认生成的不行自行修改）。</li>
+<li>在校验错误的XML头部添加：</li>
+<li><?xml version="1.0" encoding="UTF-8"?> <!DOCTYPE dubbo SYSTEM"http://code.alibabatech.com/schema/dubbo"></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>关于maven-dependency-plugin错误 可能是IDE错误提示，空白处添加空格保存自动消失。<ul>
+<li>错误信息如下：Artifact has not been packaged yet. When used on reactor artifact, unpack should be executed after packaging: see MDEP-98. (org.apache.maven.plugins:maven-dependency-plugin:2.8:unpack:unpack:package)<ul>
+<li>修复方案更改插件配置:</li>
+<li><groupId>org.apache.maven.plugins</groupId><br><artifactId>maven-dependency-plugin</artifactId><br><version>2.10&lt;/version<executions>
+<execution>
+<id>unpack</id>
+<phase>packaged</phase>
+<goals>
+<goal>unpack</goal>
+</goals>
+</execution>
+</executions>
+</plugin></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Dubbo源码模块<ul>
+<li>Config配置层(Dubbo-config)</li>
+<li>Proxy服务代理层(Dubbo-rpc)</li>
+<li>Registry注册中心层(Dubbo-registry)</li>
+<li>Cluster路由层(Dubbo-cluster)</li>
+<li>Monitor监控层(Dubbo-monitor)</li>
+<li>Protocol远程调用层(Dubbo-rpc)</li>
+<li>Exchange信息交换层(Dubbo-remoting)</li>
+<li>Transport网络传输层(Dubbo-remoting)</li>
+<li>Serialize数据序列化层(Dubbo-common)</li>
+</ul>
+</li>
+</ul>
+<h3 id="Zookeeper"><a href="#Zookeeper" class="headerlink" title="Zookeeper"></a>Zookeeper</h3><blockquote>
+<p>（测试方案采用zookeeper做均衡负载，简单介绍下配置信息）</p>
 </blockquote>
+<ul>
+<li>下载地址 <a href="http://apache.fayea.com/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz" target="_blank" rel="noopener">http://apache.fayea.com/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz</a></li>
+<li>基本配置：<ul>
+<li>单机模式：修改zookeeper-3.4.8/conf zoo.cfg(原始文件名zoo_sanple.cfg复制一份重命名)<ul>
+<li>编辑内容（仅供参考,具体环境自行修改）</li>
+<li>tickTime = 2000<ul>
+<li>tickTime：基本事件单元，以毫秒为单位。这个时间是作为 Zookeeper 服务器之间或客户端与服务器之间维持心跳的时间间隔，也就是每个 tickTime 时间就会发送一个心跳。</li>
+</ul>
+</li>
+<li>initLimit= 5<ul>
+<li>initLimit:这个配置项用来配置Zookeeper接受客户端初始化连接时最长能忍受多少个心跳时间间隔数，当已超过5个心跳的时间（也就是tickTime）长度后Zookeeper服务器还没有收到客户端的返回信息，那么表明这个客户端连接失败。总的时间长度是5 * 2000=4s。</li>
+</ul>
+</li>
+<li>dataDir = D:\zookeeper\data<ul>
+<li>顾名思义就是 Zookeeper 保存数据快照的目录，默认情况下，Zookeeper 将写数据的日志文件也保存在这个目录里）。</li>
+</ul>
+</li>
+<li>dataLogDir= D:\zookeeper\log<ul>
+<li>顾名思义就是 Zookeeper 保存日志的目录。</li>
+</ul>
+</li>
+<li>synclimit = 5<ul>
+<li>这个配置项表示Leader与Follower之间发送消息，请求和应答时间长长度，最长不能超过多少个tickTime的时间长度,总的时间长度是2 * 2000 = 4s。</li>
+</ul>
+</li>
+<li>clientPort = 2181<ul>
+<li>这个端口就是客户端连接 Zookeeper 服务器的端口，Zookeeper 会监听这个端口，接受客户端的访问请求。</li>
+</ul>
+</li>
+<li>Server（待续）<ul>
+<li>格式：server.id=host:port:port（两个port保证可以正常使用就行）<ul>
+<li>id：通常为整数，建议使用整数。</li>
+<li>host：服务器的IP地址。</li>
+<li>port: Follower端口</li>
+<li>port: Leader选举投票。</li>
+</ul>
+</li>
+<li>ZooKeeper建议使用hostname，而非ip。这需要对主机的/etc/hostname和/etc/hosts做host绑定(不用的OS不同修改方式)。</li>
+</ul>
+</li>
+<li>创建一个myid文件（放在 dataDir文件下面）<ul>
+<li>写入一行数据（请查阅zoo.cfg文件）<ul>
+<li>写入当前Zookeeper id位置的数据即可。表示当前系统环境Zookeeper是哪一个Server（通讯用的）。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>#Dubbo程序运行</p>
+<ul>
+<li>测试运行,默认配置即可。注意与zookeeper一台机器。</li>
+<li>运行Dubbo-admin本机tomcat启动启动成功后127.0.0.1:8080/dubbo-admin（注意默认请设置跟目录,否则部分功能不发正常显示）<ul>
+<li>默认用户名密码(root/root,guest/guest)</li>
+</ul>
+</li>
+</ul>
 
       
     </div>
@@ -605,7 +653,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Jvm/">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Mybatis/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -619,7 +667,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Jvm/" class="post-title-link" itemprop="url">查缺补漏-Jvm</a>
+            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Mybatis/" class="post-title-link" itemprop="url">查缺补漏-Mybatis</a>
         </h2>
 
         <div class="post-meta">
@@ -636,7 +684,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-08 07:43:50" itemprop="dateModified" datetime="2020-08-08T07:43:50+08:00">2020-08-08</time>
+                <time title="Modified: 2020-07-30 00:39:45" itemprop="dateModified" datetime="2020-07-30T00:39:45+08:00">2020-07-30</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -662,128 +710,82 @@
           <blockquote>
 <p>本章是整理知识内容，为强化知识长期更新。</p>
 </blockquote>
-<h3 id="JVM的内存布局"><a href="#JVM的内存布局" class="headerlink" title="JVM的内存布局"></a>JVM的内存布局</h3><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/JVM%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80.png"></p>
-<ol>
-<li><p>堆</p>
-<ul>
-<li><p>堆（Java Heap） 也叫 Java 堆或者是 GC 堆，它是一个线程共享的内存区域，也是 JVM 中占用内存最大的一块区域，Java 中所有的对象都存储在这里。</p>
-<ul>
-<li><strong>Java堆区具有下面几个特点：</strong><ul>
-<li>存储的是我们<strong>new</strong>来的对象，不存放基本类型和对象引用。</li>
-<li>由于创建了大量的对象，垃圾回收器主要工作在这块区域。</li>
-<li>线程共享区域，因此是线程不安全的。</li>
-<li>能够发生内存溢出，主要有OutOfMemoryError和StackOverflowError。</li>
-</ul>
-</li>
-<li>那么什么时候发生OutOfMemoryError，什么时候发生StackOverflowError？虚拟机在扩展栈时无法申请到足够的内存空间，<strong>将抛出OutOfMemoryError异常</strong>，线程请求的栈深度超过虚拟机所允许的最大深度，<strong>将抛出StackOverflowError异常</strong>。</li>
-<li>Java堆区还可以划分为<strong>新生代和老年代</strong>，新生代又可以进一步划分为<strong>Eden区、Survivor 1区、Survivor 2区</strong>。具体比例参数的话，可以看一下下面这张图。</li>
-</ul>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Java%E5%A0%86%E7%9A%84%E5%88%92%E5%88%86.png"></p>
-</li>
-</ul>
-</li>
-<li><p>方法区</p>
-<ul>
-<li>方法区（Method Area） 也被称为非堆区，用于和“Java 堆”的概念进行区分，它也是线程共享的内存区域，用于存储已经被 JVM 加载的类型信息、常量、静态变量、代码缓存等数据。</li>
-</ul>
-</li>
-<li><p>程序计数器</p>
-<ul>
-<li>程序计数器（Program Counter Register） 线程独有一块很小的内存区域，保存当前线程所执行字节码的位置，包括正在执行的指令、跳转、分支、循环、异常处理等。</li>
-</ul>
-</li>
-</ol>
-<blockquote>
-<ul>
-<li><p>Java栈具备的特点</p>
-</li>
-<li><p><strong>线程私有区域，每一个线程都有独享一个虚拟机栈，因此这是线程安全的区域。</strong></p>
-</li>
-<li><p>存放基本数据类型以及对象的引用。</p>
-</li>
-<li><p>每一个方法执行的时候会在虚拟机栈中创建一个相应栈帧，方法执行完毕后该栈帧就会被销毁。<strong>方法栈帧是以先进后出的方式虚拟机栈的。</strong></p>
-</li>
-<li><p>每一个栈帧又可以划分为<strong>局部变量表、操作数栈、动态链接、方法出口</strong>以及额外的附加信息。</p>
-<ul>
-<li>这个区域可能有两种异常：如果线程请求的栈深度大于虚拟机所允许的深度，将抛出StackOverflowError异常（通常是递归导致的）；JVM动态扩展时无法申请到足够内存则抛出OutOfMemoryError异常。    </li>
-</ul>
-</li>
-</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaConcurrent/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaConcurrent/" class="post-title-link" itemprop="url">查缺补漏-JavaConcurrent</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-03 02:21:39" itemprop="dateModified" datetime="2020-08-03T02:21:39+08:00">2020-08-03</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index"><span itemprop="name">知识点</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>本章是整理知识内容，为强化知识长期更新。</p>
 </blockquote>
-<ol start="4">
-<li><p>虚拟机栈</p>
-<ul>
-<li>虚拟机栈也叫 Java 虚拟机栈（Java Virtual Machine Stack），和程序计数器相同它也是线程独享的，用来描述 Java 方法的执行，在每个方法被执行时就会同步创建一个栈帧，用来存储局部变量表、操作栈、动态链接、方法出口等信息。当调用方法时执行入栈，而方法返回时执行出栈。</li>
-</ul>
-</li>
-<li><p>本地方法栈</p>
-<ul>
-<li>本地方法栈（Native Method Stacks）与虚拟机栈类似，它是线程独享的，并且作用也和虚拟机栈类似。只不过虚拟机栈是为虚拟机中执行的 Java 方法服务的，而本地方法栈则是为虚拟机使用到的本地（Native）方法服务。</li>
-</ul>
-</li>
-</ol>
-<ul>
-<li>JVM 的执行流程是，首先先把 Java 代码（.java）转化成字节码（.class），然后通过类加载器将字节码加载到内存中，所谓的内存也就是我们上面介绍的运行时数据区，但字节码并不是可以直接交给操作系统执行的机器码，而是一套 JVM 的指令集。这个时候需要使用特定的命令解析器也就是我们俗称的<strong>执行引擎（Execution Engine）</strong>将字节码翻译成可以被底层操作系统执行的指令再去执行，这样就实现了整个 Java 程序的运行，这也是 JVM 的整体执行流程。</li>
-</ul>
-<h3 id="Java虚拟机是如何加载Java类的"><a href="#Java虚拟机是如何加载Java类的" class="headerlink" title="Java虚拟机是如何加载Java类的"></a>Java虚拟机是如何加载Java类的</h3><blockquote>
-<p>符号引用和直接引用有一个重要的区别：使用符号引用时被引用的目标不一定已经加载到内存中；而使用直接引用时，引用的目标必定已经存在虚拟机的内存中了。</p>
-</blockquote>
-<ul>
-<li>类的生命周期会经历以下 7 个阶段：</li>
-</ul>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/ClassLoading.png"></p>
-<ol>
-<li>加载阶段（Loading）</li>
-<li>验证阶段（Verification）</li>
-<li>准备阶段（Preparation）</li>
-<li>解析阶段（Resolution）</li>
-<li>初始化阶段（Initialization）</li>
-<li>使用阶段（Using）</li>
-<li>卸载阶段（Unloading）</li>
-</ol>
-<ul>
-<li>具体含义</li>
-</ul>
-<ol>
-<li><p>加载阶段<br>此阶段用于查到相应的类（通过类名进行查找）并将此类的字节流转换为方法区运行时的数据结构，然后再在内存中生成一个能代表此类的 java.lang.Class 对象，作为其他数据访问的入口。</p>
-<ul>
-<li>Java语言的类型可以分为两大类：<strong>基本类型、引用类型</strong>。基本类型是由虚拟机预先定义好的，所以不会经历单独的类加载过程。而引用类型又分为四种：<strong>类、接口、数组类、泛型参数</strong>。由于泛型参数会在编译的过程中被擦除（关于类型擦除的知识，大家可以查下资料），所以在Java中只有类、接口、数组类三种类型需要经历JVM对其进行连接和初始化的过程。</li>
-</ul>
-</li>
-<li><p>验证阶段<br>此步骤主要是为了验证字节码的安全性，如果不做安全校验的话可能会载入非安全或有错误的字节码，从而导致系统崩溃，它是 JVM 自我保护的一项重要举措。</p>
-<ul>
-<li>验证的主要动作大概有以下几个：<ul>
-<li>文件格式校验包括常量池中的常量类型、Class 文件的各个部分是否被删除或被追加了其他信息等；</li>
-<li>元数据校验包括父类正确性校验（检查父类是否有被 final 修饰）、抽象类校验等；</li>
-<li>字节码校验，此步骤最为关键和复杂，主要用于校验程序中的语义是否合法且符合逻辑；</li>
-<li>符号引用校验，对类自身以外比如常量池中的各种符号引用的信息进行匹配性校验。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>准备阶段<br>此阶段是用来初始化并为类中定义的静态变量分配内存的，这些静态变量会被分配到方法区上。这些变量所使用的内存都将在方法区（&lt;Jdk1.8）元数据区（&gt;=Jdk1.8）中进行分配。这时候进行内存分配的仅包括类变量，而不包括实例变量，实例变量将会在对象实例化的时候随对象一起分配在Java堆中。</p>
-</li>
-<li><p>解析阶段<br>此阶段主要是用来解析类、接口、字段及方法的，解析时会把符号引用替换成直接引用。</p>
-<ol>
-<li>所谓的符号引用是指以一组符号来描述所引用的目标，符号可以是任何形式的字面量，只要使用时能无歧义地定位到目标即可；而直接引用是可以直接指向目标的指针、相对偏移量或者是一个能间接定位到目标的句柄。</li>
-<li>符号引用和直接引用有一个重要的区别：使用符号引用时被引用的目标不一定已经加载到内存中；而使用直接引用时，引用的目标必定已经存在虚拟机的内存中了。</li>
-</ol>
-</li>
-<li><p>初始化<br>初始化阶段 JVM 就正式开始执行类中编写的 Java 业务代码了。到这一步骤之后，类的加载过程就算正式完成了。</p>
-<ol>
-<li>JVM 规范枚举了下述多种触发情况：<ol>
-<li>当虚拟机启动时，初始化用户指定的主类；</li>
-<li>当遇到用以新建目标类实例的 new 指令时，初始化 new 指令的目标类；</li>
-<li>当遇到调用静态方法的指令时，初始化该静态方法所在的类；</li>
-<li>当遇到访问静态字段的指令时，初始化该静态字段所在的类；子类的初始化会触发父类的初始化；</li>
-<li>如果一个接口定义了 default 方法，那么直接实现或者间接实现该接口的类的初始化，会触发该接口的初始化；</li>
-<li>使用反射 API 对某个类进行反射调用时，初始化这个类；</li>
-<li>当初次调用 MethodHandle 实例时，初始化该 MethodHandle 指向的方法所在的类。</li>
-</ol>
-</li>
-</ol>
-</li>
-</ol>
 
       
     </div>
