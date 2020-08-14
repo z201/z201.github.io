@@ -265,7 +265,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-14 09:10:46" itemprop="dateModified" datetime="2020-08-14T09:10:46+08:00">2020-08-14</time>
+                <time title="Modified: 2020-08-14 10:55:49" itemprop="dateModified" datetime="2020-08-14T10:55:49+08:00">2020-08-14</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -434,35 +434,29 @@
 </tbody></table>
 <ul>
 <li><p>Java中只有原生数据类型是特殊的，它们不是对象。其它的都是对象。那么就一个尴尬的问题，集合类都是存放的对象，JDK5之后考虑到这个问题就自动进行逆行拆箱装箱的操作。</p>
-<ul>
-<li><pre><code class="java">//比如所在泛型中是不能存放原生数据类型的，如要要存放原生数据类型的数据，需要装箱。
-Collection&lt;int&gt; c = new ArrayList&lt;int&gt;(); //这是无法编译成功的。
-Collection&lt;Integer&gt; cc = new ArrayList&lt;Integer&gt;(); //这样才行。
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 每个 JDK 类都提供了相应方法来解析它的内部表示，并将其转换为相应的原语类型。</span><br><span class="line"></span><br><span class="line">- 但是注意装箱拆箱操作其实是非常消耗内存的举动，在该过程中可能会生成生成无用对象增加GC压力。所以尽量避免这中操作。</span><br><span class="line"></span><br><span class="line">  &#96;&#96;&#96;java</span><br><span class="line">    Integer sum &#x3D; 0;</span><br><span class="line">    for(int index  &#x3D; 1000; index &lt; 5000; index ++)&#123;</span><br><span class="line">     sum+&#x3D;index;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-比如这种，每次sum都需要自动拆箱。
-</code></pre>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//比如所在泛型中是不能存放原生数据类型的，如要要存放原生数据类型的数据，需要装箱。</span></span><br><span class="line">Collection&lt;<span class="keyword">int</span>&gt; c = <span class="keyword">new</span> ArrayList&lt;<span class="keyword">int</span>&gt;(); <span class="comment">//这是无法编译成功的。</span></span><br><span class="line">Collection&lt;Integer&gt; cc = <span class="keyword">new</span> ArrayList&lt;Integer&gt;(); <span class="comment">//这样才行。</span></span><br></pre></td></tr></table></figure>
 </li>
-</ul>
+<li><p>每个 JDK 类都提供了相应方法来解析它的内部表示，并将其转换为相应的原语类型。</p>
+</li>
+<li><p>但是注意装箱拆箱操作其实是非常消耗内存的举动，在该过程中可能会生成生成无用对象增加GC压力。所以尽量避免这中操作。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Integer sum = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> index  = <span class="number">1000</span>; index &lt; <span class="number">5000</span>; index ++)&#123;</span><br><span class="line"> sum+=index;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  比如这种，每次sum都需要自动拆箱。</p>
 </li>
 </ul>
 <ul>
 <li><p>默认情况下整数的类型都是int、浮点型的数都是double。</p>
-<ul>
-<li><p>隐式强制类型转换</p>
-</li>
-<li><pre><code class="java">     float d = 1.1f; //在后面添加f,大小写不区分。
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&lt;!--more--&gt;</span><br><span class="line"></span><br><span class="line">### 声明一个Double变量赋值 0.001会编译错误吗 ？</span><br><span class="line"></span><br><span class="line">- 不会，double 数据类型是双精度、64 位、标准的浮点数。</span><br><span class="line"></span><br><span class="line">### Java是纯粹的面向对象语言吗？</span><br><span class="line"></span><br><span class="line">- Java不是存粹的面向对象语言，因为它包含了原生数据类型，比如int 、double。</span><br><span class="line"></span><br><span class="line">### Java面向对象的特征？</span><br><span class="line"></span><br><span class="line">- 继承、封装、多态、抽象。</span><br><span class="line"></span><br><span class="line">### int 和 Integer 有什么区别。</span><br><span class="line"></span><br><span class="line">- Integer是int的包装类，它有一个int类型字段存储数据，并提供了基础的操作。关于Integer的缓存值，jdk5之后引入了一个静态工厂方法&#96;valueOf&#96;，在调用它的时候会有明显的性能提升，内部是一个缓存机制&#96;IntegerCache&#96;默认的长度是-128~127之间。</span><br><span class="line">  - 这种缓存行为不仅适用于Integer对象。我们针对所有整数类型的类都有类似的缓存机制。</span><br><span class="line">    - 有 ByteCache 用于缓存 Byte 对象。</span><br><span class="line">    - 有 ShortCache 用于缓存 Short 对象。</span><br><span class="line">    - 有 LongCache 用于缓存 Long 对象。</span><br><span class="line">    - 有 CharacterCache 用于缓存 Character 对象。</span><br><span class="line">    - Byte，Short，Long 有固定范围: -128 到 127。对于 Character, 范围是 0 到 127。除了 Integer 可以通过参数改变范围外，其它的都不行。</span><br><span class="line"></span><br><span class="line">### Java中访问类型有哪几种</span><br><span class="line"></span><br><span class="line">| 访问类型  | 同一个类 | 同一个包 | 不同包的子类 | 不同包的非子类 |</span><br><span class="line">| --------- | -------- | -------- | ------------ | -------------- |</span><br><span class="line">| public    | Y        | Y        | Y            | Y              |</span><br><span class="line">| protected | Y        | Y        | Y            |                |</span><br><span class="line">| default   | Y        | Y        |              |                |</span><br><span class="line">| private   | Y        |          |              |                |</span><br><span class="line"></span><br><span class="line">### Java中重载和重写的区别</span><br><span class="line"></span><br><span class="line">- 重写(override) </span><br><span class="line">  - 存在父类和子类之间。</span><br><span class="line">  - 方法名、参数、返回值相同。</span><br><span class="line">  - 方法被&#96;final&#96;修饰不能被重写。</span><br><span class="line">  - 子类重写父类方法后，不能抛出比父类方法的异常。子类不能缩写父类的方法&#96;访问权限&#96;。</span><br><span class="line">- 重载(overload)</span><br><span class="line">  - 参数类型、个数、顺序至少有一个不相同。</span><br><span class="line">  - 不能重载只有返回值不同的方法名。</span><br><span class="line">  - 存在于父类和子类、同类中。</span><br><span class="line"></span><br><span class="line">- Constructor 不能被 override（重写）,但是可以 overload（重载）,所以你可以看到⼀个类中有多个构造函数的情况。</span><br><span class="line"></span><br><span class="line">### Java值传递和引用传递的区别</span><br><span class="line"></span><br><span class="line">- 其实只有传值</span><br><span class="line"></span><br><span class="line">- 值传递(call by value)，对于基本型变量，传递的是该变量的副本，改变副本不影响变量。</span><br><span class="line">- 传递引用(call by reference)，对于对象型变量，传递的该对象的地址的一个副本，并不是原对象本身。</span><br><span class="line"></span><br><span class="line">### **instanceof** **关键字的作用**</span><br><span class="line"></span><br><span class="line">- instanceof 严格来说是Java中的一个双目运算符，用来测试一个对象是否为一个类的实例，用法为：</span><br><span class="line"></span><br><span class="line">&#96;&#96;&#96;java</span><br><span class="line">boolean result &#x3D; obj instanceof Class</span><br></pre></td></tr></table></figure></code></pre>
+   <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">float</span> d = <span class="number">1.1f</span>; <span class="comment">//在后面添加f,大小写不区分。隐式强制类型转换</span></span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-</li>
-<li><p>其中 obj 为一个对象，Class 表示一个类或者一个接口，当 obj 为 Class 的对象，或者是其直接或间接子类，或者是其接口的实现类，结果result 都返回 true，否则返回false。</p>
-</li>
-<li><p>注意：编译器会检查 obj 是否能转换成右边的class类型，如果不能转换则直接报错，如果不能确定类型，则通过编译，具体看运行时定。</p>
-</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">System.out.println(i <span class="keyword">instanceof</span> Integer);<span class="comment">//编译不通过 i必须是引用类型，不能是基本类型 </span></span><br><span class="line">System.out.println(i <span class="keyword">instanceof</span> Object);<span class="comment">//编译不通过</span></span><br><span class="line"></span><br><span class="line">Integer integer = <span class="keyword">new</span> Integer(<span class="number">1</span>); </span><br><span class="line">System.out.println(integer <span class="keyword">instanceof</span> Integer);<span class="comment">//true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//false ,在 JavaSE规范 中对 instanceof 运算符的规定就是：如果 obj 为 null，那么将返回 false。</span></span><br><span class="line">System.out.println(<span class="keyword">null</span> <span class="keyword">instanceof</span> Object);</span><br></pre></td></tr></table></figure>
-
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCore/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
