@@ -234,7 +234,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Jvm/">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCore/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -248,7 +248,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Jvm/" class="post-title-link" itemprop="url">查缺补漏-Jvm</a>
+            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCore/" class="post-title-link" itemprop="url">查缺补漏-JavaCore</a>
         </h2>
 
         <div class="post-meta">
@@ -265,7 +265,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-14 09:10:40" itemprop="dateModified" datetime="2020-08-14T09:10:40+08:00">2020-08-14</time>
+                <time title="Modified: 2020-08-14 09:10:46" itemprop="dateModified" datetime="2020-08-14T09:10:46+08:00">2020-08-14</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -291,140 +291,177 @@
           <blockquote>
 <p>本章是整理知识内容，为强化知识长期更新。</p>
 </blockquote>
-<h3 id="JVM的内存布局"><a href="#JVM的内存布局" class="headerlink" title="JVM的内存布局"></a>JVM的内存布局</h3><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/JVM%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80.png"></p>
-<ol>
-<li><p>堆</p>
+<h3 id="什么是面向对象？"><a href="#什么是面向对象？" class="headerlink" title="什么是面向对象？"></a>什么是面向对象？</h3><ul>
+<li>面向对象是一个思想，时间万物皆可以被看做一个对象。</li>
+</ul>
+<h3 id="介绍下-Java-基本数据类型"><a href="#介绍下-Java-基本数据类型" class="headerlink" title="介绍下 Java 基本数据类型"></a>介绍下 Java 基本数据类型</h3><ul>
+<li>Java中存在8个原生数据类型，同时又分成四种：整形、浮点型、char、Boolean。它们之间存在自动类型转换，规则是从小到大。并且都存在自动装箱拆箱特性，但是这种操作是隐式操作而且在某些情况会导致CG压力增大。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">类型</th>
+<th align="center">存储需求</th>
+<th align="center">取值范围</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">int</td>
+<td align="center">4字节</td>
+<td align="center">-2 147 483 638 ～ 2 147 483 637</td>
+</tr>
+<tr>
+<td align="center">short</td>
+<td align="center">2字节</td>
+<td align="center">-32 768 ～ 32 767</td>
+</tr>
+<tr>
+<td align="center">long</td>
+<td align="center">8字节</td>
+<td align="center">-9 223 372 036 854 775 808 ～ 9 223 372 036 854 775 807</td>
+</tr>
+<tr>
+<td align="center">byte</td>
+<td align="center">1字节</td>
+<td align="center">- 128 ～ 127</td>
+</tr>
+</tbody></table>
 <ul>
-<li><p>堆（Java Heap） 也叫 Java 堆或者是 GC 堆，它是一个线程共享的内存区域，也是 JVM 中占用内存最大的一块区域，Java 中所有的对象都存储在这里。</p>
+<li>整型的范围与运行Java运行的硬件没有关系，所有的数据类型所占的字节数量与平台无关。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">类型</th>
+<th align="center">存储需求</th>
+<th align="center">取值范围</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">float</td>
+<td align="center">4字节</td>
+<td align="center">大约 $\pm$ 3.402 823 37F + 38F (有效位数为7～8位)</td>
+</tr>
+<tr>
+<td align="center">double</td>
+<td align="center">8字节</td>
+<td align="center">大约 $\pm$ 1.797 693 134 862 315 70E + 308 （有效位数为15位）</td>
+</tr>
+</tbody></table>
 <ul>
-<li><strong>Java堆区具有下面几个特点：</strong><ul>
-<li>存储的是我们<strong>new</strong>来的对象，不存放基本类型和对象引用。</li>
-<li>由于创建了大量的对象，垃圾回收器主要工作在这块区域。</li>
-<li>线程共享区域，因此是线程不安全的。</li>
-<li>能够发生内存溢出，主要有OutOfMemoryError和StackOverflowError。</li>
-</ul>
+<li><p>double这种类型的精度是float的两倍。</p>
 </li>
-<li>那么什么时候发生OutOfMemoryError，什么时候发生StackOverflowError？虚拟机在扩展栈时无法申请到足够的内存空间，<strong>将抛出OutOfMemoryError异常</strong>，线程请求的栈深度超过虚拟机所允许的最大深度，<strong>将抛出StackOverflowError异常</strong>。</li>
-<li>Java堆区还可以划分为<strong>新生代和老年代</strong>，新生代又可以进一步划分为<strong>Eden区、Survivor 1区、Survivor 2区</strong>。具体比例参数的话，可以看一下下面这张图。</li>
-</ul>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Java%E5%A0%86%E7%9A%84%E5%88%92%E5%88%86.png"></p>
-</li>
-</ul>
-</li>
-<li><p>方法区</p>
+<li><p>所有浮点数值计算都遵循IEEE 754规范，下面是溢出和出错的情况的三种特殊的浮点数值。</p>
 <ul>
-<li>方法区（Method Area） 也被称为非堆区，用于和“Java 堆”的概念进行区分，它也是线程共享的内存区域，用于存储已经被 JVM 加载的类型信息、常量、静态变量、代码缓存等数据。</li>
+<li>正无穷大</li>
+<li>负无穷大</li>
+<li>NaN ( 不是一个数字 )</li>
+<li>一个整整数除以0的结果为正无穷大，计算0/0或者负数的平方根结果为NaN。</li>
 </ul>
 </li>
-<li><p>程序计数器</p>
+<li><p>char类型</p>
 <ul>
-<li>程序计数器（Program Counter Register） 线程独有一块很小的内存区域，保存当前线程所执行字节码的位置，包括正在执行的指令、跳转、分支、循环、异常处理等。</li>
+<li>char类型表示单个字符，属于Unicode编码表。因为历史原因，不建议在程序中使用。除非确实要对UTF-16代码单元进行操作。</li>
+<li>char字节大小<ul>
+<li>Java中无论是汉字还是英文字母都是用Unicode编码来表示的，一个Unicode是16位，每字节是8位，所以一个Unicode码占两字节。但是英文字母比较特殊，源自于8位（1字节）的ASCII吗，于是在Unicode码仅使用了低8位（1字节）就可以表示。</li>
 </ul>
 </li>
-</ol>
-<blockquote>
+</ul>
+</li>
+<li><p>boolean类型</p>
 <ul>
-<li><p>Java栈具备的特点</p>
+<li>布尔类型，只有两个值false、true。基本用于判定条件。</li>
+<li>boolean字节大小<ul>
+<li>Java规范中并未明确规定boolean类型的大小。</li>
+</ul>
 </li>
-<li><p><strong>线程私有区域，每一个线程都有独享一个虚拟机栈，因此这是线程安全的区域。</strong></p>
+</ul>
 </li>
-<li><p>存放基本数据类型以及对象的引用。</p>
-</li>
-<li><p>每一个方法执行的时候会在虚拟机栈中创建一个相应栈帧，方法执行完毕后该栈帧就会被销毁。<strong>方法栈帧是以先进后出的方式虚拟机栈的。</strong></p>
-</li>
-<li><p>每一个栈帧又可以划分为<strong>局部变量表、操作数栈、动态链接、方法出口</strong>以及额外的附加信息。</p>
+</ul>
 <ul>
-<li>这个区域可能有两种异常：如果线程请求的栈深度大于虚拟机所允许的深度，将抛出StackOverflowError异常（通常是递归导致的）；JVM动态扩展时无法申请到足够内存则抛出OutOfMemoryError异常。    </li>
-</ul>
-</li>
-</ul>
-</blockquote>
-<ol start="4">
-<li><p>虚拟机栈</p>
+<li><p>自动类型转换</p>
 <ul>
-<li>虚拟机栈也叫 Java 虚拟机栈（Java Virtual Machine Stack），和程序计数器相同它也是线程独享的，用来描述 Java 方法的执行，在每个方法被执行时就会同步创建一个栈帧，用来存储局部变量表、操作栈、动态链接、方法出口等信息。当调用方法时执行入栈，而方法返回时执行出栈。</li>
+<li><p><strong>整型、实型（常量）、字符型数据可以混合运算。运算中，不同类型的数据先转化为同一类型，然后进行运算。</strong></p>
+<p>转换从低级到高级。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">byte</span>,<span class="keyword">short</span>,<span class="keyword">char</span>—&gt; <span class="keyword">int</span> —&gt; <span class="keyword">long</span>—&gt; <span class="keyword">float</span> —&gt; <span class="keyword">double</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>不能对boolean进行类型转换、不能把对象类型转换成不相关的对象、把大容量的对象转换成小容量对象时需要强制类型转换、转换过程中间可能出现精度损失。</p>
+</li>
 </ul>
 </li>
-<li><p>本地方法栈</p>
+<li><p>装箱和拆箱<strong>boxing or unboxing</strong></p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">原语</th>
+<th align="center">对应的JDK类</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">int</td>
+<td align="center">java.lang.Integer</td>
+</tr>
+<tr>
+<td align="center">short</td>
+<td align="center">java.lang.Short</td>
+</tr>
+<tr>
+<td align="center">long</td>
+<td align="center">java.lang.Long</td>
+</tr>
+<tr>
+<td align="center">byte</td>
+<td align="center">java.lang.Byte</td>
+</tr>
+<tr>
+<td align="center">char</td>
+<td align="center">java.lang.Character</td>
+</tr>
+<tr>
+<td align="center">double</td>
+<td align="center">java.lang.Double</td>
+</tr>
+<tr>
+<td align="center">float</td>
+<td align="center">java.lang.Float</td>
+</tr>
+<tr>
+<td align="center">boolean</td>
+<td align="center">java.lang.Boolean</td>
+</tr>
+</tbody></table>
 <ul>
-<li>本地方法栈（Native Method Stacks）与虚拟机栈类似，它是线程独享的，并且作用也和虚拟机栈类似。只不过虚拟机栈是为虚拟机中执行的 Java 方法服务的，而本地方法栈则是为虚拟机使用到的本地（Native）方法服务。</li>
-</ul>
-</li>
-</ol>
+<li><p>Java中只有原生数据类型是特殊的，它们不是对象。其它的都是对象。那么就一个尴尬的问题，集合类都是存放的对象，JDK5之后考虑到这个问题就自动进行逆行拆箱装箱的操作。</p>
 <ul>
-<li>JVM 的执行流程是，首先先把 Java 代码（.java）转化成字节码（.class），然后通过类加载器将字节码加载到内存中，所谓的内存也就是我们上面介绍的运行时数据区，但字节码并不是可以直接交给操作系统执行的机器码，而是一套 JVM 的指令集。这个时候需要使用特定的命令解析器也就是我们俗称的<strong>执行引擎（Execution Engine）</strong>将字节码翻译成可以被底层操作系统执行的指令再去执行，这样就实现了整个 Java 程序的运行，这也是 JVM 的整体执行流程。</li>
+<li><pre><code class="java">//比如所在泛型中是不能存放原生数据类型的，如要要存放原生数据类型的数据，需要装箱。
+Collection&lt;int&gt; c = new ArrayList&lt;int&gt;(); //这是无法编译成功的。
+Collection&lt;Integer&gt; cc = new ArrayList&lt;Integer&gt;(); //这样才行。
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 每个 JDK 类都提供了相应方法来解析它的内部表示，并将其转换为相应的原语类型。</span><br><span class="line"></span><br><span class="line">- 但是注意装箱拆箱操作其实是非常消耗内存的举动，在该过程中可能会生成生成无用对象增加GC压力。所以尽量避免这中操作。</span><br><span class="line"></span><br><span class="line">  &#96;&#96;&#96;java</span><br><span class="line">    Integer sum &#x3D; 0;</span><br><span class="line">    for(int index  &#x3D; 1000; index &lt; 5000; index ++)&#123;</span><br><span class="line">     sum+&#x3D;index;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+比如这种，每次sum都需要自动拆箱。
+</code></pre>
+</li>
 </ul>
-<h3 id="Java虚拟机是如何加载Java类的"><a href="#Java虚拟机是如何加载Java类的" class="headerlink" title="Java虚拟机是如何加载Java类的"></a>Java虚拟机是如何加载Java类的</h3><blockquote>
-<p>符号引用和直接引用有一个重要的区别：使用符号引用时被引用的目标不一定已经加载到内存中；而使用直接引用时，引用的目标必定已经存在虚拟机的内存中了。</p>
-</blockquote>
+</li>
+</ul>
 <ul>
-<li>类的生命周期会经历以下 7 个阶段：</li>
-</ul>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/ClassLoading.png"></p>
-<ol>
-<li>加载阶段（Loading）</li>
-<li>验证阶段（Verification）</li>
-<li>准备阶段（Preparation）</li>
-<li>解析阶段（Resolution）</li>
-<li>初始化阶段（Initialization）</li>
-<li>使用阶段（Using）</li>
-<li>卸载阶段（Unloading）</li>
-</ol>
+<li><p>默认情况下整数的类型都是int、浮点型的数都是double。</p>
 <ul>
-<li>具体含义</li>
-</ul>
-<ol>
-<li><p>加载阶段<br>此阶段用于查到相应的类（通过类名进行查找）并将此类的字节流转换为方法区运行时的数据结构，然后再在内存中生成一个能代表此类的 java.lang.Class 对象，作为其他数据访问的入口。</p>
-<ul>
-<li>Java语言的类型可以分为两大类：<strong>基本类型、引用类型</strong>。基本类型是由虚拟机预先定义好的，所以不会经历单独的类加载过程。而引用类型又分为四种：<strong>类、接口、数组类、泛型参数</strong>。由于泛型参数会在编译的过程中被擦除（关于类型擦除的知识，大家可以查下资料），所以在Java中只有类、接口、数组类三种类型需要经历JVM对其进行连接和初始化的过程。</li>
-</ul>
+<li><p>隐式强制类型转换</p>
 </li>
-<li><p>验证阶段<br> 此步骤主要是为了验证字节码的安全性，如果不做安全校验的话可能会载入非安全或有错误的字节码，从而导致系统崩溃，它是 JVM 自我保护的一项重要举措。</p>
-<ul>
-<li>验证的主要动作大概有以下几个：<ul>
-<li>文件格式校验包括常量池中的常量类型、Class 文件的各个部分是否被删除或被追加了其他信息等；</li>
-<li>元数据校验包括父类正确性校验（检查父类是否有被 final 修饰）、抽象类校验等；</li>
-<li>字节码校验，此步骤最为关键和复杂，主要用于校验程序中的语义是否合法且符合逻辑；</li>
-<li>符号引用校验，对类自身以外比如常量池中的各种符号引用的信息进行匹配性校验。</li>
-</ul>
+<li><pre><code class="java">     float d = 1.1f; //在后面添加f,大小写不区分。
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&lt;!--more--&gt;</span><br><span class="line"></span><br><span class="line">### 声明一个Double变量赋值 0.001会编译错误吗 ？</span><br><span class="line"></span><br><span class="line">- 不会，double 数据类型是双精度、64 位、标准的浮点数。</span><br><span class="line"></span><br><span class="line">### Java是纯粹的面向对象语言吗？</span><br><span class="line"></span><br><span class="line">- Java不是存粹的面向对象语言，因为它包含了原生数据类型，比如int 、double。</span><br><span class="line"></span><br><span class="line">### Java面向对象的特征？</span><br><span class="line"></span><br><span class="line">- 继承、封装、多态、抽象。</span><br><span class="line"></span><br><span class="line">### int 和 Integer 有什么区别。</span><br><span class="line"></span><br><span class="line">- Integer是int的包装类，它有一个int类型字段存储数据，并提供了基础的操作。关于Integer的缓存值，jdk5之后引入了一个静态工厂方法&#96;valueOf&#96;，在调用它的时候会有明显的性能提升，内部是一个缓存机制&#96;IntegerCache&#96;默认的长度是-128~127之间。</span><br><span class="line">  - 这种缓存行为不仅适用于Integer对象。我们针对所有整数类型的类都有类似的缓存机制。</span><br><span class="line">    - 有 ByteCache 用于缓存 Byte 对象。</span><br><span class="line">    - 有 ShortCache 用于缓存 Short 对象。</span><br><span class="line">    - 有 LongCache 用于缓存 Long 对象。</span><br><span class="line">    - 有 CharacterCache 用于缓存 Character 对象。</span><br><span class="line">    - Byte，Short，Long 有固定范围: -128 到 127。对于 Character, 范围是 0 到 127。除了 Integer 可以通过参数改变范围外，其它的都不行。</span><br><span class="line"></span><br><span class="line">### Java中访问类型有哪几种</span><br><span class="line"></span><br><span class="line">| 访问类型  | 同一个类 | 同一个包 | 不同包的子类 | 不同包的非子类 |</span><br><span class="line">| --------- | -------- | -------- | ------------ | -------------- |</span><br><span class="line">| public    | Y        | Y        | Y            | Y              |</span><br><span class="line">| protected | Y        | Y        | Y            |                |</span><br><span class="line">| default   | Y        | Y        |              |                |</span><br><span class="line">| private   | Y        |          |              |                |</span><br><span class="line"></span><br><span class="line">### Java中重载和重写的区别</span><br><span class="line"></span><br><span class="line">- 重写(override) </span><br><span class="line">  - 存在父类和子类之间。</span><br><span class="line">  - 方法名、参数、返回值相同。</span><br><span class="line">  - 方法被&#96;final&#96;修饰不能被重写。</span><br><span class="line">  - 子类重写父类方法后，不能抛出比父类方法的异常。子类不能缩写父类的方法&#96;访问权限&#96;。</span><br><span class="line">- 重载(overload)</span><br><span class="line">  - 参数类型、个数、顺序至少有一个不相同。</span><br><span class="line">  - 不能重载只有返回值不同的方法名。</span><br><span class="line">  - 存在于父类和子类、同类中。</span><br><span class="line"></span><br><span class="line">- Constructor 不能被 override（重写）,但是可以 overload（重载）,所以你可以看到⼀个类中有多个构造函数的情况。</span><br><span class="line"></span><br><span class="line">### Java值传递和引用传递的区别</span><br><span class="line"></span><br><span class="line">- 其实只有传值</span><br><span class="line"></span><br><span class="line">- 值传递(call by value)，对于基本型变量，传递的是该变量的副本，改变副本不影响变量。</span><br><span class="line">- 传递引用(call by reference)，对于对象型变量，传递的该对象的地址的一个副本，并不是原对象本身。</span><br><span class="line"></span><br><span class="line">### **instanceof** **关键字的作用**</span><br><span class="line"></span><br><span class="line">- instanceof 严格来说是Java中的一个双目运算符，用来测试一个对象是否为一个类的实例，用法为：</span><br><span class="line"></span><br><span class="line">&#96;&#96;&#96;java</span><br><span class="line">boolean result &#x3D; obj instanceof Class</span><br></pre></td></tr></table></figure></code></pre>
 </li>
 </ul>
 </li>
-<li><p>准备阶段<br> 此阶段是用来初始化并为类中定义的静态变量分配内存的，这些静态变量会被分配到方法区上。这些变量所使用的内存都将在方法区（&lt;Jdk1.8）元数据区（&gt;=Jdk1.8）中进行分配。这时候进行内存分配的仅包括类变量，而不包括实例变量，实例变量将会在对象实例化的时候随对象一起分配在Java堆中。</p>
+<li><p>其中 obj 为一个对象，Class 表示一个类或者一个接口，当 obj 为 Class 的对象，或者是其直接或间接子类，或者是其接口的实现类，结果result 都返回 true，否则返回false。</p>
 </li>
-<li><p>解析阶段<br> 此阶段主要是用来解析类、接口、字段及方法的，解析时会把符号引用替换成直接引用。</p>
-<ol>
-<li>所谓的符号引用是指以一组符号来描述所引用的目标，符号可以是任何形式的字面量，只要使用时能无歧义地定位到目标即可；而直接引用是可以直接指向目标的指针、相对偏移量或者是一个能间接定位到目标的句柄。</li>
-<li>符号引用和直接引用有一个重要的区别：使用符号引用时被引用的目标不一定已经加载到内存中；而使用直接引用时，引用的目标必定已经存在虚拟机的内存中了。</li>
-</ol>
+<li><p>注意：编译器会检查 obj 是否能转换成右边的class类型，如果不能转换则直接报错，如果不能确定类型，则通过编译，具体看运行时定。</p>
 </li>
-<li><p>初始化<br> 初始化阶段 JVM 就正式开始执行类中编写的 Java 业务代码了。到这一步骤之后，类的加载过程就算正式完成了。</p>
-<ol>
-<li>JVM 规范枚举了下述多种触发情况：<ol>
-<li>当虚拟机启动时，初始化用户指定的主类；<ol start="2">
-<li>当遇到用以新建目标类实例的 new 指令时，初始化 new 指令的目标类；<ol start="3">
-<li>当遇到调用静态方法的指令时，初始化该静态方法所在的类；<ol start="4">
-<li>当遇到访问静态字段的指令时，初始化该静态字段所在的类；子类的初始化会触发父类的初始化；<ol start="5">
-<li>如果一个接口定义了 default 方法，那么直接实现或者间接实现该接口的类的初始化，会触发该接口的初始化；<ol start="6">
-<li>使用反射 API 对某个类进行反射调用时，初始化这个类；<ol start="7">
-<li>当初次调用 MethodHandle 实例时，初始化该 MethodHandle 指向的方法所在的类。</li>
-</ol>
-</li>
-</ol>
-</li>
-</ol>
-</li>
-</ol>
-</li>
-</ol>
-</li>
-</ol>
-</li>
-</ol>
-</li>
-</ol>
-</li>
-</ol>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">System.out.println(i <span class="keyword">instanceof</span> Integer);<span class="comment">//编译不通过 i必须是引用类型，不能是基本类型 </span></span><br><span class="line">System.out.println(i <span class="keyword">instanceof</span> Object);<span class="comment">//编译不通过</span></span><br><span class="line"></span><br><span class="line">Integer integer = <span class="keyword">new</span> Integer(<span class="number">1</span>); </span><br><span class="line">System.out.println(integer <span class="keyword">instanceof</span> Integer);<span class="comment">//true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//false ,在 JavaSE规范 中对 instanceof 运算符的规定就是：如果 obj 为 null，那么将返回 false。</span></span><br><span class="line">System.out.println(<span class="keyword">null</span> <span class="keyword">instanceof</span> Object);</span><br></pre></td></tr></table></figure>
+
 
       
     </div>
