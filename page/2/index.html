@@ -234,6 +234,131 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/23/Linux%E5%9F%BA%E7%A1%80%E5%91%BD%E4%BB%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/04/23/Linux%E5%9F%BA%E7%A1%80%E5%91%BD%E4%BB%A4/" class="post-title-link" itemprop="url">Linux基础命令</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-04-23 08:58:34" itemprop="dateCreated datePublished" datetime="2018-04-23T08:58:34+08:00">2018-04-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-15 09:17:23" itemprop="dateModified" datetime="2020-08-15T09:17:23+08:00">2020-08-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>linux作为个人工作经常使用的系统、做下简单的记录方便以后工作参考。</p>
+</blockquote>
+<h2 id="ps"><a href="#ps" class="headerlink" title="ps"></a><a href="http://man.linuxde.net/ps" target="_blank" rel="noopener">ps</a></h2><blockquote>
+<p>ps命令用于报告系统某个时间内进程的情况</p>
+</blockquote>
+<ul>
+<li>参数</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">-A : 所有的进程均显示出来</span><br><span class="line">-a : 不与terminal有关的所有进程</span><br><span class="line">-u : 有效用户的相关进程</span><br><span class="line">-x : 一般与a参数一起使用，可以列出比较完整的信息。</span><br><span class="line">-l : 较详细地将PID的信息列出。</span><br></pre></td></tr></table></figure>
+
+<h3 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h3><p>查询某程序的情况</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> [root@VM_115_109_centos ~]<span class="comment"># ps -ef | grep mysqld</span></span></span><br><span class="line">root      8013 17307  0 05:34 pts/0    00:00:00 grep --color=auto mysqld</span><br><span class="line">mysql    28882     1  0 Apr02 ?        00:07:03 /usr/sbin/mysqld --daemonize --pid-file=/var/run/mysqld/mysqld.pid</span><br></pre></td></tr></table></figure>
+
+<p>UID      PID   PPID     C STIME   TTY    TIME     CMD (类目描述)</p>
+<ul>
+<li>UID 程序被该 UID 所拥有</li>
+<li>PID 就是这个程序的 ID </li>
+<li>PPID 则是其上级父程序的ID</li>
+<li>C CPU 使用的资源百分比</li>
+<li>STIME 系统启动时间</li>
+<li>TTY 登入者的终端机位置</li>
+<li>TIME 使用掉的 CPU 时间。</li>
+<li>CMD 所下达的指令</li>
+</ul>
+<p>查看内存占用前1的进程</p>
+<ul>
+<li>ps auxw | head -1;ps auxw|sort -rn -k4|head -1  </li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">  ps auxw | head -1;ps auxw|sort -rn -k4|head -1</span></span><br><span class="line">USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</span><br><span class="line">mysql    28882  0.0 10.9 1143416 205484 ?      Sl   Apr02   7:20 /usr/sbin/mysqld --daemonize --pid-file=/var/run/mysqld/mysqld.pid</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>内存的单位是kb，VSZ是虚拟内存的占用，RSS是真实的内存的占用。</li>
+</ul>
+<ul>
+<li>命令分解：</li>
+<li>ps auxw显示系统资源占用情况；</li>
+<li>head -1表示显示第一列，即标题列；</li>
+<li>sort -r 表示反向排序，-n表示按数字排序，-k4表示列的第4个字符。</li>
+</ul>
+<p>查看CPU占用前1的进程</p>
+<ul>
+<li>ps auxw|head -1;ps auxw|sort -rn -k3|head -1</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ps auxw|head -1;ps auxw|sort -rn -k3|head -5</span></span><br><span class="line">USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</span><br><span class="line">root      1690  0.1  0.6 536692 12436 ?        Sl   Apr10  29:58 barad_agent</span><br><span class="line">USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</span><br><span class="line">root         9  0.0  0.0      0     0 ?        R    Mar08   1:45 [rcu_sched]</span><br><span class="line">root       884  0.0  0.0 110044   808 ttyS0    Ss+  Mar08   0:00 /sbin/agetty --keep-baud 115200 38400 9600 ttyS0 vt220</span><br><span class="line">root       883  0.0  0.0 110044   788 tty1     Ss+  Mar08   0:00 /sbin/agetty --noclear tty1 linux</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/04/23/Linux%E5%9F%BA%E7%A1%80%E5%91%BD%E4%BB%A4/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/06/30/%E9%9D%A2%E8%AF%95%E9%A2%98-%E5%A4%9A%E7%BA%BF%E7%A8%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1392,196 +1517,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/06/30/%E9%9D%A2%E8%AF%95%E9%A2%98-Jdk%E5%9F%BA%E7%A1%80/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCollecionsFramework/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCollecionsFramework/" class="post-title-link" itemprop="url">查缺补漏-JavaCollecionsFramework</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-15 06:13:39" itemprop="dateModified" datetime="2020-08-15T06:13:39+08:00">2020-08-15</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-<h3 id="Java集合"><a href="#Java集合" class="headerlink" title="Java集合"></a>Java集合</h3><p>​    集合是Java提供的工具包、包含常用的数据结构：集合、链表、队列、栈、数组、映射等。Collection的包是java.util.*。</p>
-<h4 id="Collection"><a href="#Collection" class="headerlink" title="Collection"></a>Collection</h4><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Collection/Java-Collection-Framework.svg"></p>
-<h4 id="Map"><a href="#Map" class="headerlink" title="Map"></a>Map</h4><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Collection/Java-Map-Framework.svg">  </p>
-<p><code>实际上还有Cloneable、Serializable接口是都集合类需要实现的，通用所以不不画上去了。 </code> </p>
-<h4 id="Java集合主要划分4个部分："><a href="#Java集合主要划分4个部分：" class="headerlink" title="Java集合主要划分4个部分："></a>Java集合主要划分4个部分：</h4><ul>
-<li>List(列队)</li>
-<li>Set(集合)</li>
-<li>Map(映射)</li>
-<li>工具类(Iterator迭代器、Enumeration枚举类、Arrays、Collections)</li>
-</ul>
-<h4 id="划重点"><a href="#划重点" class="headerlink" title="划重点"></a>划重点</h4><ul>
-<li>Conllection<ul>
-<li>List<ul>
-<li><code>ArrayList</code></li>
-<li><code>Vector</code><ul>
-<li>Stack</li>
-</ul>
-</li>
-<li><code>LinkedList</code></li>
-</ul>
-</li>
-<li>Set<ul>
-<li><code>HashSet</code></li>
-<li><code>TreeSet</code></li>
-<li><code>LinkedHashSet</code></li>
-</ul>
-</li>
-<li>Queue</li>
-</ul>
-</li>
-<li>Map<ul>
-<li><code>HashMap</code></li>
-<li><code>HashTable</code></li>
-<li><code>TreeMap</code></li>
-</ul>
-</li>
-<li>工具<ul>
-<li>Arrays</li>
-<li>Collections</li>
-<li>Enumeration</li>
-</ul>
-</li>
-</ul>
-<h3 id="Java类库中具体集合"><a href="#Java类库中具体集合" class="headerlink" title="Java类库中具体集合"></a>Java类库中具体集合</h3><table>
-<thead>
-<tr>
-<th>集合类型</th>
-<th>概括</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>ArrayList<E></td>
-<td>一种可以动态增长和缩减的索引序列，访问速度很快但是插入和删除比ArrayList慢。</td>
-</tr>
-<tr>
-<td>LinkedList<E></td>
-<td>一种可以在任何位置进行高效地插入和删除操作的有序序列，但是访问比较ArrayList慢。</td>
-</tr>
-<tr>
-<td>ArrayDeque<E></td>
-<td>一种循环数组实现的双端序列。</td>
-</tr>
-<tr>
-<td>HashSet<E></td>
-<td>一种没有重复元素的无序集合。</td>
-</tr>
-<tr>
-<td>TreeSet<E></td>
-<td>一种有序集合。</td>
-</tr>
-<tr>
-<td>EnumSet&lt;E extends Enum<E>&gt;</td>
-<td>一种包含枚举类型的集合。</td>
-</tr>
-<tr>
-<td>LinkedHashSet<E></td>
-<td>一种可以记住元素插入顺序的集合。</td>
-</tr>
-<tr>
-<td>PriorityQueue<E></td>
-<td>一种允许高效删除最小元素的集合。</td>
-</tr>
-<tr>
-<td>HashMap&lt;K , V&gt;</td>
-<td>一个存储 键 / 值 关联的数据结构。</td>
-</tr>
-<tr>
-<td>TreeMap&lt;K , V&gt;</td>
-<td>一种键值有序排列的映射表。</td>
-</tr>
-<tr>
-<td>EnumMap&lt;K extends Enum<K>, V&gt;</td>
-<td>一种键属于枚举类型的映射表。</td>
-</tr>
-<tr>
-<td>LinkedHashMap&lt;K ,V &gt;</td>
-<td>一种可以记住键 / 值 项添加顺序的映射表。</td>
-</tr>
-<tr>
-<td>WeakHashMap&lt;K , V &gt;</td>
-<td>一种其值无用武之地后可以被垃圾回收回收的映射表。</td>
-</tr>
-<tr>
-<td>IdentityHashMap&lt;K , V&gt;</td>
-<td>一种用 == 而不是用用 equals 比较的映射表。</td>
-</tr>
-</tbody></table>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCollecionsFramework/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
