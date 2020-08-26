@@ -234,6 +234,356 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/07/15/%E5%AE%9E%E8%B7%B5-spring-boot%E5%BC%82%E5%B8%B8%E9%92%89%E9%92%89%E9%80%9A%E7%9F%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/07/15/%E5%AE%9E%E8%B7%B5-spring-boot%E5%BC%82%E5%B8%B8%E9%92%89%E9%92%89%E9%80%9A%E7%9F%A5/" class="post-title-link" itemprop="url">实践-SpringBoot异常钉钉通知</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-07-15 15:23:20" itemprop="dateCreated datePublished" datetime="2020-07-15T15:23:20+08:00">2020-07-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-15 09:20:15" itemprop="dateModified" datetime="2020-08-15T09:20:15+08:00">2020-08-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>本篇幅只是回顾使用钉钉做异常告警需要那些关键业务信息。</p>
+</blockquote>
+<h3 id="为什么要做钉钉通知？"><a href="#为什么要做钉钉通知？" class="headerlink" title="为什么要做钉钉通知？"></a>为什么要做钉钉通知？</h3><p>​        事情要从我入职上家公司说起，进入公司后把线上项目clone下来大致看了下。代码风格过于滞后、编码风格混乱。进入公司第一周就出现了线上故障，嗯。我去线上检查日志，emmmm竟然没有日志输出。这次故障是由客户反馈来的。当时我非常吃惊，大伙好像很淡定的样子，习以为常了？</p>
+<p>​        想到当初面试的时候和总监的谈话，主要是带领团队落地微服务架构，看来必须大刀阔斧了。</p>
+<p>​        首先想到的时候改进日志输出、定义全局异常级别，根据异常级别输出日志。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">Java应用 -&gt;&gt; SpringAop全局异常拦截 : runtimeException</span><br><span class="line">SpringAop全局异常拦截 -&gt;&gt;  钉钉 : alarmNoticeSend</span><br><span class="line">钉钉 -&gt;&gt; 开发人员  : exceptionInfo</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>效果图</li>
+</ul>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/springboot%E9%92%89%E9%92%89%E5%85%A8%E5%B1%80%E5%BC%82%E5%B8%B8%E6%8B%A6%E6%88%AA.png"></p>
+<p>​        我们需要从钉钉里面看到那些异常信息呢？这是当时输出到钉钉的信息。通过编写全局拦截器，在公共基础项目里面添加了aop全局拦截。刚开始上线的时候钉钉一天动不动就几千个异常告警。刚开始大伙都很紧张，过了个把月大伙已经又麻木了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">告警信息</span><br><span class="line">工程名：z201-gateway</span><br><span class="line">类路径：cn.z201.cloud.gateway.VlinkFrameworkGatewayApplicationTest</span><br><span class="line">方法名：alarm</span><br><span class="line">异常信息：java.lang.IllegalAccessException</span><br><span class="line">异常追踪：</span><br><span class="line">cn.z201.cloud.gateway.VlinkFrameworkGatewayApplicationTest.alarm(VlinkFrameworkGatewayApplicationTest.java:<span class="number">64</span>)</span><br><span class="line">sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)</span><br><span class="line">sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:<span class="number">62</span>)</span><br><span class="line">sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:<span class="number">43</span>)</span><br><span class="line">java.lang.reflect.Method.invoke(Method.java:<span class="number">498</span>)</span><br><span class="line">org.junit.runners.model.FrameworkMethod$<span class="number">1</span>.runReflectiveCall(FrameworkMethod.java:<span class="number">50</span>)</span><br><span class="line">org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:<span class="number">12</span>)</span><br><span class="line">org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:<span class="number">47</span>)</span><br><span class="line">org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:<span class="number">17</span>)</span><br><span class="line">org.springframework.test.context.junit4.statements.RunBeforeTestExecutionCallbacks.evaluate(RunBeforeTestExecutionCallbacks.java:<span class="number">74</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="这样的告警信息就够了吗？"><a href="#这样的告警信息就够了吗？" class="headerlink" title="这样的告警信息就够了吗？"></a>这样的告警信息就够了吗？</h3><p>​        明显这样是不够够的，前端有安卓、ios、微信小程序、web、快应用。太多前端项目了，后端需要识别出是哪里的项目出的问题。于是又改进了一次。邀请前端开发人员在HttpHeader里面增加额外参数。为了做流量区分也增加了一些参数。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"> &#123;</span><br><span class="line">  <span class="string">"Content-Type"</span>:<span class="string">"application/json"</span> </span><br><span class="line">  "Authorization":"Bearer xxxxxxxxxx"  ## jwt</span><br><span class="line">  "Client-Business-Group-Source": "1", ##  业务组来源唯一标号</span><br><span class="line">  "Client-Business-Source": "1000", ## 业务来源唯一标号</span><br><span class="line">  "Client-Business-Activity-Source": "1", ## 查看介绍、更多 针对特殊业务流量识别</span><br><span class="line">  "Client-Env-Source": "1",				 ##客户端环境来源  1 ios  2 android  3 windows</span><br><span class="line">  "Client-Platform-Source": "xxx", ##客户端平台 xxx手机型号、浏览器</span><br><span class="line">  "Client-Start-Time": "1",        ##请求时间戳</span><br><span class="line">  "Client-Version-Source": "1.0.0" ##客户端版本号</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        通过上面的改进告警信息完善很多。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">告警信息</span><br><span class="line">工程名：z201-gateway</span><br><span class="line">类路径：cn.z201.cloud.gateway.VlinkFrameworkGatewayApplicationTest</span><br><span class="line">方法名：alarm</span><br><span class="line">异常信息：java.lang.IllegalAccessException</span><br><span class="line">异常扩展信息： &#123;</span><br><span class="line">  &quot;Client-Business-Source&quot;: &quot;1000&quot;, </span><br><span class="line">  &quot;Client-Business-Activity-Source&quot;: &quot;1&quot;, </span><br><span class="line">  &quot;Client-Env-Source&quot;: &quot;1&quot;,				 </span><br><span class="line">  &quot;Client-Platform-Source&quot;: &quot;xxx&quot;,   </span><br><span class="line">  &quot;Client-Version-Source&quot;: &quot;1.0.0&quot; </span><br><span class="line">&#125; </span><br><span class="line">异常追踪：</span><br><span class="line">cn.z201.cloud.gateway.VlinkFrameworkGatewayApplicationTest.alarm(VlinkFrameworkGatewayApplicationTest.java:64)</span><br><span class="line">sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)</span><br><span class="line">sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)</span><br><span class="line">sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)</span><br><span class="line">java.lang.reflect.Method.invoke(Method.java:498)</span><br><span class="line">org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)</span><br><span class="line">org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)</span><br><span class="line">org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)</span><br><span class="line">org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)</span><br><span class="line">org.springframework.test.context.junit4.statements.RunBeforeTestExecutionCallbacks.evaluate(RunBeforeTestExecutionCallbacks.java:74)</span><br></pre></td></tr></table></figure>
+
+<h3 id="分布式下面临的问题！"><a href="#分布式下面临的问题！" class="headerlink" title="分布式下面临的问题！"></a>分布式下面临的问题！</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">gateway -&gt;&gt; 应用A : httpRequest</span><br><span class="line">应用A -&gt;&gt;  应用B : httpRequest</span><br><span class="line">应用B --&gt;&gt; 应用A : httpResponse</span><br><span class="line">应用A --&gt;&gt; gateway : httpResponse</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/%E5%A4%9A%E5%BA%94%E7%94%A8%E9%93%BE%E8%B7%AF%E8%AF%B7%E6%B1%82.png"></p>
+<p>​        当调用链多的时候定位问题就有点麻烦，比如应用a调用应用b。应用b执行了异常信息直接抛出了告警信息。但是spring cloud http rpc默认是不会吧请求参数传递到后面的服务中，需要我们做下简单的扩展。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> z201.coding@gmail.com</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">HttpApiConstant</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    String X_REAL_IP = <span class="string">"x-real-ip"</span>;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 请求头跟踪id名。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    String HTTP_HEADER_TRACE_ID = <span class="string">"AppTraceId"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 请求头</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    String HTTP_TOKEN_HEADER = <span class="string">"Authorization"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * app租户</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    String APP_TENANT = <span class="string">"Tenant"</span>;</span><br><span class="line"></span><br><span class="line">    String CLIENT_BUSINESS_GROUP_SOURCE = <span class="string">"Client-Business-Group-Source"</span>;</span><br><span class="line"></span><br><span class="line">    String CLIENT_BUSINESS_SOURCE = <span class="string">"Client-Business-Source"</span>;</span><br><span class="line"></span><br><span class="line">    String CLIENT_BUSINESS_ACTIVITY_SOURCE = <span class="string">"Client-Business-Activity-Source"</span>;</span><br><span class="line"></span><br><span class="line">    String CLIENT_EVN_SOURCE = <span class="string">"Client-Env-Source"</span>;</span><br><span class="line"></span><br><span class="line">    String CLIENT_PLATFORM_SOURCE = <span class="string">"Client-Platform-Source"</span>;</span><br><span class="line"></span><br><span class="line">    String CLIENT_START_TIME = <span class="string">"Client-Start-Time"</span>;</span><br><span class="line"></span><br><span class="line">    String CLIENT_VERSION_SOURCE = <span class="string">"Client-Version-Source"</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> z201.coding@gmail.com</span></span><br><span class="line"><span class="comment"> * 自定义restTemplate拦截器</span></span><br><span class="line"><span class="comment"> * 这里可以把一些参数从应用层传到内部服务</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="meta">@ConditionalOnClass</span>(WebMvcConfigurer<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">class</span> <span class="title">MdcFeignInterceptorConfig</span> <span class="keyword">implements</span> <span class="title">RequestInterceptor</span>, <span class="title">HttpApiConstant</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MdcFeignInterceptorConfig</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">"Loaded Z-REST-INTERCEPTOR [V1.0.0]"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">apply</span><span class="params">(RequestTemplate template)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())</span><br><span class="line">                    .getRequest();</span><br><span class="line">            String xRealIp = request.getHeader(X_REAL_IP);</span><br><span class="line">            String authentication = request.getHeader(HTTP_TOKEN_HEADER);</span><br><span class="line">            String appTraceId = request.getHeader(HTTP_HEADER_TRACE_ID);</span><br><span class="line">            String businessGroupSource = request.getHeader(CLIENT_BUSINESS_GROUP_SOURCE);</span><br><span class="line">            String clientBusinessSource = request.getHeader(CLIENT_BUSINESS_SOURCE);</span><br><span class="line">            String clientBusinessActivitySource = request.getHeader(CLIENT_BUSINESS_ACTIVITY_SOURCE);</span><br><span class="line">            String clientEnvSource = request.getHeader(CLIENT_EVN_SOURCE);</span><br><span class="line">            String clientPlatformSource = request.getHeader(CLIENT_PLATFORM_SOURCE);</span><br><span class="line">            String clientStartTime = request.getHeader(CLIENT_START_TIME);</span><br><span class="line">            String clientVersionSource = request.getHeader(CLIENT_VERSION_SOURCE);</span><br><span class="line">            template.header(HttpHeaders.ACCEPT_ENCODING, <span class="string">"gzip"</span>);</span><br><span class="line">            template.header(X_REAL_IP, xRealIp);</span><br><span class="line">            template.header(HTTP_TOKEN_HEADER, authentication);</span><br><span class="line">            template.header(CLIENT_BUSINESS_GROUP_SOURCE, businessGroupSource);</span><br><span class="line">            template.header(CLIENT_BUSINESS_SOURCE, clientBusinessSource);</span><br><span class="line">            template.header(CLIENT_BUSINESS_ACTIVITY_SOURCE, clientBusinessActivitySource);</span><br><span class="line">            template.header(CLIENT_EVN_SOURCE, clientEnvSource);</span><br><span class="line">            template.header(CLIENT_PLATFORM_SOURCE, clientPlatformSource);</span><br><span class="line">            template.header(CLIENT_START_TIME, clientStartTime);</span><br><span class="line">            template.header(CLIENT_VERSION_SOURCE, clientVersionSource);</span><br><span class="line">            <span class="keyword">if</span> (log.isDebugEnabled()) &#123;</span><br><span class="line">                Enumeration&lt;String&gt; headerNames = request.getHeaderNames();</span><br><span class="line">                <span class="keyword">while</span> (headerNames.hasMoreElements()) &#123;</span><br><span class="line">                    String name = headerNames.nextElement();</span><br><span class="line">                    String value = request.getHeader(name);</span><br><span class="line">                    log.debug(<span class="string">"header &#123;&#125; - &#123;&#125;"</span>, name, value);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            log.error(<span class="string">"template exception &#123;&#125;"</span>,e.getMessage());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>简单的异常钉钉告警就到这里结束了。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/02/27/%E5%AE%9E%E8%B7%B5-mybatis+h2+logback%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/02/27/%E5%AE%9E%E8%B7%B5-mybatis+h2+logback%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/" class="post-title-link" itemprop="url">实践-mybatis+h2+logback单元测试</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-02-27 14:16:34" itemprop="dateCreated datePublished" datetime="2019-02-27T14:16:34+08:00">2019-02-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-15 09:20:05" itemprop="dateModified" datetime="2020-08-15T09:20:05+08:00">2020-08-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p><a href="https://z201.cn/2019/02/26/mybatis%E5%B0%8F%E8%AF%95%E7%89%9B%E5%88%80/" target="_blank" rel="noopener">mybatis小试牛刀</a> 在此基础上添加log日志。</p>
+</blockquote>
+<ul>
+<li><p>官方文档 ： <a href="http://www.mybatis.org/mybatis-3/zh/logging.html" target="_blank" rel="noopener">http://www.mybatis.org/mybatis-3/zh/logging.html</a></p>
+</li>
+<li><p>项目地址 ： <a href="https://github.com/z201/z201.github.io.code/tree/master/mybatis-learning/mybatis-learning-02" target="_blank" rel="noopener">mybatis-learning-02</a></p>
+</li>
+</ul>
+<h3 id="0x01-测试控制台的显示内容"><a href="#0x01-测试控制台的显示内容" class="headerlink" title="0x01 测试控制台的显示内容"></a>0x01 测试控制台的显示内容</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">User(id=1, name=TOM, age=12, gender=0)</span><br><span class="line">User(id=2, name=JON, age=13, gender=1)</span><br><span class="line">User(id=3, name=King, age=11, gender=0)</span><br></pre></td></tr></table></figure>
+
+<h3 id="0x02-增加日志输出"><a href="#0x02-增加日志输出" class="headerlink" title="0x02 增加日志输出"></a>0x02 增加日志输出</h3><blockquote>
+<p>根据官方文档显示，支持的log有很多实现，这里使用Slf4j + Logback 多组合。</p>
+</blockquote>
+<ul>
+<li>根据之前的项目，这里偷懒重新创建一个项目并把之前的代码都复制过来。</li>
+<li>添加maven依赖。</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"> <span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">mybatis.version</span>&gt;</span>3.5.0<span class="tag">&lt;/<span class="name">mybatis.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">junit.version</span>&gt;</span>4.12<span class="tag">&lt;/<span class="name">junit.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">lmbok.version</span>&gt;</span>1.18.4<span class="tag">&lt;/<span class="name">lmbok.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">mysql.version</span>&gt;</span>5.1.47<span class="tag">&lt;/<span class="name">mysql.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">h2.version</span>&gt;</span>1.4.197<span class="tag">&lt;/<span class="name">h2.version</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 新增内容 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">slf4j.version</span>&gt;</span>1.7.25<span class="tag">&lt;/<span class="name">slf4j.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">logback.version</span>&gt;</span>1.2.3<span class="tag">&lt;/<span class="name">logback.version</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- pom文件需要指定打包编码集，[WARNING] File encoding has not been set, using platform encoding GBK, i.e. build is platform dependent!  --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">project.build.sourceEncoding</span>&gt;</span>UTF-8<span class="tag">&lt;/<span class="name">project.build.sourceEncoding</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.slf4j<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>slf4j-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;slf4j.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>ch.qos.logback<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>logback-classic<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;logback.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>添加logback配置文件</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">appender</span> <span class="attr">name</span>=<span class="string">"STDOUT"</span> <span class="attr">class</span>=<span class="string">"ch.qos.logback.core.ConsoleAppender"</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- encoders are assigned the type</span></span><br><span class="line"><span class="comment">             ch.qos.logback.classic.encoder.PatternLayoutEncoder by default --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">encoder</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">pattern</span>&gt;</span>z201.github.cn %d&#123;HH:mm:ss.SSS&#125; [%thread] %-5level %logger&#123;36&#125; - %msg%n<span class="tag">&lt;/<span class="name">pattern</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">encoder</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">appender</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">root</span> <span class="attr">level</span>=<span class="string">"debug"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">appender-ref</span> <span class="attr">ref</span>=<span class="string">"STDOUT"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">root</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>再次运行单元测试。</li>
+</ul>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.046</span> [main] DEBUG org<span class="variable">.apache</span><span class="variable">.ibatis</span><span class="variable">.logging</span><span class="variable">.LogFactory</span> - Logging initialized using '<span class="keyword">class</span> org<span class="variable">.apache</span><span class="variable">.ibatis</span><span class="variable">.logging</span><span class="variable">.slf4j</span><span class="variable">.Slf4jImpl</span>' adapter.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.049</span> [main] DEBUG org<span class="variable">.apache</span><span class="variable">.ibatis</span><span class="variable">.logging</span><span class="variable">.LogFactory</span> - Logging initialized using '<span class="keyword">class</span> org<span class="variable">.apache</span><span class="variable">.ibatis</span><span class="variable">.logging</span><span class="variable">.slf4j</span><span class="variable">.Slf4jImpl</span>' adapter.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.076</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - PooledDataSource forcefully closed/removed all connections.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.076</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - PooledDataSource forcefully closed/removed all connections.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.076</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - PooledDataSource forcefully closed/removed all connections.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.076</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - PooledDataSource forcefully closed/removed all connections.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.155</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.t</span><span class="variable">.jdbc</span><span class="variable">.JdbcTransaction</span> - Opening JDBC Connection</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.356</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - Created connection <span class="number">1839168128</span>.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.356</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.t</span><span class="variable">.jdbc</span><span class="variable">.JdbcTransaction</span> - Setting autocommit to false on JDBC Connection [conn0: url=jdbc:h2:mem:mybatis_learning_01_db user=ROOT]</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.358</span> [main] DEBUG c<span class="variable">.z201</span><span class="variable">.mybatis</span><span class="variable">.learning</span><span class="variable">.UserDao</span><span class="variable">.list</span> - ==&gt;  Preparing: SELECT * FROM <span class="meta">`user` </span></span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.384</span> [main] DEBUG c<span class="variable">.z201</span><span class="variable">.mybatis</span><span class="variable">.learning</span><span class="variable">.UserDao</span><span class="variable">.list</span> - ==&gt; Parameters: </span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.411</span> [main] DEBUG c<span class="variable">.z201</span><span class="variable">.mybatis</span><span class="variable">.learning</span><span class="variable">.UserDao</span><span class="variable">.list</span> - &lt;==      Total: <span class="number">3</span></span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.414</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.t</span><span class="variable">.jdbc</span><span class="variable">.JdbcTransaction</span> - Resetting autocommit to true on JDBC Connection [conn0: url=jdbc:h2:mem:mybatis_learning_01_db user=ROOT]</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.415</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.t</span><span class="variable">.jdbc</span><span class="variable">.JdbcTransaction</span> - Closing JDBC Connection [conn0: url=jdbc:h2:mem:mybatis_learning_01_db user=ROOT]</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.415</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - Returned connection <span class="number">1839168128</span> to pool.</span><br><span class="line">User(id=<span class="number">1</span>, name=TOM, age=<span class="number">12</span>, gender=<span class="number">0</span>)</span><br><span class="line">User(id=<span class="number">2</span>, name=JON, age=<span class="number">13</span>, gender=<span class="number">1</span>)</span><br><span class="line">User(id=<span class="number">3</span>, name=King, age=<span class="number">11</span>, gender=<span class="number">0</span>)</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.416</span> [main] DEBUG cn<span class="variable">.z201</span><span class="variable">.mybatis</span><span class="variable">.test</span><span class="variable">.MybatisTest01</span> - <span class="keyword">end</span>...</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Jvm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Jvm/" class="post-title-link" itemprop="url">查缺补漏-Jvm</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-15 09:19:58" itemprop="dateModified" datetime="2020-08-15T09:19:58+08:00">2020-08-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>本章是整理知识内容，为强化知识长期更新。</p>
+</blockquote>
+<h3 id="JVM的内存布局"><a href="#JVM的内存布局" class="headerlink" title="JVM的内存布局"></a>JVM的内存布局</h3><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/JVM%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80.png"></p>
+<ol>
+<li><p>堆</p>
+<ul>
+<li><p>堆（Java Heap） 也叫 Java 堆或者是 GC 堆，它是一个线程共享的内存区域，也是 JVM 中占用内存最大的一块区域，Java 中所有的对象都存储在这里。</p>
+<ul>
+<li><strong>Java堆区具有下面几个特点：</strong><ul>
+<li>存储的是我们<strong>new</strong>来的对象，不存放基本类型和对象引用。</li>
+<li>由于创建了大量的对象，垃圾回收器主要工作在这块区域。</li>
+<li>线程共享区域，因此是线程不安全的。</li>
+<li>能够发生内存溢出，主要有OutOfMemoryError和StackOverflowError。</li>
+</ul>
+</li>
+<li>那么什么时候发生OutOfMemoryError，什么时候发生StackOverflowError？虚拟机在扩展栈时无法申请到足够的内存空间，<strong>将抛出OutOfMemoryError异常</strong>，线程请求的栈深度超过虚拟机所允许的最大深度，<strong>将抛出StackOverflowError异常</strong>。</li>
+<li>Java堆区还可以划分为<strong>新生代和老年代</strong>，新生代又可以进一步划分为<strong>Eden区、Survivor 1区、Survivor 2区</strong>。具体比例参数的话，可以看一下下面这张图。</li>
+</ul>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Java%E5%A0%86%E7%9A%84%E5%88%92%E5%88%86.png"></p>
+</li>
+</ul>
+</li>
+<li><p>方法区</p>
+<ul>
+<li>方法区（Method Area） 也被称为非堆区，用于和“Java 堆”的概念进行区分，它也是线程共享的内存区域，用于存储已经被 JVM 加载的类型信息、常量、静态变量、代码缓存等数据。</li>
+</ul>
+</li>
+<li><p>程序计数器</p>
+<ul>
+<li>程序计数器（Program Counter Register） 线程独有一块很小的内存区域，保存当前线程所执行字节码的位置，包括正在执行的指令、跳转、分支、循环、异常处理等。</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<ul>
+<li><p>Java栈具备的特点</p>
+</li>
+<li><p><strong>线程私有区域，每一个线程都有独享一个虚拟机栈，因此这是线程安全的区域。</strong></p>
+</li>
+<li><p>存放基本数据类型以及对象的引用。</p>
+</li>
+<li><p>每一个方法执行的时候会在虚拟机栈中创建一个相应栈帧，方法执行完毕后该栈帧就会被销毁。<strong>方法栈帧是以先进后出的方式虚拟机栈的。</strong></p>
+</li>
+<li><p>每一个栈帧又可以划分为<strong>局部变量表、操作数栈、动态链接、方法出口</strong>以及额外的附加信息。</p>
+<ul>
+<li>这个区域可能有两种异常：如果线程请求的栈深度大于虚拟机所允许的深度，将抛出StackOverflowError异常（通常是递归导致的）；JVM动态扩展时无法申请到足够内存则抛出OutOfMemoryError异常。    </li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<ol start="4">
+<li><p>虚拟机栈</p>
+<ul>
+<li>虚拟机栈也叫 Java 虚拟机栈（Java Virtual Machine Stack），和程序计数器相同它也是线程独享的，用来描述 Java 方法的执行，在每个方法被执行时就会同步创建一个栈帧，用来存储局部变量表、操作栈、动态链接、方法出口等信息。当调用方法时执行入栈，而方法返回时执行出栈。</li>
+</ul>
+</li>
+<li><p>本地方法栈</p>
+<ul>
+<li>本地方法栈（Native Method Stacks）与虚拟机栈类似，它是线程独享的，并且作用也和虚拟机栈类似。只不过虚拟机栈是为虚拟机中执行的 Java 方法服务的，而本地方法栈则是为虚拟机使用到的本地（Native）方法服务。</li>
+</ul>
+</li>
+</ol>
+<ul>
+<li>JVM 的执行流程是，首先先把 Java 代码（.java）转化成字节码（.class），然后通过类加载器将字节码加载到内存中，所谓的内存也就是我们上面介绍的运行时数据区，但字节码并不是可以直接交给操作系统执行的机器码，而是一套 JVM 的指令集。这个时候需要使用特定的命令解析器也就是我们俗称的<strong>执行引擎（Execution Engine）</strong>将字节码翻译成可以被底层操作系统执行的指令再去执行，这样就实现了整个 Java 程序的运行，这也是 JVM 的整体执行流程。</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Jvm/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-%E9%80%9A%E8%AE%AF%E5%8D%8F%E8%AE%AE/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -696,211 +1046,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/05/08/Idea%E4%BD%BF%E7%94%A8%E7%9B%B8%E5%85%B3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/05/08/Idea%E4%BD%BF%E7%94%A8%E7%9B%B8%E5%85%B3/" class="post-title-link" itemprop="url">Idea常用插件</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-05-08 16:35:04" itemprop="dateCreated datePublished" datetime="2019-05-08T16:35:04+08:00">2019-05-08</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-15 09:14:04" itemprop="dateModified" datetime="2020-08-15T09:14:04+08:00">2020-08-15</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>有必要记录下自己常用的插件，避免特殊事件的发生。</p>
-</blockquote>
-<h4 id="Free-Mybatis-plugin"><a href="#Free-Mybatis-plugin" class="headerlink" title="Free Mybatis plugin"></a>Free Mybatis plugin</h4><blockquote>
-<p>Mybatis 插件，可以定位java和xml关系。通过java接口快速生成相关xml文件或者方法。</p>
-</blockquote>
-<h4 id="Mybaits-Log-plugin"><a href="#Mybaits-Log-plugin" class="headerlink" title="Mybaits Log plugin"></a>Mybaits Log plugin</h4><blockquote>
-<p>使用插件将mybaits默认的日志输出转换成可以运行的sql日志。</p>
-</blockquote>
-<h4 id="Alibaba-java-coding-guidelines"><a href="#Alibaba-java-coding-guidelines" class="headerlink" title="Alibaba-java-coding-guidelines"></a>Alibaba-java-coding-guidelines</h4><blockquote>
-<p>阿里巴巴java代码检查工具</p>
-</blockquote>
-<h4 id="json2pojo"><a href="#json2pojo" class="headerlink" title="json2pojo"></a>json2pojo</h4><blockquote>
-<p>json转bean的工具</p>
-</blockquote>
-<h4 id="查看某个方法被调用的地方。-鼠标选中方法名称"><a href="#查看某个方法被调用的地方。-鼠标选中方法名称" class="headerlink" title="查看某个方法被调用的地方。(鼠标选中方法名称)"></a>查看某个方法被调用的地方。(鼠标选中方法名称)</h4><p><code>Navigate | Call Hierarchy </code> 快捷键<code>control + option + h</code></p>
-<h4 id="Genterate-代码生成"><a href="#Genterate-代码生成" class="headerlink" title="Genterate 代码生成"></a>Genterate 代码生成</h4><p><code>Code | Genterate</code> #快捷键 <code>command + n</code></p>
-<h4 id="Copyright-模版"><a href="#Copyright-模版" class="headerlink" title="Copyright 模版"></a>Copyright 模版</h4><p><code>Edit | Copyright | Copyright profiles </code></p>
-<ul>
-<li>样板</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Copyright (c) $today.year  </span><br><span class="line">@Author:z201.coding@gamil.com</span><br><span class="line">@LastModified:$today.format(&quot;yyyy-MM-dd&quot;)</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/05/08/Idea%E4%BD%BF%E7%94%A8%E7%9B%B8%E5%85%B3/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/06/24/Mac%E4%B8%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/06/24/Mac%E4%B8%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/" class="post-title-link" itemprop="url">Mac下开发环境</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-06-24 15:30:34" itemprop="dateCreated datePublished" datetime="2018-06-24T15:30:34+08:00">2018-06-24</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-15 09:11:03" itemprop="dateModified" datetime="2020-08-15T09:11:03+08:00">2020-08-15</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/" itemprop="url" rel="index"><span itemprop="name">开发环境</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>最近开始用mac来开发。记录下环境安装过程方便以后快速恢复熟悉的开发环境。</p>
-</blockquote>
-<p>这里提前修改一下控制台前缀</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[dev mc]$ sudo vim &#x2F;etc&#x2F;bashrc</span><br><span class="line">#修改以下内容</span><br><span class="line">PS1&#x3D;&#39;\h:\W \u\$ &#39;</span><br><span class="line">#修改成</span><br><span class="line">PS1&#x3D;&#39;[dev \u]$ &#39;</span><br></pre></td></tr></table></figure>
-
-<h3 id="好用的工具"><a href="#好用的工具" class="headerlink" title="好用的工具"></a>好用的工具</h3><ul>
-<li>pages <code>同事推荐的软件</code>暂时用来写周报。</li>
-<li>brew <code>这是一个神器,和linux 上的yum 类似的工具。</code></li>
-<li>sublime text <code>我之前在windows上都是使用notepad++。上App Store上没找到,该用这个了。</code></li>
-</ul>
-<h3 id="pages"><a href="#pages" class="headerlink" title="pages"></a>pages</h3><ul>
-<li>直接在app store安装就好了</li>
-</ul>
-<h3 id="brew"><a href="#brew" class="headerlink" title="brew"></a>brew</h3><ul>
-<li>安装过程使用终端安装。</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#  这里并没有换行，复制的时候请注意。</span><br><span class="line">&#x2F;usr&#x2F;bin&#x2F;ruby -e &quot;$(curl -fsSL https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;Homebrew&#x2F;install&#x2F;master&#x2F;install)&quot;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>基本操作方式</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 更新</span><br><span class="line">brew update </span><br><span class="line"># 安装软件 </span><br><span class="line">brew install xxx（软件名）</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/06/24/Mac%E4%B8%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/05/27/%E6%80%BB%E7%BB%93%E4%BB%A3%E7%A0%81%E9%A3%8E%E6%A0%BC/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1263,261 +1408,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCore/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCore/" class="post-title-link" itemprop="url">查缺补漏-JavaCore</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-15 08:03:19" itemprop="dateModified" datetime="2020-08-15T08:03:19+08:00">2020-08-15</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-<h3 id="面向对象思想"><a href="#面向对象思想" class="headerlink" title="面向对象思想"></a>面向对象思想</h3><ul>
-<li>面向对象是一个思想，时间万物皆可以被看做一个对象。</li>
-</ul>
-<h3 id="封装"><a href="#封装" class="headerlink" title="封装"></a>封装</h3><ul>
-<li>隐藏对象的属性和实现的具体细节，只对外暴露公共访问方式。</li>
-</ul>
-<h3 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h3><ul>
-<li>当多个类出现相同代码逻辑时，我们通常将相同的代码重构到一个类中，如果是绑定关系就可以使用继承。</li>
-<li>Java中类是单继承。</li>
-</ul>
-<h3 id="多态"><a href="#多态" class="headerlink" title="多态"></a>多态</h3><ul>
-<li>一个事物的的多种状态，比如女人、男人都是人的性别。人的性别就分为女人、男人。</li>
-</ul>
-<h3 id="重写和重载"><a href="#重写和重载" class="headerlink" title="重写和重载"></a>重写和重载</h3><ul>
-<li>重载：同一个类中，方法名相同，参数个数或者类型不相同，返回类型可以不相同。</li>
-<li>重写：类的继承关系中体现，子类重写父类的方法。</li>
-</ul>
-<h3 id="介绍下-Java-基本数据类型"><a href="#介绍下-Java-基本数据类型" class="headerlink" title="介绍下 Java 基本数据类型"></a>介绍下 Java 基本数据类型</h3><ul>
-<li>Java中存在8个原生数据类型，同时又分成四种：整形、浮点型、char、Boolean。它们之间存在自动类型转换，规则是从小到大。并且都存在自动装箱拆箱特性，但是这种操作是隐式操作而且在某些情况会导致CG压力增大。</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th align="center">类型</th>
-<th align="center">存储需求</th>
-<th align="center">取值范围</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">int</td>
-<td align="center">4字节</td>
-<td align="center">-2 147 483 638 ～ 2 147 483 637</td>
-</tr>
-<tr>
-<td align="center">short</td>
-<td align="center">2字节</td>
-<td align="center">-32 768 ～ 32 767</td>
-</tr>
-<tr>
-<td align="center">long</td>
-<td align="center">8字节</td>
-<td align="center">-9 223 372 036 854 775 808 ～ 9 223 372 036 854 775 807</td>
-</tr>
-<tr>
-<td align="center">byte</td>
-<td align="center">1字节</td>
-<td align="center">- 128 ～ 127</td>
-</tr>
-</tbody></table>
-<ul>
-<li>整型的范围与运行Java运行的硬件没有关系，所有的数据类型所占的字节数量与平台无关。</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th align="center">类型</th>
-<th align="center">存储需求</th>
-<th align="center">取值范围</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">float</td>
-<td align="center">4字节</td>
-<td align="center">大约 $\pm$ 3.402 823 37F + 38F (有效位数为7～8位)</td>
-</tr>
-<tr>
-<td align="center">double</td>
-<td align="center">8字节</td>
-<td align="center">大约 $\pm$ 1.797 693 134 862 315 70E + 308 （有效位数为15位）</td>
-</tr>
-</tbody></table>
-<ul>
-<li><p>double这种类型的精度是float的两倍。</p>
-</li>
-<li><p>所有浮点数值计算都遵循IEEE 754规范，下面是溢出和出错的情况的三种特殊的浮点数值。</p>
-<ul>
-<li>正无穷大</li>
-<li>负无穷大</li>
-<li>NaN ( 不是一个数字 )</li>
-<li>一个整整数除以0的结果为正无穷大，计算0/0或者负数的平方根结果为NaN。</li>
-</ul>
-</li>
-<li><p>char类型</p>
-<ul>
-<li>char类型表示单个字符，属于Unicode编码表。因为历史原因，不建议在程序中使用。除非确实要对UTF-16代码单元进行操作。</li>
-<li>char字节大小<ul>
-<li>Java中无论是汉字还是英文字母都是用Unicode编码来表示的，一个Unicode是16位，每字节是8位，所以一个Unicode码占两字节。但是英文字母比较特殊，源自于8位（1字节）的ASCII吗，于是在Unicode码仅使用了低8位（1字节）就可以表示。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>boolean类型</p>
-<ul>
-<li>布尔类型，只有两个值false、true。基本用于判定条件。</li>
-<li>boolean字节大小<ul>
-<li>Java规范中并未明确规定boolean类型的大小。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>自动类型转换</p>
-<ul>
-<li><p><strong>整型、实型（常量）、字符型数据可以混合运算。运算中，不同类型的数据先转化为同一类型，然后进行运算。</strong></p>
-<p>转换从低级到高级。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">byte</span>,<span class="keyword">short</span>,<span class="keyword">char</span>—&gt; <span class="keyword">int</span> —&gt; <span class="keyword">long</span>—&gt; <span class="keyword">float</span> —&gt; <span class="keyword">double</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>不能对boolean进行类型转换、不能把对象类型转换成不相关的对象、把大容量的对象转换成小容量对象时需要强制类型转换、转换过程中间可能出现精度损失。</p>
-</li>
-</ul>
-</li>
-<li><p>装箱和拆箱<strong>boxing or unboxing</strong></p>
-</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th align="center">原语</th>
-<th align="center">对应的JDK类</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">int</td>
-<td align="center">java.lang.Integer</td>
-</tr>
-<tr>
-<td align="center">short</td>
-<td align="center">java.lang.Short</td>
-</tr>
-<tr>
-<td align="center">long</td>
-<td align="center">java.lang.Long</td>
-</tr>
-<tr>
-<td align="center">byte</td>
-<td align="center">java.lang.Byte</td>
-</tr>
-<tr>
-<td align="center">char</td>
-<td align="center">java.lang.Character</td>
-</tr>
-<tr>
-<td align="center">double</td>
-<td align="center">java.lang.Double</td>
-</tr>
-<tr>
-<td align="center">float</td>
-<td align="center">java.lang.Float</td>
-</tr>
-<tr>
-<td align="center">boolean</td>
-<td align="center">java.lang.Boolean</td>
-</tr>
-</tbody></table>
-<ul>
-<li><p>Java中只有原生数据类型是特殊的，它们不是对象。其它的都是对象。那么就一个尴尬的问题，集合类都是存放的对象，JDK5之后考虑到这个问题就自动进行逆行拆箱装箱的操作。</p>
-  <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//比如所在泛型中是不能存放原生数据类型的，如要要存放原生数据类型的数据，需要装箱。</span></span><br><span class="line">Collection&lt;<span class="keyword">int</span>&gt; c = <span class="keyword">new</span> ArrayList&lt;<span class="keyword">int</span>&gt;(); <span class="comment">//这是无法编译成功的。</span></span><br><span class="line">Collection&lt;Integer&gt; cc = <span class="keyword">new</span> ArrayList&lt;Integer&gt;(); <span class="comment">//这样才行。</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>每个 JDK 类都提供了相应方法来解析它的内部表示，并将其转换为相应的原语类型。</p>
-</li>
-<li><p>但是注意装箱拆箱操作其实是非常消耗内存的举动，在该过程中可能会生成生成无用对象增加GC压力。所以尽量避免这中操作。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Integer sum = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> index  = <span class="number">1000</span>; index &lt; <span class="number">5000</span>; index ++)&#123;</span><br><span class="line"> sum+=index;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>  比如这种，每次sum都需要自动拆箱。</p>
-</li>
-</ul>
-<ul>
-<li><p>默认情况下整数的类型都是int、浮点型的数都是double。</p>
-   <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">float</span> d = <span class="number">1.1f</span>; <span class="comment">//在后面添加f,大小写不区分。隐式强制类型转换</span></span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCore/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1588,7 +1478,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">93</span>
+          <span class="site-state-item-count">94</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1599,7 +1489,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">84</span>
+        <span class="site-state-item-count">86</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
