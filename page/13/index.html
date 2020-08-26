@@ -1024,7 +1024,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Jvm/">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCollecionsFramework/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -1038,7 +1038,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Jvm/" class="post-title-link" itemprop="url">查缺补漏-Jvm</a>
+            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCollecionsFramework/" class="post-title-link" itemprop="url">查缺补漏-JavaCollecionsFramework</a>
         </h2>
 
         <div class="post-meta">
@@ -1055,7 +1055,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-15 09:19:58" itemprop="dateModified" datetime="2020-08-15T09:19:58+08:00">2020-08-15</time>
+                <time title="Modified: 2020-08-15 06:13:39" itemprop="dateModified" datetime="2020-08-15T06:13:39+08:00">2020-08-15</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1081,72 +1081,116 @@
           <blockquote>
 <p>本章是整理知识内容，为强化知识长期更新。</p>
 </blockquote>
-<h3 id="JVM的内存布局"><a href="#JVM的内存布局" class="headerlink" title="JVM的内存布局"></a>JVM的内存布局</h3><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/JVM%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80.png"></p>
-<ol>
-<li><p>堆</p>
-<ul>
-<li><p>堆（Java Heap） 也叫 Java 堆或者是 GC 堆，它是一个线程共享的内存区域，也是 JVM 中占用内存最大的一块区域，Java 中所有的对象都存储在这里。</p>
-<ul>
-<li><strong>Java堆区具有下面几个特点：</strong><ul>
-<li>存储的是我们<strong>new</strong>来的对象，不存放基本类型和对象引用。</li>
-<li>由于创建了大量的对象，垃圾回收器主要工作在这块区域。</li>
-<li>线程共享区域，因此是线程不安全的。</li>
-<li>能够发生内存溢出，主要有OutOfMemoryError和StackOverflowError。</li>
+<h3 id="Java集合"><a href="#Java集合" class="headerlink" title="Java集合"></a>Java集合</h3><p>​    集合是Java提供的工具包、包含常用的数据结构：集合、链表、队列、栈、数组、映射等。Collection的包是java.util.*。</p>
+<h4 id="Collection"><a href="#Collection" class="headerlink" title="Collection"></a>Collection</h4><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Collection/Java-Collection-Framework.svg"></p>
+<h4 id="Map"><a href="#Map" class="headerlink" title="Map"></a>Map</h4><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Collection/Java-Map-Framework.svg">  </p>
+<p><code>实际上还有Cloneable、Serializable接口是都集合类需要实现的，通用所以不不画上去了。 </code> </p>
+<h4 id="Java集合主要划分4个部分："><a href="#Java集合主要划分4个部分：" class="headerlink" title="Java集合主要划分4个部分："></a>Java集合主要划分4个部分：</h4><ul>
+<li>List(列队)</li>
+<li>Set(集合)</li>
+<li>Map(映射)</li>
+<li>工具类(Iterator迭代器、Enumeration枚举类、Arrays、Collections)</li>
+</ul>
+<h4 id="划重点"><a href="#划重点" class="headerlink" title="划重点"></a>划重点</h4><ul>
+<li>Conllection<ul>
+<li>List<ul>
+<li><code>ArrayList</code></li>
+<li><code>Vector</code><ul>
+<li>Stack</li>
 </ul>
 </li>
-<li>那么什么时候发生OutOfMemoryError，什么时候发生StackOverflowError？虚拟机在扩展栈时无法申请到足够的内存空间，<strong>将抛出OutOfMemoryError异常</strong>，线程请求的栈深度超过虚拟机所允许的最大深度，<strong>将抛出StackOverflowError异常</strong>。</li>
-<li>Java堆区还可以划分为<strong>新生代和老年代</strong>，新生代又可以进一步划分为<strong>Eden区、Survivor 1区、Survivor 2区</strong>。具体比例参数的话，可以看一下下面这张图。</li>
-</ul>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Java%E5%A0%86%E7%9A%84%E5%88%92%E5%88%86.png"></p>
-</li>
+<li><code>LinkedList</code></li>
 </ul>
 </li>
-<li><p>方法区</p>
-<ul>
-<li>方法区（Method Area） 也被称为非堆区，用于和“Java 堆”的概念进行区分，它也是线程共享的内存区域，用于存储已经被 JVM 加载的类型信息、常量、静态变量、代码缓存等数据。</li>
+<li>Set<ul>
+<li><code>HashSet</code></li>
+<li><code>TreeSet</code></li>
+<li><code>LinkedHashSet</code></li>
 </ul>
 </li>
-<li><p>程序计数器</p>
-<ul>
-<li>程序计数器（Program Counter Register） 线程独有一块很小的内存区域，保存当前线程所执行字节码的位置，包括正在执行的指令、跳转、分支、循环、异常处理等。</li>
+<li>Queue</li>
 </ul>
 </li>
-</ol>
-<blockquote>
-<ul>
-<li><p>Java栈具备的特点</p>
+<li>Map<ul>
+<li><code>HashMap</code></li>
+<li><code>HashTable</code></li>
+<li><code>TreeMap</code></li>
+</ul>
 </li>
-<li><p><strong>线程私有区域，每一个线程都有独享一个虚拟机栈，因此这是线程安全的区域。</strong></p>
-</li>
-<li><p>存放基本数据类型以及对象的引用。</p>
-</li>
-<li><p>每一个方法执行的时候会在虚拟机栈中创建一个相应栈帧，方法执行完毕后该栈帧就会被销毁。<strong>方法栈帧是以先进后出的方式虚拟机栈的。</strong></p>
-</li>
-<li><p>每一个栈帧又可以划分为<strong>局部变量表、操作数栈、动态链接、方法出口</strong>以及额外的附加信息。</p>
-<ul>
-<li>这个区域可能有两种异常：如果线程请求的栈深度大于虚拟机所允许的深度，将抛出StackOverflowError异常（通常是递归导致的）；JVM动态扩展时无法申请到足够内存则抛出OutOfMemoryError异常。    </li>
+<li>工具<ul>
+<li>Arrays</li>
+<li>Collections</li>
+<li>Enumeration</li>
 </ul>
 </li>
 </ul>
-</blockquote>
-<ol start="4">
-<li><p>虚拟机栈</p>
-<ul>
-<li>虚拟机栈也叫 Java 虚拟机栈（Java Virtual Machine Stack），和程序计数器相同它也是线程独享的，用来描述 Java 方法的执行，在每个方法被执行时就会同步创建一个栈帧，用来存储局部变量表、操作栈、动态链接、方法出口等信息。当调用方法时执行入栈，而方法返回时执行出栈。</li>
-</ul>
-</li>
-<li><p>本地方法栈</p>
-<ul>
-<li>本地方法栈（Native Method Stacks）与虚拟机栈类似，它是线程独享的，并且作用也和虚拟机栈类似。只不过虚拟机栈是为虚拟机中执行的 Java 方法服务的，而本地方法栈则是为虚拟机使用到的本地（Native）方法服务。</li>
-</ul>
-</li>
-</ol>
-<ul>
-<li>JVM 的执行流程是，首先先把 Java 代码（.java）转化成字节码（.class），然后通过类加载器将字节码加载到内存中，所谓的内存也就是我们上面介绍的运行时数据区，但字节码并不是可以直接交给操作系统执行的机器码，而是一套 JVM 的指令集。这个时候需要使用特定的命令解析器也就是我们俗称的<strong>执行引擎（Execution Engine）</strong>将字节码翻译成可以被底层操作系统执行的指令再去执行，这样就实现了整个 Java 程序的运行，这也是 JVM 的整体执行流程。</li>
-</ul>
+<h3 id="Java类库中具体集合"><a href="#Java类库中具体集合" class="headerlink" title="Java类库中具体集合"></a>Java类库中具体集合</h3><table>
+<thead>
+<tr>
+<th>集合类型</th>
+<th>概括</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ArrayList<E></td>
+<td>一种可以动态增长和缩减的索引序列，访问速度很快但是插入和删除比ArrayList慢。</td>
+</tr>
+<tr>
+<td>LinkedList<E></td>
+<td>一种可以在任何位置进行高效地插入和删除操作的有序序列，但是访问比较ArrayList慢。</td>
+</tr>
+<tr>
+<td>ArrayDeque<E></td>
+<td>一种循环数组实现的双端序列。</td>
+</tr>
+<tr>
+<td>HashSet<E></td>
+<td>一种没有重复元素的无序集合。</td>
+</tr>
+<tr>
+<td>TreeSet<E></td>
+<td>一种有序集合。</td>
+</tr>
+<tr>
+<td>EnumSet&lt;E extends Enum<E>&gt;</td>
+<td>一种包含枚举类型的集合。</td>
+</tr>
+<tr>
+<td>LinkedHashSet<E></td>
+<td>一种可以记住元素插入顺序的集合。</td>
+</tr>
+<tr>
+<td>PriorityQueue<E></td>
+<td>一种允许高效删除最小元素的集合。</td>
+</tr>
+<tr>
+<td>HashMap&lt;K , V&gt;</td>
+<td>一个存储 键 / 值 关联的数据结构。</td>
+</tr>
+<tr>
+<td>TreeMap&lt;K , V&gt;</td>
+<td>一种键值有序排列的映射表。</td>
+</tr>
+<tr>
+<td>EnumMap&lt;K extends Enum<K>, V&gt;</td>
+<td>一种键属于枚举类型的映射表。</td>
+</tr>
+<tr>
+<td>LinkedHashMap&lt;K ,V &gt;</td>
+<td>一种可以记住键 / 值 项添加顺序的映射表。</td>
+</tr>
+<tr>
+<td>WeakHashMap&lt;K , V &gt;</td>
+<td>一种其值无用武之地后可以被垃圾回收回收的映射表。</td>
+</tr>
+<tr>
+<td>IdentityHashMap&lt;K , V&gt;</td>
+<td>一种用 == 而不是用用 equals 比较的映射表。</td>
+</tr>
+</tbody></table>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Jvm/#more" rel="contents">
+              <a class="btn" href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCollecionsFramework/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
