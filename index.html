@@ -332,6 +332,122 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/11/20/Docker-Compose-Redis5-0-Mysql5-7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/11/20/Docker-Compose-Redis5-0-Mysql5-7/" class="post-title-link" itemprop="url">Docker-Compose-Redis5.0+Mysql5.7</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-11-20 15:58:13 / Modified: 17:04:53" itemprop="dateCreated datePublished" datetime="2020-11-20T15:58:13+08:00">2020-11-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Docker/" itemprop="url" rel="index"><span itemprop="name">Docker</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>记录下使用docker-compose构建管理Redis、mysql。</p>
+</blockquote>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><ol>
+<li>创建工作目录</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -p docker docker/mysql docker/mysql/data docker/redis docker/redis/data</span><br><span class="line"><span class="comment"># 使用 tree docker 查看目录结构 yum -y install tree 安装</span></span><br><span class="line">$ tree docker</span><br><span class="line">docker</span><br><span class="line">├── mysql</span><br><span class="line">│   └── data</span><br><span class="line">└── redis</span><br><span class="line">    └── data</span><br><span class="line">$ touch docker/mysql/my.cnf docker/redis/redis.conf </span><br><span class="line">$ tree docker</span><br><span class="line">docker</span><br><span class="line">├── mysql</span><br><span class="line">│   ├── data</span><br><span class="line">│   └── my.cnf</span><br><span class="line">└── redis</span><br><span class="line">    ├── data</span><br><span class="line">    └── redis.conf</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>准备my.conf 、redis.conf<ol>
+<li>my.conf</li>
+</ol>
+</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">[client]</span><br><span class="line"> port = 3306</span><br><span class="line"> socket = /var/lib/mysql/data/mysql.sock</span><br><span class="line">[mysqld]</span><br><span class="line"> <span class="comment"># 针对5.7版本执行group by字句出错问题解决</span></span><br><span class="line">sql_mode=<span class="string">'STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'</span></span><br><span class="line"> <span class="comment"># 一般配置选项</span></span><br><span class="line"> basedir = /var/lib/mysql</span><br><span class="line"> datadir = /var/lib/mysql/data</span><br><span class="line"> port = 3306</span><br><span class="line"> socket = /var/lib/mysql/data/mysql.sock</span><br><span class="line"> lc-messages-dir = /usr/share/mysql <span class="comment"># 务必配置此项，否则执行sql出错时，只能显示错误代码而不显示具体错误消息</span></span><br><span class="line"> character-set-server=utf8</span><br><span class="line"> back_log = 300</span><br><span class="line"> max_connections = 3000</span><br><span class="line"> max_connect_errors = 50</span><br><span class="line"> table_open_cache = 4096</span><br><span class="line"> max_allowed_packet = 32M</span><br><span class="line"> <span class="comment">#binlog_cache_size = 4M</span></span><br><span class="line"> max_heap_table_size = 128M</span><br><span class="line"> read_rnd_buffer_size = 16M</span><br><span class="line"> sort_buffer_size = 16M</span><br><span class="line"> join_buffer_size = 16M</span><br><span class="line"> thread_cache_size = 16</span><br><span class="line"> query_cache_size = 64M</span><br><span class="line"> query_cache_limit = 4M</span><br><span class="line"> ft_min_word_len = 8</span><br><span class="line"> thread_stack = 512K</span><br><span class="line"> transaction_isolation = REPEATABLE-READ</span><br><span class="line"> tmp_table_size = 64M</span><br><span class="line"> <span class="comment">#log-bin=mysql-bin</span></span><br><span class="line"> long_query_time = 6</span><br><span class="line"> server_id=1</span><br><span class="line"> innodb_buffer_pool_size = 256M</span><br><span class="line"> innodb_thread_concurrency = 16</span><br><span class="line"> innodb_log_buffer_size = 16M</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>redis.conf 可以去这里下载 <a href="https://redis.io/topics/config" target="_blank" rel="noopener">官网</a></li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">wget https://raw.githubusercontent.com/redis/redis/5.0/redis.conf</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改内容</span></span><br><span class="line">daemonize no     <span class="comment">## 若使用开机启动，生成pid，该项必须设置为诶yes，否则redis将不能够正常执行开机启动(systemctl start redis,执行后一直卡着，直到超时)</span></span><br><span class="line"><span class="comment">#bind 127.0.0.1  ##注释掉，允许所有其他ip访问，真实使用最好坐下限制，只允许某些主机访问</span></span><br><span class="line">protected-mode no  <span class="comment">## 允许其他机器上的客户端连接当前redis，配置文件设置该项，则开机启动处就可以去掉--protected no </span></span><br><span class="line">requirepass root  <span class="comment">##设置密码</span></span><br><span class="line"><span class="comment"># daemonize yes，他的作用是开启守护进程模式，在该模式下，redis会在后台运行，并将进程pid号写入至redis.conf选项pidfile设置的文件中，此时redis将一直运行，除非手动kill该进程。但是在后面的命令中“-d”选项也是开启daemonize，这是docker自家的方式。</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="编写Docker-Compose文件"><a href="#编写Docker-Compose文件" class="headerlink" title="编写Docker-Compose文件"></a>编写Docker-Compose文件</h2><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">version : <span class="string">'3'</span></span><br><span class="line">services:</span><br><span class="line">  mysql:</span><br><span class="line">    image: mysql/mysql-server:<span class="number">5.7</span>.<span class="number">18</span></span><br><span class="line">    container_name: mysql5.<span class="number">7.18</span>-dev</span><br><span class="line">    networks:</span><br><span class="line">      - net-shop-db</span><br><span class="line">    ports:</span><br><span class="line">      - <span class="string">"3306:3306"</span></span><br><span class="line">    volumes:</span><br><span class="line">      - /opt/docker/mysql/conf/my.cnf:/etc/my.cnf <span class="comment"># 映射数据库配置文件</span></span><br><span class="line">      - /opt/docker/mysql/data:/var/lib/mysql/data  <span class="comment"># 映射数据库保存目录到宿主机，防止数据丢失</span></span><br><span class="line">      - /opt/docker/mysql/log:/var/log/mysql <span class="comment"># 日志文件</span></span><br><span class="line">      - /etc/localtime:/etc/localtime:ro <span class="comment"># 设置容器时区与宿主机保持一致</span></span><br><span class="line">    restart: always <span class="comment"># 设置容器自启模式</span></span><br><span class="line">    command: [</span><br><span class="line">      <span class="string">'--character-set-server=utf8mb4'</span>,</span><br><span class="line">      <span class="string">'--collation-server=utf8mb4_unicode_ci'</span>,</span><br><span class="line">      <span class="string">'--lower_case_table_names=1'</span>,</span><br><span class="line">      <span class="string">'--default-time-zone=+8:00'</span>]</span><br><span class="line">    environment:</span><br><span class="line">      - TZ=Asia/Shanghai <span class="comment"># 设置容器时区与宿主机保持一致</span></span><br><span class="line">      - MYSQL_ROOT_PASSWORD=root <span class="comment"># 设置root密码</span></span><br><span class="line">  redis:</span><br><span class="line">    image: redis:<span class="number">5.0</span>.<span class="number">5</span></span><br><span class="line">    container_name: redis5.<span class="number">0.6</span>-dev</span><br><span class="line">    networks:</span><br><span class="line">      - net-shop-db</span><br><span class="line">    ports:</span><br><span class="line">      - <span class="string">"6379:6379"</span></span><br><span class="line">    volumes:</span><br><span class="line">      - /etc/localtime:/etc/localtime:ro <span class="comment"># 设置容器时区与宿主机保持一致</span></span><br><span class="line">      - /opt/docker/redis/data:/data</span><br><span class="line">      - /opt/docker/redis/redis.conf:/etc/redis.conf</span><br><span class="line">    command: redis-server /etc/redis.conf <span class="comment"># 启动redis命令</span></span><br><span class="line">    environment:</span><br><span class="line">      - TZ=Asia/Shanghai <span class="comment"># 设置容器时区与宿主机保持一致</span></span><br><span class="line">    restart: always <span class="comment"># 设置容器自启模式</span></span><br><span class="line"></span><br><span class="line">networks:</span><br><span class="line">  net-shop-db:</span><br><span class="line">    driver: bridge</span><br></pre></td></tr></table></figure>
+
+<h2 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h2><ol>
+<li>创建并启动容器 <code>docker-compose -f docker-compose.yml up -d</code></li>
+<li>批量停止容器并清除容器 <code>docker-compose -f docker-compose.yml down</code></li>
+<li>重新构建容器 <code>docker-compose -f docker-compose.yml up --build -d</code></li>
+<li>启动失败，可以查看容器日志信息获取帮助 <code>docker logs 容器名词或容器ID # 既docker-compose.yml文件参数container_name指定的值</code></li>
+</ol>
+<h2 id="备注"><a href="#备注" class="headerlink" title="备注"></a>备注</h2><ol>
+<li><p>docker-compose 命令不存在、未找到命令</p>
+</li>
+<li><p>centos 7中python-pip模块不存在，是因为像centos这类衍生的发行版，源跟新滞后，或者不存在。即使使用yum去search python-pip也找不到软件包。</p>
+</li>
+<li><p>为了使用安装滞后或源中不存在的安装包，需要安装扩展源EPEL。扩展源EPEL(<a href="http://fedoraproject.org/wiki/EPEL" target="_blank" rel="noopener">http://fedoraproject.org/wiki/EPEL</a>) 是由 Fedora 社区打造，为 RHEL 及衍生发行版如 CentOS、Scientific Linux 等提供高质量软件包的项目。</p>
+</li>
+<li><p>检查当前docker 版本 </p>
+</li>
+</ol>
+<ul>
+<li>安装扩展源：sudo yum -y install epel-release</li>
+<li>安装python-pip模块：sudo yum install python-pip</li>
+</ul>
+<p>此时执行 <code>docker-compose version</code> 命令可能会会出现命令不存在的问题，以下给出解决方案：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 注意查看docker 版本 和 docker-compose 的版本</span></span><br><span class="line"><span class="built_in">cd</span> /usr/<span class="built_in">local</span>/bin/</span><br><span class="line"></span><br><span class="line">curl -L https://github.com/docker/compose/releases/download/1.27.4/docker-compose-`uname -s`-`uname -m` -o /usr/<span class="built_in">local</span>/bin/docker-compose</span><br><span class="line"></span><br><span class="line">chmod +x /usr/<span class="built_in">local</span>/bin/docker-compose</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://yefeihonours.github.io/post/docker/docker_compose/" target="_blank" rel="noopener">docker-compose 命令不存在、未找到命令</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/43654441" target="_blank" rel="noopener">使用 docker-compose 在 Docker 中启动有密码的 Redis 容器</a></p>
+<p><a href="https://cloud.tencent.com/developer/article/1678769" target="_blank" rel="noopener">Docker-Compose搭建mysql、redis、zookeeper、rabbitmq、consul、elasticsearch环境</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/11/20/Centos7-Docker%E9%83%A8%E7%BD%B2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -416,122 +532,6 @@
 <li>检查docker运行情况<code>service docker status</code></li>
 </ol>
 <h2 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h2><p><a href="https://developer.aliyun.com/article/336442" target="_blank" rel="noopener">阿里云CentOS 7上安装配置Docker</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/11/20/Docker-Compose-Redis5-0-Mysql5-7/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/11/20/Docker-Compose-Redis5-0-Mysql5-7/" class="post-title-link" itemprop="url">Docker-Compose-Redis5.0+Mysql5.7</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2020-11-20 15:58:13 / Modified: 16:47:16" itemprop="dateCreated datePublished" datetime="2020-11-20T15:58:13+08:00">2020-11-20</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Docker/" itemprop="url" rel="index"><span itemprop="name">Docker</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>记录下使用docker-compose构建管理Redis、mysql。</p>
-</blockquote>
-<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><ol>
-<li>创建工作目录</li>
-</ol>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -p docker docker/mysql docker/mysql/data docker/redis docker/redis/data</span><br><span class="line"><span class="comment"># 使用 tree docker 查看目录结构 yum -y install tree 安装</span></span><br><span class="line">$ tree docker</span><br><span class="line">docker</span><br><span class="line">├── mysql</span><br><span class="line">│   └── data</span><br><span class="line">└── redis</span><br><span class="line">    └── data</span><br><span class="line">$ touch docker/mysql/my.cnf docker/redis/redis.conf </span><br><span class="line">$ tree docker</span><br><span class="line">docker</span><br><span class="line">├── mysql</span><br><span class="line">│   ├── data</span><br><span class="line">│   └── my.cnf</span><br><span class="line">└── redis</span><br><span class="line">    ├── data</span><br><span class="line">    └── redis.conf</span><br></pre></td></tr></table></figure>
-
-<ol start="2">
-<li>准备my.conf 、redis.conf<ol>
-<li>my.conf</li>
-</ol>
-</li>
-</ol>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">[client]</span><br><span class="line"> port = 3306</span><br><span class="line"> socket = /var/lib/mysql/data/mysql.sock</span><br><span class="line">[mysqld]</span><br><span class="line"> <span class="comment"># 针对5.7版本执行group by字句出错问题解决</span></span><br><span class="line">sql_mode=<span class="string">'STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'</span></span><br><span class="line"> <span class="comment"># 一般配置选项</span></span><br><span class="line"> basedir = /var/lib/mysql</span><br><span class="line"> datadir = /var/lib/mysql/data</span><br><span class="line"> port = 3306</span><br><span class="line"> socket = /var/lib/mysql/data/mysql.sock</span><br><span class="line"> lc-messages-dir = /usr/share/mysql <span class="comment"># 务必配置此项，否则执行sql出错时，只能显示错误代码而不显示具体错误消息</span></span><br><span class="line"> character-set-server=utf8</span><br><span class="line"> back_log = 300</span><br><span class="line"> max_connections = 3000</span><br><span class="line"> max_connect_errors = 50</span><br><span class="line"> table_open_cache = 4096</span><br><span class="line"> max_allowed_packet = 32M</span><br><span class="line"> <span class="comment">#binlog_cache_size = 4M</span></span><br><span class="line"> max_heap_table_size = 128M</span><br><span class="line"> read_rnd_buffer_size = 16M</span><br><span class="line"> sort_buffer_size = 16M</span><br><span class="line"> join_buffer_size = 16M</span><br><span class="line"> thread_cache_size = 16</span><br><span class="line"> query_cache_size = 64M</span><br><span class="line"> query_cache_limit = 4M</span><br><span class="line"> ft_min_word_len = 8</span><br><span class="line"> thread_stack = 512K</span><br><span class="line"> transaction_isolation = REPEATABLE-READ</span><br><span class="line"> tmp_table_size = 64M</span><br><span class="line"> <span class="comment">#log-bin=mysql-bin</span></span><br><span class="line"> long_query_time = 6</span><br><span class="line"> server_id=1</span><br><span class="line"> innodb_buffer_pool_size = 256M</span><br><span class="line"> innodb_thread_concurrency = 16</span><br><span class="line"> innodb_log_buffer_size = 16M</span><br></pre></td></tr></table></figure>
-
-<ol start="2">
-<li>redis.conf 可以去这里下载 <a href="https://redis.io/topics/config" target="_blank" rel="noopener">官网</a></li>
-</ol>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">wget https://raw.githubusercontent.com/redis/redis/5.0/redis.conf</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改内容</span></span><br><span class="line">daemonize no     <span class="comment">## 若使用开机启动，生成pid，该项必须设置为诶yes，否则redis将不能够正常执行开机启动(systemctl start redis,执行后一直卡着，直到超时)</span></span><br><span class="line"><span class="comment">#bind 127.0.0.1  ##注释掉，允许所有其他ip访问，真实使用最好坐下限制，只允许某些主机访问</span></span><br><span class="line">protected-mode no  <span class="comment">## 允许其他机器上的客户端连接当前redis，配置文件设置该项，则开机启动处就可以去掉--protected no </span></span><br><span class="line">requirepass root  <span class="comment">##设置密码</span></span><br><span class="line"><span class="comment"># daemonize yes，他的作用是开启守护进程模式，在该模式下，redis会在后台运行，并将进程pid号写入至redis.conf选项pidfile设置的文件中，此时redis将一直运行，除非手动kill该进程。但是在后面的命令中“-d”选项也是开启daemonize，这是docker自家的方式。</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="编写Docker-Compose文件"><a href="#编写Docker-Compose文件" class="headerlink" title="编写Docker-Compose文件"></a>编写Docker-Compose文件</h2><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">version : <span class="string">'3'</span></span><br><span class="line">services:</span><br><span class="line">  mysql:</span><br><span class="line">    image: mysql/mysql-server:<span class="number">5.7</span>.<span class="number">18</span></span><br><span class="line">    container_name: mysql5.<span class="number">7.18</span>-dev</span><br><span class="line">    networks:</span><br><span class="line">      - net-shop-db</span><br><span class="line">    ports:</span><br><span class="line">      - <span class="string">"3306:3306"</span></span><br><span class="line">    volumes:</span><br><span class="line">      - /opt/docker/mysql/conf/my.cnf:/etc/my.cnf <span class="comment"># 映射数据库配置文件</span></span><br><span class="line">      - /opt/docker/mysql/data:/var/lib/mysql/data  <span class="comment"># 映射数据库保存目录到宿主机，防止数据丢失</span></span><br><span class="line">      - /opt/docker/mysql/log:/var/log/mysql <span class="comment"># 日志文件</span></span><br><span class="line">      - /etc/localtime:/etc/localtime:ro <span class="comment"># 设置容器时区与宿主机保持一致</span></span><br><span class="line">    restart: always <span class="comment"># 设置容器自启模式</span></span><br><span class="line">    command: [</span><br><span class="line">      <span class="string">'--character-set-server=utf8mb4'</span>,</span><br><span class="line">      <span class="string">'--collation-server=utf8mb4_unicode_ci'</span>,</span><br><span class="line">      <span class="string">'--lower_case_table_names=1'</span>,</span><br><span class="line">      <span class="string">'--default-time-zone=+8:00'</span>]</span><br><span class="line">    environment:</span><br><span class="line">      - TZ=Asia/Shanghai <span class="comment"># 设置容器时区与宿主机保持一致</span></span><br><span class="line">      - MYSQL_ROOT_PASSWORD=root <span class="comment"># 设置root密码</span></span><br><span class="line">  redis:</span><br><span class="line">    image: redis:<span class="number">5.0</span>.<span class="number">5</span></span><br><span class="line">    container_name: redis5.<span class="number">0.6</span>-dev</span><br><span class="line">    networks:</span><br><span class="line">      - net-shop-db</span><br><span class="line">    ports:</span><br><span class="line">      - <span class="string">"6379:6379"</span></span><br><span class="line">    volumes:</span><br><span class="line">      - /etc/localtime:/etc/localtime:ro <span class="comment"># 设置容器时区与宿主机保持一致</span></span><br><span class="line">      - /opt/docker/redis/data:/data</span><br><span class="line">      - /opt/docker/redis/redis.conf:/etc/redis.conf</span><br><span class="line">    command: redis-server /etc/redis.conf <span class="comment"># 启动redis命令</span></span><br><span class="line">    environment:</span><br><span class="line">      - TZ=Asia/Shanghai <span class="comment"># 设置容器时区与宿主机保持一致</span></span><br><span class="line">    restart: always <span class="comment"># 设置容器自启模式</span></span><br><span class="line"></span><br><span class="line">networks:</span><br><span class="line">  net-shop-db:</span><br><span class="line">    driver: bridge</span><br></pre></td></tr></table></figure>
-
-<h2 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h2><ol>
-<li>创建并启动容器 <code>docker-compose -f docker-compose.yml up -d</code></li>
-<li>批量停止容器并清除容器 <code>docker-compose -f docker-compose.yml down</code></li>
-<li>重新构建容器 <code>docker-compose -f docker-compose.yml up --build -d</code></li>
-<li>启动失败，可以查看容器日志信息获取帮助 <code>docker logs 容器名词或容器ID # 既docker-compose.yml文件参数container_name指定的值</code></li>
-</ol>
-<h2 id="备注"><a href="#备注" class="headerlink" title="备注"></a>备注</h2><ol>
-<li><p>docker-compose 命令不存在、未找到命令</p>
-</li>
-<li><p>centos 7中python-pip模块不存在，是因为像centos这类衍生的发行版，源跟新滞后，或者不存在。即使使用yum去search python-pip也找不到软件包。</p>
-</li>
-<li><p>为了使用安装滞后或源中不存在的安装包，需要安装扩展源EPEL。扩展源EPEL(<a href="http://fedoraproject.org/wiki/EPEL" target="_blank" rel="noopener">http://fedoraproject.org/wiki/EPEL</a>) 是由 Fedora 社区打造，为 RHEL 及衍生发行版如 CentOS、Scientific Linux 等提供高质量软件包的项目。</p>
-</li>
-<li><p>检查当前docker 版本 </p>
-</li>
-</ol>
-<ul>
-<li>安装扩展源：sudo yum -y install epel-release</li>
-<li>安装python-pip模块：sudo yum install python-pip</li>
-</ul>
-<p>此时执行 <code>docker-compose version</code> 命令可能会会出现命令不存在的问题，以下给出解决方案：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /usr/<span class="built_in">local</span>/bin/</span><br><span class="line"></span><br><span class="line">wget https://github.com/docker/compose/releases/download/1.13.1/docker-compose-Linux-x86_64 rename docker-compose-Linux-x86_64 docker-compose docker-compose-Linux-x86_64</span><br><span class="line"></span><br><span class="line">chmod +x /usr/<span class="built_in">local</span>/bin/docker-compose</span><br></pre></td></tr></table></figure>
-
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://yefeihonours.github.io/post/docker/docker_compose/" target="_blank" rel="noopener">docker-compose 命令不存在、未找到命令</a></p>
-<p><a href="https://zhuanlan.zhihu.com/p/43654441" target="_blank" rel="noopener">使用 docker-compose 在 Docker 中启动有密码的 Redis 容器</a></p>
-<p><a href="https://cloud.tencent.com/developer/article/1678769" target="_blank" rel="noopener">Docker-Compose搭建mysql、redis、zookeeper、rabbitmq、consul、elasticsearch环境</a></p>
 
       
     </div>
