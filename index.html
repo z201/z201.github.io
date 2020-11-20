@@ -332,6 +332,203 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/11/20/Centos7-Docker%E9%83%A8%E7%BD%B2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/11/20/Centos7-Docker%E9%83%A8%E7%BD%B2/" class="post-title-link" itemprop="url">Centos7.*-Docker部署</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-11-20 14:26:04 / Modified: 14:37:54" itemprop="dateCreated datePublished" datetime="2020-11-20T14:26:04+08:00">2020-11-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index"><span itemprop="name">Linux运维</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>记录下自己在阿里云部署docker记录。</p>
+</blockquote>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><ol>
+<li>准备一台ESC服务器，并可以使用控制台登录。</li>
+<li>检查ESC是否安装了docker，可以选择是否卸载重装。<ol>
+<li>检查docker是否安装,<code>docker 显示相关信息则表示安装</code></li>
+<li>卸载docker，若不重装直接忽略，<code>yum list installed | grep docker</code>查看安装内容</li>
+</ol>
+</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ yum list installed | grep docker</span><br><span class="line">containerd.io.x86_64                1.3.7-3.1.el7                   @docker-ce-stable</span><br><span class="line">docker-ce.x86_64                    3:19.03.13-3.el7                @docker-ce-stable</span><br><span class="line">docker-ce-cli.x86_64                1:19.03.13-3.el7                @docker-ce-stable</span><br><span class="line"><span class="comment"># 依次卸载</span></span><br><span class="line">$ yum -y remove docker-ce.x86_64</span><br><span class="line">$ yum -y remove docker-ce-cli.x86_64</span><br><span class="line">$ yum -y remove containerd.io.x86_64</span><br><span class="line"><span class="comment"># 检查卸载结果</span></span><br><span class="line">$ yum list installed | grep docker</span><br><span class="line"><span class="comment"># 无输出内容</span></span><br><span class="line">$ docker </span><br><span class="line"><span class="comment"># -bash: docekr: 未找到命令 则表示卸载干净了</span></span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>更新yum <code>yum update</code></li>
+<li>安装docker <code>yum install docker -y</code><ol>
+<li>检查<code>docker -v</code>输出版本信息</li>
+</ol>
+</li>
+</ol>
+<h2 id="设置docker相关信息"><a href="#设置docker相关信息" class="headerlink" title="设置docker相关信息"></a>设置docker相关信息</h2><ol>
+<li>设置docker开机启动项<code>systemctl enable docker.service</code></li>
+<li>检查docker当前运行情况 <code>systemctl status docker</code></li>
+<li>若未启动则启动docker <code>systemctl start docker</code> ,若启动了可以重启<code>systemctl restart docker</code></li>
+<li>检查docker运行情况<code>service docker status</code></li>
+</ol>
+<h2 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h2><p><a href="https://developer.aliyun.com/article/336442" target="_blank" rel="noopener">阿里云CentOS 7上安装配置Docker</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/06/24/Mac%E4%B8%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/06/24/Mac%E4%B8%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/" class="post-title-link" itemprop="url">Mac下开发环境</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-06-24 15:30:34" itemprop="dateCreated datePublished" datetime="2018-06-24T15:30:34+08:00">2018-06-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-16 21:36:46" itemprop="dateModified" datetime="2020-11-16T21:36:46+08:00">2020-11-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/" itemprop="url" rel="index"><span itemprop="name">开发环境</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>最近开始用mac来开发。记录下环境安装过程方便以后快速恢复熟悉的开发环境。</p>
+</blockquote>
+<p>这里提前修改一下控制台前缀</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[dev mc]$ sudo vim &#x2F;etc&#x2F;bashrc</span><br><span class="line">#修改以下内容</span><br><span class="line">PS1&#x3D;&#39;\h:\W \u\$ &#39;</span><br><span class="line">#修改成</span><br><span class="line">PS1&#x3D;&#39;[dev \u]$ &#39;</span><br></pre></td></tr></table></figure>
+
+<h3 id="好用的工具"><a href="#好用的工具" class="headerlink" title="好用的工具"></a>好用的工具</h3><ul>
+<li>pages <code>同事推荐的软件</code>暂时用来写周报。</li>
+<li>brew <code>这是一个神器,和linux 上的yum 类似的工具。</code></li>
+<li>sublime text <code>我之前在windows上都是使用notepad++。上App Store上没找到,该用这个了。</code></li>
+</ul>
+<h3 id="pages"><a href="#pages" class="headerlink" title="pages"></a>pages</h3><ul>
+<li>直接在app store安装就好了</li>
+</ul>
+<h3 id="brew"><a href="#brew" class="headerlink" title="brew"></a>brew</h3><ul>
+<li>安装过程使用终端安装。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#  这里并没有换行，复制的时候请注意。</span><br><span class="line">&#x2F;usr&#x2F;bin&#x2F;ruby -e &quot;$(curl -fsSL https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;Homebrew&#x2F;install&#x2F;master&#x2F;install)&quot;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>基本操作方式</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># 更新</span><br><span class="line">brew update </span><br><span class="line"># 安装软件 </span><br><span class="line">brew install xxx（软件名）</span><br><span class="line"></span><br><span class="line">#常见命令整理如下，以下命令都可带上 cask 参数：	</span><br><span class="line"></span><br><span class="line">brew search name：联网搜索软件是否存在 brew 中</span><br><span class="line">brew install name：安装软件</span><br><span class="line">brew upgrade name：更新软件</span><br><span class="line">brew uninstall name：卸载软件</span><br><span class="line">brew reinstall name：重新安装软件</span><br><span class="line">brew info name：查看软件安装地址</span><br><span class="line">brew cleanup：清理缓存等</span><br><span class="line">brew doctor：查看建议，例如升级等</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/06/24/Mac%E4%B8%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/08/31/%E5%AE%9E%E8%B7%B5-centos7%E6%90%AD%E5%BB%BAselenium-java%E8%BF%90%E8%A1%8C%E7%8E%AF%E5%A2%83/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -411,109 +608,6 @@
 
 <h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p><a href="https://segmentfault.com/a/1190000015389941" target="_blank" rel="noopener">CentOS使用yum安装jdk</a></p>
 
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/06/24/Mac%E4%B8%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/06/24/Mac%E4%B8%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/" class="post-title-link" itemprop="url">Mac下开发环境</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-06-24 15:30:34" itemprop="dateCreated datePublished" datetime="2018-06-24T15:30:34+08:00">2018-06-24</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-10-21 11:19:59" itemprop="dateModified" datetime="2020-10-21T11:19:59+08:00">2020-10-21</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/" itemprop="url" rel="index"><span itemprop="name">开发环境</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>最近开始用mac来开发。记录下环境安装过程方便以后快速恢复熟悉的开发环境。</p>
-</blockquote>
-<p>这里提前修改一下控制台前缀</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[dev mc]$ sudo vim &#x2F;etc&#x2F;bashrc</span><br><span class="line">#修改以下内容</span><br><span class="line">PS1&#x3D;&#39;\h:\W \u\$ &#39;</span><br><span class="line">#修改成</span><br><span class="line">PS1&#x3D;&#39;[dev \u]$ &#39;</span><br></pre></td></tr></table></figure>
-
-<h3 id="好用的工具"><a href="#好用的工具" class="headerlink" title="好用的工具"></a>好用的工具</h3><ul>
-<li>pages <code>同事推荐的软件</code>暂时用来写周报。</li>
-<li>brew <code>这是一个神器,和linux 上的yum 类似的工具。</code></li>
-<li>sublime text <code>我之前在windows上都是使用notepad++。上App Store上没找到,该用这个了。</code></li>
-</ul>
-<h3 id="pages"><a href="#pages" class="headerlink" title="pages"></a>pages</h3><ul>
-<li>直接在app store安装就好了</li>
-</ul>
-<h3 id="brew"><a href="#brew" class="headerlink" title="brew"></a>brew</h3><ul>
-<li>安装过程使用终端安装。</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#  这里并没有换行，复制的时候请注意。</span><br><span class="line">&#x2F;usr&#x2F;bin&#x2F;ruby -e &quot;$(curl -fsSL https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;Homebrew&#x2F;install&#x2F;master&#x2F;install)&quot;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>基本操作方式</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># 更新</span><br><span class="line">brew update </span><br><span class="line"># 安装软件 </span><br><span class="line">brew install xxx（软件名）</span><br><span class="line"></span><br><span class="line">#常见命令整理如下，以下命令都可带上 cask 参数：	</span><br><span class="line"></span><br><span class="line">brew search name：联网搜索软件是否存在 brew 中</span><br><span class="line">brew install name：安装软件</span><br><span class="line">brew upgrade name：更新软件</span><br><span class="line">brew uninstall name：卸载软件</span><br><span class="line">brew reinstall name：重新安装软件</span><br><span class="line">brew info name：查看软件安装地址</span><br><span class="line">brew cleanup：清理缓存等</span><br><span class="line">brew doctor：查看建议，例如升级等</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/06/24/Mac%E4%B8%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
       
     </div>
 
@@ -1470,105 +1564,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/02/%E7%88%AC%E8%99%AB%E5%85%A5%E9%97%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/03/02/%E7%88%AC%E8%99%AB%E5%85%A5%E9%97%A8/" class="post-title-link" itemprop="url">爬虫入门</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-03-02 12:03:21" itemprop="dateCreated datePublished" datetime="2019-03-02T12:03:21+08:00">2019-03-02</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-31 10:08:09" itemprop="dateModified" datetime="2020-08-31T10:08:09+08:00">2020-08-31</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%88%AC%E8%99%AB/" itemprop="url" rel="index"><span itemprop="name">爬虫</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>既然sakila的数据不是很好用，干脆自己爬点数据吧。</p>
-</blockquote>
-<ul>
-<li>在 <a href="https://z201.cn/2019/02/28/%E5%AE%9E%E6%88%98-sakila%E6%95%B0%E6%8D%AE%E5%BA%93%E9%A1%B9%E7%9B%AE/" target="_blank" rel="noopener">实战-sakila数据库项目</a> 介绍了sakila数据开发应用，结果发现只有文字数据，而且影片数据也不理想，所以这里需要使用爬虫从万能的互联网上抓点数据。</li>
-</ul>
-<h3 id="目标选择"><a href="#目标选择" class="headerlink" title="目标选择"></a>目标选择</h3><ul>
-<li>腾讯视频</li>
-</ul>
-<h3 id="抓取类型"><a href="#抓取类型" class="headerlink" title="抓取类型"></a>抓取类型</h3><ul>
-<li>电影</li>
-</ul>
-<h3 id="技术选型"><a href="#技术选型" class="headerlink" title="技术选型"></a>技术选型</h3><ul>
-<li><code> jsoup</code></li>
-</ul>
-<h3 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h3><blockquote>
-<p>简单的单元测试入门。jsoup的用法可以直接查看官方文档。</p>
-</blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String UA_PHONE = <span class="string">"Mozilla/5.0 (Linux; Android 4.3; Nexus 10 Build/JSS15Q) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.23 Safari/537.36"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String UA_PC = <span class="string">"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String QQ_PAGE_MOVIE = <span class="string">"http://v.qq.com/x/list/movie?itype=-1&amp;offset=1"</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">	Document document = Jsoup.connect(QQ_PAGE_MOVIE)</span><br><span class="line">            .userAgent(UA_PC)</span><br><span class="line">            .timeout(TIME_OUT)</span><br><span class="line">            .ignoreContentType(<span class="keyword">true</span>).get();</span><br><span class="line">      Elements elements = document.select(<span class="string">"li.list_item a.figure"</span>);</span><br><span class="line">        <span class="keyword">for</span> (Element element : elements) &#123;</span><br><span class="line">            String url = element.attr(<span class="string">"href"</span>);</span><br><span class="line">            String title = element.select(<span class="string">"img"</span>).attr(<span class="string">"alt"</span>);</span><br><span class="line">            String image = element.select(<span class="string">"img"</span>).attr(<span class="string">"r-lazyload"</span>);</span><br><span class="line">            System.out.println(<span class="string">"href  "</span> + url + <span class="string">"   title  "</span> + title + <span class="string">"  image  "</span> + image);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/03/02/%E7%88%AC%E8%99%AB%E5%85%A5%E9%97%A8/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1639,7 +1634,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">95</span>
+          <span class="site-state-item-count">96</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
