@@ -27,7 +27,7 @@
 <meta property="og:site_name" content="枫叶的小博客">
 <meta property="og:description" content="Centos7的yum源中默认是没有mysql,因为现在已经用mariaDB代替mysql了。  安装前检查检查linux系统版本12[root@localhost backup]# cat &#x2F;etc&#x2F;system-releaseCentOS Linux release 7.4.1708 (Core)  检查是否已经安装mysql1[root@localhost backup]# rpm -qa">
 <meta property="article:published_time" content="2018-04-20T22:04:28.000Z">
-<meta property="article:modified_time" content="2020-11-20T06:44:26.614Z">
+<meta property="article:modified_time" content="2020-11-21T11:38:13.840Z">
 <meta property="article:author" content="小峰同学">
 <meta property="article:tag" content="Centos7">
 <meta property="article:tag" content="Linux">
@@ -269,7 +269,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-11-20 14:44:26" itemprop="dateModified" datetime="2020-11-20T14:44:26+08:00">2020-11-20</time>
+                <time title="Modified: 2020-11-21 19:38:13" itemprop="dateModified" datetime="2020-11-21T19:38:13+08:00">2020-11-21</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -398,6 +398,16 @@
 <p>正式环境不要把root权限开发出去了，当然这里只是测试。</p>
 </blockquote>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GRANT ALL PRIVILEGES ON *.* TO &#39;root&#39;@&#39;%&#39; IDENTIFIED BY &#39;password&#39; WITH GRANT OPTION;  &#x2F;&#x2F;% 所有人都可以访问</span><br><span class="line">FLUSH PRIVILEGES;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>查看用户信息</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select host,user,plugin,authentication_string from mysql.user;</span><br><span class="line">+-----------+-----------+-----------------------+-------------------------------------------+</span><br><span class="line">| host      | user      | plugin                | authentication_string                     |</span><br><span class="line">+-----------+-----------+-----------------------+-------------------------------------------+</span><br><span class="line">| localhost | root      | mysql_native_password | *84AAC12F54AB666ECFC2A83C676908C8BBC381B1 |</span><br><span class="line">| localhost | mysql.sys | mysql_native_password | *THISISNOTAVALIDPASSWORDTHATCANBEUSEDHERE |</span><br><span class="line">| %         | root      | mysql_native_password | *6BB4837EB74329105EE4568DDA7DC67ED2CA2AD9 |</span><br><span class="line">+-----------+-----------+-----------------------+-------------------------------------------+</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>修改加密方式</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ALTER USER <span class="string">'root'</span>@<span class="string">'%'</span> IDENTIFIED WITH mysql_native_password BY <span class="string">'123456'</span>;  <span class="comment">### 123456 mysql的登录密码</span></span><br><span class="line">flush privileges;</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>重启服务</li>
