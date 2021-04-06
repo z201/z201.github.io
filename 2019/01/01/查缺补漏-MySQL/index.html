@@ -31,7 +31,7 @@
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/mysql/SHOW_ENGINES.png">
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/mysql/innodb-architecture.png">
 <meta property="article:published_time" content="2018-12-31T16:00:01.000Z">
-<meta property="article:modified_time" content="2020-10-11T05:08:03.160Z">
+<meta property="article:modified_time" content="2021-04-06T15:33:07.697Z">
 <meta property="article:author" content="小峰同学">
 <meta property="article:tag" content="Mysql">
 <meta name="twitter:card" content="summary">
@@ -272,7 +272,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-10-11 13:08:03" itemprop="dateModified" datetime="2020-10-11T13:08:03+08:00">2020-10-11</time>
+                <time title="Modified: 2021-04-06 23:33:07" itemprop="dateModified" datetime="2021-04-06T23:33:07+08:00">2021-04-06</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -368,6 +368,13 @@
 </blockquote>
 <ul>
 <li>本质上发送过来的是一个文本信息，这里就需要对该文本信息进行编译，涉及到<code>词法解析</code>、<code>语法解析</code>、<code>语义解析</code>等阶段。需要注意的是，这里会对sql语句进行一些检查，比如设计的相关表、表字段。这里检查通过的才会进入查询优化模块。</li>
+<li>根据SQL语言的功能可以划分成4个部分<ul>
+<li>DDL，英文叫做 Data Definition Language，也就是数据定义语言，它用来定义我们的数据库对象，包括数据库、数据表和列。通过使用 DDL，我们可以创建，删除和修改数据库和表结构。</li>
+<li>DML，英文叫做 Data Manipulation Language，数据操作语言，我们用它操作和数据库相关的记录，比如增加、删除、修改数据表中的记录。</li>
+<li>DCL，英文叫做 Data Control Language，数据控制语言，我们用它来定义访问权限和安全级别。</li>
+<li>DQL，英文叫做 Data Query Language，数据查询语言，我们用它查询想要的记录，它是 SQL 语言的重中之重。在实际的业务中，我们绝大多数情况下都是在和查询打交道，因此学会编写正确且高效的查询语句，是学习的重点。</li>
+</ul>
+</li>
 </ul>
 <h4 id="查询优化"><a href="#查询优化" class="headerlink" title="查询优化"></a>查询优化</h4><blockquote>
 <p>通过之前的语法解析，基本可以判定语法树是合法的，此时mysql就知道文本内容要做什么。</p>
@@ -726,7 +733,36 @@
 <li>一个事务可能涉及修改多个数据页，并且这些数据页在物理上并不连续，使用随机IO写入性能太差！</li>
 </ol>
 <p>因此 <code>mysql</code> 设计了 <code>redo log</code> ， <strong>具体来说就是只记录事务对数据页做了哪些修改</strong>，这样就能完美地解决性能问题了(相对而言文件更小并且是顺序IO)。</p>
-<h3 id="undo-Log"><a href="#undo-Log" class="headerlink" title="undo Log"></a>undo Log</h3><h3 id="MVCC"><a href="#MVCC" class="headerlink" title="MVCC"></a>MVCC</h3>
+<ul>
+<li>redo log</li>
+</ul>
+<blockquote>
+<p><code>redo log</code> 包含两个部分，一个是内存中的日志缓冲 <code>redo log buffer</code> , 另一个是磁盘上的日志文件<code>redo logfile</code> </p>
+</blockquote>
+<ol>
+<li>mysql 每执行一条<code>DML</code>语句，先将记录写入<code>redo log buffer</code>,后续某个时间点再一次性将多个操作写到 <code>redo log file</code>。这种先写日志，再写磁盘的技术就是<code>Mysql</code>里经常说到的<code>WAL (write-ahead Logging)</code>技术。</li>
+<li>在计算机中，用户的空间<code>user space</code>下的缓冲区一般情况下是不能直接写入磁盘，中间需要经过系统内核空间<code> kerne space</code>缓冲区<code>Os Buffer</code>，因此<code>redo log buffer</code>写入<code>redo logfile</code>实际上是写入<code>Os Buffer</code>，然后再通过系统调用<code>fsunc()</code>将数据刷入<code>redo log file</code><ol>
+<li>mysql 支持三种将<code>redo log buffer</code>写入<code>redo log file</code>的机制，可以通过<code>innodb_flush_log_at_trx_commit</code>配置<ol>
+<li>参数 0<ol>
+<li>事物提交不将<code>redo log buffer</code>只日志写入<code>os buffer</code>，而是每秒写入<code>os buffer</code>并调用<code>fsync()</code>写入<code>redo log file</code>中，也就是说设置0时，大概每秒刷新一次进入磁盘，如果系统出现故障，会丢失1秒的数据。</li>
+</ol>
+</li>
+<li>参数 1<ol>
+<li>每次提交事物都将<code>redo log buufer</code> 写入 <code>os buffer</code>并调用<code>fsync()</code>。这种情况系统故障也不会丢失数据，<code>io</code>性能太差。</li>
+</ol>
+</li>
+<li>参数 2<ol>
+<li>每次提交事物都将<code>redo log buufer</code> 写入 <code>os buffer</code>，每秒调用<code>fsync()</code>将<code>os buffer</code>中日志写入<code>redo log file</code></li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+<li></li>
+</ol>
+<h3 id="undo-Log"><a href="#undo-Log" class="headerlink" title="undo Log"></a>undo Log</h3><h3 id="MVCC"><a href="#MVCC" class="headerlink" title="MVCC"></a>MVCC</h3><h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p><a href="https://mp.weixin.qq.com/s/lnLSOPQkjTkr957ds_4ZPA" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/lnLSOPQkjTkr957ds_4ZPA</a></p>
+
     </div>
 
     
@@ -826,7 +862,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Mysql基础架构图"><span class="nav-number">1.</span> <span class="nav-text">Mysql基础架构图</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#简单介绍上图相关模块功能"><span class="nav-number">1.1.</span> <span class="nav-text">简单介绍上图相关模块功能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#连接器"><span class="nav-number">1.2.</span> <span class="nav-text">连接器</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#半双工"><span class="nav-number">1.2.1.</span> <span class="nav-text">半双工</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#长连接与短连接"><span class="nav-number">1.2.2.</span> <span class="nav-text">长连接与短连接</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查询缓存"><span class="nav-number">1.3.</span> <span class="nav-text">查询缓存</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#语法解析"><span class="nav-number">1.4.</span> <span class="nav-text">语法解析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查询优化"><span class="nav-number">1.5.</span> <span class="nav-text">查询优化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#执行器"><span class="nav-number">1.6.</span> <span class="nav-text">执行器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#存储引擎"><span class="nav-number">1.7.</span> <span class="nav-text">存储引擎</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#索引"><span class="nav-number">2.</span> <span class="nav-text">索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事物隔离"><span class="nav-number">3.</span> <span class="nav-text">事物隔离</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#并发事务的问题"><span class="nav-number">3.1.</span> <span class="nav-text">并发事务的问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#脏读"><span class="nav-number">3.2.</span> <span class="nav-text">脏读</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#不可重复读"><span class="nav-number">3.3.</span> <span class="nav-text">不可重复读</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#幻读"><span class="nav-number">3.4.</span> <span class="nav-text">幻读</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#幻读和不可重复读的区别"><span class="nav-number">3.5.</span> <span class="nav-text">幻读和不可重复读的区别</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#锁"><span class="nav-number">4.</span> <span class="nav-text">锁</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#理解下锁几种维度"><span class="nav-number">4.1.</span> <span class="nav-text">理解下锁几种维度</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-类型维度"><span class="nav-number">4.2.</span> <span class="nav-text">1. 类型维度</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-锁的粒度（粒度维度）"><span class="nav-number">4.3.</span> <span class="nav-text">2. 锁的粒度（粒度维度）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-锁的算法（算法维度）"><span class="nav-number">4.4.</span> <span class="nav-text">3. 锁的算法（算法维度）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#InnDb架构"><span class="nav-number">5.</span> <span class="nav-text">InnDb架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Buffer-Pool"><span class="nav-number">6.</span> <span class="nav-text">Buffer Pool</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mysql-log"><span class="nav-number"></span> <span class="nav-text">Mysql log</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#binlog"><span class="nav-number">1.</span> <span class="nav-text">binlog</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#redo-Log"><span class="nav-number">2.</span> <span class="nav-text">redo Log</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undo-Log"><span class="nav-number">3.</span> <span class="nav-text">undo Log</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MVCC"><span class="nav-number">4.</span> <span class="nav-text">MVCC</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Mysql基础架构图"><span class="nav-number">1.</span> <span class="nav-text">Mysql基础架构图</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#简单介绍上图相关模块功能"><span class="nav-number">1.1.</span> <span class="nav-text">简单介绍上图相关模块功能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#连接器"><span class="nav-number">1.2.</span> <span class="nav-text">连接器</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#半双工"><span class="nav-number">1.2.1.</span> <span class="nav-text">半双工</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#长连接与短连接"><span class="nav-number">1.2.2.</span> <span class="nav-text">长连接与短连接</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查询缓存"><span class="nav-number">1.3.</span> <span class="nav-text">查询缓存</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#语法解析"><span class="nav-number">1.4.</span> <span class="nav-text">语法解析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查询优化"><span class="nav-number">1.5.</span> <span class="nav-text">查询优化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#执行器"><span class="nav-number">1.6.</span> <span class="nav-text">执行器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#存储引擎"><span class="nav-number">1.7.</span> <span class="nav-text">存储引擎</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#索引"><span class="nav-number">2.</span> <span class="nav-text">索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事物隔离"><span class="nav-number">3.</span> <span class="nav-text">事物隔离</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#并发事务的问题"><span class="nav-number">3.1.</span> <span class="nav-text">并发事务的问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#脏读"><span class="nav-number">3.2.</span> <span class="nav-text">脏读</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#不可重复读"><span class="nav-number">3.3.</span> <span class="nav-text">不可重复读</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#幻读"><span class="nav-number">3.4.</span> <span class="nav-text">幻读</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#幻读和不可重复读的区别"><span class="nav-number">3.5.</span> <span class="nav-text">幻读和不可重复读的区别</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#锁"><span class="nav-number">4.</span> <span class="nav-text">锁</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#理解下锁几种维度"><span class="nav-number">4.1.</span> <span class="nav-text">理解下锁几种维度</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-类型维度"><span class="nav-number">4.2.</span> <span class="nav-text">1. 类型维度</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-锁的粒度（粒度维度）"><span class="nav-number">4.3.</span> <span class="nav-text">2. 锁的粒度（粒度维度）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-锁的算法（算法维度）"><span class="nav-number">4.4.</span> <span class="nav-text">3. 锁的算法（算法维度）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#InnDb架构"><span class="nav-number">5.</span> <span class="nav-text">InnDb架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Buffer-Pool"><span class="nav-number">6.</span> <span class="nav-text">Buffer Pool</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mysql-log"><span class="nav-number"></span> <span class="nav-text">Mysql log</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#binlog"><span class="nav-number">1.</span> <span class="nav-text">binlog</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#redo-Log"><span class="nav-number">2.</span> <span class="nav-text">redo Log</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undo-Log"><span class="nav-number">3.</span> <span class="nav-text">undo Log</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MVCC"><span class="nav-number">4.</span> <span class="nav-text">MVCC</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文献"><span class="nav-number"></span> <span class="nav-text">参考文献</span></a></div>
       </div>
       <!--/noindex-->
 
@@ -841,7 +877,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">100</span>
+          <span class="site-state-item-count">101</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
