@@ -27,7 +27,7 @@
 <meta property="og:site_name" content="枫叶的小博客">
 <meta property="og:description" content="mysql小炒，记录日常的积累。  Mysql 大小写问题 表名、表别名、字段名、字段别名都小写。SQL保留字段、函数名、绑定变量名都大写。  Exists与in 将设A、B两表，走索引的情况下。根据A、B表的大小比较，如果A表大于B表那么IN的查询效率比EXISTS高。  123SELECT * FROM A WHERE cc IN (SELECT cc FROM B)SELECT * FRO">
 <meta property="article:published_time" content="2021-04-06T01:05:03.000Z">
-<meta property="article:modified_time" content="2021-04-06T15:45:55.568Z">
+<meta property="article:modified_time" content="2021-04-06T15:55:46.093Z">
 <meta property="article:author" content="小峰同学">
 <meta property="article:tag" content="Mysql">
 <meta name="twitter:card" content="summary">
@@ -261,7 +261,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2021-04-06 09:05:03 / Modified: 23:45:55" itemprop="dateCreated datePublished" datetime="2021-04-06T09:05:03+08:00">2021-04-06</time>
+              <time title="Created: 2021-04-06 09:05:03 / Modified: 23:55:46" itemprop="dateCreated datePublished" datetime="2021-04-06T09:05:03+08:00">2021-04-06</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -306,7 +306,31 @@
 <li>数据表中联合主键的字段越少越好</li>
 <li>使用主键和外键越多越好</li>
 </ol>
+<h3 id="去除重复行"><a href="#去除重复行" class="headerlink" title="去除重复行"></a>去除重复行</h3><ol>
+<li>DISTINCT 需要放到所有列名的前面</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 这么写会报错</span><br><span class="line">SELECT name, DISTINCT age FROM us</span><br></pre></td></tr></table></figure>
 
+<ol start="2">
+<li>DISTINCT 其实是对后面所有列名的组合进行去重。</li>
+</ol>
+<h3 id="ORDER-BY-子句有以下几个点需要掌握"><a href="#ORDER-BY-子句有以下几个点需要掌握" class="headerlink" title="ORDER BY 子句有以下几个点需要掌握"></a>ORDER BY 子句有以下几个点需要掌握</h3><ol>
+<li>排序的列名：ORDER BY 后面可以有一个或多个列名，如果是多个列名进行排序，会按照后面第一个列先进行排序，当第一列的值相同的时候，再按照第二列进行排序，以此类推。</li>
+<li>排序的顺序：ORDER BY 后面可以注明排序规则，ASC 代表递增排序，DESC 代表递减排序。如果没有注明排序规则，默认情况下是按照 ASC 递增排序。我们很容易理解 ORDER BY 对数值类型字段的排序规则，但如果排序字段类型为文本数据，就需要参考数据库的设置方式了，这样才能判断 A 是在 B 之前，还是在 B 之后。比如使用 MySQL 在创建字段的时候设置为 BINARY 属性，就代表区分大小写。</li>
+<li>非选择列排序：ORDER BY 可以使用非选择列进行排序，所以即使在 SELECT 后面没有这个列名，你同样可以放到 ORDER BY 后面进行排序。</li>
+<li>ORDER BY 的位置：ORDER BY 通常位于 SELECT 语句的最后一条子句，否则会报错。</li>
+</ol>
+<h3 id="SELECT-的执行顺序"><a href="#SELECT-的执行顺序" class="headerlink" title="SELECT 的执行顺序"></a>SELECT 的执行顺序</h3><ol>
+<li>关键字的顺序</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT ... FROM ... WHERE ... GROUP BY ... HAVING ... ORDER BY ...</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>.SELECT 语句的执行顺序（在 MySQL 和 Oracle 中，SELECT 执行顺序基本相同）：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FROM &gt; WHERE &gt; GROUP BY &gt; HAVING &gt; SELECT的字段 &gt; DISTINCT &gt; ORDER BY &gt; LIMIT</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
     </div>
 
     
@@ -403,7 +427,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Mysql-大小写问题"><span class="nav-number">1.</span> <span class="nav-text">Mysql 大小写问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Exists与in"><span class="nav-number">2.</span> <span class="nav-text">Exists与in</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试环境打开profiling"><span class="nav-number">3.</span> <span class="nav-text">测试环境打开profiling</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DDL设计数据表的原则"><span class="nav-number">4.</span> <span class="nav-text">DDL设计数据表的原则</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Mysql-大小写问题"><span class="nav-number">1.</span> <span class="nav-text">Mysql 大小写问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Exists与in"><span class="nav-number">2.</span> <span class="nav-text">Exists与in</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试环境打开profiling"><span class="nav-number">3.</span> <span class="nav-text">测试环境打开profiling</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DDL设计数据表的原则"><span class="nav-number">4.</span> <span class="nav-text">DDL设计数据表的原则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#去除重复行"><span class="nav-number">5.</span> <span class="nav-text">去除重复行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ORDER-BY-子句有以下几个点需要掌握"><span class="nav-number">6.</span> <span class="nav-text">ORDER BY 子句有以下几个点需要掌握</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SELECT-的执行顺序"><span class="nav-number">7.</span> <span class="nav-text">SELECT 的执行顺序</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
