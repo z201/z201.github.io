@@ -363,7 +363,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-06-10 22:50:14" itemprop="dateModified" datetime="2021-06-10T22:50:14+08:00">2021-06-10</time>
+                <time title="Modified: 2021-07-21 15:12:16" itemprop="dateModified" datetime="2021-07-21T15:12:16+08:00">2021-07-21</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -397,7 +397,7 @@
 <h3 id="安装jenkens"><a href="#安装jenkens" class="headerlink" title="安装jenkens"></a>安装jenkens</h3><blockquote>
 <p>这里采用yum源安装</p>
 </blockquote>
-<h4 id="更新安装jenkens源"><a href="#更新安装jenkens源" class="headerlink" title="更新安装jenkens源"></a>更新安装jenkens源</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># yum 源导入</span></span><br><span class="line">sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo</span><br><span class="line"></span><br><span class="line"><span class="comment">#导入密钥</span></span><br><span class="line">sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key</span><br><span class="line"></span><br><span class="line"><span class="comment">#安装</span></span><br><span class="line">sudo yum install jenkins</span><br><span class="line"></span><br><span class="line"><span class="comment">#检查安装</span></span><br><span class="line">whereis jenkins</span><br><span class="line">&gt; jenkins: /usr/lib/jenkins</span><br><span class="line"><span class="comment"># 提示以上内容说明安装成功</span></span><br></pre></td></tr></table></figure>
+<h4 id="更新安装jenkens源"><a href="#更新安装jenkens源" class="headerlink" title="更新安装jenkens源"></a>更新安装jenkens源</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># yum 源导入</span></span><br><span class="line">sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo</span><br><span class="line"></span><br><span class="line"><span class="comment">#导入密钥</span></span><br><span class="line">sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key</span><br><span class="line"></span><br><span class="line"><span class="comment">#安装</span></span><br><span class="line">sudo yum install jenkins</span><br><span class="line"></span><br><span class="line"><span class="comment"># 手动下载安装包安装</span></span><br><span class="line">https://pkg.jenkins.io/redhat-stable/ <span class="comment"># 这里面找</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#检查安装</span></span><br><span class="line">whereis jenkins</span><br><span class="line">&gt; jenkins: /usr/lib/jenkins</span><br><span class="line"><span class="comment"># 提示以上内容说明安装成功</span></span><br></pre></td></tr></table></figure>
 
 <h3 id="修改jenkens配置信息"><a href="#修改jenkens配置信息" class="headerlink" title="修改jenkens配置信息"></a>修改jenkens配置信息</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 编辑jenkins配置文件</span></span><br><span class="line">vim /etc/sysconfig/jenkins</span><br><span class="line"><span class="comment"># 这里主要编辑两个参数 JENKINS_USER JENKINS_JAVA_OPTIONS</span></span><br><span class="line"><span class="comment"># JENKINS_USER jenkens权限用户</span></span><br><span class="line"><span class="comment"># JENKINS_JAVA_OPTIONS jenkens启动参数，这里主要设置启动内存。</span></span><br><span class="line">JENKINS_USER=<span class="string">"root"</span></span><br><span class="line">JENKINS_JAVA_OPTIONS=<span class="string">"-server -Xms512m -Xmx1024m -XX:PermSize=256m -XX:MaxPermSize=512m  -Djava.awt.headless=true"</span></span><br><span class="line"><span class="comment"># 修改目录权限 如果你不是使用root账号,我偷下懒。</span></span><br><span class="line">chown -R root:root /var/lib/jenkins</span><br><span class="line">chown -R root:root /var/cache/jenkins</span><br><span class="line">chown -R root:root /var/<span class="built_in">log</span>/jenkins</span><br></pre></td></tr></table></figure>
 
@@ -1531,7 +1531,7 @@
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1598,7 +1598,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">102</span>
+          <span class="site-state-item-count">100</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
