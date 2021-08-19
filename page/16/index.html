@@ -234,6 +234,108 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/08/23/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAHashMap/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/08/23/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAHashMap/" class="post-title-link" itemprop="url">深入浅出HashMap</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-08-23 11:08:00" itemprop="dateCreated datePublished" datetime="2018-08-23T11:08:00+08:00">2018-08-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-07-30 00:24:44" itemprop="dateModified" datetime="2020-07-30T00:24:44+08:00">2020-07-30</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">Java基础</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>本章属于持续学习、长期更修。</p>
+</blockquote>
+<h2 id="HashMap"><a href="#HashMap" class="headerlink" title="HashMap"></a>HashMap</h2><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/HashMap/HashMap.png"></p>
+<h3 id="特征"><a href="#特征" class="headerlink" title="特征"></a>特征</h3><ul>
+<li>HashMap 允许<code>null</code>键和<code>null</code>值</li>
+<li>HashMao 并不是有序的存放。在使用<code>iterate</code>迭代的时候，并不能得到存放顺序。</li>
+<li>HashMap使用它的内部类Node &lt;K，V&gt;来存储映射。</li>
+<li>HashMap将<code>entries</code>存储到多个单链表中，称为存储桶或存储桶。默认的箱数为16，默认负载因子0.75，它的扩展系数为2，当键值对数量大于阈值，则容量扩容到原来的2倍。</li>
+<li>HashMap不是线程安全的，对于多线程环境，您应该使用ConcurrentHashMap类或使用<code>Collections.synchronizedMap()</code>方法获取同步映射。</li>
+<li>底层实现是链表，但是jdk1.8后添加了红黑谁的转换。</li>
+<li>HashMap的Key用存放，所以key默认不允许重复的，如果想重复就重写key的hashcode和equals方法。</li>
+</ul>
+<h2 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h2><blockquote>
+<p>HashMap中的常量以及变量</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 未指定容量大小的情况下，默认初始化16。容量都是2的幂。第一次扩容大概率情况下是64。</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> DEFAULT_INITIAL_CAPACITY = <span class="number">1</span> &lt;&lt; <span class="number">4</span>; <span class="comment">// aka 16</span></span><br><span class="line"><span class="comment">// 容量最大长个数。</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MAXIMUM_CAPACITY = <span class="number">1</span> &lt;&lt; <span class="number">30</span>;</span><br><span class="line"><span class="comment">// 默认负载因子，</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">float</span> DEFAULT_LOAD_FACTOR = <span class="number">0.75f</span>;</span><br><span class="line"><span class="comment">// HashMap使用单链表来存储元素，这些元素称为bin或buckets。当我们调用put方法时，key的hashCode用于确定将用于存储映射的存储区。</span></span><br><span class="line"><span class="comment">// 链表转换红黑树的阀值。当某个bin\buckets的长度大于8的时候进行转换。</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TREEIFY_THRESHOLD = <span class="number">8</span>;</span><br><span class="line"><span class="comment">// 红黑树转换链表的阀值。当某个bin\buckets的长度小于8的时候进行转换。</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> UNTREEIFY_THRESHOLD = <span class="number">6</span>;</span><br><span class="line"><span class="comment">// 桶中bin最小hash容量，如果大于这个值会进行resize扩容操作，此值至少是TREEIFY_THRESHOLD的4倍</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MIN_TREEIFY_CAPACITY = <span class="number">64</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 被transient修饰的变量不回被序列化。</span></span><br><span class="line"><span class="comment">// HashMap内部类实现了Map的内部类Entry,用于存储K,V，第一次使用的时候被创建，根据需要可以进行resize。分配长度为2的冥次方</span></span><br><span class="line"><span class="keyword">transient</span> Node&lt;K,V&gt;[] table;</span><br><span class="line"><span class="comment">// 当被调用entrySet时被赋值。通过keySet()方法可以得到map key的集合，通过values方法可以得到map value的集合</span></span><br><span class="line"><span class="keyword">transient</span> Set&lt;Map.Entry&lt;K,V&gt;&gt; entrySet;</span><br><span class="line"></span><br><span class="line"><span class="comment">// size表示HashMap中存放KV的数量（为链表和树中的KV的总和）。</span></span><br><span class="line"><span class="keyword">transient</span> <span class="keyword">int</span> size;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 操作次数，通常用过fail-fast。每次扩容和更改map结构的计数器</span></span><br><span class="line"><span class="keyword">transient</span> <span class="keyword">int</span> modCount;</span><br><span class="line"></span><br><span class="line"><span class="comment">// threshold=capacity*loadFactor threshold表示当HashMap的size大于threshold时会执行resize操作。 </span></span><br><span class="line"><span class="keyword">int</span> threshold;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Load Factor用于确定何时重新散列HashMap并增加存储桶大小。存储桶或容量的默认值为16，负载系数为0.75。通过乘以容量和负载因子来计算重新散列的阈值</span></span><br><span class="line"><span class="keyword">final</span> <span class="keyword">float</span> loadFactor;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Node</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">implements</span> <span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> hash; <span class="comment">// node哈希值</span></span><br><span class="line">        <span class="keyword">final</span> K key;    </span><br><span class="line">        V value;</span><br><span class="line">        Node&lt;K,V&gt; next; <span class="comment">// 下一个node的地址</span></span><br><span class="line"></span><br><span class="line">        Node(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">            <span class="keyword">this</span>.hash = hash;</span><br><span class="line">            <span class="keyword">this</span>.key = key;</span><br><span class="line">            <span class="keyword">this</span>.value = value;</span><br><span class="line">            <span class="keyword">this</span>.next = next;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> K <span class="title">getKey</span><span class="params">()</span>        </span>&#123; <span class="keyword">return</span> key; &#125;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> V <span class="title">getValue</span><span class="params">()</span>      </span>&#123; <span class="keyword">return</span> value; &#125;</span><br><span class="line">        <span class="comment">// 这里重写方法，所以map.toString()不是内存地址。</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> key + <span class="string">"="</span> + value; &#125;</span><br><span class="line">  </span><br><span class="line">			  <span class="comment">// 这里重写了hashCode()方法</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> Objects.hashCode(key) ^ Objects.hashCode(value);</span><br><span class="line">        &#125;</span><br><span class="line">				</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> V <span class="title">setValue</span><span class="params">(V newValue)</span> </span>&#123;</span><br><span class="line">            V oldValue = value;</span><br><span class="line">            value = newValue;</span><br><span class="line">            <span class="keyword">return</span> oldValue;</span><br><span class="line">        &#125;</span><br><span class="line">  </span><br><span class="line">				<span class="comment">// 这里重写了equals()方法</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object o)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (o == <span class="keyword">this</span>)</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            <span class="comment">//Map.Entry 相等的条件：键相等、值相等、个数相等、顺序相等</span></span><br><span class="line">            <span class="keyword">if</span> (o <span class="keyword">instanceof</span> Map.Entry) &#123;</span><br><span class="line">                Map.Entry&lt;?,?&gt; e = (Map.Entry&lt;?,?&gt;)o;</span><br><span class="line">                <span class="keyword">if</span> (Objects.equals(key, e.getKey()) &amp;&amp;</span><br><span class="line">                    Objects.equals(value, e.getValue()))</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/08/23/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAHashMap/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/08/10/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAHashSet/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -598,157 +700,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/05/07/%E5%88%9D%E6%8E%A2Modbus/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/05/07/%E5%88%9D%E6%8E%A2Modbus/" class="post-title-link" itemprop="url">初探Modbus</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-05-07 00:00:00" itemprop="dateCreated datePublished" datetime="2018-05-07T00:00:00+08:00">2018-05-07</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-15 09:21:16" itemprop="dateModified" datetime="2020-08-15T09:21:16+08:00">2020-08-15</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA/" itemprop="url" rel="index"><span itemprop="name">基础理论</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-<p>以下部分超链接需要科学上网。</p>
-</blockquote>
-<h2 id="ModBus"><a href="#ModBus" class="headerlink" title="ModBus"></a>ModBus</h2><p>modbus是一种通讯协议，是Modicon公司1979年为使用可编程逻辑控制器（PLC）通讯而发表。Modbus是工业领域通讯协议的业界标准之一，目前也我国国家标准工业通讯协议中的重要成员之一。</p>
-<h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><ul>
-<li><p>Modbus采用主从（Master-Salve）通信模式，仅有主设备（Master）能对传输进行初始化，从设备（Slave）根据主设备的请求进行应答。 __在主从关系中，通信总是成对发生。一个设备必须发起请求，然后等待响应 - 并且发起设备（主设备）负责发起每次交互。 通常，主设备是人机界面（HMI）或监控和数据采集（SCADA）系统，从设备是传感器、可编程逻辑控制器（PLC）或可编程自动化控制器（PAC）。 这些请求和响应的内容以及发送这些消息的网络层由协议的不同层来定义__。 </p>
-<ul>
-<li>在串行链路的主从通信中，Modbus主设备可以连接一个或N（最大为247）个从设备，主从设备之间的通信包括单播模式和广播模式。 </li>
-<li>在广播模式中，Modbus主设备可同时向多个从设备发送请求（设备地址0用于广播模式），从设备对广播请求不进行响应。 </li>
-<li>在单播模式中，主设备发送请求至某个特定的从设备（每个Modbus从设备具有唯一地址），请求的消息帧中会包含功能代码和数据，比如功能代码“01”用来读取离散量线圈的状态。从设备接到请求后，进行应答并把消息反馈主设备。 </li>
-<li>__主设备不发送数据，从数据是不会自己发出数据的；即必须是主设备发出查询请求才能建立通讯。 __</li>
-</ul>
-</li>
-<li><p>消息帧校验方式</p>
-<ul>
-<li>ASCII消息帧：<code>LRC（纵向冗长检测）</code></li>
-<li>CRCi消息帧：<code>CRC(循环冗长检测)</code></li>
-</ul>
-</li>
-<li><p>ModBus是OSI模型第七层上即__应用层__报文传输协议。</p>
-</li>
-<li><p>ModBus支持多工业设备、包括<code>PLC</code>、<code>DSC</code>、<code>变频器</code>、智能仪表等都在应用。</p>
-</li>
-<li><p>ModBus支持多种电气接口，如<code>RS-232</code>、<code>RS-485</code>等，还可以在各种介质上传送，如双绞线、光纤、无线。</p>
-</li>
-<li><p>ModBus协议完全免费；<code>帧格式</code>简单，紧凑。</p>
-</li>
-<li><p>ModBus对线缆的要求、长度、波特率，终端电阻，接地，连接器，通信状态的LED指示，都有电气标准。</p>
-</li>
-<li><p>ModBus数据可以分为两大类，分别为Coil和Register，每一种数据，根据读写方式的不同，又可细分为两种（只读，读写）。 </p>
-<ul>
-<li>Coli是位（bit）变量。</li>
-<li>Register是整型（word ,即 16 - bit ）。</li>
-</ul>
-</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>Primary tabels</th>
-<th>Object Type</th>
-<th>Type Of</th>
-<th>comments</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Discretes Input 离线输入量</td>
-<td>Single bit</td>
-<td>只读</td>
-<td>IO系统提供这种类型的数据</td>
-</tr>
-<tr>
-<td>Coils 线圈</td>
-<td>Single bit</td>
-<td>只写</td>
-<td>通用应用程序改变这种类型的数据</td>
-</tr>
-<tr>
-<td>Input Registers  输入寄存器</td>
-<td>16-bit word</td>
-<td>只读</td>
-<td>IO系统提供这种类型的数据</td>
-</tr>
-<tr>
-<td>Holding Registers 保持寄存器</td>
-<td>16-bit word</td>
-<td>只写</td>
-<td>通用应用程序改变这种类型的数据</td>
-</tr>
-</tbody></table>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/05/07/%E5%88%9D%E6%8E%A2Modbus/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -819,13 +770,13 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">101</span>
+          <span class="site-state-item-count">102</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">

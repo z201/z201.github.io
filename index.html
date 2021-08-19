@@ -332,6 +332,103 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/08/19/Jvm-optimization/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/08/19/Jvm-optimization/" class="post-title-link" itemprop="url">Jvm-optimization</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-08-19 14:09:45 / Modified: 14:37:43" itemprop="dateCreated datePublished" datetime="2021-08-19T14:09:45+08:00">2021-08-19</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Jvm/" itemprop="url" rel="index"><span itemprop="name">Jvm</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>jvm调优是日常工作中经常会使用的技巧，整理下。</p>
+</blockquote>
+<h3 id="项目启动的时候加上的参数都是些啥意思？"><a href="#项目启动的时候加上的参数都是些啥意思？" class="headerlink" title="项目启动的时候加上的参数都是些啥意思？"></a>项目启动的时候加上的参数都是些啥意思？</h3><blockquote>
+<p>刚开始工作的时候发现同事会在jar启动的命令上增加很多参数,很长一段时间都不清楚是干啥的。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:MetaspaceSize=<span class="number">128</span>m -XX:MaxMetaspaceSize=<span class="number">128</span>m -Xms1024m -Xmx1024m -Xmn256m -Xss256k -XX:SurvivorRatio=<span class="number">8</span> -XX:+UseConcMarkSweepGC</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>简单介绍下参数</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">-XX:MetaspaceSize=<span class="number">128</span>m （元空间默认大小）</span><br><span class="line">-XX:MaxMetaspaceSize=<span class="number">128</span>m （元空间最大大小）</span><br><span class="line">-Xms1024m （堆最大大小）</span><br><span class="line">-Xmx1024m （堆默认大小）</span><br><span class="line">-Xmn256m （新生代大小）</span><br><span class="line">-Xss256k （棧最大深度大小）</span><br><span class="line">-XX:SurvivorRatio=<span class="number">8</span> （新生代分区比例 <span class="number">8</span>:<span class="number">2</span>）</span><br><span class="line">-XX:+UseConcMarkSweepGC （指定使用的垃圾收集器，这里使用CMS收集器）</span><br><span class="line">-XX:+PrintGCDetails （打印详细的GC日志）</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>虽然有了介绍但是依然不清楚具体是干啥的。并且Java虚拟机提供了非常多的参数命令。下面代码可以输出支持的参数数量</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">java -XX:+PrintFlagsFinal -XX:+UnlockDiagnosticVMOptions -version | wc -l</span><br><span class="line">openjdk version <span class="string">"1.8.0_275"</span></span><br><span class="line"><span class="function">OpenJDK Runtime <span class="title">Environment</span> <span class="params">(AdoptOpenJDK)</span><span class="params">(build <span class="number">1.8</span><span class="number">.0</span>_275-b01)</span></span></span><br><span class="line"><span class="function">OpenJDK 64-Bit Server <span class="title">VM</span> <span class="params">(AdoptOpenJDK)</span><span class="params">(build <span class="number">25.275</span>-b01, mixed mode)</span></span></span><br><span class="line"><span class="function">     838</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="如何理解这些参数的含义？"><a href="#如何理解这些参数的含义？" class="headerlink" title="如何理解这些参数的含义？"></a>如何理解这些参数的含义？</h3><blockquote>
+<p>首先我们需要理解java是如何运行的，为什么需要java虚拟机？    </p>
+<p>我们常用方式一般是命令行的方式启动或者安装java运行环境(jre)直接直接双击jar运行。实际上jre包含的java运行的必要环境。</p>
+<p>Java 作为一门高级程序语言，它的语法非常复杂，抽象程度也很高。编译出来的也不是机器可以直接直接运行代码。所以使用面向Java语言的虚拟机运行Java编译以后的特定代码。这里的特定代码指的是Java字节指令码。</p>
+</blockquote>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/08/19/Jvm-optimization/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/08/18/Nginx-log-format/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1473,86 +1570,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/02/15/Mac%E4%BD%BF%E7%94%A8Jenv%E7%AE%A1%E7%90%86%E5%A4%9A%E7%89%88%E6%9C%ACJdk/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/02/15/Mac%E4%BD%BF%E7%94%A8Jenv%E7%AE%A1%E7%90%86%E5%A4%9A%E7%89%88%E6%9C%ACJdk/" class="post-title-link" itemprop="url">Mac使用Jenv管理多版本Jdk</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2021-02-15 01:09:36 / Modified: 21:33:57" itemprop="dateCreated datePublished" datetime="2021-02-15T01:09:36+08:00">2021-02-15</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>简单记录下mac下多版本jdk管理</p>
-</blockquote>
-<ul>
-<li><a href="https://adoptopenjdk.net/" target="_blank" rel="noopener">https://adoptopenjdk.net/</a></li>
-<li><a href="https://www.jianshu.com/p/1a147d5515f0" target="_blank" rel="noopener">https://www.jianshu.com/p/1a147d5515f0</a></li>
-</ul>
-<h2 id="检查环境"><a href="#检查环境" class="headerlink" title="检查环境"></a>检查环境</h2><h3 id="查看当前安装的jdk版本"><a href="#查看当前安装的jdk版本" class="headerlink" title="查看当前安装的jdk版本"></a>查看当前安装的jdk版本</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/usr/libexec/java_home -V</span><br><span class="line"><span class="meta">#</span><span class="bash"> 如果有安装过jdk版本这里会输出信息</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="使用brew-安装jenv"><a href="#使用brew-安装jenv" class="headerlink" title="使用brew 安装jenv"></a>使用brew 安装jenv</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">brew install jenv</span><br><span class="line"><span class="meta">#</span><span class="bash">检查</span></span><br><span class="line">jenv doctor </span><br><span class="line"><span class="meta">#</span><span class="bash"> 刚安装会提示很多信息</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="初始化jenv"><a href="#初始化jenv" class="headerlink" title="初始化jenv"></a>初始化jenv</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">brew install jenv</span><br><span class="line">jenv init -</span><br><span class="line">echo 'eval "$(jenv init -)"' &gt;&gt; ~/.bash_profile</span><br><span class="line">echo 'eval "$(jenv init -)"' &gt;&gt; ~/.zprofile</span><br><span class="line">jenv add &lt;path-to-java8-Home-Dir&gt; # 这里从/usr/libexec/java_home -V 获取javaHome</span><br></pre></td></tr></table></figure>
-
-<h3 id="切换jdk"><a href="#切换jdk" class="headerlink" title="切换jdk"></a>切换jdk</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ jenv versions</span><br><span class="line">* system (set by /Users/zengqingfeng/.jenv/version)</span><br><span class="line">  1.8</span><br><span class="line">  1.8.0.275</span><br><span class="line">  openjdk64-1.8.0.275</span><br><span class="line">  </span><br><span class="line">➜  ~ jenv local system # 切换版本</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1623,13 +1640,13 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">101</span>
+          <span class="site-state-item-count">102</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
