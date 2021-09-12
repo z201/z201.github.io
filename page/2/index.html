@@ -202,6 +202,11 @@
     <a href="/tags/Mybatis" rel="section"><i class="graduation-cap fa-fw"></i>Mybatis</a>
 
   </li>
+        <li class="menu-item menu-item-vue">
+
+    <a href="/tags/Vue" rel="section"><i class="graduation-cap fa-fw"></i>Vue</a>
+
+  </li>
         <li class="menu-item menu-item-公益404">
 
     <a href="/404.html" rel="section"><i class="heartbeat fa-fw"></i>公益404</a>
@@ -230,6 +235,405 @@
 
           <div class="content index posts-expand">
             
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-SpringMvc/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-SpringMvc/" class="post-title-link" itemprop="url">查缺补漏-SpringMvc</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-04-06 21:26:40" itemprop="dateModified" datetime="2021-04-06T21:26:40+08:00">2021-04-06</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>本章是整理知识内容，为强化知识长期更新。</p>
+</blockquote>
+<h3 id="描述下Controller和RequestMapping注解。"><a href="#描述下Controller和RequestMapping注解。" class="headerlink" title="描述下Controller和RequestMapping注解。"></a>描述下Controller和RequestMapping注解。</h3><ul>
+<li><p>Controller</p>
+<ul>
+<li>声明在类上，该注解表明该类扮演控制器的角色，类似Action。</li>
+</ul>
+</li>
+<li><p>RequestMapping</p>
+<ul>
+<li>该注解是用来映射一个URL到一个类或一个特定的方处理法上。</li>
+</ul>
+</li>
+</ul>
+<h3 id="描述下Spring的作用域以及使用方法。"><a href="#描述下Spring的作用域以及使用方法。" class="headerlink" title="描述下Spring的作用域以及使用方法。"></a>描述下Spring的作用域以及使用方法。</h3><ul>
+<li>当定义一个Bean时，可以给这个Bean声明一个作用域。通过@Scope注解声明在类上。<ul>
+<li>Bean默认作用域是singleton 单例模式，在每个Spring Ioc容器中的一个Bean定义一个实例，也就是无状态Bean，也就是线程不安全的。这个单一实例会被存储到单例缓存（singleton cache）中，并且所有针对该bean的后续请求、访问和引用都将返回被缓存的对象实例。相当于一次创建多次使用。</li>
+<li>prototype 原型模式，在每个Spring Ioc容器中的一个Bean定义多实例，就相当与Java 中new 操作。通常作为有状态的Bean。Prototype作用域的bean会导致在每次对该bean请求（将其注入到另一个bean中，或者以程序的方式调用容器的getBean()方法）时都会创建一个新的bean实例。</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>其它作用域。</p>
+<ul>
+<li>request、session、global session 仅在基于web的应用中使用（不必关心你所采用的是什么web应用框架）。<ul>
+<li>如果不是在web下实现而是通过ApplicationContext这种实现，尝试使用这些作用域将抛出异常IllegalStateException未知作用域。</li>
+<li>request 对每一次HTTP请求都会产生一个新的bean。Spring容器会根据loginAction bean定义创建一个全新的LoginAction bean实例，且该loginAction bean实例仅在当前HTTP request内有效，因此可以根据需要放心的更改所建实例的内部状态，而其他请求中根据loginAction bean定义创建的实例，将不会看到这些特定于某个请求的状态变化。当处理请求结束，request作用域的bean实例将被销毁。</li>
+<li>session 对每一次HTTP请求都会产生一个新的bean，Spring容器会根据userPreferences bean定义创建一个全新的userPreferences bean实例，且该userPreferences bean仅在当前HTTP Session内有效。与request作用域一样，你可以根据需要放心的更改所创建实例的内部状态，而别的HTTP Session中根据userPreferences创建的实例，将不会看到这些特定于某个HTTP Session的状态变化。当HTTP Session最终被废弃的时候，在该HTTP Session作用域内的bean也会被废弃掉。</li>
+<li>‍global session 作用域类似于标准的HTTP Session作用域，不过它仅仅在基于portlet的web应用中才有意义。Portlet规范定义了全局Session的概念，它被所有构成某个portlet web应用的各种不同的portlet所共享。在global session作用域中定义的bean被限定于全局portlet Session的生命周期范围内。在一个标准的基于Servlet的web应用，并且定义了一个或多个具有global session作用域的bean，系统会使用标准的HTTP Session作用域，并且不会引起任何错误。</li>
+</ul>
+</li>
+<li>作用域依赖<ul>
+<li>Spring IoC容器除了管理对象（bean）的实例化，同时还负责协作者（或者叫依赖）的实例化。如果将一个Http request范围的bean注入到另一个bean中，那么需要注入一个AOP代理来替代被注入的作用域bean。也就是说需要注入一个代理对象，该对象具有与被代理对象一样的公共接口，而容器则可以足够智能的从相关作用域中（比如一个HTTP request）获取到真实的目标对象，并把方法调用委派给实际的对象。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="SpringMVc中Restfull风格的使用。"><a href="#SpringMVc中Restfull风格的使用。" class="headerlink" title="SpringMVc中Restfull风格的使用。"></a>SpringMVc中Restfull风格的使用。</h3><ul>
+<li>restfull 支持的请求头GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS, TRACE 。</li>
+<li>通常情况下只使用 GET,PUT,POST,DELETE。<ul>
+<li>GET 通常用来获取数据。</li>
+<li>PUT 通常用来新增数据。</li>
+<li>POST 通常用来更新数据。</li>
+<li>DELETE 通常用来删除数据。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping</span>(value = <span class="string">"/get"</span>, method = RequestMethod.GET)</span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">get</span><span class="params">()</span></span>&#123;</span><br><span class="line">   <span class="keyword">return</span> <span class="string">"200"</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RequestMapping</span>(value = <span class="string">"/post"</span>, method = RequestMethod.POST)</span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">post</span><span class="params">()</span></span>&#123;</span><br><span class="line">   <span class="keyword">return</span> <span class="string">"200"</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RequestMapping</span>(value = <span class="string">"/delete"</span>, method = RequestMethod.DELETE)</span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">delete</span><span class="params">()</span></span>&#123;</span><br><span class="line">   <span class="keyword">return</span> <span class="string">"200"</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RequestMapping</span>(value = <span class="string">"/put"</span>, method = RequestMethod.PUT)</span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">put</span><span class="params">()</span></span>&#123;</span><br><span class="line">   <span class="keyword">return</span> <span class="string">"200"</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="SpringMvc的处理流程"><a href="#SpringMvc的处理流程" class="headerlink" title="SpringMvc的处理流程"></a>SpringMvc的处理流程</h3><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/SpringMvc%E8%AF%B7%E6%B1%82%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B.png"></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-SpringMvc/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/02/19/Mac%E5%AE%89%E8%A3%85neo4j%E5%92%8Cjupyter/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/02/19/Mac%E5%AE%89%E8%A3%85neo4j%E5%92%8Cjupyter/" class="post-title-link" itemprop="url">Mac安装neo4j和jupyter</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-02-19 00:39:21 / Modified: 00:45:34" itemprop="dateCreated datePublished" datetime="2021-02-19T00:39:21+08:00">2021-02-19</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>准备学习下neo4j记录在mac下安装neo4j的坑。</p>
+</blockquote>
+<h2 id="neo4j官网网站下载失败"><a href="#neo4j官网网站下载失败" class="headerlink" title="neo4j官网网站下载失败"></a>neo4j官网网站下载失败</h2><blockquote>
+<p>国内只能从镜像地址下载</p>
+</blockquote>
+<p><a href="http://doc.we-yun.com:1008/" target="_blank" rel="noopener">http://doc.we-yun.com:1008/</a> </p>
+<h2 id="配置jdk11"><a href="#配置jdk11" class="headerlink" title="配置jdk11"></a>配置jdk11</h2><blockquote>
+<p>可以查看我上面内容实用Jenv管理多个版本。</p>
+</blockquote>
+<h2 id="启动neo4j"><a href="#启动neo4j" class="headerlink" title="启动neo4j"></a>启动neo4j</h2><blockquote>
+<p>下载完成后解压</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 启动</span></span><br><span class="line">./neo4j  start</span><br><span class="line"><span class="meta">#</span><span class="bash"> 关闭</span></span><br><span class="line">./neo4j  stop</span><br></pre></td></tr></table></figure>
+
+<h2 id="neo4j界面"><a href="#neo4j界面" class="headerlink" title="neo4j界面"></a>neo4j界面</h2><ul>
+<li>在浏览器中输入localhost:7474</li>
+<li>初始用户名、密码均为neo4j， 第一次登录需要修改密码</li>
+</ul>
+<h2 id="安装jupyter"><a href="#安装jupyter" class="headerlink" title="安装jupyter"></a>安装jupyter</h2><blockquote>
+<p>注意提前安装python环境</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pip install jupyter notebook -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host=mirrors.aliyun.com</span><br><span class="line"><span class="meta">#</span><span class="bash"> 检查版本</span></span><br><span class="line">jupyter --version</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/09/%E5%88%9D%E6%8E%A2Jwk/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/03/09/%E5%88%9D%E6%8E%A2Jwk/" class="post-title-link" itemprop="url">初探Jwt</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-03-09 02:02:15" itemprop="dateCreated datePublished" datetime="2019-03-09T02:02:15+08:00">2019-03-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-02-18 14:05:00" itemprop="dateModified" datetime="2021-02-18T14:05:00+08:00">2021-02-18</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA/" itemprop="url" rel="index"><span itemprop="name">基础理论</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>Json web token (JWT), 是为了在网络应用环境间传递声明而执行的一种基于JSON的开放标准。该token被设计为紧凑且安全的，特别适用于分布式站点的单点登录（SSO）场景。JWT的声明一般被用来在身份提供者和服务提供者间传递被认证的用户身份信息，以便于从资源服务器获取资源，也可以增加一些额外的其它业务逻辑所必须的声明信息，该token也可直接被用于认证，也可被加密。也就是说JWT是Token的一种表述性声明规范。</p>
+</blockquote>
+<h2 id="JWT-Json-Web-Token"><a href="#JWT-Json-Web-Token" class="headerlink" title="JWT(Json Web Token)"></a>JWT(Json Web Token)</h2><ul>
+<li>官网地址：<strong><a href="https://jwt.io/" target="_blank" rel="noopener">https://jwt.io/</a></strong></li>
+<li>jwt github：<strong><a href="https://github.com/jwtk/jjwt" target="_blank" rel="noopener">https://github.com/jwtk/jjwt</a></strong></li>
+</ul>
+<h2 id="JWT生成编码后的样子"><a href="#JWT生成编码后的样子" class="headerlink" title="JWT生成编码后的样子"></a>JWT生成编码后的样子</h2><ul>
+<li>结构类似 xxx.yyy.zzz</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImF1ZCI6IuWkqeihjOWBpeeuoeeQhueUqOaItyIsImF1ZGllbmNlIjoid2ViIiwibmJmIjoxNTA3Njg0OTQyLCJpc3MiOiJ3d3cuMW9uZS5jbiIsImV4cCI6MTUwNzY4Njc0MiwiaWF0IjoxNTA3Njg0OTQyLCJqdGkiOjEwMDB9.GGF0kFbxNk2ezzuXEJVBZyyL4e4BYMdpse73cSDrUut7cbVyYuLG1CNr8RI7eI3VHz9sdCB14Kesi8rP-v3VJA</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>base64解析之后</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	<span class="attr">"body"</span>:&#123;</span><br><span class="line">		<span class="attr">"sub"</span>:<span class="string">"admin"</span>,</span><br><span class="line">		<span class="attr">"aud"</span>:<span class="string">"XXX用户"</span>,</span><br><span class="line">		<span class="attr">"audience"</span>:<span class="string">"web"</span>,</span><br><span class="line">		<span class="attr">"nbf"</span>:<span class="number">1507684942</span>,</span><br><span class="line">		<span class="attr">"iss"</span>:<span class="string">"www.xxx.cn"</span>,</span><br><span class="line">		<span class="attr">"exp"</span>:<span class="number">1507686742</span>,</span><br><span class="line">		<span class="attr">"iat"</span>:<span class="number">1507684942</span>,</span><br><span class="line">		<span class="attr">"jti"</span>:<span class="number">1000</span></span><br><span class="line">	&#125;,</span><br><span class="line">	<span class="attr">"header"</span>:&#123;</span><br><span class="line">		<span class="attr">"typ"</span>:<span class="string">"JWT"</span>,</span><br><span class="line">		<span class="attr">"alg"</span>:<span class="string">"HS512"</span></span><br><span class="line">	&#125;,</span><br><span class="line">	<span class="attr">"signature"</span>:<span class="string">"GGF0kFbxNk2ezzuXEJVBZyyL4e4BYMdpse73cSDrUut7cbVyYuLG1CNr8RI7eI3VHz9sdCB14Kesi8rP-v3VJA"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/03/09/%E5%88%9D%E6%8E%A2Jwk/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/15/%E5%AE%9E%E8%B7%B5-jjwt%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/03/15/%E5%AE%9E%E8%B7%B5-jjwt%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/" class="post-title-link" itemprop="url">实践-jjwt单元测试</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-03-15 21:34:40" itemprop="dateCreated datePublished" datetime="2019-03-15T21:34:40+08:00">2019-03-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-02-18 14:04:50" itemprop="dateModified" datetime="2021-02-18T14:04:50+08:00">2021-02-18</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="JJWT"><a href="#JJWT" class="headerlink" title="JJWT"></a>JJWT</h2><blockquote>
+<p>之前有介绍过<a href="https://z201.cn/2019/03/09/%E5%88%9D%E6%8E%A2Jwk/" target="_blank" rel="noopener">JWT</a>的基本了解，本章内容主要是用来实际运行下jjwt的api，完成相应的单元测试。</p>
+</blockquote>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">junit.version</span>&gt;</span>4.12<span class="tag">&lt;/<span class="name">junit.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">jjwt.version</span>&gt;</span>0.10.5<span class="tag">&lt;/<span class="name">jjwt.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">lmbok.version</span>&gt;</span>1.18.4<span class="tag">&lt;/<span class="name">lmbok.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">h2.version</span>&gt;</span>1.4.197<span class="tag">&lt;/<span class="name">h2.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">slf4j.version</span>&gt;</span>1.7.25<span class="tag">&lt;/<span class="name">slf4j.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">logback.version</span>&gt;</span>1.2.3<span class="tag">&lt;/<span class="name">logback.version</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- pom文件需要指定打包编码集，[WARNING] File encoding has not been set, using platform encoding GBK, i.e. build is platform dependent!  --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">project.build.sourceEncoding</span>&gt;</span>UTF-8<span class="tag">&lt;/<span class="name">project.build.sourceEncoding</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.jsonwebtoken<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jjwt-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;jjwt.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.jsonwebtoken<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jjwt-impl<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;jjwt.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">scope</span>&gt;</span>runtime<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.jsonwebtoken<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jjwt-jackson<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;jjwt.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">scope</span>&gt;</span>runtime<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!--log --&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.slf4j<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>slf4j-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;slf4j.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>ch.qos.logback<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>logback-classic<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;logback.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- 测试框架 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>junit<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>junit<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;junit.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  	<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  	<span class="tag">&lt;<span class="name">version</span>&gt;</span>1.18.6<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="测试代码"><a href="#测试代码" class="headerlink" title="测试代码"></a>测试代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> cn.z201.java.test.jjwt;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> io.jsonwebtoken.Claims;</span><br><span class="line"><span class="keyword">import</span> io.jsonwebtoken.JwtBuilder;</span><br><span class="line"><span class="keyword">import</span> io.jsonwebtoken.Jwts;</span><br><span class="line"><span class="keyword">import</span> io.jsonwebtoken.SignatureAlgorithm;</span><br><span class="line"><span class="keyword">import</span> io.jsonwebtoken.security.Keys;</span><br><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.junit.Test;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.crypto.SecretKey;</span><br><span class="line"><span class="keyword">import</span> java.time.Clock;</span><br><span class="line"><span class="keyword">import</span> java.util.Date;</span><br><span class="line"><span class="keyword">import</span> java.util.UUID;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> z201.coding@gmail.com</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JwtExampleTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> String <span class="title">createJWT</span><span class="params">(String id, String issuer, String subject, <span class="keyword">long</span> ttlMillis, SecretKey key)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        Clock clock = Clock.systemDefaultZone();</span><br><span class="line">        Date now = <span class="keyword">new</span> Date(clock.millis());</span><br><span class="line">        <span class="comment">//Let's set the JWT Claims</span></span><br><span class="line">        JwtBuilder builder = Jwts.builder()</span><br><span class="line">                .setId(id)</span><br><span class="line">                .setIssuedAt(now)</span><br><span class="line">                .setSubject(subject)</span><br><span class="line">                .setIssuer(issuer)</span><br><span class="line">                .signWith(key);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 设置过期时间</span></span><br><span class="line">        <span class="keyword">if</span> (ttlMillis &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">long</span> expMillis = clock.millis() + ttlMillis;</span><br><span class="line">            Date exp = <span class="keyword">new</span> Date(expMillis);</span><br><span class="line">            builder.setExpiration(exp);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 返回编码之后的字符串</span></span><br><span class="line">        <span class="keyword">return</span> builder.compact();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">parseJWT</span><span class="params">(String jwt, SecretKey key)</span> </span>&#123;</span><br><span class="line">        Claims claims = Jwts.parser()</span><br><span class="line">                .setSigningKey(key)</span><br><span class="line">                .parseClaimsJws(jwt).getBody();</span><br><span class="line">        log.info(<span class="string">"ID: "</span> + claims.getId());</span><br><span class="line">        log.info(<span class="string">"Subject: "</span> + claims.getSubject());</span><br><span class="line">        log.info(<span class="string">"Issuer: "</span> + claims.getIssuer());</span><br><span class="line">        log.info(<span class="string">"Expiration: "</span> + claims.getExpiration());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testJwt</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">//The JWT signature algorithm we will be using to sign the token</span></span><br><span class="line">        SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256);</span><br><span class="line">        String jwt = createJWT(UUID.randomUUID().toString() ,  <span class="string">"issuer"</span>  , <span class="string">"subject"</span> , <span class="number">10000</span> ,key);</span><br><span class="line">        log.info(<span class="string">"createJWT &#123;&#125; "</span> , jwt );</span><br><span class="line">        parseJWT(jwt,key);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">输出</span><br><span class="line"></span><br><span class="line"><span class="number">22</span>:<span class="number">18</span>:<span class="number">48.641</span> [main] INFO cn.z201.java.test.jjwt.JwtExampleTest - createJWT eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJjNjFmNzNmZi02OTM4LTQ2MDItYTNkNC1hY2FlZmI3N2Q2YTEiLCJpYXQiOjE1NTI3NDU5MjgsInN1YiI6InN1YmplY3QiLCJpc3MiOiJpc3N1ZXIiLCJleHAiOjE1NTI3NDU5Mzh9.t_ra42L21PMVzto1r2x1fSxCRZFkuk0hSzl2k-b-VWA </span><br><span class="line"><span class="number">22</span>:<span class="number">18</span>:<span class="number">48.694</span> [main] INFO cn.z201.java.test.jjwt.JwtExampleTest - ID: c61f73ff-<span class="number">6938</span>-<span class="number">4602</span>-a3d4-acaefb77d6a1</span><br><span class="line"><span class="number">22</span>:<span class="number">18</span>:<span class="number">48.694</span> [main] INFO cn.z201.java.test.jjwt.JwtExampleTest - Subject: subject</span><br><span class="line"><span class="number">22</span>:<span class="number">18</span>:<span class="number">48.694</span> [main] INFO cn.z201.java.test.jjwt.JwtExampleTest - Issuer: issuer</span><br><span class="line"><span class="number">22</span>:<span class="number">18</span>:<span class="number">48.696</span> [main] INFO cn.z201.java.test.jjwt.JwtExampleTest - Expiration: Sat Mar <span class="number">16</span> <span class="number">22</span>:<span class="number">18</span>:<span class="number">58</span> CST <span class="number">2019</span></span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
   
   
@@ -314,102 +718,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/09/%E5%88%9D%E6%8E%A2Jwk/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/03/09/%E5%88%9D%E6%8E%A2Jwk/" class="post-title-link" itemprop="url">初探Jwt</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-03-09 02:02:15" itemprop="dateCreated datePublished" datetime="2019-03-09T02:02:15+08:00">2019-03-09</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-02-15 21:33:46" itemprop="dateModified" datetime="2021-02-15T21:33:46+08:00">2021-02-15</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA/" itemprop="url" rel="index"><span itemprop="name">基础理论</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>Json web token (JWT), 是为了在网络应用环境间传递声明而执行的一种基于JSON的开放标准。该token被设计为紧凑且安全的，特别适用于分布式站点的单点登录（SSO）场景。JWT的声明一般被用来在身份提供者和服务提供者间传递被认证的用户身份信息，以便于从资源服务器获取资源，也可以增加一些额外的其它业务逻辑所必须的声明信息，该token也可直接被用于认证，也可被加密。也就是说JWT是Token的一种表述性声明规范。</p>
-</blockquote>
-<h2 id="JWT-Json-Web-Token"><a href="#JWT-Json-Web-Token" class="headerlink" title="JWT(Json Web Token)"></a>JWT(Json Web Token)</h2><ul>
-<li>官网地址：<strong><a href="https://jwt.io/" target="_blank" rel="noopener">https://jwt.io/</a></strong></li>
-<li>jwt github：<strong><a href="https://github.com/jwtk/jjwt" target="_blank" rel="noopener">https://github.com/jwtk/jjwt</a></strong></li>
-</ul>
-<h2 id="JWT生成编码后的样子"><a href="#JWT生成编码后的样子" class="headerlink" title="JWT生成编码后的样子"></a>JWT生成编码后的样子</h2><ul>
-<li>结构类似 xxx.yyy.zzz</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImF1ZCI6IuWkqeihjOWBpeeuoeeQhueUqOaItyIsImF1ZGllbmNlIjoid2ViIiwibmJmIjoxNTA3Njg0OTQyLCJpc3MiOiJ3d3cuMW9uZS5jbiIsImV4cCI6MTUwNzY4Njc0MiwiaWF0IjoxNTA3Njg0OTQyLCJqdGkiOjEwMDB9.GGF0kFbxNk2ezzuXEJVBZyyL4e4BYMdpse73cSDrUut7cbVyYuLG1CNr8RI7eI3VHz9sdCB14Kesi8rP-v3VJA</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>base64解析之后</li>
-</ul>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	<span class="attr">"body"</span>:&#123;</span><br><span class="line">		<span class="attr">"sub"</span>:<span class="string">"admin"</span>,</span><br><span class="line">		<span class="attr">"aud"</span>:<span class="string">"XXX用户"</span>,</span><br><span class="line">		<span class="attr">"audience"</span>:<span class="string">"web"</span>,</span><br><span class="line">		<span class="attr">"nbf"</span>:<span class="number">1507684942</span>,</span><br><span class="line">		<span class="attr">"iss"</span>:<span class="string">"www.xxx.cn"</span>,</span><br><span class="line">		<span class="attr">"exp"</span>:<span class="number">1507686742</span>,</span><br><span class="line">		<span class="attr">"iat"</span>:<span class="number">1507684942</span>,</span><br><span class="line">		<span class="attr">"jti"</span>:<span class="number">1000</span></span><br><span class="line">	&#125;,</span><br><span class="line">	<span class="attr">"header"</span>:&#123;</span><br><span class="line">		<span class="attr">"typ"</span>:<span class="string">"JWT"</span>,</span><br><span class="line">		<span class="attr">"alg"</span>:<span class="string">"HS512"</span></span><br><span class="line">	&#125;,</span><br><span class="line">	<span class="attr">"signature"</span>:<span class="string">"GGF0kFbxNk2ezzuXEJVBZyyL4e4BYMdpse73cSDrUut7cbVyYuLG1CNr8RI7eI3VHz9sdCB14Kesi8rP-v3VJA"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/03/09/%E5%88%9D%E6%8E%A2Jwk/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/02/15/Mac%E4%B8%8BOpenJdk11-JavaFx%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -474,6 +782,317 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">--module-path</span><br><span class="line"><span class="meta">/Users/$</span><span class="bash">USER/word/libhome/javafx-sdk-11.0.2/lib</span></span><br><span class="line">--add-modules</span><br><span class="line">javafx.controls</span><br><span class="line">--add-modules</span><br><span class="line">javafx.base</span><br><span class="line">--add-modules</span><br><span class="line">javafx.graphics</span><br><span class="line">--add-modules</span><br><span class="line">javafx.fxml</span><br><span class="line">--add-modules</span><br><span class="line">javafx.media</span><br></pre></td></tr></table></figure>
 
 
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/11/20/Docker-Compose-Redis5-0-Mysql5-7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/11/20/Docker-Compose-Redis5-0-Mysql5-7/" class="post-title-link" itemprop="url">Docker-Compose-Redis5.0+Mysql5.7</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-11-20 15:58:13" itemprop="dateCreated datePublished" datetime="2020-11-20T15:58:13+08:00">2020-11-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-01-13 14:46:29" itemprop="dateModified" datetime="2021-01-13T14:46:29+08:00">2021-01-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Docker/" itemprop="url" rel="index"><span itemprop="name">Docker</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>记录下使用docker-compose构建管理Redis、mysql。</p>
+</blockquote>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><ol>
+<li>创建工作目录</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -p docker docker/mysql docker/mysql/data docker/redis docker/redis/data</span><br><span class="line"><span class="comment"># 使用 tree docker 查看目录结构 yum -y install tree 安装</span></span><br><span class="line">$ tree docker</span><br><span class="line">docker</span><br><span class="line">├── mysql</span><br><span class="line">│   └── data</span><br><span class="line">└── redis</span><br><span class="line">    └── data</span><br><span class="line">$ touch docker/mysql/my.cnf docker/redis/redis.conf </span><br><span class="line">$ tree docker</span><br><span class="line">docker</span><br><span class="line">├── mysql</span><br><span class="line">│   ├── data</span><br><span class="line">│   └── my.cnf</span><br><span class="line">└── redis</span><br><span class="line">    ├── data</span><br><span class="line">    └── redis.conf</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>准备my.conf 、redis.conf<ol>
+<li>my.conf</li>
+</ol>
+</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">[client]</span><br><span class="line"> port = 3306</span><br><span class="line"> socket = /var/lib/mysql/data/mysql.sock</span><br><span class="line">[mysqld]</span><br><span class="line"> <span class="comment"># 针对5.7版本执行group by字句出错问题解决</span></span><br><span class="line">sql_mode=<span class="string">'STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'</span></span><br><span class="line"> <span class="comment"># 一般配置选项</span></span><br><span class="line"> basedir = /var/lib/mysql</span><br><span class="line"> datadir = /var/lib/mysql/data</span><br><span class="line"> port = 3306</span><br><span class="line"> socket = /var/lib/mysql/data/mysql.sock</span><br><span class="line"> lc-messages-dir = /usr/share/mysql <span class="comment"># 务必配置此项，否则执行sql出错时，只能显示错误代码而不显示具体错误消息</span></span><br><span class="line"> character-set-server=utf8</span><br><span class="line"> back_log = 300</span><br><span class="line"> max_connections = 3000</span><br><span class="line"> max_connect_errors = 50</span><br><span class="line"> table_open_cache = 4096</span><br><span class="line"> max_allowed_packet = 32M</span><br><span class="line"> <span class="comment">#binlog_cache_size = 4M</span></span><br><span class="line"> max_heap_table_size = 128M</span><br><span class="line"> read_rnd_buffer_size = 16M</span><br><span class="line"> sort_buffer_size = 16M</span><br><span class="line"> join_buffer_size = 16M</span><br><span class="line"> thread_cache_size = 16</span><br><span class="line"> query_cache_size = 64M</span><br><span class="line"> query_cache_limit = 4M</span><br><span class="line"> ft_min_word_len = 8</span><br><span class="line"> thread_stack = 512K</span><br><span class="line"> transaction_isolation = REPEATABLE-READ</span><br><span class="line"> tmp_table_size = 64M</span><br><span class="line"> <span class="comment">#log-bin=mysql-bin</span></span><br><span class="line"> long_query_time = 6</span><br><span class="line"> server_id=1</span><br><span class="line"> innodb_buffer_pool_size = 256M</span><br><span class="line"> innodb_thread_concurrency = 16</span><br><span class="line"> innodb_log_buffer_size = 16M</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>redis.conf 可以去这里下载 <a href="https://redis.io/topics/config" target="_blank" rel="noopener">官网</a></li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">wget https://raw.githubusercontent.com/redis/redis/5.0/redis.conf</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改内容</span></span><br><span class="line">daemonize no     <span class="comment">## 若使用开机启动，生成pid，该项必须设置为诶yes，否则redis将不能够正常执行开机启动(systemctl start redis,执行后一直卡着，直到超时)</span></span><br><span class="line"><span class="comment">#bind 127.0.0.1  ##注释掉，允许所有其他ip访问，真实使用最好坐下限制，只允许某些主机访问</span></span><br><span class="line">protected-mode no  <span class="comment">## 允许其他机器上的客户端连接当前redis，配置文件设置该项，则开机启动处就可以去掉--protected no </span></span><br><span class="line">requirepass root  <span class="comment">##设置密码</span></span><br><span class="line"><span class="comment"># daemonize yes，他的作用是开启守护进程模式，在该模式下，redis会在后台运行，并将进程pid号写入至redis.conf选项pidfile设置的文件中，此时redis将一直运行，除非手动kill该进程。但是在后面的命令中“-d”选项也是开启daemonize，这是docker自家的方式。</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="编写Docker-Compose文件"><a href="#编写Docker-Compose文件" class="headerlink" title="编写Docker-Compose文件"></a>编写Docker-Compose文件</h2><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">version : <span class="string">'3'</span></span><br><span class="line">services:</span><br><span class="line">  mysql:</span><br><span class="line">    image: mysql/mysql-server:<span class="number">5.7</span>.<span class="number">18</span></span><br><span class="line">    container_name: mysql5.<span class="number">7.18</span>-dev</span><br><span class="line">    networks:</span><br><span class="line">      - net-shop-db</span><br><span class="line">    ports:</span><br><span class="line">      - <span class="string">"3306:3306"</span></span><br><span class="line">    volumes:</span><br><span class="line">      - /opt/docker/mysql/my.cnf:/etc/my.cnf <span class="comment"># 映射数据库配置文件</span></span><br><span class="line">      - /opt/docker/mysql/data:/var/lib/mysql/data  <span class="comment"># 映射数据库保存目录到宿主机，防止数据丢失</span></span><br><span class="line">      - /opt/docker/mysql/log:/var/log/mysql <span class="comment"># 日志文件</span></span><br><span class="line">      - /etc/localtime:/etc/localtime:ro <span class="comment"># 设置容器时区与宿主机保持一致</span></span><br><span class="line">    restart: always <span class="comment"># 设置容器自启模式</span></span><br><span class="line">    command: [</span><br><span class="line">      <span class="string">'--character-set-server=utf8mb4'</span>,</span><br><span class="line">      <span class="string">'--collation-server=utf8mb4_unicode_ci'</span>,</span><br><span class="line">      <span class="string">'--lower_case_table_names=1'</span>,</span><br><span class="line">      <span class="string">'--default-time-zone=+8:00'</span>]</span><br><span class="line">    environment:</span><br><span class="line">      - TZ=Asia/Shanghai <span class="comment"># 设置容器时区与宿主机保持一致</span></span><br><span class="line">      - MYSQL_ROOT_PASSWORD=root <span class="comment"># 设置root密码</span></span><br><span class="line">  redis:</span><br><span class="line">    image: redis:<span class="number">5.0</span>.<span class="number">5</span></span><br><span class="line">    container_name: redis5.<span class="number">0.6</span>-dev</span><br><span class="line">    networks:</span><br><span class="line">      - net-shop-db</span><br><span class="line">    ports:</span><br><span class="line">      - <span class="string">"6379:6379"</span></span><br><span class="line">    volumes:</span><br><span class="line">      - /etc/localtime:/etc/localtime:ro <span class="comment"># 设置容器时区与宿主机保持一致</span></span><br><span class="line">      - /opt/docker/redis/data:/data</span><br><span class="line">      - /opt/docker/redis/redis.conf:/etc/redis.conf</span><br><span class="line">    command: redis-server /etc/redis.conf <span class="comment"># 启动redis命令</span></span><br><span class="line">    environment:</span><br><span class="line">      - TZ=Asia/Shanghai <span class="comment"># 设置容器时区与宿主机保持一致</span></span><br><span class="line">    restart: always <span class="comment"># 设置容器自启模式</span></span><br><span class="line"></span><br><span class="line">networks:</span><br><span class="line">  net-shop-db:</span><br><span class="line">    driver: bridge</span><br></pre></td></tr></table></figure>
+
+<h2 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h2><blockquote>
+<p>注意需要提前启动docker</p>
+</blockquote>
+<ol>
+<li>创建并启动容器 <code>docker-compose -f docker-compose.yml up -d</code></li>
+<li>批量停止容器并清除容器 <code>docker-compose -f docker-compose.yml down</code></li>
+<li>重新构建容器 <code>docker-compose -f docker-compose.yml up --build -d</code></li>
+<li>启动失败，可以查看容器日志信息获取帮助 <code>docker logs 容器名词或容器ID # 既docker-compose.yml文件参数container_name指定的值</code></li>
+</ol>
+<h2 id="备注"><a href="#备注" class="headerlink" title="备注"></a>备注</h2><ol>
+<li>docker-compose 命令不存在、未找到命令。直接从github上下载，国内下载巨慢。</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 注意查看docker 版本 和 docker-compose 的版本</span></span><br><span class="line"><span class="built_in">cd</span> /usr/<span class="built_in">local</span>/bin/</span><br><span class="line"></span><br><span class="line">curl -L https://github.com/docker/compose/releases/download/1.27.4/docker-compose-`uname -s`-`uname -m` -o /usr/<span class="built_in">local</span>/bin/docker-compose</span><br><span class="line"><span class="comment">#。直接用国内的镜像</span></span><br><span class="line">curl -L https://get.daocloud.io/docker/compose/releases/download/1.27.4/docker-compose-`uname -s`-`uname -m` &gt; /usr/<span class="built_in">local</span>/bin/docker-compose</span><br><span class="line"></span><br><span class="line">chmod +x /usr/<span class="built_in">local</span>/bin/docker-compose</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://yefeihonours.github.io/post/docker/docker_compose/" target="_blank" rel="noopener">docker-compose 命令不存在、未找到命令</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/43654441" target="_blank" rel="noopener">使用 docker-compose 在 Docker 中启动有密码的 Redis 容器</a></p>
+<p><a href="https://cloud.tencent.com/developer/article/1678769" target="_blank" rel="noopener">Docker-Compose搭建mysql、redis、zookeeper、rabbitmq、consul、elasticsearch环境</a></p>
+<p><a href="https://juejin.cn/post/6844903655389265927" target="_blank" rel="noopener">Docker Compose多容器部署</a></p>
+<p><a href="https://colobu.com/2018/05/15/Stop-and-remove-all-docker-containers-and-images/" target="_blank" rel="noopener">停止、删除所有的docker容器和镜像</a></p>
+<p><a href="https://my.oschina.net/u/4362704/blog/3308004" target="_blank" rel="noopener">宿主机连接docker中的mysql</a></p>
+<p><a href="https://developer.aliyun.com/article/618035" target="_blank" rel="noopener">Docker Compose 安装 on centos7</a></p>
+<p><a href="https://cloud.tencent.com/developer/article/1678769" target="_blank" rel="noopener">Docker-Compose搭建mysql、redis、zookeeper、rabbitmq、consul、elasticsearch环境</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/140732202" target="_blank" rel="noopener">docker-compose一键安装redis+mysql+rabbitmq</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/11/20/Centos7-Docker%E9%83%A8%E7%BD%B2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/11/20/Centos7-Docker%E9%83%A8%E7%BD%B2/" class="post-title-link" itemprop="url">Centos7.*-Docker部署</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-11-20 14:26:04" itemprop="dateCreated datePublished" datetime="2020-11-20T14:26:04+08:00">2020-11-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-01-12 15:16:48" itemprop="dateModified" datetime="2021-01-12T15:16:48+08:00">2021-01-12</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index"><span itemprop="name">Linux运维</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>记录下自己在阿里云部署docker记录。</p>
+</blockquote>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><ol>
+<li>准备一台ESC服务器，并可以使用控制台登录。</li>
+<li>检查ESC是否安装了docker，可以选择是否卸载重装。<ol>
+<li>检查docker是否安装,<code>docker 显示相关信息则表示安装</code></li>
+<li>卸载docker，若不重装直接忽略，<code>yum list installed | grep docker</code>查看安装内容</li>
+</ol>
+</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ yum list installed | grep docker</span><br><span class="line">containerd.io.x86_64                1.3.7-3.1.el7                   @docker-ce-stable</span><br><span class="line">docker-ce.x86_64                    3:19.03.13-3.el7                @docker-ce-stable</span><br><span class="line">docker-ce-cli.x86_64                1:19.03.13-3.el7                @docker-ce-stable</span><br><span class="line"><span class="comment"># 依次卸载</span></span><br><span class="line">$ yum -y remove docker-ce.x86_64</span><br><span class="line">$ yum -y remove docker-ce-cli.x86_64</span><br><span class="line">$ yum -y remove containerd.io.x86_64</span><br><span class="line"><span class="comment"># 检查卸载结果</span></span><br><span class="line">$ yum list installed | grep docker</span><br><span class="line"><span class="comment"># 无输出内容</span></span><br><span class="line">$ docker </span><br><span class="line"><span class="comment"># -bash: docekr: 未找到命令 则表示卸载干净了</span></span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>安装docker<ol>
+<li>更新yum <code>yum update</code></li>
+<li>获取官方源<code>wget -P /etc/yum.repos.d/ https://download.docker.com/linux/centos/docker-ce.repo</code></li>
+<li>查看可以安装的版本<code>yum list docker-ce --showduplicates | sort -r</code></li>
+<li>选择安装 <code>yum install -y docker-ce-18.03.0.ce-1.el7.centos</code></li>
+<li>安装docker <code>yum install docker -y</code><ol>
+<li>检查<code>docker -v</code>输出版本信息</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<h2 id="设置docker相关信息"><a href="#设置docker相关信息" class="headerlink" title="设置docker相关信息"></a>设置docker相关信息</h2><ol>
+<li>设置docker开机启动项<code>systemctl enable docker.service</code></li>
+<li>关闭docker开机启动项 <code>systemctl stop docker.service</code></li>
+<li>检查docker当前运行情况 <code>systemctl status docker</code></li>
+<li>若未启动则启动docker <code>systemctl start docker</code> ,若启动了可以重启<code>systemctl restart docker</code></li>
+<li>检查docker运行情况<code>service docker status</code></li>
+</ol>
+<h2 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h2><p><a href="https://developer.aliyun.com/article/336442" target="_blank" rel="noopener">阿里云CentOS 7上安装配置Docker</a></p>
+<p><a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-compose-on-centos-7" target="_blank" rel="noopener">How To Install and Use Docker Compose on CentOS 7</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/12/15/Redis-cli%E4%BD%BF%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/12/15/Redis-cli%E4%BD%BF%E7%94%A8/" class="post-title-link" itemprop="url">Redis-cli使用</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-12-15 16:56:48" itemprop="dateCreated datePublished" datetime="2019-12-15T16:56:48+08:00">2019-12-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-12-02 16:14:32" itemprop="dateModified" datetime="2020-12-02T16:14:32+08:00">2020-12-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Redis/" itemprop="url" rel="index"><span itemprop="name">Redis</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>在mac中使用redis-cli。相比rdm我可能更喜欢这个命令行工具。</p>
+</blockquote>
+<h3 id="在mac中之安装redis-cli"><a href="#在mac中之安装redis-cli" class="headerlink" title="在mac中之安装redis-cli"></a>在mac中之安装redis-cli</h3><blockquote>
+<p>按照标准的按照流程，需要先安装redis-server。</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">brew tap ringohub/redis-cli</span><br><span class="line"></span><br><span class="line">brew update &amp;&amp; brew doctor</span><br><span class="line"></span><br><span class="line">brew install redis-cli</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>相关文档<a href="https://stackoverflow.com/questions/39704273/macos-x-is-there-a-way-to-install-only-redis-cli" target="_blank" rel="noopener">https://stackoverflow.com/questions/39704273/macos-x-is-there-a-way-to-install-only-redis-cli</a></li>
+</ul>
+<h3 id="根据redis常用命令来学习使用redis-cli。"><a href="#根据redis常用命令来学习使用redis-cli。" class="headerlink" title="根据redis常用命令来学习使用redis-cli。"></a>根据redis常用命令来学习使用redis-cli。</h3>
       
     </div>
 
@@ -576,684 +1195,6 @@
 <h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p><a href="https://help.aliyun.com/document_detail/98728.html?spm=5176.2020520163.0.dexternal.3e4756a7jNJMZQ" target="_blank" rel="noopener">阿里云帮助文档-在Nginx上配置证书</a></p>
 <p><a href="https://segmentfault.com/a/1190000018109309" target="_blank" rel="noopener">CentOS 7 上安装最新版 Nginx</a></p>
 
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/11/20/Docker-Compose-Redis5-0-Mysql5-7/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/11/20/Docker-Compose-Redis5-0-Mysql5-7/" class="post-title-link" itemprop="url">Docker-Compose-Redis5.0+Mysql5.7</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-11-20 15:58:13" itemprop="dateCreated datePublished" datetime="2020-11-20T15:58:13+08:00">2020-11-20</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-11-23 11:16:57" itemprop="dateModified" datetime="2020-11-23T11:16:57+08:00">2020-11-23</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Docker/" itemprop="url" rel="index"><span itemprop="name">Docker</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>记录下使用docker-compose构建管理Redis、mysql。</p>
-</blockquote>
-<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><ol>
-<li>创建工作目录</li>
-</ol>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -p docker docker/mysql docker/mysql/data docker/redis docker/redis/data</span><br><span class="line"><span class="comment"># 使用 tree docker 查看目录结构 yum -y install tree 安装</span></span><br><span class="line">$ tree docker</span><br><span class="line">docker</span><br><span class="line">├── mysql</span><br><span class="line">│   └── data</span><br><span class="line">└── redis</span><br><span class="line">    └── data</span><br><span class="line">$ touch docker/mysql/my.cnf docker/redis/redis.conf </span><br><span class="line">$ tree docker</span><br><span class="line">docker</span><br><span class="line">├── mysql</span><br><span class="line">│   ├── data</span><br><span class="line">│   └── my.cnf</span><br><span class="line">└── redis</span><br><span class="line">    ├── data</span><br><span class="line">    └── redis.conf</span><br></pre></td></tr></table></figure>
-
-<ol start="2">
-<li>准备my.conf 、redis.conf<ol>
-<li>my.conf</li>
-</ol>
-</li>
-</ol>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">[client]</span><br><span class="line"> port = 3306</span><br><span class="line"> socket = /var/lib/mysql/data/mysql.sock</span><br><span class="line">[mysqld]</span><br><span class="line"> <span class="comment"># 针对5.7版本执行group by字句出错问题解决</span></span><br><span class="line">sql_mode=<span class="string">'STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'</span></span><br><span class="line"> <span class="comment"># 一般配置选项</span></span><br><span class="line"> basedir = /var/lib/mysql</span><br><span class="line"> datadir = /var/lib/mysql/data</span><br><span class="line"> port = 3306</span><br><span class="line"> socket = /var/lib/mysql/data/mysql.sock</span><br><span class="line"> lc-messages-dir = /usr/share/mysql <span class="comment"># 务必配置此项，否则执行sql出错时，只能显示错误代码而不显示具体错误消息</span></span><br><span class="line"> character-set-server=utf8</span><br><span class="line"> back_log = 300</span><br><span class="line"> max_connections = 3000</span><br><span class="line"> max_connect_errors = 50</span><br><span class="line"> table_open_cache = 4096</span><br><span class="line"> max_allowed_packet = 32M</span><br><span class="line"> <span class="comment">#binlog_cache_size = 4M</span></span><br><span class="line"> max_heap_table_size = 128M</span><br><span class="line"> read_rnd_buffer_size = 16M</span><br><span class="line"> sort_buffer_size = 16M</span><br><span class="line"> join_buffer_size = 16M</span><br><span class="line"> thread_cache_size = 16</span><br><span class="line"> query_cache_size = 64M</span><br><span class="line"> query_cache_limit = 4M</span><br><span class="line"> ft_min_word_len = 8</span><br><span class="line"> thread_stack = 512K</span><br><span class="line"> transaction_isolation = REPEATABLE-READ</span><br><span class="line"> tmp_table_size = 64M</span><br><span class="line"> <span class="comment">#log-bin=mysql-bin</span></span><br><span class="line"> long_query_time = 6</span><br><span class="line"> server_id=1</span><br><span class="line"> innodb_buffer_pool_size = 256M</span><br><span class="line"> innodb_thread_concurrency = 16</span><br><span class="line"> innodb_log_buffer_size = 16M</span><br></pre></td></tr></table></figure>
-
-<ol start="2">
-<li>redis.conf 可以去这里下载 <a href="https://redis.io/topics/config" target="_blank" rel="noopener">官网</a></li>
-</ol>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">wget https://raw.githubusercontent.com/redis/redis/5.0/redis.conf</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改内容</span></span><br><span class="line">daemonize no     <span class="comment">## 若使用开机启动，生成pid，该项必须设置为诶yes，否则redis将不能够正常执行开机启动(systemctl start redis,执行后一直卡着，直到超时)</span></span><br><span class="line"><span class="comment">#bind 127.0.0.1  ##注释掉，允许所有其他ip访问，真实使用最好坐下限制，只允许某些主机访问</span></span><br><span class="line">protected-mode no  <span class="comment">## 允许其他机器上的客户端连接当前redis，配置文件设置该项，则开机启动处就可以去掉--protected no </span></span><br><span class="line">requirepass root  <span class="comment">##设置密码</span></span><br><span class="line"><span class="comment"># daemonize yes，他的作用是开启守护进程模式，在该模式下，redis会在后台运行，并将进程pid号写入至redis.conf选项pidfile设置的文件中，此时redis将一直运行，除非手动kill该进程。但是在后面的命令中“-d”选项也是开启daemonize，这是docker自家的方式。</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="编写Docker-Compose文件"><a href="#编写Docker-Compose文件" class="headerlink" title="编写Docker-Compose文件"></a>编写Docker-Compose文件</h2><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">version : <span class="string">'3'</span></span><br><span class="line">services:</span><br><span class="line">  mysql:</span><br><span class="line">    image: mysql/mysql-server:<span class="number">5.7</span>.<span class="number">18</span></span><br><span class="line">    container_name: mysql5.<span class="number">7.18</span>-dev</span><br><span class="line">    networks:</span><br><span class="line">      - net-shop-db</span><br><span class="line">    ports:</span><br><span class="line">      - <span class="string">"3306:3306"</span></span><br><span class="line">    volumes:</span><br><span class="line">      - /opt/docker/mysql/my.cnf:/etc/my.cnf <span class="comment"># 映射数据库配置文件</span></span><br><span class="line">      - /opt/docker/mysql/data:/var/lib/mysql/data  <span class="comment"># 映射数据库保存目录到宿主机，防止数据丢失</span></span><br><span class="line">      - /opt/docker/mysql/log:/var/log/mysql <span class="comment"># 日志文件</span></span><br><span class="line">      - /etc/localtime:/etc/localtime:ro <span class="comment"># 设置容器时区与宿主机保持一致</span></span><br><span class="line">    restart: always <span class="comment"># 设置容器自启模式</span></span><br><span class="line">    command: [</span><br><span class="line">      <span class="string">'--character-set-server=utf8mb4'</span>,</span><br><span class="line">      <span class="string">'--collation-server=utf8mb4_unicode_ci'</span>,</span><br><span class="line">      <span class="string">'--lower_case_table_names=1'</span>,</span><br><span class="line">      <span class="string">'--default-time-zone=+8:00'</span>]</span><br><span class="line">    environment:</span><br><span class="line">      - TZ=Asia/Shanghai <span class="comment"># 设置容器时区与宿主机保持一致</span></span><br><span class="line">      - MYSQL_ROOT_PASSWORD=root <span class="comment"># 设置root密码</span></span><br><span class="line">  redis:</span><br><span class="line">    image: redis:<span class="number">5.0</span>.<span class="number">5</span></span><br><span class="line">    container_name: redis5.<span class="number">0.6</span>-dev</span><br><span class="line">    networks:</span><br><span class="line">      - net-shop-db</span><br><span class="line">    ports:</span><br><span class="line">      - <span class="string">"6379:6379"</span></span><br><span class="line">    volumes:</span><br><span class="line">      - /etc/localtime:/etc/localtime:ro <span class="comment"># 设置容器时区与宿主机保持一致</span></span><br><span class="line">      - /opt/docker/redis/data:/data</span><br><span class="line">      - /opt/docker/redis/redis.conf:/etc/redis.conf</span><br><span class="line">    command: redis-server /etc/redis.conf <span class="comment"># 启动redis命令</span></span><br><span class="line">    environment:</span><br><span class="line">      - TZ=Asia/Shanghai <span class="comment"># 设置容器时区与宿主机保持一致</span></span><br><span class="line">    restart: always <span class="comment"># 设置容器自启模式</span></span><br><span class="line"></span><br><span class="line">networks:</span><br><span class="line">  net-shop-db:</span><br><span class="line">    driver: bridge</span><br></pre></td></tr></table></figure>
-
-<h2 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h2><blockquote>
-<p>注意需要提前启动docker</p>
-</blockquote>
-<ol>
-<li>创建并启动容器 <code>docker-compose -f docker-compose.yml up -d</code></li>
-<li>批量停止容器并清除容器 <code>docker-compose -f docker-compose.yml down</code></li>
-<li>重新构建容器 <code>docker-compose -f docker-compose.yml up --build -d</code></li>
-<li>启动失败，可以查看容器日志信息获取帮助 <code>docker logs 容器名词或容器ID # 既docker-compose.yml文件参数container_name指定的值</code></li>
-</ol>
-<h2 id="备注"><a href="#备注" class="headerlink" title="备注"></a>备注</h2><ol>
-<li>docker-compose 命令不存在、未找到命令。直接从github上下载，国内下载巨慢。</li>
-</ol>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 注意查看docker 版本 和 docker-compose 的版本</span></span><br><span class="line"><span class="built_in">cd</span> /usr/<span class="built_in">local</span>/bin/</span><br><span class="line"></span><br><span class="line">curl -L https://github.com/docker/compose/releases/download/1.27.4/docker-compose-`uname -s`-`uname -m` -o /usr/<span class="built_in">local</span>/bin/docker-compose</span><br><span class="line"><span class="comment">#。直接用国内的镜像</span></span><br><span class="line">curl -L https://get.daocloud.io/docker/compose/releases/download/1.27.4/docker-compose-`uname -s`-`uname -m` &gt; /usr/<span class="built_in">local</span>/bin/docker-compose</span><br><span class="line"></span><br><span class="line">chmod +x /usr/<span class="built_in">local</span>/bin/docker-compose</span><br></pre></td></tr></table></figure>
-
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://yefeihonours.github.io/post/docker/docker_compose/" target="_blank" rel="noopener">docker-compose 命令不存在、未找到命令</a></p>
-<p><a href="https://zhuanlan.zhihu.com/p/43654441" target="_blank" rel="noopener">使用 docker-compose 在 Docker 中启动有密码的 Redis 容器</a></p>
-<p><a href="https://cloud.tencent.com/developer/article/1678769" target="_blank" rel="noopener">Docker-Compose搭建mysql、redis、zookeeper、rabbitmq、consul、elasticsearch环境</a></p>
-<p><a href="https://juejin.cn/post/6844903655389265927" target="_blank" rel="noopener">Docker Compose多容器部署</a></p>
-<p><a href="https://colobu.com/2018/05/15/Stop-and-remove-all-docker-containers-and-images/" target="_blank" rel="noopener">停止、删除所有的docker容器和镜像</a></p>
-<p><a href="https://my.oschina.net/u/4362704/blog/3308004" target="_blank" rel="noopener">宿主机连接docker中的mysql</a></p>
-<p><a href="https://developer.aliyun.com/article/618035" target="_blank" rel="noopener">Docker Compose 安装 on centos7</a></p>
-<p><a href="https://cloud.tencent.com/developer/article/1678769" target="_blank" rel="noopener">Docker-Compose搭建mysql、redis、zookeeper、rabbitmq、consul、elasticsearch环境</a></p>
-<p><a href="https://zhuanlan.zhihu.com/p/140732202" target="_blank" rel="noopener">docker-compose一键安装redis+mysql+rabbitmq</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/21/Centos7-Mysql5.7%E5%8D%95%E5%AE%9E%E4%BE%8B%E9%83%A8%E7%BD%B2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/04/21/Centos7-Mysql5.7%E5%8D%95%E5%AE%9E%E4%BE%8B%E9%83%A8%E7%BD%B2/" class="post-title-link" itemprop="url">Centos7.*-Mysql5.7单实例部署</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-04-21 06:04:28" itemprop="dateCreated datePublished" datetime="2018-04-21T06:04:28+08:00">2018-04-21</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-11-21 20:41:28" itemprop="dateModified" datetime="2020-11-21T20:41:28+08:00">2020-11-21</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index"><span itemprop="name">Linux运维</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>Centos7的yum源中默认是没有mysql,因为现在已经用mariaDB代替mysql了。</p>
-</blockquote>
-<h2 id="安装前检查"><a href="#安装前检查" class="headerlink" title="安装前检查"></a>安装前检查</h2><h3 id="检查linux系统版本"><a href="#检查linux系统版本" class="headerlink" title="检查linux系统版本"></a>检查linux系统版本</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost backup]<span class="comment"># cat /etc/system-release</span></span><br><span class="line">CentOS Linux release 7.4.1708 (Core)</span><br></pre></td></tr></table></figure>
-
-<h3 id="检查是否已经安装mysql"><a href="#检查是否已经安装mysql" class="headerlink" title="检查是否已经安装mysql"></a>检查是否已经安装mysql</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost backup]<span class="comment"># rpm -qa | grep mysql</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><p>如果存在Mysql可以考虑卸载</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -e --nodeps mysql-connector-odbc-x.x.x-x.el7.x86_64</span><br></pre></td></tr></table></figure>
-
-<p>将/var/lib/mysql文件夹下的所有文件都删除干净。</p>
-</li>
-</ul>
-<h3 id="检查是否安装mariaDB"><a href="#检查是否安装mariaDB" class="headerlink" title="检查是否安装mariaDB"></a>检查是否安装mariaDB</h3>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/04/21/Centos7-Mysql5.7%E5%8D%95%E5%AE%9E%E4%BE%8B%E9%83%A8%E7%BD%B2/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/11/20/Centos7-Docker%E9%83%A8%E7%BD%B2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/11/20/Centos7-Docker%E9%83%A8%E7%BD%B2/" class="post-title-link" itemprop="url">Centos7.*-Docker部署</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-11-20 14:26:04" itemprop="dateCreated datePublished" datetime="2020-11-20T14:26:04+08:00">2020-11-20</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-11-21 00:44:03" itemprop="dateModified" datetime="2020-11-21T00:44:03+08:00">2020-11-21</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index"><span itemprop="name">Linux运维</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>记录下自己在阿里云部署docker记录。</p>
-</blockquote>
-<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><ol>
-<li>准备一台ESC服务器，并可以使用控制台登录。</li>
-<li>检查ESC是否安装了docker，可以选择是否卸载重装。<ol>
-<li>检查docker是否安装,<code>docker 显示相关信息则表示安装</code></li>
-<li>卸载docker，若不重装直接忽略，<code>yum list installed | grep docker</code>查看安装内容</li>
-</ol>
-</li>
-</ol>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ yum list installed | grep docker</span><br><span class="line">containerd.io.x86_64                1.3.7-3.1.el7                   @docker-ce-stable</span><br><span class="line">docker-ce.x86_64                    3:19.03.13-3.el7                @docker-ce-stable</span><br><span class="line">docker-ce-cli.x86_64                1:19.03.13-3.el7                @docker-ce-stable</span><br><span class="line"><span class="comment"># 依次卸载</span></span><br><span class="line">$ yum -y remove docker-ce.x86_64</span><br><span class="line">$ yum -y remove docker-ce-cli.x86_64</span><br><span class="line">$ yum -y remove containerd.io.x86_64</span><br><span class="line"><span class="comment"># 检查卸载结果</span></span><br><span class="line">$ yum list installed | grep docker</span><br><span class="line"><span class="comment"># 无输出内容</span></span><br><span class="line">$ docker </span><br><span class="line"><span class="comment"># -bash: docekr: 未找到命令 则表示卸载干净了</span></span><br></pre></td></tr></table></figure>
-
-<ol start="3">
-<li>安装docker<ol>
-<li>更新yum <code>yum update</code></li>
-<li>获取官方源<code>wget -P /etc/yum.repos.d/ https://download.docker.com/linux/centos/docker-ce.repo</code></li>
-<li>查看可以安装的版本<code>yum list docker-ce --showduplicates | sort -r</code></li>
-<li>选择安装 <code>yum install -y docker-ce-18.03.0.ce-1.el7.centos</code></li>
-<li>安装docker <code>yum install docker -y</code><ol>
-<li>检查<code>docker -v</code>输出版本信息</li>
-</ol>
-</li>
-</ol>
-</li>
-</ol>
-<h2 id="设置docker相关信息"><a href="#设置docker相关信息" class="headerlink" title="设置docker相关信息"></a>设置docker相关信息</h2><ol>
-<li>设置docker开机启动项<code>systemctl enable docker.service</code></li>
-<li>关闭docker开机启动项 <code>systemctl stop docker.service</code></li>
-<li>检查docker当前运行情况 <code>systemctl status docker</code></li>
-<li>若未启动则启动docker <code>systemctl start docker</code> ,若启动了可以重启<code>systemctl restart docker</code></li>
-<li>检查docker运行情况<code>service docker status</code></li>
-</ol>
-<h2 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h2><p><a href="https://developer.aliyun.com/article/336442" target="_blank" rel="noopener">阿里云CentOS 7上安装配置Docker</a></p>
-<p><a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-compose-on-centos-7" target="_blank" rel="noopener">How To Install and Use Docker Compose on CentOS 7</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/06/24/Mac%E4%B8%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/06/24/Mac%E4%B8%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/" class="post-title-link" itemprop="url">Mac下开发环境</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-06-24 15:30:34" itemprop="dateCreated datePublished" datetime="2018-06-24T15:30:34+08:00">2018-06-24</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-11-16 21:36:46" itemprop="dateModified" datetime="2020-11-16T21:36:46+08:00">2020-11-16</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/" itemprop="url" rel="index"><span itemprop="name">开发环境</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>最近开始用mac来开发。记录下环境安装过程方便以后快速恢复熟悉的开发环境。</p>
-</blockquote>
-<p>这里提前修改一下控制台前缀</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[dev mc]$ sudo vim &#x2F;etc&#x2F;bashrc</span><br><span class="line">#修改以下内容</span><br><span class="line">PS1&#x3D;&#39;\h:\W \u\$ &#39;</span><br><span class="line">#修改成</span><br><span class="line">PS1&#x3D;&#39;[dev \u]$ &#39;</span><br></pre></td></tr></table></figure>
-
-<h3 id="好用的工具"><a href="#好用的工具" class="headerlink" title="好用的工具"></a>好用的工具</h3><ul>
-<li>pages <code>同事推荐的软件</code>暂时用来写周报。</li>
-<li>brew <code>这是一个神器,和linux 上的yum 类似的工具。</code></li>
-<li>sublime text <code>我之前在windows上都是使用notepad++。上App Store上没找到,该用这个了。</code></li>
-</ul>
-<h3 id="pages"><a href="#pages" class="headerlink" title="pages"></a>pages</h3><ul>
-<li>直接在app store安装就好了</li>
-</ul>
-<h3 id="brew"><a href="#brew" class="headerlink" title="brew"></a>brew</h3><ul>
-<li>安装过程使用终端安装。</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#  这里并没有换行，复制的时候请注意。</span><br><span class="line">&#x2F;usr&#x2F;bin&#x2F;ruby -e &quot;$(curl -fsSL https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;Homebrew&#x2F;install&#x2F;master&#x2F;install)&quot;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>基本操作方式</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># 更新</span><br><span class="line">brew update </span><br><span class="line"># 安装软件 </span><br><span class="line">brew install xxx（软件名）</span><br><span class="line"></span><br><span class="line">#常见命令整理如下，以下命令都可带上 cask 参数：	</span><br><span class="line"></span><br><span class="line">brew search name：联网搜索软件是否存在 brew 中</span><br><span class="line">brew install name：安装软件</span><br><span class="line">brew upgrade name：更新软件</span><br><span class="line">brew uninstall name：卸载软件</span><br><span class="line">brew reinstall name：重新安装软件</span><br><span class="line">brew info name：查看软件安装地址</span><br><span class="line">brew cleanup：清理缓存等</span><br><span class="line">brew doctor：查看建议，例如升级等</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/06/24/Mac%E4%B8%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/08/31/%E5%AE%9E%E8%B7%B5-centos7%E6%90%AD%E5%BB%BAselenium-java%E8%BF%90%E8%A1%8C%E7%8E%AF%E5%A2%83/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/08/31/%E5%AE%9E%E8%B7%B5-centos7%E6%90%AD%E5%BB%BAselenium-java%E8%BF%90%E8%A1%8C%E7%8E%AF%E5%A2%83/" class="post-title-link" itemprop="url">实践-centos7搭建selenium-java运行环境</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-08-31 09:45:59" itemprop="dateCreated datePublished" datetime="2020-08-31T09:45:59+08:00">2020-08-31</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-10-27 16:31:58" itemprop="dateModified" datetime="2020-10-27T16:31:58+08:00">2020-10-27</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>最近在编写爬虫程序，这里简单的做下笔记。</p>
-</blockquote>
-<h3 id="阅读注意事项"><a href="#阅读注意事项" class="headerlink" title="阅读注意事项"></a>阅读注意事项</h3><ol>
-<li>需要一台服务器(阿里ESC)这种，分配的公网ip。</li>
-<li>这里使用的yum安装，所以环境配置都创建好了，不需要在手动修改。</li>
-</ol>
-<h3 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h3><blockquote>
-<p>安装Java、maven、git、selenium运行环境</p>
-</blockquote>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用的机器是centos7.4</span></span><br><span class="line"><span class="comment"># 系统环境一个一个来安装。</span></span><br><span class="line"><span class="comment"># 1.检查是否安装jdk</span></span><br><span class="line">-&gt; yum install java-1.8.0-openjdk-devel.x86_64</span><br><span class="line">-&gt; java -version</span><br><span class="line">openjdk version <span class="string">"1.8.0_262"</span></span><br><span class="line">OpenJDK Runtime Environment (build 1.8.0_262-b10)</span><br><span class="line">OpenJDK 64-Bit Server VM (build 25.262-b10, mixed mode)</span><br><span class="line">-&gt; yum install maven</span><br><span class="line">-&gt; mvn -version</span><br><span class="line">Java version: 1.8.0_262, vendor: Oracle Corporation</span><br><span class="line">Java home: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.262.b10-0.el7_8.x86_64/jre</span><br><span class="line">Default locale: zh_CN, platform encoding: UTF-8</span><br><span class="line">OS name: <span class="string">"linux"</span>, version: <span class="string">"3.10.0-862.el7.x86_64"</span>, arch: <span class="string">"amd64"</span>, family: <span class="string">"unix"</span></span><br><span class="line">-&gt; yum install git</span><br><span class="line">git version 1.8.3.1</span><br><span class="line"><span class="comment"># 查看是否生成过证书</span></span><br><span class="line">-&gt; ls -al ~/.ssh</span><br><span class="line"><span class="comment"># 这里配置下ssh公钥方便git拉去代码</span></span><br><span class="line">-&gt; ssh-keygen -t rsa -C “you email@gamil.com”</span><br><span class="line"><span class="comment"># 查看证书</span></span><br><span class="line">-&gt; cat ~/.ssh/id_rsa.pub</span><br><span class="line"><span class="comment"># 开始配置 selenium 运行环境</span></span><br><span class="line">-&gt; wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm</span><br><span class="line">-&gt; yum localinstall google-chrome-stable_current_x86_64.rpm</span><br><span class="line"><span class="comment"># 检查版本 </span></span><br><span class="line">-&gt; google-chrome --version </span><br><span class="line">Google Chrome 85.0.4183.83 </span><br><span class="line"><span class="comment"># 安装 chromedriver</span></span><br><span class="line">-&gt; yum install chromedriver</span><br><span class="line">-&gt; chromedriver -version</span><br><span class="line">ChromeDriver 84.0.4147.89 </span><br><span class="line"><span class="comment"># 这里注意 chromedriver 可能与chrome的版本不一致，去官方网站下载后解压复制到/usr/bin中</span></span><br><span class="line"><span class="comment"># 下载地址 https://chromedriver.chromium.org/</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>注意 google-chrome 和 chromedriver版本是需要对应的具体可以到官方查看。</li>
-<li>在centos上运行需要配置下关键参数</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ChromeOptions chromeOptions = <span class="keyword">new</span> ChromeOptions();</span><br><span class="line">   chromeOptions.addArguments(<span class="string">"--headless"</span>);</span><br><span class="line">   chromeOptions.addArguments(<span class="string">"--disable-gpu"</span>); <span class="comment">// 不配置一定报错</span></span><br><span class="line">   chromeOptions.addArguments(<span class="string">"--no-sandbox"</span>);</span><br><span class="line">   <span class="comment">// 创建无界面浏览器对象</span></span><br><span class="line">   chromeOptions.setHeadless(<span class="keyword">true</span>);</span><br><span class="line">   <span class="keyword">return</span> <span class="keyword">new</span> ChromeDriver(chromeOptions);</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>启动代码的需要指定环境变量</li>
-</ul>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">System.setProperty(<span class="string">"webdriver.chrome.chromedriver"</span>, <span class="string">"/usr/bin/chromedriver"</span>);</span><br><span class="line"># 具体可以通过 whereis chromedriver查看。</span><br></pre></td></tr></table></figure>
-
-<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p><a href="https://segmentfault.com/a/1190000015389941" target="_blank" rel="noopener">CentOS使用yum安装jdk</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Redis/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Redis/" class="post-title-link" itemprop="url">查缺补漏-Redis</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-10-11 12:53:56" itemprop="dateModified" datetime="2020-10-11T12:53:56+08:00">2020-10-11</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-<h1 id="Redis-简介"><a href="#Redis-简介" class="headerlink" title="Redis 简介"></a>Redis 简介</h1><blockquote>
-<p>Redis 是完全开源免费的，遵守 BSD 协议，是一个高性能的 key - value 数据库</p>
-</blockquote>
-<ul>
-<li>Redis 与 其他 key - value 缓存产品有以下三个特点：<ul>
-<li>Redis 支持数据持久化，可以将内存中的数据保存在磁盘中，重启的时候可以再次加载进行使用。</li>
-<li>Redis 不仅仅支持简单的 key - value 类型的数据，同时还提供 list，set，zset，hash 等数据结构的存储</li>
-<li>Redis 支持数据的备份，即 master - slave 模式的数据备份。</li>
-</ul>
-</li>
-<li>Redis是内存数据库，所有操作都在内存上完成，内存的访问速度本身就很快，读的速度是 110000 次 /s, 写的速度是 81000 次 /s。另一方面是因为它的数据结构。键值对是按一定的数据结构来组织的，操作键值对最终就是对数据结构进行增删改查操作，所以高效的数据结构是 Redis 快速处理数据的基础。</li>
-</ul>
-<h3 id="Redis单线程"><a href="#Redis单线程" class="headerlink" title="Redis单线程"></a>Redis单线程</h3><ul>
-<li>我们通常说，Redis 是单线程，主要是指 Redis 的网络 IO 和键值对读写是由一个线程来完成的，这也是 Redis 对外提供键值存储服务的主要流程。但 Redis 的其他功能，比如持久化、异步删除、集群数据同步等，其实是由额外的线程执行的。Redis 的单线程设计机制以及多路复用机制</li>
-<li>Linux 中的 IO 多路复用机制<ul>
-<li>Linux 中的 IO 多路复用机制是指一个线程处理多个 IO 流，就是我们经常听到的 select/epoll 机制。简单来说，在 Redis 只运行单线程的情况下，该机制允许内核中，同时存在多个监听套接字和已连接套接字。内核会一直监听这些套接字上的连接请求或数据请求。一旦有请求到达，就会交给 Redis 线程处理，这就实现了一个 Redis 线程处理多个 IO 流的效果。</li>
-</ul>
-</li>
-</ul>
-<h3 id="Redis单线程处理IO请求性能瓶颈"><a href="#Redis单线程处理IO请求性能瓶颈" class="headerlink" title="Redis单线程处理IO请求性能瓶颈"></a>Redis单线程处理IO请求性能瓶颈</h3><ul>
-<li>任意一个请求在server中一旦发生耗时，都会影响整个server的性能，也就是说后面的请求都要等前面这个耗时请求处理完成，自己才能被处理到。耗时的操作包括以下几种：<ul>
-<li>操作bigkey：写入一个bigkey在分配内存时需要消耗更多的时间，同样，删除bigkey释放内存同样会产生耗时；</li>
-<li>使用复杂度过高的命令：例如SORT/SUNION/ZUNIONSTORE，或者O(N)命令，但是N很大，例如lrange key 0 -1一次查询全量数据；</li>
-<li>大量key集中过期：Redis的过期机制也是在主线程中执行的，大量key集中过期会导致处理一个请求时，耗时都在删除过期key，耗时变长；</li>
-<li>淘汰策略：淘汰策略也是在主线程执行的，当内存超过Redis内存上限后，每次写入都需要淘汰一些key，也会造成耗时变长；</li>
-<li>AOF刷盘开启always机制：每次写入都需要把这个操作刷到磁盘，写磁盘的速度远比写内存慢，会拖慢Redis的性能；</li>
-<li>主从全量同步生成RDB：虽然采用fork子进程生成数据快照，但fork这一瞬间也是会阻塞整个线程的，实例越大，阻塞时间越久；</li>
-</ul>
-</li>
-<li>并发量非常大时，单线程读写客户端IO数据存在性能瓶颈，虽然采用IO多路复用机制，但是读写客户端数据依旧是同步IO，只能单线程依次读取客户端的数据，无法利用到CPU多核。</li>
-<li>Redis在4.0推出了lazy-free机制，把bigkey释放内存的耗时操作放在了异步线程中执行，降低对主线程的影响。</li>
-<li>Redis在6.0推出了多线程，可以在高并发场景下利用CPU多核多线程读写客户端数据，进一步提升server性能，当然，只是针对客户端的读写是并行的，每个命令的真正操作依旧是单线程的。</li>
-</ul>
-<h3 id="Redis持久化机制"><a href="#Redis持久化机制" class="headerlink" title="Redis持久化机制"></a>Redis持久化机制</h3><ul>
-<li>Redis是一个支持持久化的内存数据库，通过持久化机制把内存中的数据同步到硬盘文件来保证数据持久化。当Redis重启后通过把硬盘文件重新加载到内存，就能达到恢复数据的目的。<ul>
-<li>实现：单独创建fork()一个子进程，将当前父进程的数据库数据复制到子进程的内存中，然后由子进程内存释放。</li>
-</ul>
-</li>
-<li>RDB是Redis默认的持久化方式。按照一定的时间周期策略把内存的数据以快照的形式保存到硬盘的二进制文件。即Snapshot快照存储，对应产生的数据文件为dump.rdb，通过配置文件中的save参数来定义快照的周期。（ 快照可以是其所表示的数据的一个副本，也可以是数据的一个复制品。）</li>
-<li>AOF：Redis会将每一个收到的写命令都通过Write函数追加到文件最后，类似于MySQL的binlog。当Redis重启是会通过重新执行文件中保存的写命令来在内存中重建整个数据库的内容。当两种方式同时开启时，数据恢复Redis会优先选择AOF恢复。</li>
-</ul>
-<h3 id="AOF日志"><a href="#AOF日志" class="headerlink" title="AOF日志"></a>AOF日志</h3><ul>
-<li>写后日志，“写后”的意思是 Redis 是先执行命令，把数据写入内存，然后才记录日志。</li>
-<li>AOF 也有两个潜在的风险<ul>
-<li>如果刚执行完一个命令，还没有来得及记日志就宕机了，那么这个命令和相应的数据就有丢失的风险。如果此时 Redis 是用作缓存，还可以从后端数据库重新读入数据进行恢复，但是，如果 Redis 是直接用作数据库的话，此时，因为命令没有记入日志，所以就无法用日志进行恢复了。</li>
-<li>AOF 虽然避免了对当前命令的阻塞，但可能会给下一个操作带来阻塞风险。这是因为，AOF 日志也是在主线程中执行的，如果在把日志文件写入磁盘时，磁盘写压力大，就会导致写盘很慢，进而导致后续的操作也无法执行了。</li>
-</ul>
-</li>
-<li>AOF三种写回策略<ul>
-<li>Always，同步写回：每个写命令执行完，立马同步地将日志写回磁盘；<ul>
-<li>同步写回可以做到基本不丢数据，但是它在每一个写命令后都有一个慢速的落盘操作，不可避免地会影响主线程性能。</li>
-</ul>
-</li>
-<li>Everysec，每秒写回：每个写命令执行完，只是先把日志写到 AOF 文件的内存缓冲区，每隔一秒把缓冲区中的内容写入磁盘；<ul>
-<li>每秒写回采用一秒写回一次的频率，避免了“同步写回”的性能开销，虽然减少了对系统性能的影响，但是如果发生宕机，上一秒内未落盘的命令操作仍然会丢失。所以，这只能算是，在避免影响主线程性能和避免数据丢失两者间取了个折中。</li>
-</ul>
-</li>
-<li>No，操作系统控制的写回：每个写命令执行完，只是先把日志写到 AOF 文件的内存缓冲区，由操作系统决定何时将缓冲区内容写回磁盘。<ul>
-<li>操作系统控制的写回在写完缓冲区后，就可以继续执行后续的命令，但是落盘的时机已经不在 Redis 手中了，只要 AOF 记录没有写回磁盘，一旦宕机对应的数据就丢失了。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="RDB快照"><a href="#RDB快照" class="headerlink" title="RDB快照"></a>RDB快照</h3><ul>
-<li>Redis 的数据都在内存中，为了提供所有数据的可靠性保证，它执行的是全量快照，也就是说，把内存中的所有数据都记录到磁盘中。全量数据越多，RDB 文件就越大，往磁盘上写数据的时间开销就越大。</li>
-<li>对于 Redis 而言，它的单线程模型就决定了，我们要尽量避免所有会阻塞主线程的操作，所以，针对任何操作，我们都会提一个灵魂之问：“它会阻塞主线程吗?”RDB 文件的生成是否会阻塞主线程，这就关系到是否会降低 Redis 的性能。</li>
-<li>Redis 提供了两个命令来生成 RDB 文件，分别是 save 和 bgsave。<ul>
-<li>save：在主线程中执行，会导致阻塞；</li>
-<li>bgsave：创建一个子进程，专门用于写入 RDB 文件，避免了主线程的阻塞，这也是 Redis RDB 文件生成的默认配置。</li>
-</ul>
-</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Redis/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
       
     </div>
 
@@ -1382,13 +1323,7 @@
           <a href="http://redisdoc.com/index.html" title="http:&#x2F;&#x2F;redisdoc.com&#x2F;index.html" rel="noopener" target="_blank">redisdoc</a>
         </li>
         <li class="links-of-blogroll-item">
-          <a href="http://www.spring4all.com/" title="http:&#x2F;&#x2F;www.spring4all.com&#x2F;" rel="noopener" target="_blank">spring4all 最专业的Spring民间组织</a>
-        </li>
-        <li class="links-of-blogroll-item">
           <a href="http://www.sczyh30.com/" title="http:&#x2F;&#x2F;www.sczyh30.com&#x2F;" rel="noopener" target="_blank">浮生若梦</a>
-        </li>
-        <li class="links-of-blogroll-item">
-          <a href="http://tengj.top/" title="http:&#x2F;&#x2F;tengj.top&#x2F;" rel="noopener" target="_blank">嘟嘟独立博客</a>
         </li>
         <li class="links-of-blogroll-item">
           <a href="https://spring.hhui.top/spring-blog/" title="https:&#x2F;&#x2F;spring.hhui.top&#x2F;spring-blog&#x2F;" rel="noopener" target="_blank">一灰灰Blog</a>
