@@ -239,7 +239,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Dubbo/">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/12/15/Redis-cli%E4%BD%BF%E7%94%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -253,7 +253,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Dubbo/" class="post-title-link" itemprop="url">查缺补漏-Dubbo</a>
+            <a href="/2019/12/15/Redis-cli%E4%BD%BF%E7%94%A8/" class="post-title-link" itemprop="url">Redis-cli使用</a>
         </h2>
 
         <div class="post-meta">
@@ -263,14 +263,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
+              <time title="Created: 2019-12-15 16:56:48" itemprop="dateCreated datePublished" datetime="2019-12-15T16:56:48+08:00">2019-12-15</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-15 05:45:59" itemprop="dateModified" datetime="2020-08-15T05:45:59+08:00">2020-08-15</time>
+                <time title="Modified: 2020-12-02 16:14:32" itemprop="dateModified" datetime="2020-12-02T16:14:32+08:00">2020-12-02</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -278,7 +278,7 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index"><span itemprop="name">知识点</span></a>
+                  <a href="/categories/Redis/" itemprop="url" rel="index"><span itemprop="name">Redis</span></a>
                 </span>
             </span>
 
@@ -294,1082 +294,17 @@
 
       
           <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
+<p>在mac中使用redis-cli。相比rdm我可能更喜欢这个命令行工具。</p>
 </blockquote>
-<h3 id="Dubbo概述"><a href="#Dubbo概述" class="headerlink" title="Dubbo概述"></a>Dubbo概述</h3><ul>
-<li>服务治理（SOA）治理框架</li>
-<li>Duboo是一个分布式服务框架<ul>
-<li>远程通讯：提供多种基于长链接的NIO框架抽象封装,包括多种线程模型、序列化“请求-响应”的信息交换方案。</li>
-<li>集群容错：提供基于接口方法的透明远程调用过程，包括多协议支持、软负载均衡、失败容错、地址路由、动态配置等集群支持。</li>
-<li>自动发现：基于注册中心目录服务，使服务消费方能动态地查找提供方，使地址透明，使服务提供方可以平滑增或减少机器。</li>
-<li>介绍：</li>
-<li>致力于提供高性能和透明化的RPC远程服务调用方案，以及SOA服务治理方案。</li>
-<li>Dubbo的命名：澳大利亚达博市</li>
-<li>同类型框架：<ul>
-<li>Apache Thrift、Hessian、RMI、WebService（原生）、HSF（淘宝，不开源）、JSF（京东，不开源）。</li>
-</ul>
-</li>
-<li>Dubbo涉及的基础知识<ul>
-<li>远程调用方面：RMI、Hassion、WebService、Thrift进行底层调用。</li>
-<li>通讯交互：HTTP、Mian、netty。</li>
-<li>序列化：Hession2、Java、Json。</li>
-<li>容器：Jetty、Spring。</li>
-<li>负载均衡：zookeeper、Redis。（大部分都是zookeeper）</li>
-</ul>
-</li>
-<li>简单的使用场景<ul>
-<li>作为对内提供服务应用的容器。</li>
-<li>拆分负载Web应用到服务容器。</li>
-<li>应用负载均和协调。</li>
-<li>引用服务处理。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="架构节点（抽象概念）"><a href="#架构节点（抽象概念）" class="headerlink" title="架构节点（抽象概念）"></a>架构节点（抽象概念）</h3><ul>
-<li>Provider:暴露服务的服务提供方。</li>
-<li>Consumer：调用远程服务的服务消费方。</li>
-<li>Registry：服务注册于发现服务</li>
-<li>Monitor:统计服务的调用次调用时间监控中心</li>
-<li>Container:服务运行容器<ul>
-<li>节点调用关系</li>
-<li>服务提供-服务提供者在启动的时候,向注册中心提供自己提供的服务。</li>
-<li>服务消费-服务消费者在启动的时候,向注册中心订阅自己所需要的服务。<ul>
-<li>注册中心异步返回服务提供者地址列表给消费者,如果有变动,注册中心将给予长连接推送变更数据给消费者。</li>
-</ul>
-</li>
-<li>服务统计-服务者和消费者,在内存中累计调用次数和调用时间,定时每分钟发送一次统计数据到监控中心。<ul>
-<li>异步方式</li>
-</ul>
-</li>
-<li>服务调用关系<ul>
-<li>服务消费者,从提供者地址列表中,基于[软负载均衡算法],选一台提供者进行调用,如果调用失败,在选另一台调用。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="Dubbo源码相关"><a href="#Dubbo源码相关" class="headerlink" title="Dubbo源码相关"></a>Dubbo源码相关</h3><ul>
-<li>源码地址<code>git clone https://github.com/alibaba/dubbo</code></li>
-<li>初次编码不执行Test <code>mvn clean install -Dmaven.test.skip=true</code></li>
-<li>JS错误不修改,请自行忽视。</li>
-<li>修复mavan的警告<br>* 地址：<code>dubbo-parent pom.xml</code><br>* maven-jar-plugin version:2.4<br>* maven-surefire-plugin Version 2.19.1<br>* maven-deploy-plugin Version 3.3.9</li>
-<li>项目导入后修复Dubbo XML校验错误提示</li>
-<li>需要导入dubbo.xsd文件</li>
-<li>下载dubbo-2.5.3.jar 版本尽量保持源码同步,解压dt后导入eclipse中。<ul>
-<li>Preferences-XML-XML Catalog 添加一个自定义的：<ul>
-<li>Location: D:\xsd\dubbo.xsd</li>
-<li>Key: <a href="http://code.alibabatech.com/schema/dubbo/dubbo.xsd" target="_blank" rel="noopener">http://code.alibabatech.com/schema/dubbo/dubbo.xsd</a> （默认生成的不行自行修改）。</li>
-<li>在校验错误的XML头部添加：</li>
-<li><?xml version="1.0" encoding="UTF-8"?> <!DOCTYPE dubbo SYSTEM"http://code.alibabatech.com/schema/dubbo"></li>
-</ul>
-</li>
-</ul>
-</li>
-<li>关于maven-dependency-plugin错误 可能是IDE错误提示，空白处添加空格保存自动消失。<ul>
-<li>错误信息如下：Artifact has not been packaged yet. When used on reactor artifact, unpack should be executed after packaging: see MDEP-98. (org.apache.maven.plugins:maven-dependency-plugin:2.8:unpack:unpack:package)<ul>
-<li>修复方案更改插件配置:</li>
-<li><groupId>org.apache.maven.plugins</groupId><br><artifactId>maven-dependency-plugin</artifactId><br><version>2.10&lt;/version<executions>
-<execution>
-<id>unpack</id>
-<phase>packaged</phase>
-<goals>
-<goal>unpack</goal>
-</goals>
-</execution>
-</executions>
-</plugin></li>
-</ul>
-</li>
-</ul>
-</li>
-<li>Dubbo源码模块<ul>
-<li>Config配置层(Dubbo-config)</li>
-<li>Proxy服务代理层(Dubbo-rpc)</li>
-<li>Registry注册中心层(Dubbo-registry)</li>
-<li>Cluster路由层(Dubbo-cluster)</li>
-<li>Monitor监控层(Dubbo-monitor)</li>
-<li>Protocol远程调用层(Dubbo-rpc)</li>
-<li>Exchange信息交换层(Dubbo-remoting)</li>
-<li>Transport网络传输层(Dubbo-remoting)</li>
-<li>Serialize数据序列化层(Dubbo-common)</li>
-</ul>
-</li>
-</ul>
-<h3 id="Zookeeper"><a href="#Zookeeper" class="headerlink" title="Zookeeper"></a>Zookeeper</h3><blockquote>
-<p>（测试方案采用zookeeper做均衡负载，简单介绍下配置信息）</p>
+<h3 id="在mac中之安装redis-cli"><a href="#在mac中之安装redis-cli" class="headerlink" title="在mac中之安装redis-cli"></a>在mac中之安装redis-cli</h3><blockquote>
+<p>按照标准的按照流程，需要先安装redis-server。</p>
 </blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">brew tap ringohub/redis-cli</span><br><span class="line"></span><br><span class="line">brew update &amp;&amp; brew doctor</span><br><span class="line"></span><br><span class="line">brew install redis-cli</span><br></pre></td></tr></table></figure>
+
 <ul>
-<li>下载地址 <a href="http://apache.fayea.com/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz" target="_blank" rel="noopener">http://apache.fayea.com/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz</a></li>
-<li>基本配置：<ul>
-<li>单机模式：修改zookeeper-3.4.8/conf zoo.cfg(原始文件名zoo_sanple.cfg复制一份重命名)<ul>
-<li>编辑内容（仅供参考,具体环境自行修改）</li>
-<li>tickTime = 2000<ul>
-<li>tickTime：基本事件单元，以毫秒为单位。这个时间是作为 Zookeeper 服务器之间或客户端与服务器之间维持心跳的时间间隔，也就是每个 tickTime 时间就会发送一个心跳。</li>
+<li>相关文档<a href="https://stackoverflow.com/questions/39704273/macos-x-is-there-a-way-to-install-only-redis-cli" target="_blank" rel="noopener">https://stackoverflow.com/questions/39704273/macos-x-is-there-a-way-to-install-only-redis-cli</a></li>
 </ul>
-</li>
-<li>initLimit= 5<ul>
-<li>initLimit:这个配置项用来配置Zookeeper接受客户端初始化连接时最长能忍受多少个心跳时间间隔数，当已超过5个心跳的时间（也就是tickTime）长度后Zookeeper服务器还没有收到客户端的返回信息，那么表明这个客户端连接失败。总的时间长度是5 * 2000=4s。</li>
-</ul>
-</li>
-<li>dataDir = D:\zookeeper\data<ul>
-<li>顾名思义就是 Zookeeper 保存数据快照的目录，默认情况下，Zookeeper 将写数据的日志文件也保存在这个目录里）。</li>
-</ul>
-</li>
-<li>dataLogDir= D:\zookeeper\log<ul>
-<li>顾名思义就是 Zookeeper 保存日志的目录。</li>
-</ul>
-</li>
-<li>synclimit = 5<ul>
-<li>这个配置项表示Leader与Follower之间发送消息，请求和应答时间长长度，最长不能超过多少个tickTime的时间长度,总的时间长度是2 * 2000 = 4s。</li>
-</ul>
-</li>
-<li>clientPort = 2181<ul>
-<li>这个端口就是客户端连接 Zookeeper 服务器的端口，Zookeeper 会监听这个端口，接受客户端的访问请求。</li>
-</ul>
-</li>
-<li>Server（待续）<ul>
-<li>格式：server.id=host:port:port（两个port保证可以正常使用就行）<ul>
-<li>id：通常为整数，建议使用整数。</li>
-<li>host：服务器的IP地址。</li>
-<li>port: Follower端口</li>
-<li>port: Leader选举投票。</li>
-</ul>
-</li>
-<li>ZooKeeper建议使用hostname，而非ip。这需要对主机的/etc/hostname和/etc/hosts做host绑定(不用的OS不同修改方式)。</li>
-</ul>
-</li>
-<li>创建一个myid文件（放在 dataDir文件下面）<ul>
-<li>写入一行数据（请查阅zoo.cfg文件）<ul>
-<li>写入当前Zookeeper id位置的数据即可。表示当前系统环境Zookeeper是哪一个Server（通讯用的）。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="Zookeeper概述"><a href="#Zookeeper概述" class="headerlink" title="Zookeeper概述"></a>Zookeeper概述</h3><ul>
-<li><p>背景</p>
-<ul>
-<li>Zookeeper可以让企业的IT架构逐步从集中式向分布式过度，所谓的分布式是指：把一个计算任务分解成若干个计算单元，并且分派到若干不同的计算机中去执行，然后汇总计算结果的过程。</li>
-</ul>
-</li>
-<li><p>Zookeeper介绍</p>
-<ul>
-<li>Zookeeper是源代码开放的分布式协调服务，由雅虎创建，是Google Chubby开源实现。Zookeeper是一个高性能的分布式数据一致性解决方案，它将那些复杂、容易出错的分布式一致性服务封装起来，构成一个搞笑可靠的原语集，并提供一系列简单易用的接口给用户使用。</li>
-</ul>
-</li>
-<li><p>Zookeeper的典型应用场景</p>
-<ul>
-<li>数据发布/订阅 顾名思义就是一方把数据发布出来，另一方通过某种手动可以得到这些数据。<ul>
-<li>通常数据订阅有两种方式：推模式和拉模式，推模式一般是服务器主动向客户端推送消息，拉模式是客户端主动去服务端获取数据（通常采用的是轮询的方式）。</li>
-<li>Zookeeper采用两种方式的结合。<ul>
-<li>发布者将数据发布到Zookeeper集群节点上，订阅者通过一定的方法告诉服务器，我对那个节点的数据感兴趣，那个服务器在这些节点的数据发送变化时，就通知客户端，客户端得到通知后可以去服务器获取数据信息。</li>
-<li>分布式协调/通知<ul>
-<li>心跳检测：在分布式系统中，通常需要机器是否可以用，Zookeeper中我们让所有的机器都注册一个临时节点，所以只需要判断这个节点是否存在就可以了，不需要直接去连接需要检查的机器，降低系统的负载度（节点分为临时和持久）。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>Zookpeeper重量级使用</p>
-<ul>
-<li>Hadoop、HBase、Storm、Solr。</li>
-</ul>
-</li>
-<li><p>集群角色</p>
-<ul>
-<li>Leader、Follower、Observer<ul>
-<li>Leader服务器是整个Zookeeper集群工作机制的核心</li>
-<li>Follower服务器是Zookeeper集群状态的跟随者</li>
-<li>Oserver服务器充当一个观察者的角色</li>
-<li>Leader、Follower设计模式，Observer观察者模式</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>会话</p>
-<ul>
-<li>会话是指客户端Zookeeper服务器的连接，Zookeeper中的会话叫Session，客户端与服务器建立TCP的长连接来维持一个Session,客户端在启动的时候首先会与服务器建立一个TCP连接,通过这个连接客户端能够通过心跳检测与服务器保持有效的会话，也能向Zookeeper服务器发送请求并获得响应。</li>
-</ul>
-</li>
-<li><p>数据节点</p>
-<ul>
-<li>Zookeeper中的节点有两类<ul>
-<li>集群中的一台机器称为一个节点</li>
-<li>数据模型中的数据单元Znode，分别为持久节点和临时节点。（其实数据节点就是一个tree节点就是Znode）</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>版本</p>
-<ul>
-<li>Zookeeper中的版本<ul>
-<li>version<ul>
-<li>当前数据节点数据内容版本</li>
-</ul>
-</li>
-<li>cversion<ul>
-<li>当前数据节点子节点的版本号</li>
-</ul>
-</li>
-<li>aversion<ul>
-<li>当前数据节点ACL变更版本号</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>watcher（事件监听器）</p>
-<ul>
-<li>Zookeeper允许用户在指定节点上注册一些Watcher，当数据节点发生变化的时候，Zookeeper服务器会把这个变化通知发送给感兴趣的客户端。</li>
-</ul>
-</li>
-<li><p>ACL权限控制</p>
-<ul>
-<li>ACL是Access Contril Lists 的缩写,Zookeeper采用ACL策略来进行权限控制,有以下权限：<ul>
-<li>CREATE：创建子节点</li>
-<li>READ：获取子节点</li>
-<li>WRITE:更新子节点数据权限</li>
-<li>DELETE:删除子节点权限</li>
-<li>ADMIN：设置节点ACL权限</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="Zoopeeper环境搭建（集群、单机、伪集群）"><a href="#Zoopeeper环境搭建（集群、单机、伪集群）" class="headerlink" title="Zoopeeper环境搭建（集群、单机、伪集群）"></a>Zoopeeper环境搭建（集群、单机、伪集群）</h3><ul>
-<li>单机模式（设备环境有限暂时单机）<ul>
-<li>准备工作<ul>
-<li>下载Zookeeper（此处自行处理）</li>
-<li>解压 tar xzvf xxx.gz 解压</li>
-<li>重命名文件夹 Zookeeper 命令mv xxx xxx 后面的参数是新名字（可以不做）</li>
-<li>进入文件夹中/conf/</li>
-<li>复制配置文件zoo_sample.cfg（样例文件） 并重命名 zoo.cfg</li>
-</ul>
-</li>
-<li>编辑zoo.cfg内容（仅供参考,具体环境自行修改）</li>
-<li>tickTime = 2000<ul>
-<li>tickTime：基本事件单元，以毫秒为单位。这个时间是作为 Zookeeper 服务器之间或客户端与服务器之间维持心跳的时间间隔，也就是每个 tickTime 时间就会发送一个心跳。</li>
-</ul>
-</li>
-<li>initLimit= 5<ul>
-<li>initLimit:这个配置项用来配置Zookeeper接受客户端初始化连接时最长能忍受多少个心跳时间间隔数，当已超过5个心跳的时间（也就是tickTime）长度后Zookeeper服务器还没有收到客户端的返回信息，那么表明这个客户端连接失败。总的时间长度是5 * 2000=4s。</li>
-</ul>
-</li>
-<li>dataDir = D:\zookeeper\data<ul>
-<li>顾名思义就是 Zookeeper 保存数据快照的目录，默认情况下，Zookeeper 将写数据的日志文件也保存在这个目录里）。</li>
-</ul>
-</li>
-<li>dataLogDir= D:\zookeeper\log<ul>
-<li>顾名思义就是 Zookeeper 保存日志的目录。</li>
-</ul>
-</li>
-<li>synclimit = 5<ul>
-<li>这个配置项表示Leader与Follower之间发送消息，请求和应答时间长长度，最长不能超过多少个tickTime的时间长度,总的时间长度是2 * 2000 = 4s。</li>
-</ul>
-</li>
-<li>clientPort = 2181<ul>
-<li>这个端口就是客户端连接 Zookeeper 服务器的端口，Zookeeper 会监听这个端口，接受客户端的访问请求。</li>
-</ul>
-</li>
-<li>Server（待续）<ul>
-<li>格式：server.id=host:port:port（两个port保证可以正常使用就行）<ul>
-<li>id：通常为整数，并且不能重复使用整数。</li>
-<li>host：服务器的IP地址。</li>
-<li>port: Follower端口</li>
-<li>port: Leader选举投票。</li>
-</ul>
-</li>
-<li>ZooKeeper建议使用hostname，而非ip。这需要对主机的/etc/hostname和/etc/hosts做host绑定(不用的OS不同修改方式)。</li>
-<li>创建一个myid文件（放在 dataDir文件下面）</li>
-<li>写入一行数据（请查阅zoo.cfg文件）<ul>
-<li>写入id位置的数据即可。表示当前系统环境Zookeeper是哪一个Server（通讯用的）。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>启动服务与停止服务</li>
-<li>进入bin/文件</li>
-<li>执行zkServer.cmd 或则 <a href="http://zkserver.sh/" target="_blank" rel="noopener">zkServer.sh</a></li>
-<li>CMD直接双击运行 ,SH则 sudo sh ./zkServer.sh start 启动 stop 关闭</li>
-<li>验证 使用telnet来测试(自行安装)<ul>
-<li>telnet ip port 敲命令 stat 若返回数据表示当前服务器不能对外提供服务表明集群下其他服务器未启动（在Zookeeper中只要有半数的服务器正常工作就可以向外提供服务）。</li>
-</ul>
-</li>
-<li>在此简单说明下何为伪集群就是在一台服务器上的多个Zookeeper的集群叫伪集群（伪集群 两个port不能与其他zookeeper的port一样）。</li>
-<li>单机模式就删除其他服务器运行的时候就是单机模式。</li>
-</ul>
-</li>
-</ul>
-<p>#Dubbo程序运行</p>
-<ul>
-<li>测试运行,默认配置即可。注意与zookeeper一台机器。</li>
-<li>运行Dubbo-admin本机tomcat启动启动成功后127.0.0.1:8080/dubbo-admin（注意默认请设置跟目录,否则部分功能不发正常显示）<ul>
-<li>默认用户名密码(root/root,guest/guest)</li>
-</ul>
-</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/07/03/%E9%9D%A2%E8%AF%95%E9%A2%98-Redis/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/03/%E9%9D%A2%E8%AF%95%E9%A2%98-Redis/" class="post-title-link" itemprop="url">面试题-Redis</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-07-03 04:39:42" itemprop="dateCreated datePublished" datetime="2020-07-03T04:39:42+08:00">2020-07-03</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-15 04:36:37" itemprop="dateModified" datetime="2020-08-15T04:36:37+08:00">2020-08-15</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E9%9D%A2%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">面试</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章属于持续学习、长期更修。</p>
-</blockquote>
-<h3 id="缓存雪崩、缓存穿透、缓存预热、缓存更新、缓存降级等问题"><a href="#缓存雪崩、缓存穿透、缓存预热、缓存更新、缓存降级等问题" class="headerlink" title="缓存雪崩、缓存穿透、缓存预热、缓存更新、缓存降级等问题"></a>缓存雪崩、缓存穿透、缓存预热、缓存更新、缓存降级等问题</h3><ol>
-<li><p>缓存雪崩</p>
-<ul>
-<li>我们可以简单的理解为：由于原有缓存失效，新缓存未到期间(例如：我们设置缓存时采用了相同的过期时间，在同一时刻出现大面积的缓存过期)，所有原本应该访问缓存的请求都去查询数据库了，而对数据库CPU和内存造成巨大压力，严重的会造成数据库宕机。从而形成一系列连锁反应，造成整个系统崩溃。</li>
-<li><strong>解决办法：</strong><ul>
-<li>大多数系统设计者考虑用加锁（ 最多的解决方案）或者队列的方式保证来保证不会有大量的线程对数据库一次性进行读写，从而避免失效时大量的并发请求落到底层存储系统上。还有一个简单方案就时讲缓存失效时间分散开。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>缓存穿透</p>
-<ul>
-<li><p>缓存穿透是指用户查询数据，在数据库没有，自然在缓存中也不会有。这样就导致用户查询的时候，在缓存中找不到，每次都要去数据库再查询一遍，然后返回空（相当于进行了两次无用的查询）。这样请求就绕过缓存直接查数据库，这也是经常提的缓存命中率问题。</p>
-</li>
-<li><p>解决办法</p>
-<ul>
-<li>最常见的则是采用<strong>布隆过滤器</strong>，将所有可能存在的数据哈希到一个足够大的bitmap中，一个一定不存在的数据会被这个bitmap拦截掉，从而避免了对底层存储系统的查询压力。</li>
-<li>如果一个查询返回的数据为空（不管是数据不存在，还是系统故障），我们仍然把这个空结果进行缓存，但它的过期时间会很短，最长不超过五分钟。通过这个直接设置的默认值存放到缓存，这样第二次到缓冲中获取就有值了，而不会继续访问数据库，这种办法最简单粗暴。</li>
-<li><strong>布隆过滤器（推荐）</strong><ul>
-<li>就是引入了k(k&gt;1)k(k&gt;1)个相互独立的哈希函数，保证在给定的空间、误判率下，完成元素判重的过程。它的优点是空间效率和查询时间都远远超过一般的算法，缺点是有一定的误识别率和删除困难。Hash存在一个冲突（碰撞）的问题，用同一个Hash得到的两个URL的值有可能相同。为了减少冲突，我们可以多引入几个Hash，如果通过其中的一个Hash值我们得出某元素不在集合中，那么该元素肯定不在集合中。只有在所有的Hash函数告诉我们该元素在集合中时，才能确定该元素存在于集合中。这便是Bloom-Filter的基本思想。Bloom-Filter一般用于在大数据量的集合中判定某元素是否存在。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>缓存预热</p>
-<ul>
-<li>缓存预热这个应该是一个比较常见的概念，缓存预热就是系统上线后，将相关的缓存数据直接加载到缓存系统。这样就可以避免在用户请求的时候，先查询数据库，然后再将数据缓存的问题！用户直接查询事先被预热的缓存数据！</li>
-</ul>
-</li>
-<li><p>缓存更新</p>
-<ul>
-<li>除了缓存服务器自带的缓存失效策略之外（Redis默认的有6中策略可供选择），我们还可以根据具体的业务需求进行自定义的缓存淘汰，常见的策略有两种：<ul>
-<li>定时去清理过期的缓存；</li>
-<li>当有用户请求过来时，再判断这个请求所用到的缓存是否过期，过期的话就去底层系统得到新数据并更新缓存。</li>
-</ul>
-</li>
-<li>两者各有优劣，第一种的缺点是维护大量缓存的key是比较麻烦的，第二种的缺点就是每次用户请求过来都要判断缓存失效，逻辑相对比较复杂！具体用哪种方案，大家可以根据自己的应用场景来权衡。</li>
-</ul>
-</li>
-<li><p>缓存降级</p>
-<ul>
-<li>当访问量剧增、服务出现问题（如响应时间慢或不响应）或非核心服务影响到核心流程的性能时，仍然需要保证服务还是可用的，即使是有损服务。系统可以根据一些关键数据进行自动降级，也可以配置开关实现人工降级。<ul>
-<li>以参考日志级别设置预案：<ul>
-<li>一般：比如有些服务偶尔因为网络抖动或者服务正在上线而超时，可以自动降级；</li>
-<li>警告：有些服务在一段时间内成功率有波动（如在95~100%之间），可以自动降级或人工降级，并发送告警；</li>
-<li>错误：比如可用率低于90%，或者数据库连接池被打爆了，或者访问量突然猛增到系统能承受的最大阀值，此时可以根据情况自动降级或者人工降级；</li>
-<li>严重错误：比如因为特殊原因数据错误了，此时需要紧急人工降级。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>服务降级的目的，是为了防止Redis服务故障，导致数据库跟着一起发生雪崩问题。因此，对于不重要的缓存数据，可以采取服务降级策略，例如一个比较常见的做法就是，Redis出现问题，不去数据库查询，而是直接返回默认值给用户。</li>
-</ul>
-</li>
-</ol>
-<h3 id="Redis-的线程模型"><a href="#Redis-的线程模型" class="headerlink" title="Redis 的线程模型"></a>Redis 的线程模型</h3><ul>
-<li>redis 内部使⽤⽂件事件处理器<code>file event handler</code>，这个⽂件事件处理器是单线程的，所以redis 才叫做单线程的模型。它采⽤ IO 多路复⽤机制同时监听多个 socket，根据 socket 上的事件来选择对应的事件处理器进⾏处理。</li>
-</ul>
-<h3 id="单线程的Redis为什么这么快"><a href="#单线程的Redis为什么这么快" class="headerlink" title="单线程的Redis为什么这么快"></a>单线程的Redis为什么这么快</h3><ul>
-<li>存内存操作。</li>
-<li>单线程操作，避免平凡的上下文切换。</li>
-<li>采用了非阻塞I/O多路复用操作。（这里的I/O是指网络I/O）</li>
-</ul>
-<h3 id="Redis的过期策略以及内存淘汰机制"><a href="#Redis的过期策略以及内存淘汰机制" class="headerlink" title="Redis的过期策略以及内存淘汰机制"></a>Redis的过期策略以及内存淘汰机制</h3><ul>
-<li><p>redis采用的是定期删除+惰性删除策略。</p>
-<ul>
-<li>定期删除，redis默认每个100ms检查，是否有过期的key,有过期key则删除。需要说明的是，redis不是每个100ms将所有的key检查一次，而是随机抽取进行检查(如果每隔100ms,全部key进行检查，redis岂不是卡死)。因此，如果只采用定期删除策略，会导致很多key到时间没有删除。惰性删除派上用场。也就是说在你获取某个key的时候，redis会检查一下，这个key如果设置了过期时间那么是否过期了？如果过期了此时就会删除。</li>
-</ul>
-</li>
-<li><p>配内存淘汰策略</p>
-<ul>
-<li><p><strong>volatile-lru</strong>：从已设置过期时间的数据集（server.db[i].expires）中挑选最近最少使用的数据淘汰</p>
-</li>
-<li><p><strong>volatile-ttl</strong>：从已设置过期时间的数据集（server.db[i].expires）中挑选将要过期的数据淘汰</p>
-</li>
-<li><p><strong>volatile-random</strong>：从已设置过期时间的数据集（server.db[i].expires）中任意选择数据淘汰</p>
-</li>
-<li><p><strong>allkeys-lru</strong>：从数据集（server.db[i].dict）中挑选最近最少使用的数据淘汰</p>
-</li>
-<li><p><strong>allkeys-random</strong>：从数据集（server.db[i].dict）中任意选择数据淘汰</p>
-</li>
-<li><p><strong>no-enviction</strong>（驱逐）：禁止驱逐数据，新写入操作会报错</p>
-</li>
-<li><p>如果没有设置 expire 的key, 不满足先决条件(prerequisites); 那么 volatile-lru, volatile-random 和</p>
-<p>volatile-ttl 策略的行为, 和 noeviction(不删除) 基本上一致。</p>
-</li>
-</ul>
-</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/07/03/%E9%9D%A2%E8%AF%95%E9%A2%98-Redis/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/06/30/%E9%9D%A2%E8%AF%95%E9%A2%98-Jvm/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/06/30/%E9%9D%A2%E8%AF%95%E9%A2%98-Jvm/" class="post-title-link" itemprop="url">面试题-Jvm</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-06-30 00:41:13" itemprop="dateCreated datePublished" datetime="2020-06-30T00:41:13+08:00">2020-06-30</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-15 03:34:43" itemprop="dateModified" datetime="2020-08-15T03:34:43+08:00">2020-08-15</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E9%9D%A2%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">面试</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章属于持续学习、长期更修。</p>
-</blockquote>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaConcurrent/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaConcurrent/" class="post-title-link" itemprop="url">查缺补漏-JavaConcurrent</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-14 09:10:49" itemprop="dateModified" datetime="2020-08-14T09:10:49+08:00">2020-08-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Mybatis/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Mybatis/" class="post-title-link" itemprop="url">查缺补漏-Mybatis</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-14 09:10:34" itemprop="dateModified" datetime="2020-08-14T09:10:34+08:00">2020-08-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Spring/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Spring/" class="post-title-link" itemprop="url">查缺补漏-Spring</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-14 09:10:24" itemprop="dateModified" datetime="2020-08-14T09:10:24+08:00">2020-08-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/SpringFrameworkRutime.png"></p>
-<h3 id="Spring-Ioc"><a href="#Spring-Ioc" class="headerlink" title="Spring Ioc"></a>Spring Ioc</h3><h4 id="1-描述下依赖注入。"><a href="#1-描述下依赖注入。" class="headerlink" title="1.描述下依赖注入。"></a>1.描述下依赖注入。</h4><ul>
-<li>平常的Java开发中，程序员在某个类中需要依赖其它类的方法。通常是new一个依赖类再调用类实例的方法，这种开发存在的问题是new的类实例不好统一管理。 Spring提出了依赖注入的思想，即依赖类不由程序员实例化，而是通过Spring容器帮我们new指定实例并且将实例注入到需要该对象的类中。依赖注入的另一种说法是”控制反转”。通俗的理解是：平常我们new一个实例，这个实例的控制权是我们程序员。而控制反转是指new实例工作不由我们程序员来做而是交给Spring容器来做。</li>
-<li>IOC对于Spring框架来说，就是由Spring来负责控制对象的生命周期和对象间的关系。</li>
-<li>所谓依赖注入，就是由IOC容器在运行期间，动态地将某种依赖关系注入到对象之中，所以，以来注入DI 和控制反转IOC 是从不同的角度描述的同一间事情，就是值通过引用IOC容器，利用以来关系注入的方式，实现对象之间的解耦。</li>
-</ul>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/SpringIoc%E5%88%9D%E5%A7%8B%E5%8C%96%E8%BF%87%E7%A8%8B.png"></p>
-<h4 id="2-注入的几种方式？"><a href="#2-注入的几种方式？" class="headerlink" title="2. 注入的几种方式？"></a>2. 注入的几种方式？</h4><ul>
-<li>Set注入。</li>
-<li>构造方法注入。</li>
-<li>工厂的方法注入。</li>
-</ul>
-<h3 id="Spring-AOP"><a href="#Spring-AOP" class="headerlink" title="Spring AOP"></a>Spring AOP</h3><ul>
-<li><p>AOP(Aspect-Oriented Programming:⾯向切⾯编程)能够将那些与业务⽆关，却为业务模块所共同调⽤的逻辑或责任（例如事务处理、⽇志管理、权限控制等）封装起来，便于减少系统的重复代码，降低模块间的耦合度，并有利于未来的可拓展性和可维护性。</p>
-<ul>
-<li><strong>Spring AOP</strong>就是基于动态代理的，如果要代理的对象，实现了某个接⼝，那么Spring AOP会使⽤<strong>JDK</strong> Proxy，去创建代理对象，⽽对于没有实现接⼝的对象，就⽆法使⽤ JDK Proxy 去进⾏代理了，这时候Spring AOP会使⽤<strong>Cglib</strong> ，这时候Spring AOP会使⽤ <strong>Cglib</strong> ⽣成⼀个被代理对象的⼦类来作为代理。</li>
-</ul>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/SpringAopProcess.png"></p>
-<ul>
-<li>Spring Aop是运行时增强。</li>
-<li>Cglib Aop是编译器增强。</li>
-</ul>
-</li>
-<li><p>AOP专门用于处理系统中分布于各个模块中交叉关注点的问题，在JavaEE应用中，常常通过AOP来处理一些横切性质的系统级服务，如事物管理、安全检查、缓存对象池管理。</p>
-<ul>
-<li>1.）切面 -Aspect 切面类 比如日志类</li>
-<li>2.） 连接点 - Join Point 加入切点的那个点</li>
-<li>3.）通知 -Advice 是在切面某个特定的连接点上的动作。</li>
-<li>4.）切入点 - Point Cut 匹配连接点的断点</li>
-<li>5.）引入 - Introduction </li>
-<li>6.）目标对象 - Target Object 被一个或多个通知对象，永远被代理的对象。</li>
-<li>7.） AOP代理 - AOP Proxy AOP创建的对象用来实现切面对象。</li>
-<li>8.）织入 - Weaving </li>
-<li>9.）AOP通俗的理解：<ul>
-<li>一个组建A，不关心其他常用的服务组件B，但是这个组件A使用组件B的时候不是组建A自身去调用，而是通过配置等其他方式，比如Spring中可以通过XML配置文件。这样就使的A压根不需要知道服务组件B是怎么样的，A只关心自己的业务逻辑，具体A使用B的时候，配置文件去做，与具体的A组件无关。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-SpringBoot/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-SpringBoot/" class="post-title-link" itemprop="url">查缺补漏-SpringBoot</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-14 09:10:21" itemprop="dateModified" datetime="2020-08-14T09:10:21+08:00">2020-08-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/07/12/%E9%9D%A2%E8%AF%95%E9%A2%98-%E4%BA%A4%E6%8D%A2%E4%B8%A4%E4%B8%AA%E5%8F%98%E9%87%8F%E7%9A%84%E5%80%BC/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/12/%E9%9D%A2%E8%AF%95%E9%A2%98-%E4%BA%A4%E6%8D%A2%E4%B8%A4%E4%B8%AA%E5%8F%98%E9%87%8F%E7%9A%84%E5%80%BC/" class="post-title-link" itemprop="url">面试题-交换两个变量的值</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-07-12 08:02:14" itemprop="dateCreated datePublished" datetime="2020-07-12T08:02:14+08:00">2020-07-12</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-12 08:10:29" itemprop="dateModified" datetime="2020-08-12T08:10:29+08:00">2020-08-12</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E9%9D%A2%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">面试</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>刚去杭州面试的第二家公司，做笔试的时候的时候遇到的。最近几天在整理以前的笔记发现了。简单记录下。</p>
-</blockquote>
-<h3 id="互换两个变量的值"><a href="#互换两个变量的值" class="headerlink" title="互换两个变量的值"></a>互换两个变量的值</h3><blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a=<span class="number">10</span>;</span><br><span class="line"><span class="keyword">int</span> b=<span class="number">12</span>;</span><br><span class="line"><span class="comment">// 通过两个变量之间的运算输出结果 a = 12 b = 10</span></span><br></pre></td></tr></table></figure>
-</blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">swapTest1</span><span class="params">()</span></span>&#123;</span><br><span class="line">		<span class="keyword">int</span> a=<span class="number">10</span>;</span><br><span class="line">		<span class="keyword">int</span> b=<span class="number">12</span>;</span><br><span class="line">		a=a^b; <span class="comment">//a=1010^b=1100;</span></span><br><span class="line">		b=a^b; <span class="comment">//a=0110^b=1100;</span></span><br><span class="line">		a=a^b; <span class="comment">//a=0110^b=1010;</span></span><br><span class="line">		<span class="comment">//a=1100=12;b=1010;</span></span><br><span class="line">		System.out.println(a);</span><br><span class="line">		System.out.println(b);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">swapTest2</span><span class="params">()</span></span>&#123;</span><br><span class="line">		<span class="keyword">int</span> a = <span class="number">10</span>;</span><br><span class="line">		<span class="keyword">int</span> b = <span class="number">12</span>;</span><br><span class="line">		a = a + b; <span class="comment">// 22 = 10 + 12</span></span><br><span class="line">		b = a - b; <span class="comment">// 10 = 22 - 12</span></span><br><span class="line">		a = a - b; <span class="comment">// 12 = 22 - 10</span></span><br><span class="line">		System.out.println(a);</span><br><span class="line">		System.out.println(b);</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
-
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/01/01/%E5%AE%9E%E8%B7%B5-netty%E7%AE%80%E5%8D%95%E7%9A%84%E8%81%8A%E5%A4%A9%E5%AE%A4/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/01/01/%E5%AE%9E%E8%B7%B5-netty%E7%AE%80%E5%8D%95%E7%9A%84%E8%81%8A%E5%A4%A9%E5%AE%A4/" class="post-title-link" itemprop="url">实践-netty简单的聊天室</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-01-01 07:17:29" itemprop="dateCreated datePublished" datetime="2020-01-01T07:17:29+08:00">2020-01-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-07 07:24:50" itemprop="dateModified" datetime="2020-08-07T07:24:50+08:00">2020-08-07</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>翻出了去年的代码，最开始打算用netty直接实现im系统。当初学习的时候写了个demo项目。</p>
-</blockquote>
-
+<h3 id="根据redis常用命令来学习使用redis-cli。"><a href="#根据redis常用命令来学习使用redis-cli。" class="headerlink" title="根据redis常用命令来学习使用redis-cli。"></a>根据redis常用命令来学习使用redis-cli。</h3>
       
     </div>
 
@@ -1489,10 +424,328 @@
   
   
 
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/05/27/%E6%80%BB%E7%BB%93%E4%BB%A3%E7%A0%81%E9%A3%8E%E6%A0%BC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/05/27/%E6%80%BB%E7%BB%93%E4%BB%A3%E7%A0%81%E9%A3%8E%E6%A0%BC/" class="post-title-link" itemprop="url">总结代码风格</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-05-27 20:49:08" itemprop="dateCreated datePublished" datetime="2019-05-27T20:49:08+08:00">2019-05-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-15 09:10:22" itemprop="dateModified" datetime="2020-08-15T09:10:22+08:00">2020-08-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">软件工程</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>好久没更新博客，最近公司让我出一个代码规范，我吓了一跳。赶忙翻出阿里《 码出高效》，不敢造次，我就补充点个人的想法吧。代码是给人看的。代码风格应该遵循<code>极简主义</code>                                                                                                      </p>
+</blockquote>
+<h3 id="1、避免复杂、追求简单"><a href="#1、避免复杂、追求简单" class="headerlink" title="1、避免复杂、追求简单"></a>1、避免复杂、追求简单</h3><blockquote>
+<p>日常开发中，除了解决业务问题还需要解决许多的工程问题。如何选择当下合适的方法解决问题；需要不断尝试和摸索，没有最好的方法只有更好的方法。</p>
+</blockquote>
+<h3 id="2、合理平滑的处理技术债务"><a href="#2、合理平滑的处理技术债务" class="headerlink" title="2、合理平滑的处理技术债务"></a>2、合理平滑的处理技术债务</h3><blockquote>
+<p>技术的演变速度太快，如何避免长时间的技术债务是非常严重的问题，总之弊大于利。尽可能保持轻装上阵，避免拖油瓶项目。</p>
+<p>关键字：</p>
+<ul>
+<li>一方库: 本工程内部子项目模块依赖的库(jar 包)。 </li>
+<li>二方库: 公司内部发布到中央仓库，可供公司内部其它应用依赖的库(jar包)。 </li>
+<li>三方库: 公司之外的开源库(jar 包)。 </li>
+</ul>
+</blockquote>
+<h4 id="『避免过度封装』"><a href="#『避免过度封装』" class="headerlink" title="『避免过度封装』"></a>『避免过度封装』</h4><blockquote>
+<p>特别是没有完整的技术人员编制的情况下，怎么简单怎么处理（去除中间商赚差价一个道理。）避免过度开发<code>一方库</code>；建议使用原生方式(综合评估代码量)<code>避免框架过度封装</code>。（Java的方法调用链过长是出了名的恶心）</p>
+</blockquote>
+<h4 id="『避免代码过度重复』"><a href="#『避免代码过度重复』" class="headerlink" title="『避免代码过度重复』"></a>『避免代码过度重复』</h4><blockquote>
+<p>每次开发业务都会写很多的代码。定期对公司项目进行基础代码的重构。合理的拆分<code>业务无关的基础代码</code>。</p>
+</blockquote>
+<h4 id="『避免版本混乱』"><a href="#『避免版本混乱』" class="headerlink" title="『避免版本混乱』"></a>『避免版本混乱』</h4><p>使用统一的版本管理。约束所有的项目jar版本依赖。防止因为过度使用<code>三方库</code>出现奇怪的bug。公司<code>bom</code>需要单独处理。尽量保持与社区版本同步，比如springboot最新版是2.1.3 ，那么公司使用的版本最好是近半年的GA版本。</p>
+<h4 id="『物极必反』"><a href="#『物极必反』" class="headerlink" title="『物极必反』"></a>『物极必反』</h4><blockquote>
+<p>请勿过度依赖某框架栈或者解决方式，客观的对比相关解决方案优缺点。</p>
+</blockquote>
+<h4 id="『选择大于努力』"><a href="#『选择大于努力』" class="headerlink" title="『选择大于努力』"></a>『选择大于努力』</h4><blockquote>
+<p>集中精力掌握核心知识。按照目前技术演变的速度，更新最快的是应用技术，其次是行业规范相关技术。最后才是革命性的技术。</p>
+</blockquote>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/%E4%BB%A3%E7%A0%81%E6%80%BB%E7%BB%93/%E6%8A%80%E6%9C%AF%E8%B1%A1%E9%99%90%E5%9B%BE.png"></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/05/27/%E6%80%BB%E7%BB%93%E4%BB%A3%E7%A0%81%E9%A3%8E%E6%A0%BC/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/05/08/Idea%E4%BD%BF%E7%94%A8%E7%9B%B8%E5%85%B3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/05/08/Idea%E4%BD%BF%E7%94%A8%E7%9B%B8%E5%85%B3/" class="post-title-link" itemprop="url">Idea常用插件</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-05-08 16:35:04" itemprop="dateCreated datePublished" datetime="2019-05-08T16:35:04+08:00">2019-05-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-25 23:19:05" itemprop="dateModified" datetime="2020-08-25T23:19:05+08:00">2020-08-25</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>有必要记录下自己常用的插件，避免特殊事件的发生。</p>
+</blockquote>
+<h4 id="Free-Mybatis-plugin"><a href="#Free-Mybatis-plugin" class="headerlink" title="Free Mybatis plugin"></a>Free Mybatis plugin</h4><blockquote>
+<p>Mybatis 插件，可以定位java和xml关系。通过java接口快速生成相关xml文件或者方法。</p>
+</blockquote>
+<h4 id="Mybaits-Log-plugin"><a href="#Mybaits-Log-plugin" class="headerlink" title="Mybaits Log plugin"></a>Mybaits Log plugin</h4><blockquote>
+<p>使用插件将mybaits默认的日志输出转换成可以运行的sql日志。</p>
+</blockquote>
+<h4 id="Alibaba-java-coding-guidelines"><a href="#Alibaba-java-coding-guidelines" class="headerlink" title="Alibaba-java-coding-guidelines"></a>Alibaba-java-coding-guidelines</h4><blockquote>
+<p>阿里巴巴java代码检查工具</p>
+</blockquote>
+<h4 id="json2pojo"><a href="#json2pojo" class="headerlink" title="json2pojo"></a>json2pojo</h4><blockquote>
+<p>json转bean的工具</p>
+</blockquote>
+<h4 id="查看某个方法被调用的地方。-鼠标选中方法名称"><a href="#查看某个方法被调用的地方。-鼠标选中方法名称" class="headerlink" title="查看某个方法被调用的地方。(鼠标选中方法名称)"></a>查看某个方法被调用的地方。(鼠标选中方法名称)</h4><p><code>Navigate | Call Hierarchy </code> 快捷键<code>control + option + h</code></p>
+<h4 id="Genterate-代码生成"><a href="#Genterate-代码生成" class="headerlink" title="Genterate 代码生成"></a>Genterate 代码生成</h4><p><code>Code | Genterate</code> #快捷键 <code>command + n</code></p>
+<h4 id="Copyright-模版"><a href="#Copyright-模版" class="headerlink" title="Copyright 模版"></a>Copyright 模版</h4><p><code>Edit | Copyright | Copyright profiles </code></p>
+<ul>
+<li>样板</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Copyright (c) $today.year  </span><br><span class="line">@Author:z201.coding@gamil.com</span><br><span class="line">@LastModified:$today.format(&quot;yyyy-MM-dd&quot;)</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/05/08/Idea%E4%BD%BF%E7%94%A8%E7%9B%B8%E5%85%B3/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/04/21/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-skywalking%E6%BA%90%E7%A0%81%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/04/21/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-skywalking%E6%BA%90%E7%A0%81%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" class="post-title-link" itemprop="url">源码分析-skywalking源码环境搭建</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-04-21 18:40:55" itemprop="dateCreated datePublished" datetime="2019-04-21T18:40:55+08:00">2019-04-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-04-23 00:03:29" itemprop="dateModified" datetime="2019-04-23T00:03:29+08:00">2019-04-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">源码分析</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="0x00-阅读源代码"><a href="#0x00-阅读源代码" class="headerlink" title="0x00 阅读源代码"></a>0x00 阅读源代码</h2><blockquote>
+<p>长达9天的断网终于结束了。</p>
+</blockquote>
+<h3 id="下载源代码"><a href="#下载源代码" class="headerlink" title="下载源代码"></a>下载源代码</h3><ul>
+<li>代码仓库地址 <a href="https://gitee.com/Z201/skywalking.git" target="_blank" rel="noopener">https://gitee.com/Z201/skywalking.git</a></li>
+<li>阅读版本号 <code>v6.0.0-GA</code></li>
+<li>下载版本<code>git clone -b v6.0.0-GA https://github.com/apache/skywalking.git</code><ul>
+<li>由于github下载速度是在太慢了，这里用gitee克隆一个镜像。</li>
+<li>下载版本<code>git clone -b v6.0.0-GA https://gitee.com/Z201/skywalking.git</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="查看源代码结构"><a href="#查看源代码结构" class="headerlink" title="查看源代码结构"></a>查看源代码结构</h3><blockquote>
+<p>源码设计子项目过多，这里简单暂时2级目录。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">tree -d L 2</span><br><span class="line">.</span><br><span class="line">├── src  </span><br><span class="line">│   ├── main # 源代码</span><br><span class="line">│   ├── site # 站点稳当</span><br><span class="line">│   └── test # 单元测试</span><br><span class="line">└── travis   # 官方的ci集成</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>查看项目源码主目录</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">➜  skywalking git:(8b638258b) tree -d -L 1</span><br><span class="line">.</span><br><span class="line">├── apm-application-toolkit</span><br><span class="line">├── apm-checkstyle</span><br><span class="line">├── apm-commons</span><br><span class="line">├── apm-dist</span><br><span class="line">├── apm-protocol <span class="comment"># pd文件</span></span><br><span class="line">├── apm-sniffer <span class="comment"># 插件</span></span><br><span class="line">├── apm-webapp  </span><br><span class="line">├── docker</span><br><span class="line">├── docs</span><br><span class="line">├── licenses</span><br><span class="line">├── oap-server <span class="comment"># 这里和5.x 有很大的不同改动了很多东西。</span></span><br><span class="line">├── skywalking-ui </span><br><span class="line">└── tools</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>将项目导入idea中。</li>
+</ul>
+<p>官方文档:<a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/How-to-build.md" target="_blank" rel="noopener">如何构建</a></p>
+<p><code>git submodule init</code></p>
+<p><code>git submodule update</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">➜  skywalking git:(8b638258b) git submodule init</span><br><span class="line">Submodule <span class="string">'apm-protocol/apm-network/src/main/proto'</span> (https://github.com/apache/incubator-skywalking-data-collect-protocol.git) registered <span class="keyword">for</span> path <span class="string">'apm-protocol/apm-network/src/main/proto'</span></span><br><span class="line">Submodule <span class="string">'oap-server/server-query-plugin/query-graphql-plugin/src/main/resources/query-protocol'</span> (https://github.com/apache/incubator-skywalking-query-protocol.git) registered <span class="keyword">for</span> path <span class="string">'oap-server/server-query-plugin/query-graphql-plugin/src/main/resources/query-protocol'</span></span><br><span class="line">Submodule <span class="string">'skywalking-ui'</span> (https://github.com/apache/incubator-skywalking-ui) registered <span class="keyword">for</span> path <span class="string">'skywalking-ui'</span></span><br><span class="line">➜  skywalking git:(8b638258b) git submodule update</span><br><span class="line">Cloning into <span class="string">'/Users/zengqingfeng/word/source-code/skywalking/apm-protocol/apm-network/src/main/proto'</span>...</span><br><span class="line">Cloning into <span class="string">'/Users/zengqingfeng/word/source-code/skywalking/oap-server/server-query-plugin/query-graphql-plugin/src/main/resources/query-protocol'</span>...</span><br><span class="line">Cloning into <span class="string">'/Users/zengqingfeng/word/source-code/skywalking/skywalking-ui'</span>...</span><br><span class="line">Submodule path <span class="string">'apm-protocol/apm-network/src/main/proto'</span>: checked out <span class="string">'b66fa070fd647662f06497e4ed3657eb258cb6e9'</span></span><br><span class="line">Submodule path <span class="string">'oap-server/server-query-plugin/query-graphql-plugin/src/main/resources/query-protocol'</span>: checked out <span class="string">'c65a23bd6b9bba8d1df30d4de261624952df2b7b'</span></span><br><span class="line">Submodule path <span class="string">'skywalking-ui'</span>: checked out <span class="string">'c44642f73b9f73a54b0d716cade5094304e1a67b'</span></span><br></pre></td></tr></table></figure>
+
+<p><code>clean package -DskipTests</code></p>
+<blockquote>
+<p>这个时候慢慢等吧v6.0.0-GA有120个子项目。更新完之后导入IDEA就好了。</p>
+</blockquote>
+<h3 id="END"><a href="#END" class="headerlink" title="END"></a>END</h3>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/7/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/7/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1559,7 +812,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">102</span>
+          <span class="site-state-item-count">103</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
