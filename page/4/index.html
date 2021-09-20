@@ -239,7 +239,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Redis/">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/07/15/%E5%AE%9E%E8%B7%B5-spring-boot%E5%BC%82%E5%B8%B8%E9%92%89%E9%92%89%E9%80%9A%E7%9F%A5/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -253,7 +253,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Redis/" class="post-title-link" itemprop="url">查缺补漏-Redis</a>
+            <a href="/2020/07/15/%E5%AE%9E%E8%B7%B5-spring-boot%E5%BC%82%E5%B8%B8%E9%92%89%E9%92%89%E9%80%9A%E7%9F%A5/" class="post-title-link" itemprop="url">实践-SpringBoot异常钉钉通知</a>
         </h2>
 
         <div class="post-meta">
@@ -263,14 +263,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
+              <time title="Created: 2020-07-15 15:23:20" itemprop="dateCreated datePublished" datetime="2020-07-15T15:23:20+08:00">2020-07-15</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-10-11 12:53:56" itemprop="dateModified" datetime="2020-10-11T12:53:56+08:00">2020-10-11</time>
+                <time title="Modified: 2020-08-15 09:20:15" itemprop="dateModified" datetime="2020-08-15T09:20:15+08:00">2020-08-15</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -278,7 +278,7 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
+                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
                 </span>
             </span>
 
@@ -294,89 +294,34 @@
 
       
           <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
+<p>本篇幅只是回顾使用钉钉做异常告警需要那些关键业务信息。</p>
 </blockquote>
-<h1 id="Redis-简介"><a href="#Redis-简介" class="headerlink" title="Redis 简介"></a>Redis 简介</h1><blockquote>
-<p>Redis 是完全开源免费的，遵守 BSD 协议，是一个高性能的 key - value 数据库</p>
-</blockquote>
+<h3 id="为什么要做钉钉通知？"><a href="#为什么要做钉钉通知？" class="headerlink" title="为什么要做钉钉通知？"></a>为什么要做钉钉通知？</h3><p>​        事情要从我入职上家公司说起，进入公司后把线上项目clone下来大致看了下。代码风格过于滞后、编码风格混乱。进入公司第一周就出现了线上故障，嗯。我去线上检查日志，emmmm竟然没有日志输出。这次故障是由客户反馈来的。当时我非常吃惊，大伙好像很淡定的样子，习以为常了？</p>
+<p>​        想到当初面试的时候和总监的谈话，主要是带领团队落地微服务架构，看来必须大刀阔斧了。</p>
+<p>​        首先想到的时候改进日志输出、定义全局异常级别，根据异常级别输出日志。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">Java应用 -&gt;&gt; SpringAop全局异常拦截 : runtimeException</span><br><span class="line">SpringAop全局异常拦截 -&gt;&gt;  钉钉 : alarmNoticeSend</span><br><span class="line">钉钉 -&gt;&gt; 开发人员  : exceptionInfo</span><br></pre></td></tr></table></figure>
+
 <ul>
-<li>Redis 与 其他 key - value 缓存产品有以下三个特点：<ul>
-<li>Redis 支持数据持久化，可以将内存中的数据保存在磁盘中，重启的时候可以再次加载进行使用。</li>
-<li>Redis 不仅仅支持简单的 key - value 类型的数据，同时还提供 list，set，zset，hash 等数据结构的存储</li>
-<li>Redis 支持数据的备份，即 master - slave 模式的数据备份。</li>
+<li>效果图</li>
 </ul>
-</li>
-<li>Redis是内存数据库，所有操作都在内存上完成，内存的访问速度本身就很快，读的速度是 110000 次 /s, 写的速度是 81000 次 /s。另一方面是因为它的数据结构。键值对是按一定的数据结构来组织的，操作键值对最终就是对数据结构进行增删改查操作，所以高效的数据结构是 Redis 快速处理数据的基础。</li>
-</ul>
-<h3 id="Redis单线程"><a href="#Redis单线程" class="headerlink" title="Redis单线程"></a>Redis单线程</h3><ul>
-<li>我们通常说，Redis 是单线程，主要是指 Redis 的网络 IO 和键值对读写是由一个线程来完成的，这也是 Redis 对外提供键值存储服务的主要流程。但 Redis 的其他功能，比如持久化、异步删除、集群数据同步等，其实是由额外的线程执行的。Redis 的单线程设计机制以及多路复用机制</li>
-<li>Linux 中的 IO 多路复用机制<ul>
-<li>Linux 中的 IO 多路复用机制是指一个线程处理多个 IO 流，就是我们经常听到的 select/epoll 机制。简单来说，在 Redis 只运行单线程的情况下，该机制允许内核中，同时存在多个监听套接字和已连接套接字。内核会一直监听这些套接字上的连接请求或数据请求。一旦有请求到达，就会交给 Redis 线程处理，这就实现了一个 Redis 线程处理多个 IO 流的效果。</li>
-</ul>
-</li>
-</ul>
-<h3 id="Redis单线程处理IO请求性能瓶颈"><a href="#Redis单线程处理IO请求性能瓶颈" class="headerlink" title="Redis单线程处理IO请求性能瓶颈"></a>Redis单线程处理IO请求性能瓶颈</h3><ul>
-<li>任意一个请求在server中一旦发生耗时，都会影响整个server的性能，也就是说后面的请求都要等前面这个耗时请求处理完成，自己才能被处理到。耗时的操作包括以下几种：<ul>
-<li>操作bigkey：写入一个bigkey在分配内存时需要消耗更多的时间，同样，删除bigkey释放内存同样会产生耗时；</li>
-<li>使用复杂度过高的命令：例如SORT/SUNION/ZUNIONSTORE，或者O(N)命令，但是N很大，例如lrange key 0 -1一次查询全量数据；</li>
-<li>大量key集中过期：Redis的过期机制也是在主线程中执行的，大量key集中过期会导致处理一个请求时，耗时都在删除过期key，耗时变长；</li>
-<li>淘汰策略：淘汰策略也是在主线程执行的，当内存超过Redis内存上限后，每次写入都需要淘汰一些key，也会造成耗时变长；</li>
-<li>AOF刷盘开启always机制：每次写入都需要把这个操作刷到磁盘，写磁盘的速度远比写内存慢，会拖慢Redis的性能；</li>
-<li>主从全量同步生成RDB：虽然采用fork子进程生成数据快照，但fork这一瞬间也是会阻塞整个线程的，实例越大，阻塞时间越久；</li>
-</ul>
-</li>
-<li>并发量非常大时，单线程读写客户端IO数据存在性能瓶颈，虽然采用IO多路复用机制，但是读写客户端数据依旧是同步IO，只能单线程依次读取客户端的数据，无法利用到CPU多核。</li>
-<li>Redis在4.0推出了lazy-free机制，把bigkey释放内存的耗时操作放在了异步线程中执行，降低对主线程的影响。</li>
-<li>Redis在6.0推出了多线程，可以在高并发场景下利用CPU多核多线程读写客户端数据，进一步提升server性能，当然，只是针对客户端的读写是并行的，每个命令的真正操作依旧是单线程的。</li>
-</ul>
-<h3 id="Redis持久化机制"><a href="#Redis持久化机制" class="headerlink" title="Redis持久化机制"></a>Redis持久化机制</h3><ul>
-<li>Redis是一个支持持久化的内存数据库，通过持久化机制把内存中的数据同步到硬盘文件来保证数据持久化。当Redis重启后通过把硬盘文件重新加载到内存，就能达到恢复数据的目的。<ul>
-<li>实现：单独创建fork()一个子进程，将当前父进程的数据库数据复制到子进程的内存中，然后由子进程内存释放。</li>
-</ul>
-</li>
-<li>RDB是Redis默认的持久化方式。按照一定的时间周期策略把内存的数据以快照的形式保存到硬盘的二进制文件。即Snapshot快照存储，对应产生的数据文件为dump.rdb，通过配置文件中的save参数来定义快照的周期。（ 快照可以是其所表示的数据的一个副本，也可以是数据的一个复制品。）</li>
-<li>AOF：Redis会将每一个收到的写命令都通过Write函数追加到文件最后，类似于MySQL的binlog。当Redis重启是会通过重新执行文件中保存的写命令来在内存中重建整个数据库的内容。当两种方式同时开启时，数据恢复Redis会优先选择AOF恢复。</li>
-</ul>
-<h3 id="AOF日志"><a href="#AOF日志" class="headerlink" title="AOF日志"></a>AOF日志</h3><ul>
-<li>写后日志，“写后”的意思是 Redis 是先执行命令，把数据写入内存，然后才记录日志。</li>
-<li>AOF 也有两个潜在的风险<ul>
-<li>如果刚执行完一个命令，还没有来得及记日志就宕机了，那么这个命令和相应的数据就有丢失的风险。如果此时 Redis 是用作缓存，还可以从后端数据库重新读入数据进行恢复，但是，如果 Redis 是直接用作数据库的话，此时，因为命令没有记入日志，所以就无法用日志进行恢复了。</li>
-<li>AOF 虽然避免了对当前命令的阻塞，但可能会给下一个操作带来阻塞风险。这是因为，AOF 日志也是在主线程中执行的，如果在把日志文件写入磁盘时，磁盘写压力大，就会导致写盘很慢，进而导致后续的操作也无法执行了。</li>
-</ul>
-</li>
-<li>AOF三种写回策略<ul>
-<li>Always，同步写回：每个写命令执行完，立马同步地将日志写回磁盘；<ul>
-<li>同步写回可以做到基本不丢数据，但是它在每一个写命令后都有一个慢速的落盘操作，不可避免地会影响主线程性能。</li>
-</ul>
-</li>
-<li>Everysec，每秒写回：每个写命令执行完，只是先把日志写到 AOF 文件的内存缓冲区，每隔一秒把缓冲区中的内容写入磁盘；<ul>
-<li>每秒写回采用一秒写回一次的频率，避免了“同步写回”的性能开销，虽然减少了对系统性能的影响，但是如果发生宕机，上一秒内未落盘的命令操作仍然会丢失。所以，这只能算是，在避免影响主线程性能和避免数据丢失两者间取了个折中。</li>
-</ul>
-</li>
-<li>No，操作系统控制的写回：每个写命令执行完，只是先把日志写到 AOF 文件的内存缓冲区，由操作系统决定何时将缓冲区内容写回磁盘。<ul>
-<li>操作系统控制的写回在写完缓冲区后，就可以继续执行后续的命令，但是落盘的时机已经不在 Redis 手中了，只要 AOF 记录没有写回磁盘，一旦宕机对应的数据就丢失了。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="RDB快照"><a href="#RDB快照" class="headerlink" title="RDB快照"></a>RDB快照</h3><ul>
-<li>Redis 的数据都在内存中，为了提供所有数据的可靠性保证，它执行的是全量快照，也就是说，把内存中的所有数据都记录到磁盘中。全量数据越多，RDB 文件就越大，往磁盘上写数据的时间开销就越大。</li>
-<li>对于 Redis 而言，它的单线程模型就决定了，我们要尽量避免所有会阻塞主线程的操作，所以，针对任何操作，我们都会提一个灵魂之问：“它会阻塞主线程吗?”RDB 文件的生成是否会阻塞主线程，这就关系到是否会降低 Redis 的性能。</li>
-<li>Redis 提供了两个命令来生成 RDB 文件，分别是 save 和 bgsave。<ul>
-<li>save：在主线程中执行，会导致阻塞；</li>
-<li>bgsave：创建一个子进程，专门用于写入 RDB 文件，避免了主线程的阻塞，这也是 Redis RDB 文件生成的默认配置。</li>
-</ul>
-</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Redis/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/springboot%E9%92%89%E9%92%89%E5%85%A8%E5%B1%80%E5%BC%82%E5%B8%B8%E6%8B%A6%E6%88%AA.png"></p>
+<p>​        我们需要从钉钉里面看到那些异常信息呢？这是当时输出到钉钉的信息。通过编写全局拦截器，在公共基础项目里面添加了aop全局拦截。刚开始上线的时候钉钉一天动不动就几千个异常告警。刚开始大伙都很紧张，过了个把月大伙已经又麻木了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">告警信息</span><br><span class="line">工程名：z201-gateway</span><br><span class="line">类路径：cn.z201.cloud.gateway.VlinkFrameworkGatewayApplicationTest</span><br><span class="line">方法名：alarm</span><br><span class="line">异常信息：java.lang.IllegalAccessException</span><br><span class="line">异常追踪：</span><br><span class="line">cn.z201.cloud.gateway.VlinkFrameworkGatewayApplicationTest.alarm(VlinkFrameworkGatewayApplicationTest.java:<span class="number">64</span>)</span><br><span class="line">sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)</span><br><span class="line">sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:<span class="number">62</span>)</span><br><span class="line">sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:<span class="number">43</span>)</span><br><span class="line">java.lang.reflect.Method.invoke(Method.java:<span class="number">498</span>)</span><br><span class="line">org.junit.runners.model.FrameworkMethod$<span class="number">1</span>.runReflectiveCall(FrameworkMethod.java:<span class="number">50</span>)</span><br><span class="line">org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:<span class="number">12</span>)</span><br><span class="line">org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:<span class="number">47</span>)</span><br><span class="line">org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:<span class="number">17</span>)</span><br><span class="line">org.springframework.test.context.junit4.statements.RunBeforeTestExecutionCallbacks.evaluate(RunBeforeTestExecutionCallbacks.java:<span class="number">74</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="这样的告警信息就够了吗？"><a href="#这样的告警信息就够了吗？" class="headerlink" title="这样的告警信息就够了吗？"></a>这样的告警信息就够了吗？</h3><p>​        明显这样是不够够的，前端有安卓、ios、微信小程序、web、快应用。太多前端项目了，后端需要识别出是哪里的项目出的问题。于是又改进了一次。邀请前端开发人员在HttpHeader里面增加额外参数。为了做流量区分也增加了一些参数。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"> &#123;</span><br><span class="line">  <span class="string">"Content-Type"</span>:<span class="string">"application/json"</span> </span><br><span class="line">  "Authorization":"Bearer xxxxxxxxxx"  ## jwt</span><br><span class="line">  "Client-Business-Group-Source": "1", ##  业务组来源唯一标号</span><br><span class="line">  "Client-Business-Source": "1000", ## 业务来源唯一标号</span><br><span class="line">  "Client-Business-Activity-Source": "1", ## 查看介绍、更多 针对特殊业务流量识别</span><br><span class="line">  "Client-Env-Source": "1",				 ##客户端环境来源  1 ios  2 android  3 windows</span><br><span class="line">  "Client-Platform-Source": "xxx", ##客户端平台 xxx手机型号、浏览器</span><br><span class="line">  "Client-Start-Time": "1",        ##请求时间戳</span><br><span class="line">  "Client-Version-Source": "1.0.0" ##客户端版本号</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        通过上面的改进告警信息完善很多。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">告警信息</span><br><span class="line">工程名：z201-gateway</span><br><span class="line">类路径：cn.z201.cloud.gateway.VlinkFrameworkGatewayApplicationTest</span><br><span class="line">方法名：alarm</span><br><span class="line">异常信息：java.lang.IllegalAccessException</span><br><span class="line">异常扩展信息： &#123;</span><br><span class="line">  &quot;Client-Business-Source&quot;: &quot;1000&quot;, </span><br><span class="line">  &quot;Client-Business-Activity-Source&quot;: &quot;1&quot;, </span><br><span class="line">  &quot;Client-Env-Source&quot;: &quot;1&quot;,				 </span><br><span class="line">  &quot;Client-Platform-Source&quot;: &quot;xxx&quot;,   </span><br><span class="line">  &quot;Client-Version-Source&quot;: &quot;1.0.0&quot; </span><br><span class="line">&#125; </span><br><span class="line">异常追踪：</span><br><span class="line">cn.z201.cloud.gateway.VlinkFrameworkGatewayApplicationTest.alarm(VlinkFrameworkGatewayApplicationTest.java:64)</span><br><span class="line">sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)</span><br><span class="line">sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)</span><br><span class="line">sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)</span><br><span class="line">java.lang.reflect.Method.invoke(Method.java:498)</span><br><span class="line">org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)</span><br><span class="line">org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)</span><br><span class="line">org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)</span><br><span class="line">org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)</span><br><span class="line">org.springframework.test.context.junit4.statements.RunBeforeTestExecutionCallbacks.evaluate(RunBeforeTestExecutionCallbacks.java:74)</span><br></pre></td></tr></table></figure>
+
+<h3 id="分布式下面临的问题！"><a href="#分布式下面临的问题！" class="headerlink" title="分布式下面临的问题！"></a>分布式下面临的问题！</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">gateway -&gt;&gt; 应用A : httpRequest</span><br><span class="line">应用A -&gt;&gt;  应用B : httpRequest</span><br><span class="line">应用B --&gt;&gt; 应用A : httpResponse</span><br><span class="line">应用A --&gt;&gt; gateway : httpResponse</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/%E5%A4%9A%E5%BA%94%E7%94%A8%E9%93%BE%E8%B7%AF%E8%AF%B7%E6%B1%82.png"></p>
+<p>​        当调用链多的时候定位问题就有点麻烦，比如应用a调用应用b。应用b执行了异常信息直接抛出了告警信息。但是spring cloud http rpc默认是不会吧请求参数传递到后面的服务中，需要我们做下简单的扩展。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> z201.coding@gmail.com</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">HttpApiConstant</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    String X_REAL_IP = <span class="string">"x-real-ip"</span>;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 请求头跟踪id名。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    String HTTP_HEADER_TRACE_ID = <span class="string">"AppTraceId"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 请求头</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    String HTTP_TOKEN_HEADER = <span class="string">"Authorization"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * app租户</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    String APP_TENANT = <span class="string">"Tenant"</span>;</span><br><span class="line"></span><br><span class="line">    String CLIENT_BUSINESS_GROUP_SOURCE = <span class="string">"Client-Business-Group-Source"</span>;</span><br><span class="line"></span><br><span class="line">    String CLIENT_BUSINESS_SOURCE = <span class="string">"Client-Business-Source"</span>;</span><br><span class="line"></span><br><span class="line">    String CLIENT_BUSINESS_ACTIVITY_SOURCE = <span class="string">"Client-Business-Activity-Source"</span>;</span><br><span class="line"></span><br><span class="line">    String CLIENT_EVN_SOURCE = <span class="string">"Client-Env-Source"</span>;</span><br><span class="line"></span><br><span class="line">    String CLIENT_PLATFORM_SOURCE = <span class="string">"Client-Platform-Source"</span>;</span><br><span class="line"></span><br><span class="line">    String CLIENT_START_TIME = <span class="string">"Client-Start-Time"</span>;</span><br><span class="line"></span><br><span class="line">    String CLIENT_VERSION_SOURCE = <span class="string">"Client-Version-Source"</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> z201.coding@gmail.com</span></span><br><span class="line"><span class="comment"> * 自定义restTemplate拦截器</span></span><br><span class="line"><span class="comment"> * 这里可以把一些参数从应用层传到内部服务</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="meta">@ConditionalOnClass</span>(WebMvcConfigurer<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">class</span> <span class="title">MdcFeignInterceptorConfig</span> <span class="keyword">implements</span> <span class="title">RequestInterceptor</span>, <span class="title">HttpApiConstant</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MdcFeignInterceptorConfig</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">"Loaded Z-REST-INTERCEPTOR [V1.0.0]"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">apply</span><span class="params">(RequestTemplate template)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())</span><br><span class="line">                    .getRequest();</span><br><span class="line">            String xRealIp = request.getHeader(X_REAL_IP);</span><br><span class="line">            String authentication = request.getHeader(HTTP_TOKEN_HEADER);</span><br><span class="line">            String appTraceId = request.getHeader(HTTP_HEADER_TRACE_ID);</span><br><span class="line">            String businessGroupSource = request.getHeader(CLIENT_BUSINESS_GROUP_SOURCE);</span><br><span class="line">            String clientBusinessSource = request.getHeader(CLIENT_BUSINESS_SOURCE);</span><br><span class="line">            String clientBusinessActivitySource = request.getHeader(CLIENT_BUSINESS_ACTIVITY_SOURCE);</span><br><span class="line">            String clientEnvSource = request.getHeader(CLIENT_EVN_SOURCE);</span><br><span class="line">            String clientPlatformSource = request.getHeader(CLIENT_PLATFORM_SOURCE);</span><br><span class="line">            String clientStartTime = request.getHeader(CLIENT_START_TIME);</span><br><span class="line">            String clientVersionSource = request.getHeader(CLIENT_VERSION_SOURCE);</span><br><span class="line">            template.header(HttpHeaders.ACCEPT_ENCODING, <span class="string">"gzip"</span>);</span><br><span class="line">            template.header(X_REAL_IP, xRealIp);</span><br><span class="line">            template.header(HTTP_TOKEN_HEADER, authentication);</span><br><span class="line">            template.header(CLIENT_BUSINESS_GROUP_SOURCE, businessGroupSource);</span><br><span class="line">            template.header(CLIENT_BUSINESS_SOURCE, clientBusinessSource);</span><br><span class="line">            template.header(CLIENT_BUSINESS_ACTIVITY_SOURCE, clientBusinessActivitySource);</span><br><span class="line">            template.header(CLIENT_EVN_SOURCE, clientEnvSource);</span><br><span class="line">            template.header(CLIENT_PLATFORM_SOURCE, clientPlatformSource);</span><br><span class="line">            template.header(CLIENT_START_TIME, clientStartTime);</span><br><span class="line">            template.header(CLIENT_VERSION_SOURCE, clientVersionSource);</span><br><span class="line">            <span class="keyword">if</span> (log.isDebugEnabled()) &#123;</span><br><span class="line">                Enumeration&lt;String&gt; headerNames = request.getHeaderNames();</span><br><span class="line">                <span class="keyword">while</span> (headerNames.hasMoreElements()) &#123;</span><br><span class="line">                    String name = headerNames.nextElement();</span><br><span class="line">                    String value = request.getHeader(name);</span><br><span class="line">                    log.debug(<span class="string">"header &#123;&#125; - &#123;&#125;"</span>, name, value);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            log.error(<span class="string">"template exception &#123;&#125;"</span>,e.getMessage());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>简单的异常钉钉告警就到这里结束了。</p>
+
       
     </div>
 
@@ -395,7 +340,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/06/30/%E9%9D%A2%E8%AF%95%E9%A2%98-Spring/">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/07/12/%E9%9D%A2%E8%AF%95%E9%A2%98-%E4%BA%A4%E6%8D%A2%E4%B8%A4%E4%B8%AA%E5%8F%98%E9%87%8F%E7%9A%84%E5%80%BC/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -409,7 +354,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2020/06/30/%E9%9D%A2%E8%AF%95%E9%A2%98-Spring/" class="post-title-link" itemprop="url">面试题-Spring</a>
+            <a href="/2020/07/12/%E9%9D%A2%E8%AF%95%E9%A2%98-%E4%BA%A4%E6%8D%A2%E4%B8%A4%E4%B8%AA%E5%8F%98%E9%87%8F%E7%9A%84%E5%80%BC/" class="post-title-link" itemprop="url">面试题-交换两个变量的值</a>
         </h2>
 
         <div class="post-meta">
@@ -419,14 +364,95 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2020-06-30 17:56:39" itemprop="dateCreated datePublished" datetime="2020-06-30T17:56:39+08:00">2020-06-30</time>
+              <time title="Created: 2020-07-12 08:02:14" itemprop="dateCreated datePublished" datetime="2020-07-12T08:02:14+08:00">2020-07-12</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-09-03 09:51:07" itemprop="dateModified" datetime="2020-09-03T09:51:07+08:00">2020-09-03</time>
+                <time title="Modified: 2020-08-12 08:10:29" itemprop="dateModified" datetime="2020-08-12T08:10:29+08:00">2020-08-12</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9D%A2%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">面试</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>刚去杭州面试的第二家公司，做笔试的时候的时候遇到的。最近几天在整理以前的笔记发现了。简单记录下。</p>
+</blockquote>
+<h3 id="互换两个变量的值"><a href="#互换两个变量的值" class="headerlink" title="互换两个变量的值"></a>互换两个变量的值</h3><blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a=<span class="number">10</span>;</span><br><span class="line"><span class="keyword">int</span> b=<span class="number">12</span>;</span><br><span class="line"><span class="comment">// 通过两个变量之间的运算输出结果 a = 12 b = 10</span></span><br></pre></td></tr></table></figure>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">swapTest1</span><span class="params">()</span></span>&#123;</span><br><span class="line">		<span class="keyword">int</span> a=<span class="number">10</span>;</span><br><span class="line">		<span class="keyword">int</span> b=<span class="number">12</span>;</span><br><span class="line">		a=a^b; <span class="comment">//a=1010^b=1100;</span></span><br><span class="line">		b=a^b; <span class="comment">//a=0110^b=1100;</span></span><br><span class="line">		a=a^b; <span class="comment">//a=0110^b=1010;</span></span><br><span class="line">		<span class="comment">//a=1100=12;b=1010;</span></span><br><span class="line">		System.out.println(a);</span><br><span class="line">		System.out.println(b);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">swapTest2</span><span class="params">()</span></span>&#123;</span><br><span class="line">		<span class="keyword">int</span> a = <span class="number">10</span>;</span><br><span class="line">		<span class="keyword">int</span> b = <span class="number">12</span>;</span><br><span class="line">		a = a + b; <span class="comment">// 22 = 10 + 12</span></span><br><span class="line">		b = a - b; <span class="comment">// 10 = 22 - 12</span></span><br><span class="line">		a = a - b; <span class="comment">// 12 = 22 - 10</span></span><br><span class="line">		System.out.println(a);</span><br><span class="line">		System.out.println(b);</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/07/03/%E9%9D%A2%E8%AF%95%E9%A2%98-Redis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/07/03/%E9%9D%A2%E8%AF%95%E9%A2%98-Redis/" class="post-title-link" itemprop="url">面试题-Redis</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-07-03 04:39:42" itemprop="dateCreated datePublished" datetime="2020-07-03T04:39:42+08:00">2020-07-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-15 04:36:37" itemprop="dateModified" datetime="2020-08-15T04:36:37+08:00">2020-08-15</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -452,691 +478,352 @@
           <blockquote>
 <p>本章属于持续学习、长期更修。</p>
 </blockquote>
-<h3 id="谈谈对Spring理解"><a href="#谈谈对Spring理解" class="headerlink" title="谈谈对Spring理解"></a>谈谈对Spring理解</h3><ul>
-<li>Spring是一个轻量级的IoC和AOP容器框架。是为Java应用程序提供基础性服务的一套框架，目的是用于简化企业应用程序的开发，它使得开发者只需要关心业务需求。</li>
-<li>主要由以下几个模块组成：<ul>
-<li>Spring Core：核心类库，提供IOC服务</li>
-<li>Spring Context：提供框架式的Bean访问方式，以及企业级功能（JNDI、定时任务等）</li>
-<li>Spring AOP：AOP服务切面编程</li>
-<li>Spring DAO：对JDBC的抽象，简化了数据访问异常的处理</li>
-<li>Spring ORM：对现有的ORM框架的支持</li>
-<li>Spring Web：提供了基本的面向Web的综合特性，例如多方文件上传</li>
-<li>Spring MVC：提供面向Web应用的Model-View-Controller实现</li>
+<h3 id="缓存雪崩、缓存穿透、缓存预热、缓存更新、缓存降级等问题"><a href="#缓存雪崩、缓存穿透、缓存预热、缓存更新、缓存降级等问题" class="headerlink" title="缓存雪崩、缓存穿透、缓存预热、缓存更新、缓存降级等问题"></a>缓存雪崩、缓存穿透、缓存预热、缓存更新、缓存降级等问题</h3><ol>
+<li><p>缓存雪崩</p>
+<ul>
+<li>我们可以简单的理解为：由于原有缓存失效，新缓存未到期间(例如：我们设置缓存时采用了相同的过期时间，在同一时刻出现大面积的缓存过期)，所有原本应该访问缓存的请求都去查询数据库了，而对数据库CPU和内存造成巨大压力，严重的会造成数据库宕机。从而形成一系列连锁反应，造成整个系统崩溃。</li>
+<li><strong>解决办法：</strong><ul>
+<li>大多数系统设计者考虑用加锁（ 最多的解决方案）或者队列的方式保证来保证不会有大量的线程对数据库一次性进行读写，从而避免失效时大量的并发请求落到底层存储系统上。还有一个简单方案就时讲缓存失效时间分散开。</li>
 </ul>
 </li>
 </ul>
-<h3 id="谈谈对-IoC-和-DI-的理解"><a href="#谈谈对-IoC-和-DI-的理解" class="headerlink" title="谈谈对 IoC 和 DI 的理解"></a>谈谈对 IoC 和 DI 的理解</h3><ul>
-<li>IoC（Inversion of Control，翻译为“控制反转”）不是一个具体的技术，而是一种设计思想。与传统控制流相比，IoC 会颠倒控制流，在传统的编程中需要开发者自行创建并销毁对象，而在 IoC 中会把这些操作交给框架来处理，这样开发者就不用关注具体的实现细节了，拿来直接用就可以了，这就是控制反转。</li>
-<li>IoC 很好的体现出了面向对象的设计法则之一——好莱坞法则：“别找我们，我们找你”。即由 IoC 容器帮对象找到相应的依赖对象并注入，而不是由对象主动去找。</li>
-<li>DI（Dependency Injection，翻译为“依赖注入”）表示组件间的依赖关系交由容器在运行期自动生成，也就是说，由容器动态的将某个依赖关系注入到组件之中，这样就能提升组件的重用频率。通过依赖注入机制，我们只需要通过简单的配置，就可指定目标需要的资源，完成自身的业务逻辑，而不需要关心资源来自哪里、由谁实现等问题。</li>
-<li>IoC 和 DI 其实是同一个概念从不同角度的描述的，由于控制反转这个概念比较含糊（可能只理解成了容器控制对象这一个层面，很难让人想到谁来维护对象关系），所以 2004 年被开发者尊称为“教父”的 Martin Fowler（世界顶级专家，敏捷开发方法的创始人之一）又给出了一个新的名字“依赖注入”，相对 IoC 而言，“依赖注入”明确描述了“被注入对象依赖 IoC 容器配置依赖对象”。</li>
-</ul>
-<h3 id="Spring-中的单例-bean-的线程安全问题了解吗？"><a href="#Spring-中的单例-bean-的线程安全问题了解吗？" class="headerlink" title="Spring 中的单例 bean 的线程安全问题了解吗？"></a>Spring 中的单例 bean 的线程安全问题了解吗？</h3><ul>
-<li>单例 bean 存在线程问题，主要是因为当多个线程操作同⼀个对象的时候，对这个对象的⾮静态成员变量的写操作会存在线程安全问题。在类中定义⼀个ThreadLocal成员变量，将需要的可变成员变量保存在 ThreadLocal 中（推荐的⼀种⽅式）。</li>
-</ul>
-<h3 id="Spring框架中都用到了哪些设计模式"><a href="#Spring框架中都用到了哪些设计模式" class="headerlink" title="Spring框架中都用到了哪些设计模式"></a>Spring框架中都用到了哪些设计模式</h3><ul>
-<li>工厂模式：BeanFactory就是简单工厂模式的体现，用来创建对象的实例</li>
-<li>单例模式：Bean默认为单例模式</li>
-<li>代理模式：Spring的AOP功能用到了JDK的动态代理和CGLIB字节码生成技术</li>
-<li>模板方法：用来解决代码重复的问题。比如. RestTemplate, JmsTemplate, JpaTemplate</li>
-<li>观察者模式：定义对象键一种一对多的依赖关系，当一个对象的状态发生改变时，所有依赖于它的对象都会得到通知被制动更新，如Spring中listener的实现–ApplicationListener，Spring 事件驱动模型就是观察者模式很经典的⼀个应⽤。</li>
-<li>适配器模式 :Spring AOP 的增强或通知(Advice)使⽤到了适配器模式、spring MVC 中也是⽤到了适配器模式适配 Controller 。</li>
-</ul>
-<h3 id="Spring中Autowired和Resource关键字的区别？"><a href="#Spring中Autowired和Resource关键字的区别？" class="headerlink" title="Spring中Autowired和Resource关键字的区别？"></a>Spring中Autowired和Resource关键字的区别？</h3><ul>
-<li>@Resource和@Autowired都是做bean的注入时使用，其实@Resource并不是Spring的注解，它的包是javax.annotation.Resource，需要导入，但是Spring支持该注解的注入。</li>
-<li>Autowired注解是按照类型（byType）装配依赖对象，默认情况下它要求依赖对象必须存在，如果允许null值，可以设置它的required属性为false。如果我们想使用按照名称（byName）来装配，可以结合@Qualififier注解一起使用：</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestServiceImpl</span> </span>&#123; </span><br><span class="line">  <span class="comment">// 下面两种@Autowired只要使用一种即可 </span></span><br><span class="line">  <span class="meta">@Autowired</span> </span><br><span class="line">  <span class="keyword">private</span> UserDao userDao; <span class="comment">// 用于字段上 </span></span><br><span class="line">  </span><br><span class="line">  <span class="meta">@Autowired</span>  <span class="comment">// 用于属性的方法上</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUserDao</span><span class="params">(UserDao userDao)</span> </span></span><br><span class="line"><span class="function">  </span>&#123;  </span><br><span class="line">    <span class="keyword">this</span>.userDao = userDao; </span><br><span class="line">  &#125; </span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// @Autowired注解是按照类型（byType）装配依赖对象，默认情况下它要求依赖对象必须存在，如果允</span></span><br><span class="line"><span class="comment">// 许null值，可以设置它的required属性为false。如果我们想使用按照名称（byName）来装配，可以结</span></span><br><span class="line"><span class="comment">// 合@Qualifier注解一起使用。如下：</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestServiceImpl</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Autowired</span> </span><br><span class="line">  <span class="meta">@Qualifier</span>(<span class="string">"userDao"</span>) <span class="keyword">private</span> UserDao userDao;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>Resource默认按照ByName自动注入，由J2EE提供，需要导入包javax.annotation.Resource。@Resource有两个重要的属性：name和type，而Spring将@Resource注解的name属性解析为bean的名字，而type属性则解析为bean的类型。所以，如果使用name属性，则使用byName的自动注入策略，而使用type属性时则使用byType自动注入策略。如果既不制定name也不制定type属性，这时将通过反射机制使用byName自动注入策略。</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestServiceImpl</span> </span>&#123; </span><br><span class="line">  <span class="comment">// 下面两种@Resource只要使用一种即可 </span></span><br><span class="line">  </span><br><span class="line">  <span class="comment">// 用于字段上 </span></span><br><span class="line">  <span class="meta">@Resource</span>(name=<span class="string">"userDao"</span>) </span><br><span class="line">  <span class="keyword">private</span> UserDao userDao; </span><br><span class="line">  </span><br><span class="line">  <span class="comment">// 用于属性的setter方法上 </span></span><br><span class="line">  <span class="meta">@Resource</span>(name=<span class="string">"userDao"</span>) </span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUserDao</span><span class="params">(UserDao userDao)</span> </span>&#123; </span><br><span class="line">    <span class="keyword">this</span>.userDao = userDao;</span><br><span class="line">  &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="Bean注册方式有几种？"><a href="#Bean注册方式有几种？" class="headerlink" title="Bean注册方式有几种？"></a>Bean注册方式有几种？</h3><ul>
-<li>XML 配置文件的注册方式</li>
-</ul>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"person"</span> <span class="attr">class</span>=<span class="string">"org.springframework.beans.Person"</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"id"</span> <span class="attr">value</span>=<span class="string">"1"</span>/&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"name"</span> <span class="attr">value</span>=<span class="string">"Java"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>Java 注解的注册方式</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 可以使用 @Component 注解方式来注册 Bean</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">   <span class="keyword">private</span> Integer id;</span><br><span class="line">   <span class="keyword">private</span> String name</span><br><span class="line">   <span class="comment">// 忽略其他方法</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// @Bean 注解方式来注册 Bean</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">   <span class="meta">@Bean</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> Person  <span class="title">person</span><span class="params">()</span></span>&#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">new</span> Person();</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="comment">// 忽略其他方法</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>Java API 的注册方式</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用 BeanDefinitionRegistry.registerBeanDefinition() 方法的方式注册 Bean	</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomBeanDefinitionRegistry</span> <span class="keyword">implements</span> <span class="title">BeanDefinitionRegistryPostProcessor</span> </span>&#123;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">postProcessBeanFactory</span><span class="params">(ConfigurableListableBeanFactory beanFactory)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">postProcessBeanDefinitionRegistry</span><span class="params">(BeanDefinitionRegistry registry)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">		RootBeanDefinition personBean = <span class="keyword">new</span> RootBeanDefinition(Person<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">		<span class="comment">// 新增 Bean</span></span><br><span class="line">		registry.registerBeanDefinition(<span class="string">"person"</span>, personBean);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/06/30/%E9%9D%A2%E8%AF%95%E9%A2%98-Spring/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/16/%E7%88%AC%E8%99%AB%E5%85%A5%E9%97%A8selenium/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/03/16/%E7%88%AC%E8%99%AB%E5%85%A5%E9%97%A8selenium/" class="post-title-link" itemprop="url">爬虫入门selenium</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-03-16 10:44:05" itemprop="dateCreated datePublished" datetime="2019-03-16T10:44:05+08:00">2019-03-16</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-31 10:11:59" itemprop="dateModified" datetime="2020-08-31T10:11:59+08:00">2020-08-31</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%88%AC%E8%99%AB/" itemprop="url" rel="index"><span itemprop="name">爬虫</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="Selenium"><a href="#Selenium" class="headerlink" title="Selenium"></a>Selenium</h2><blockquote>
-<p>Selenium是最广泛使用的开源Web UI（用户界面）自动化测试套件之一。它最初由Jason Huggins于2004年开发，作为Thought Works的内部工具。Selenium支持跨不同浏览器，平台和编程语言的自动化。</p>
-</blockquote>
-<ul>
-<li><p>Selenium可以轻松部署在Windows，Linux，Solaris和Macintosh等平台上。此外，它支持iOS（iOS，Windows Mobile和Android）等移动应用程序的OS（操作系统）。</p>
 </li>
-<li><p>Selenium通过使用特定于每种语言的驱动程序支持各种编程语言.Selenium支持的语言包括C＃，Java，Perl，PHP，Python和Ruby。目前，Selenium Web驱动程序最受Java和C＃欢迎。Selenium测试脚本可以使用任何支持的编程语言进行编码，并且可以直接在大多数现代Web浏览器中运行。Selenium支持的浏览器包括Internet Explorer，Mozilla Firefox，Google Chrome和Safari。</p>
+<li><p>缓存穿透</p>
+<ul>
+<li><p>缓存穿透是指用户查询数据，在数据库没有，自然在缓存中也不会有。这样就导致用户查询的时候，在缓存中找不到，每次都要去数据库再查询一遍，然后返回空（相当于进行了两次无用的查询）。这样请求就绕过缓存直接查数据库，这也是经常提的缓存命中率问题。</p>
 </li>
-</ul>
-<h3 id="Selenium-WebDriver"><a href="#Selenium-WebDriver" class="headerlink" title="Selenium WebDriver"></a>Selenium WebDriver</h3><blockquote>
-<p>Selenium WebDriver是Selenium RC的继承者。Selenium WebDriver接受命令（在Selenese中发送，或通过客户端API）并将它们发送到浏览器。这是通过特定于浏览器的浏览器驱动程序实现的，该驱动程序将命令发送到浏览器并检索结果。大多数浏览器驱动程序实际上启动并访问浏览器应用程序。</p>
-</blockquote>
+<li><p>解决办法</p>
 <ul>
-<li>Selenium WebDriver是Selenium Tool套件中最重要的组件。最新版本“Selenium 2.0”与WebDriver API集成，提供更简单，更简洁的编程接口。</li>
-</ul>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Selenium/selenium-webdriver.png"></p>
-<h3 id="环境配置"><a href="#环境配置" class="headerlink" title="环境配置"></a>环境配置</h3><blockquote>
-<p>这里选用的是Google Chrome测试套件。</p>
-</blockquote>
-<ul>
-<li><p>注意，使用jdk8。</p>
-</li>
-<li><p>下载ChromeDriver</p>
-<ul>
-<li>由三个独立的部分组成。有浏览器本身（“chrome”），Selenium项目提供的语言绑定（“驱动程序”）和从Chromium项目下载的可执行文件，它充当“chrome”和“driver”之间的桥梁。此可执行文件称为“chromedriver”，但我们将尝试将其称为此页面中的“服务器”以减少混淆。</li>
-<li>根据电脑安装的chrome版本选择合适的版本<a href="https://sites.google.com/a/chromium.org/chromedriver/downloads" target="_blank" rel="noopener">下载地址</a></li>
+<li>最常见的则是采用<strong>布隆过滤器</strong>，将所有可能存在的数据哈希到一个足够大的bitmap中，一个一定不存在的数据会被这个bitmap拦截掉，从而避免了对底层存储系统的查询压力。</li>
+<li>如果一个查询返回的数据为空（不管是数据不存在，还是系统故障），我们仍然把这个空结果进行缓存，但它的过期时间会很短，最长不超过五分钟。通过这个直接设置的默认值存放到缓存，这样第二次到缓冲中获取就有值了，而不会继续访问数据库，这种办法最简单粗暴。</li>
+<li><strong>布隆过滤器（推荐）</strong><ul>
+<li>就是引入了k(k&gt;1)k(k&gt;1)个相互独立的哈希函数，保证在给定的空间、误判率下，完成元素判重的过程。它的优点是空间效率和查询时间都远远超过一般的算法，缺点是有一定的误识别率和删除困难。Hash存在一个冲突（碰撞）的问题，用同一个Hash得到的两个URL的值有可能相同。为了减少冲突，我们可以多引入几个Hash，如果通过其中的一个Hash值我们得出某元素不在集合中，那么该元素肯定不在集合中。只有在所有的Hash函数告诉我们该元素在集合中时，才能确定该元素存在于集合中。这便是Bloom-Filter的基本思想。Bloom-Filter一般用于在大数据量的集合中判定某元素是否存在。</li>
 </ul>
 </li>
 </ul>
-<h4 id="快速安装"><a href="#快速安装" class="headerlink" title="快速安装"></a>快速安装</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Mac users with Homebrew installed: </span></span><br><span class="line">brew tap homebrew/cask &amp;&amp; brew cask install chromedriver</span><br><span class="line"><span class="comment"># Debian based Linux distros: </span></span><br><span class="line">sudo apt-get install chromium-chromedriver</span><br></pre></td></tr></table></figure>
-
-<h4 id="快速更新"><a href="#快速更新" class="headerlink" title="快速更新"></a>快速更新</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Mac users with Homebrew reInstall </span></span><br><span class="line">brew cask reinstall chromedriver</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/03/16/%E7%88%AC%E8%99%AB%E5%85%A5%E9%97%A8selenium/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/04/%E7%88%AC%E8%99%AB%E5%85%A5%E9%97%A8xpath/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/03/04/%E7%88%AC%E8%99%AB%E5%85%A5%E9%97%A8xpath/" class="post-title-link" itemprop="url">爬虫入门xpath</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-03-04 11:37:52" itemprop="dateCreated datePublished" datetime="2019-03-04T11:37:52+08:00">2019-03-04</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-31 10:08:26" itemprop="dateModified" datetime="2020-08-31T10:08:26+08:00">2020-08-31</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%88%AC%E8%99%AB/" itemprop="url" rel="index"><span itemprop="name">爬虫</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>​     衔接上一篇<a href="https://z201.cn/2019/03/02/%E7%88%AC%E8%99%AB%E5%85%A5%E9%97%A8/" target="_blank" rel="noopener">爬虫入门</a>。为了更好爬输出，有必要Xpath用法有一定了解。</p>
-<p>​    了解Xpath之前先了解下XML、HTML。如果完全不知道是什么，建议系统学习HTML、XML下阅读下文。</p>
-</blockquote>
-<h2 id="XML"><a href="#XML" class="headerlink" title="XML"></a>XML</h2><blockquote>
-<p><strong>可扩展标记语言</strong>（英语：E<strong>x</strong>tensible <strong>M</strong>arkup <strong>L</strong>anguage，简称：<strong>XML</strong>），是一种标记语言。标记指计算机所能理解的信息符号，通过此种标记，计算机之间可以处理包含各种信息的文章等。如何定义这些标记，既可以选择国际通用的标记语言，比如HTML，也可以使用像XML这样由相关人士自由决定的标记语言，这就是语言的可扩展性。XML是从标准通用标记语言（SGML）中简化修改出来的。它主要用到的有可扩展标记语言、可扩展样式语言（XSL）、XBRL和XPath等。 </p>
-</blockquote>
-<p>示例-0</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">note</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">to</span>&gt;</span>George<span class="tag">&lt;/<span class="name">to</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">from</span>&gt;</span>John<span class="tag">&lt;/<span class="name">from</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">heading</span>&gt;</span>Reminder<span class="tag">&lt;/<span class="name">heading</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span>Don't forget the meeting!<span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">note</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="HTML"><a href="#HTML" class="headerlink" title="HTML"></a>HTML</h2><blockquote>
-<p><strong>超文本标记语言</strong>（英语：<strong>H</strong>yper<strong>T</strong>ext <strong>M</strong>arkup <strong>L</strong>anguage，简称：<strong>HTML</strong>）是一种用于创建网页的标准标记语言。HTML是一种基础技术，常与CSS、JavaScript一起被众多网站用于设计令人赏心悦目的网页、网页应用程序以及移动应用程序的用户界面。网页浏览器可以读取HTML文件，并将其渲染成可视化网页。HTML描述了一个网站的结构语义随着线索的呈现，使之成为一种标记语言而非编程语言。</p>
-<p>HTML元素是构建网站的基石。HTML允许嵌入图像与对象，并且可以用于创建交互式表单，它被用来结构化信息——例如标题、段落和列表等等，也可用来在一定程度上描述文档的外观和语义。HTML的语言形式为尖括号包围的HTML元素（如<code>&lt;html&gt;</code>），浏览器使用HTML标签和脚本来诠释网页内容，但不会将它们显示在页面上。</p>
-<p>HTML可以嵌入如JavaScript的脚本语言，它们会影响HTML网页的行为。网页浏览器也可以引用层叠样式表（CSS）来定义文本和其它元素的外观与布局。维护HTML和CSS标准的组织万维网联盟（W3C）鼓励人们使用CSS替代一些用于表现的HTML元素。</p>
-</blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/03/04/%E7%88%AC%E8%99%AB%E5%85%A5%E9%97%A8xpath/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/02/%E7%88%AC%E8%99%AB%E5%85%A5%E9%97%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/03/02/%E7%88%AC%E8%99%AB%E5%85%A5%E9%97%A8/" class="post-title-link" itemprop="url">爬虫入门</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-03-02 12:03:21" itemprop="dateCreated datePublished" datetime="2019-03-02T12:03:21+08:00">2019-03-02</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-31 10:08:09" itemprop="dateModified" datetime="2020-08-31T10:08:09+08:00">2020-08-31</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%88%AC%E8%99%AB/" itemprop="url" rel="index"><span itemprop="name">爬虫</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>既然sakila的数据不是很好用，干脆自己爬点数据吧。</p>
-</blockquote>
+</li>
+</ul>
+</li>
+<li><p>缓存预热</p>
 <ul>
-<li>在 <a href="https://z201.cn/2019/02/28/%E5%AE%9E%E6%88%98-sakila%E6%95%B0%E6%8D%AE%E5%BA%93%E9%A1%B9%E7%9B%AE/" target="_blank" rel="noopener">实战-sakila数据库项目</a> 介绍了sakila数据开发应用，结果发现只有文字数据，而且影片数据也不理想，所以这里需要使用爬虫从万能的互联网上抓点数据。</li>
+<li>缓存预热这个应该是一个比较常见的概念，缓存预热就是系统上线后，将相关的缓存数据直接加载到缓存系统。这样就可以避免在用户请求的时候，先查询数据库，然后再将数据缓存的问题！用户直接查询事先被预热的缓存数据！</li>
 </ul>
-<h3 id="目标选择"><a href="#目标选择" class="headerlink" title="目标选择"></a>目标选择</h3><ul>
-<li>腾讯视频</li>
-</ul>
-<h3 id="抓取类型"><a href="#抓取类型" class="headerlink" title="抓取类型"></a>抓取类型</h3><ul>
-<li>电影</li>
-</ul>
-<h3 id="技术选型"><a href="#技术选型" class="headerlink" title="技术选型"></a>技术选型</h3><ul>
-<li><code> jsoup</code></li>
-</ul>
-<h3 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h3><blockquote>
-<p>简单的单元测试入门。jsoup的用法可以直接查看官方文档。</p>
-</blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String UA_PHONE = <span class="string">"Mozilla/5.0 (Linux; Android 4.3; Nexus 10 Build/JSS15Q) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.23 Safari/537.36"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String UA_PC = <span class="string">"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String QQ_PAGE_MOVIE = <span class="string">"http://v.qq.com/x/list/movie?itype=-1&amp;offset=1"</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">	Document document = Jsoup.connect(QQ_PAGE_MOVIE)</span><br><span class="line">            .userAgent(UA_PC)</span><br><span class="line">            .timeout(TIME_OUT)</span><br><span class="line">            .ignoreContentType(<span class="keyword">true</span>).get();</span><br><span class="line">      Elements elements = document.select(<span class="string">"li.list_item a.figure"</span>);</span><br><span class="line">        <span class="keyword">for</span> (Element element : elements) &#123;</span><br><span class="line">            String url = element.attr(<span class="string">"href"</span>);</span><br><span class="line">            String title = element.select(<span class="string">"img"</span>).attr(<span class="string">"alt"</span>);</span><br><span class="line">            String image = element.select(<span class="string">"img"</span>).attr(<span class="string">"r-lazyload"</span>);</span><br><span class="line">            System.out.println(<span class="string">"href  "</span> + url + <span class="string">"   title  "</span> + title + <span class="string">"  image  "</span> + image);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/03/02/%E7%88%AC%E8%99%AB%E5%85%A5%E9%97%A8/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/07/16/%E5%AE%9E%E8%B7%B5-eureka%E9%92%89%E9%92%89%E5%91%8A%E8%AD%A6%E9%80%9A%E7%9F%A5/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/16/%E5%AE%9E%E8%B7%B5-eureka%E9%92%89%E9%92%89%E5%91%8A%E8%AD%A6%E9%80%9A%E7%9F%A5/" class="post-title-link" itemprop="url">实践-eureka钉钉告警通知</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-07-16 17:04:36" itemprop="dateCreated datePublished" datetime="2020-07-16T17:04:36+08:00">2020-07-16</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-26 22:24:02" itemprop="dateModified" datetime="2020-08-26T22:24:02+08:00">2020-08-26</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本篇幅只是回顾使用eureka的时候如何钉钉告警。</p>
-</blockquote>
-<h3 id="eureka如何快速实现钉钉告警"><a href="#eureka如何快速实现钉钉告警" class="headerlink" title="eureka如何快速实现钉钉告警"></a>eureka如何快速实现钉钉告警</h3><p><a href="https://z201.cn/2020/07/15/%E5%AE%9E%E8%B7%B5-spring-boot%E5%BC%82%E5%B8%B8%E9%92%89%E9%92%89%E9%80%9A%E7%9F%A5/" target="_blank" rel="noopener">实践-spring-boot异常钉钉通知</a></p>
-<p>​        上面实践了springboot全局异常钉钉告警机制。这篇主要回顾eureka监听机制钉钉告警。在日常维护工作中，如果出现网络抖动或者其它问题导致应用不可用，需要第一件发出告警提醒相关人员尽快处理。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">eureka -&gt;&gt; eventListener : event</span><br><span class="line">eventListener -&gt;&gt;  钉钉 : alarmNoticeSend</span><br><span class="line">钉钉 -&gt;&gt; 开发人员  : eurekaInstanceInfo</span><br></pre></td></tr></table></figure>
-
+</li>
+<li><p>缓存更新</p>
 <ul>
-<li>实例图</li>
+<li>除了缓存服务器自带的缓存失效策略之外（Redis默认的有6中策略可供选择），我们还可以根据具体的业务需求进行自定义的缓存淘汰，常见的策略有两种：<ul>
+<li>定时去清理过期的缓存；</li>
+<li>当有用户请求过来时，再判断这个请求所用到的缓存是否过期，过期的话就去底层系统得到新数据并更新缓存。</li>
 </ul>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/eureka%E5%AE%9E%E4%BE%8B%E9%92%89%E9%92%89%E5%91%8A%E8%AD%A6.png"></p>
-<p>​        关键代码</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@EventListener</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">listen</span><span class="params">(EurekaInstanceCanceledEvent event)</span> </span>&#123;</span><br><span class="line">        log.error(<span class="string">"告警通知 [&#123;&#125;] 服务注销 timestamp [&#123;&#125;] serverId [&#123;&#125;]"</span>,</span><br><span class="line">                event.getAppName(),</span><br><span class="line">                event.getTimestamp(),</span><br><span class="line">                event.getServerId());</span><br><span class="line">        <span class="keyword">if</span> (!event.isReplication()) &#123;</span><br><span class="line">            ServiceNotice serviceNotice = <span class="keyword">new</span> ServiceNotice();</span><br><span class="line">            serviceNotice.setTitle(<span class="string">"告警通知 服务下线"</span>);</span><br><span class="line">            serviceNotice.setAppName(event.getAppName());</span><br><span class="line">            serviceNotice.setTimestamp(event.getTimestamp());</span><br><span class="line">            serviceNotice.setServerId(event.getServerId());</span><br><span class="line">            serviceNotice.setProfiles(active);</span><br><span class="line">            alarmNoticeManage.createNotice(serviceNotice, <span class="string">""</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@EventListener</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">listen</span><span class="params">(EurekaInstanceRegisteredEvent event)</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">"告警通知 [&#123;&#125;] 服务注册 timestamp [&#123;&#125;] id [&#123;&#125;] ipAddr [&#123;&#125;] "</span>,</span><br><span class="line">                event.getInstanceInfo().getAppName(),</span><br><span class="line">                event.getTimestamp(),</span><br><span class="line">                event.getInstanceInfo().getId(),</span><br><span class="line">                event.getInstanceInfo().getIPAddr()</span><br><span class="line">        );</span><br><span class="line">        <span class="keyword">if</span> (!event.isReplication()) &#123;</span><br><span class="line">            ServiceNotice serviceNotice = <span class="keyword">new</span> ServiceNotice();</span><br><span class="line">            serviceNotice.setTitle(<span class="string">"告警通知 服务上线"</span>);</span><br><span class="line">            serviceNotice.setAppName(event.getInstanceInfo().getAppName());</span><br><span class="line">            serviceNotice.setTimestamp(event.getTimestamp());</span><br><span class="line">            serviceNotice.setServerId(event.getInstanceInfo().getId());</span><br><span class="line">            serviceNotice.setProfiles(active);</span><br><span class="line">            alarmNoticeManage.createNotice(serviceNotice, <span class="string">""</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
+</li>
+<li>两者各有优劣，第一种的缺点是维护大量缓存的key是比较麻烦的，第二种的缺点就是每次用户请求过来都要判断缓存失效，逻辑相对比较复杂！具体用哪种方案，大家可以根据自己的应用场景来权衡。</li>
+</ul>
+</li>
+<li><p>缓存降级</p>
 <ul>
-<li>效果如下</li>
+<li>当访问量剧增、服务出现问题（如响应时间慢或不响应）或非核心服务影响到核心流程的性能时，仍然需要保证服务还是可用的，即使是有损服务。系统可以根据一些关键数据进行自动降级，也可以配置开关实现人工降级。<ul>
+<li>以参考日志级别设置预案：<ul>
+<li>一般：比如有些服务偶尔因为网络抖动或者服务正在上线而超时，可以自动降级；</li>
+<li>警告：有些服务在一段时间内成功率有波动（如在95~100%之间），可以自动降级或人工降级，并发送告警；</li>
+<li>错误：比如可用率低于90%，或者数据库连接池被打爆了，或者访问量突然猛增到系统能承受的最大阀值，此时可以根据情况自动降级或者人工降级；</li>
+<li>严重错误：比如因为特殊原因数据错误了，此时需要紧急人工降级。</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">告警通知 服务下线</span><br><span class="line">2020-07-16 16:03:20 Z-GATEWAY 192.168.31.7:z-gateway:9000 profiles dev1</span><br><span class="line">@xxx</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>eureka查看源码得知有五个事件。</li>
+</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">EurekaServerStartedEvent - Eureka服务端启动事件</span><br><span class="line">EurekaRegistryAvailableEvent - Eureka服务端可用事件</span><br><span class="line">EurekaInstanceRegisteredEvent - Eureka客户端服务注册事件</span><br><span class="line">EurekaInstanceRenewedEvent - Eureka客户端续约事件</span><br><span class="line">EurekaInstanceCanceledEvent - Eureka客户端下线事件</span><br></pre></td></tr></table></figure>
-
-<p>这里就比较简单了。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/05/08/Idea%E4%BD%BF%E7%94%A8%E7%9B%B8%E5%85%B3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/05/08/Idea%E4%BD%BF%E7%94%A8%E7%9B%B8%E5%85%B3/" class="post-title-link" itemprop="url">Idea常用插件</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-05-08 16:35:04" itemprop="dateCreated datePublished" datetime="2019-05-08T16:35:04+08:00">2019-05-08</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-25 23:19:05" itemprop="dateModified" datetime="2020-08-25T23:19:05+08:00">2020-08-25</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>有必要记录下自己常用的插件，避免特殊事件的发生。</p>
-</blockquote>
-<h4 id="Free-Mybatis-plugin"><a href="#Free-Mybatis-plugin" class="headerlink" title="Free Mybatis plugin"></a>Free Mybatis plugin</h4><blockquote>
-<p>Mybatis 插件，可以定位java和xml关系。通过java接口快速生成相关xml文件或者方法。</p>
-</blockquote>
-<h4 id="Mybaits-Log-plugin"><a href="#Mybaits-Log-plugin" class="headerlink" title="Mybaits Log plugin"></a>Mybaits Log plugin</h4><blockquote>
-<p>使用插件将mybaits默认的日志输出转换成可以运行的sql日志。</p>
-</blockquote>
-<h4 id="Alibaba-java-coding-guidelines"><a href="#Alibaba-java-coding-guidelines" class="headerlink" title="Alibaba-java-coding-guidelines"></a>Alibaba-java-coding-guidelines</h4><blockquote>
-<p>阿里巴巴java代码检查工具</p>
-</blockquote>
-<h4 id="json2pojo"><a href="#json2pojo" class="headerlink" title="json2pojo"></a>json2pojo</h4><blockquote>
-<p>json转bean的工具</p>
-</blockquote>
-<h4 id="查看某个方法被调用的地方。-鼠标选中方法名称"><a href="#查看某个方法被调用的地方。-鼠标选中方法名称" class="headerlink" title="查看某个方法被调用的地方。(鼠标选中方法名称)"></a>查看某个方法被调用的地方。(鼠标选中方法名称)</h4><p><code>Navigate | Call Hierarchy </code> 快捷键<code>control + option + h</code></p>
-<h4 id="Genterate-代码生成"><a href="#Genterate-代码生成" class="headerlink" title="Genterate 代码生成"></a>Genterate 代码生成</h4><p><code>Code | Genterate</code> #快捷键 <code>command + n</code></p>
-<h4 id="Copyright-模版"><a href="#Copyright-模版" class="headerlink" title="Copyright 模版"></a>Copyright 模版</h4><p><code>Edit | Copyright | Copyright profiles </code></p>
-<ul>
-<li>样板</li>
+</li>
+<li>服务降级的目的，是为了防止Redis服务故障，导致数据库跟着一起发生雪崩问题。因此，对于不重要的缓存数据，可以采取服务降级策略，例如一个比较常见的做法就是，Redis出现问题，不去数据库查询，而是直接返回默认值给用户。</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Copyright (c) $today.year  </span><br><span class="line">@Author:z201.coding@gamil.com</span><br><span class="line">@LastModified:$today.format(&quot;yyyy-MM-dd&quot;)</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/05/08/Idea%E4%BD%BF%E7%94%A8%E7%9B%B8%E5%85%B3/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/21/%E5%88%9D%E6%8E%A2Eureka%E4%B8%8EZookeeper/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/04/21/%E5%88%9D%E6%8E%A2Eureka%E4%B8%8EZookeeper/" class="post-title-link" itemprop="url">初探Eureka与Zookeeper</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-04-21 06:14:16" itemprop="dateCreated datePublished" datetime="2018-04-21T06:14:16+08:00">2018-04-21</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-17 10:23:45" itemprop="dateModified" datetime="2020-08-17T10:23:45+08:00">2020-08-17</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA/" itemprop="url" rel="index"><span itemprop="name">基础理论</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>服务注册中心，给客户端提供可供调用的服务列表，客户端在进行远程服务调用时，根据服务列表然后选择服务提供方的服务地址进行服务调用。服务注册中心在分布式系统中大量应用，是分布式系统中不可或缺的组件，例如rocketmq的name server，hdfs中的namenode，dubbo中的zk注册中心，spring cloud中的服务注册中心eureka。  在spring cloud中，除了可以使用eureka作为注册中心外，还可以通过配置的方式使用zookeeper作为注册中心。既然这样，我们该如何选择注册中心的实现呢？</p>
-</blockquote>
-<h3 id="CAP定理"><a href="#CAP定理" class="headerlink" title="CAP定理"></a>CAP定理</h3><blockquote>
-<p>又被称作布鲁尔定理（Eric Brewer）它指出对于一个分布式计算系统来说，不可能同时满足以下三点：</p>
-</blockquote>
-<ol>
-<li>强一致性（Consistency）：系统在执行某项操作后数据状态仍然处于一致，例如在分布式系统中，更新操作执行成功后所有的用户都应该读取到最新的值，这样的系统被认为具有强一致性。</li>
-<li>可用性（Availability）：每一个操作总是能够在一定的时间内返回结果</li>
-<li>分区容错性（Partition tolerance）：单个节点故障不应导致整个系统崩溃，也就是说尽管网络在节点之间丢弃（或延迟）任意数量的消息，但是系统继续操作。</li>
+</li>
 </ol>
+<h3 id="Redis-的线程模型"><a href="#Redis-的线程模型" class="headerlink" title="Redis 的线程模型"></a>Redis 的线程模型</h3><ul>
+<li>redis 内部使⽤⽂件事件处理器<code>file event handler</code>，这个⽂件事件处理器是单线程的，所以redis 才叫做单线程的模型。它采⽤ IO 多路复⽤机制同时监听多个 socket，根据 socket 上的事件来选择对应的事件处理器进⾏处理。</li>
+</ul>
+<h3 id="单线程的Redis为什么这么快"><a href="#单线程的Redis为什么这么快" class="headerlink" title="单线程的Redis为什么这么快"></a>单线程的Redis为什么这么快</h3><ul>
+<li>存内存操作。</li>
+<li>单线程操作，避免平凡的上下文切换。</li>
+<li>采用了非阻塞I/O多路复用操作。（这里的I/O是指网络I/O）</li>
+</ul>
+<h3 id="Redis的过期策略以及内存淘汰机制"><a href="#Redis的过期策略以及内存淘汰机制" class="headerlink" title="Redis的过期策略以及内存淘汰机制"></a>Redis的过期策略以及内存淘汰机制</h3><ul>
+<li><p>redis采用的是定期删除+惰性删除策略。</p>
+<ul>
+<li>定期删除，redis默认每个100ms检查，是否有过期的key,有过期key则删除。需要说明的是，redis不是每个100ms将所有的key检查一次，而是随机抽取进行检查(如果每隔100ms,全部key进行检查，redis岂不是卡死)。因此，如果只采用定期删除策略，会导致很多key到时间没有删除。惰性删除派上用场。也就是说在你获取某个key的时候，redis会检查一下，这个key如果设置了过期时间那么是否过期了？如果过期了此时就会删除。</li>
+</ul>
+</li>
+<li><p>配内存淘汰策略</p>
+<ul>
+<li><p><strong>volatile-lru</strong>：从已设置过期时间的数据集（server.db[i].expires）中挑选最近最少使用的数据淘汰</p>
+</li>
+<li><p><strong>volatile-ttl</strong>：从已设置过期时间的数据集（server.db[i].expires）中挑选将要过期的数据淘汰</p>
+</li>
+<li><p><strong>volatile-random</strong>：从已设置过期时间的数据集（server.db[i].expires）中任意选择数据淘汰</p>
+</li>
+<li><p><strong>allkeys-lru</strong>：从数据集（server.db[i].dict）中挑选最近最少使用的数据淘汰</p>
+</li>
+<li><p><strong>allkeys-random</strong>：从数据集（server.db[i].dict）中任意选择数据淘汰</p>
+</li>
+<li><p><strong>no-enviction</strong>（驱逐）：禁止驱逐数据，新写入操作会报错</p>
+</li>
+<li><p>如果没有设置 expire 的key, 不满足先决条件(prerequisites); 那么 volatile-lru, volatile-random 和</p>
+<p>volatile-ttl 策略的行为, 和 noeviction(不删除) 基本上一致。</p>
+</li>
+</ul>
+</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/07/03/%E9%9D%A2%E8%AF%95%E9%A2%98-Redis/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/07/03/%E9%9D%A2%E8%AF%95%E9%A2%98-Mysql/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/07/03/%E9%9D%A2%E8%AF%95%E9%A2%98-Mysql/" class="post-title-link" itemprop="url">面试题-Mysql</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-07-03 04:33:01" itemprop="dateCreated datePublished" datetime="2020-07-03T04:33:01+08:00">2020-07-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-04-06 23:34:02" itemprop="dateModified" datetime="2021-04-06T23:34:02+08:00">2021-04-06</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9D%A2%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">面试</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>本章属于持续学习、长期更修。</p>
+</blockquote>
+<h3 id="数据库的三范式是什么"><a href="#数据库的三范式是什么" class="headerlink" title="数据库的三范式是什么"></a>数据库的三范式是什么</h3><ul>
+<li>第一范式：列不可再分</li>
+<li>第二范式：行可以唯一区分，主键约束</li>
+<li>第三范式：表的非主属性不能依赖与其他表的非主属性 外键约束</li>
+<li>且三大范式是一级一级依赖的，第二范式建立在第一范式上，第三范式建立第一第二范式上。</li>
+<li>第一范式（1NF）：数据库表中的字段都是单一属性的，不可再分。这个单一属性由基本类型构成，包括整型、实数、字符型、逻辑型、日期型等。</li>
+<li>第二范式（2NF）：数据库表中不存在非关键字段对任一候选关键字段的部分函数依赖（部分函数依赖指的是存在组合关键字中的某些字段决定非关键字段的情况），也即所有非关键字段都完全依赖于任意一组候选关键字。</li>
+<li>第三范式（3NF）：在第二范式的基础上，数据表中如果不存在非关键字段对任一候选关键字段的传递函数依赖则符合第三范式。所谓传递函数依赖，指的是如 果存在”A → B → C”的决定关系，则C传递函数依赖于A。因此，满足第三范式的数据库表应该不存在如下依赖关系： 关键字段 → 非关键字段 x → 非关键字段y</li>
+</ul>
+<h3 id="说下mysql有几种数据库引擎"><a href="#说下mysql有几种数据库引擎" class="headerlink" title="说下mysql有几种数据库引擎"></a>说下mysql有几种数据库引擎</h3><blockquote>
+<p>不清楚，因为每个版本发布都会新增一些。但是我最熟悉是的innodb。</p>
+</blockquote>
+<h3 id="说下mysql-Master-slave-的原理"><a href="#说下mysql-Master-slave-的原理" class="headerlink" title="说下mysql Master slave 的原理"></a>说下mysql Master slave 的原理</h3><ul>
+<li><p><strong>主</strong>：binlog线程——记录下所有改变了数据库数据的语句，放进master上的binlog中；</p>
+</li>
+<li><p><strong>从</strong>：io线程——在使用start slave 之后，负责从master上拉取 binlog 内容，放进 自己的relay log中；</p>
+</li>
+<li><p><strong>从</strong>：sql执行线程——执行relay log中的语句；</p>
+</li>
+</ul>
+<h3 id="MySQL中myisam与innodb的区别"><a href="#MySQL中myisam与innodb的区别" class="headerlink" title="MySQL中myisam与innodb的区别"></a>MySQL中myisam与innodb的区别</h3><ul>
+<li>InnoDB支持事物，而MyISAM不支持事物</li>
+<li>InnoDB支持行级锁，而MyISAM支持表级锁</li>
+<li>InnoDB支持MVCC, 而MyISAM不支持</li>
+<li>InnoDB支持外键，而MyISAM不支持</li>
+<li>InnoDB不支持全文索引，而MyISAM支持。</li>
+</ul>
+<h3 id="innodb引擎的4大特性"><a href="#innodb引擎的4大特性" class="headerlink" title="innodb引擎的4大特性"></a>innodb引擎的4大特性</h3><ul>
+<li>插入缓冲（insert buffer),</li>
+<li>二次写(double write),</li>
+<li>自适应哈希索引(ahi),</li>
+<li>预读(read ahead)</li>
+<li>支持事务操作，具有事务 ACID 隔离特性，默认的隔离级别是<code>可重复读(repetable-read)</code>、通过MVCC（并发版本控制）来实现的。能够解决<code>脏读</code>和<code>不可重复读</code>的问题。</li>
+<li>InnoDB 支持外键操作。</li>
+<li>InnoDB 默认的锁粒度<code>行级锁</code>，并发性能比较好，会发生死锁的情况。</li>
+<li>和 MyISAM 一样的是，InnoDB 存储引擎也有 <code>.frm文件存储表结构</code> 定义，但是不同的是，InnoDB 的表数据与索引数据是存储在一起的，都位于 B+ 数的叶子节点上，而 MyISAM 的表数据和索引数据是分开的。</li>
+<li>InnoDB 有安全的日志文件，这个日志文件用于恢复因数据库崩溃或其他情况导致的数据丢失问题，保证数据的一致性。</li>
+<li>InnoDB 和 MyISAM 支持的索引类型相同，但具体实现因为文件结构的不同有很大差异。</li>
+<li>增删改查性能方面，如果执行大量的增删改操作，推荐使用 InnoDB 存储引擎，它在删除操作时是对行删除，不会重建表。</li>
+</ul>
+<h3 id="什么是事务？"><a href="#什么是事务？" class="headerlink" title="什么是事务？"></a>什么是事务？</h3><ul>
+<li>事务（Transaction）是并发控制的基本单位。所谓的事务，它是一个操作序列，这些操作要么都执行，要么都不执行，它是一个不可分割的工作单位。事务是数据库维护数据一致性的单位，在每个事务结束时，都能保持数据一致性。</li>
+</ul>
+<h3 id="覆盖索引和回表"><a href="#覆盖索引和回表" class="headerlink" title="覆盖索引和回表"></a>覆盖索引和回表</h3><ul>
+<li>覆盖索引指的是在一次查询中，如果一个索引包含或者说覆盖所有需要查询的字段的值，我们就称之为覆盖索引，而不再需要回表查询。而要确定一个查询是否是覆盖索引，我们只需要explain sql语句看Extra的结果是否是“Using index”即可。</li>
+</ul>
+<h3 id="MySQL-事务四大特性"><a href="#MySQL-事务四大特性" class="headerlink" title="MySQL 事务四大特性"></a>MySQL 事务四大特性</h3><blockquote>
+<p>一说到 MySQL 事务，你肯定能想起来四大特性：<code>原子性</code>、<code>一致性</code>、<code>隔离性</code>、<code>持久性</code>。什么是 MySQL 中的事务？</p>
+<p>事务是一组操作，组成这组操作的各个单元，要不全都成功要不全都失败，这个特性就是事务。</p>
+<p>在 MySQL 中，事务是在引擎层实现的，只有使用 <code>innodb</code> 引擎的数据库或表才支持事务。</p>
+</blockquote>
+<ul>
+<li><code>原子性(Atomicity)</code>: 原子性指的就是 MySQL 中的包含事务的操作要么<code>全部成功</code>、要么全部<code>失败回滚</code>，因此事务的操作如果成功就必须要全部应用到数据库，如果操作失败则不能对数据库有任何影响。</li>
+<li><code>一致性(Consistency)</code>：一致性指的是一个事务在执行前后其状态一致。比如 A 和 B 加起来的钱一共是 1000 元，那么不管 A 和 B 之间如何转账，转多少次，事务结束后两个用户的钱加起来还得是 1000，这就是事务的一致性。</li>
+<li><code>持久性(Durability)</code>: 持久性指的是一旦事务提交，那么发生的改变就是永久性的，即使数据库遇到特殊情况比如故障的时候也不会产生干扰。</li>
+<li><code>隔离性(Isolation)</code>：当多个事务同时进行时，就有可能出现<code>脏读(dirty read)</code>、<code>不可重复读(non-repeatable read)</code>、<code>幻读(phantom read)</code> 的情况，为了解决这些并发问题，提出了隔离性的概念。<ul>
+<li>重点说下隔离性它们分别是<code>读未提交(read uncommitted)</code>、<code>读已提交(read committed)</code>、<code>可重复读(repetable read)</code> 和 <code>串行化(serializable)</code>。下面分别来解释一下。</li>
+<li><code>读未提交</code>：读未提交指的是一个事务在提交之前，它所做的修改就能够被其他事务所看到。</li>
+<li><code>读已提交</code>：读已提交指的是一个事务在提交之后，它所做的变更才能够让其他事务看到。</li>
+<li><code>可重复读</code>：可重复读指的是一个事务在执行的过程中，看到的数据是和启动时看到的数据是一致的。未提交的变更对其他事务不可见。</li>
+<li><code>串行化</code>：顾名思义是对于同一行记录，<code>写</code>会加<code>写锁</code>，<code>读</code>会加<code>读锁</code>。当出现读写锁冲突的时候，后访问的事务必须等前一个事务执行完成，才能继续执行。</li>
+</ul>
+</li>
+</ul>
+<h3 id="SQL语句的执行顺序"><a href="#SQL语句的执行顺序" class="headerlink" title="SQL语句的执行顺序"></a>SQL语句的执行顺序</h3><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/SQL%E8%AF%AD%E5%8F%A5%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F.png"></p>
 <blockquote>
-<p>根据CAP原理将数据库分成了满足CA原则、满足CP原则和满足AP原则三大类</p>
+<p>我们在编写一个查询语句的时候</p>
 </blockquote>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span></span><br><span class="line">    &lt; select_list &gt;</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">    &lt; left_table &gt; &lt; join_type &gt;</span><br><span class="line"><span class="keyword">JOIN</span> &lt; right_table &gt; <span class="keyword">ON</span> &lt; join_condition &gt;</span><br><span class="line"><span class="keyword">WHERE</span></span><br><span class="line">    &lt; where_condition &gt;</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span></span><br><span class="line">    &lt; group_by_list &gt;</span><br><span class="line"><span class="keyword">HAVING</span></span><br><span class="line">    &lt; having_condition &gt;</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span></span><br><span class="line">    &lt; order_by_condition &gt;</span><br><span class="line"><span class="keyword">LIMIT</span> &lt; limit_number &gt;</span><br></pre></td></tr></table></figure>
+
 <ol>
-<li>CA：单点集群，满足一致性，可用性，通常在可扩展性上不太强大，比如RDB。</li>
-<li>CP：满足一致性和分区容错性，通常性能不是特别高，如分布式数据库。</li>
-<li>AP：满足可用性和分区容错性，通常可能对一致性要求低一些，如大多数的NoSQL。</li>
+<li>FROM 连接</li>
 </ol>
-<h3 id="BASE（Basically-Available，Soft-state，Eventual-consistency）"><a href="#BASE（Basically-Available，Soft-state，Eventual-consistency）" class="headerlink" title="BASE（Basically Available，Soft-state，Eventual consistency）"></a>BASE（Basically Available，Soft-state，Eventual consistency）</h3><blockquote>
-<p>eBay的架构师Dan Pritchett源于对大规模分布式系统的实践总结，在ACM上发表文章提出BASE理论，BASE理论是对CAP理论的延伸，核心思想是即使无法做到强一致性（Strong Consistency，CAP的一致性就是强一致性），但应用可以采用适合的方式达到最终一致性（Eventual Consitency）。</p>
-</blockquote>
-<ol>
-<li>基本可用（Basically Available）：系统能够基本运行并一直提供服务。</li>
-<li>软状态（Soft-state）：系统不要求一直保持强一致状态。</li>
-<li>最终一致性（Eventual consistency）：系统需要在某一时刻后达到一致性要求。</li>
-</ol>
-<h3 id="Zookeeper保证CP"><a href="#Zookeeper保证CP" class="headerlink" title="Zookeeper保证CP"></a><strong>Zookeeper保证CP</strong></h3><ul>
-<li>当向注册中心查询服务列表时，我们可以容忍注册中心返回的是几分钟以前的注册信息，但不能接受服务直接down掉不可用。也就是说，服务注册功能对可用性的要求要高于一致性。但是zk会出现这样一种情况，当master节点因为网络故障与其他节点失去联系时，剩余节点会重新进行leader选举。问题在于，选举leader的时间太长，30 ~ 120s, 且选举期间整个zk集群都是不可用的，这就导致在选举期间注册服务瘫痪。在云部署的环境下，因网络问题使得zk集群失去master节点是较大概率会发生的事，虽然服务能够最终恢复，但是漫长的选举时间导致的注册长期不可用是不能容忍的。</li>
+<ul>
+<li>首先，对 SELECT 语句执行查询时，对<code>FROM</code> 关键字两边的表执行连接，会形成<code>笛卡尔积</code>，这时候会产生一个<code>虚表VT1(virtual table)</code></li>
 </ul>
-<h3 id="Eureka保证AP"><a href="#Eureka保证AP" class="headerlink" title="Eureka保证AP"></a>Eureka保证AP</h3><ul>
-<li><p>Eureka各个节点都是平等的，几个节点挂掉不会影响正常节点的工作，剩余的节点依然可以提供注册和查询服务。而Eureka的客户端在向某个Eureka注册或如果发现连接失败，则会自动切换至其它节点，只要有一台Eureka还在，就能保证注册服务可用(保证可用性)，只不过查到的信息可能不是最新的(不保证强一致性)。除此之外，Eureka还有一种自我保护机制，如果在15分钟内超过85%的节点都没有正常的心跳，那么Eureka就认为客户端与注册中心出现了网络故障，此时会出现以下几种情况： </p>
-<ol>
-<li>Eureka不再从注册列表中移除因为长时间没收到心跳而应该过期的服务 </li>
-<li>Eureka仍然能够接受新服务的注册和查询请求，但是不会被同步到其它节点上(即保证当前节点依然可用) </li>
-<li>当网络稳定时，当前实例新的注册信息会被同步到其它节点中</li>
+<blockquote>
+<p>首先先来解释一下什么是<code>笛卡尔积</code></p>
+<p>现在我们有两个集合 A = {0,1} , B = {2,3,4}</p>
+<p>那么，集合 A * B 得到的结果就是</p>
+<p>A * B = {(0,2)、(1,2)、(0,3)、(1,3)、(0,4)、(1,4)};</p>
+<p>B * A = {(2,0)、{2,1}、{3,0}、{3,1}、{4,0}、(4,1)};</p>
+<p>上面 A * B 和 B * A 的结果就可以称为两个集合相乘的 <code>笛卡尔积</code></p>
+<p>我们可以得出结论，A 集合和 B 集合相乘，包含了集合 A 中的元素和集合 B 中元素之和，也就是 A 元素的个数 * B 元素的个数</p>
+</blockquote>
+<ol start="2">
+<li>ON 过滤</li>
 </ol>
+<ul>
+<li>然后对 FROM 连接的结果进行 ON 筛选，创建 VT2，把符合记录的条件存在 VT2 中。</li>
+</ul>
+<ol start="3">
+<li>JOIN 连接</li>
+</ol>
+<p>第三步，如果是 <code>OUTER JOIN(left join、right join)</code> ，那么这一步就将添加外部行，如果是 left join 就把 ON 过滤条件的左表添加进来，如果是 right join ，就把右表添加进来，从而生成新的虚拟表 VT3。</p>
+<ol start="4">
+<li>WHERE 过滤</li>
+</ol>
+<ul>
+<li><p>第四步，是执行 WHERE 过滤器，对上一步生产的虚拟表引用 WHERE 筛选，生成虚拟表 VT4。</p>
 </li>
-<li><p>因此， Eureka可以很好的应对因网络故障导致部分节点失去联系的情况，而不会像zookeeper那样使整个注册服务瘫痪。</p>
+<li><p>WHERE 和 ON 的区别</p>
+<ul>
+<li>如果有外部列，ON 针对过滤的是关联表，主表(保留表)会返回所有的列;</li>
+<li>如果没有添加外部列，两者的效果是一样的;</li>
+</ul>
+</li>
+<li><p>应用</p>
+<ul>
+<li>对主表的过滤应该使用 WHERE;</li>
+<li>对于关联表，先条件查询后连接则用 ON，先连接后条件查询则用 WHERE;</li>
+</ul>
+</li>
+</ul>
+<ol start="5">
+<li>GROUP BY</li>
+</ol>
+<ul>
+<li>根据 group by 字句中的列，会对 VT4 中的记录进行分组操作，产生虚拟机表 VT5。果应用了group by，那么后面的所有步骤都只能得到的 VT5 的列或者是聚合函数（count、sum、avg等）。</li>
+</ul>
+<ol start="6">
+<li>HAVING</li>
+</ol>
+<ul>
+<li>紧跟着 GROUP BY 字句后面的是 HAVING，使用 HAVING 过滤，会把符合条件的放在 VT6</li>
+</ul>
+<ol start="7">
+<li>SELECT</li>
+</ol>
+<ul>
+<li>第七步才会执行 SELECT 语句，将 VT6 中的结果按照 SELECT 进行刷选，生成 VT7</li>
+</ul>
+<ol start="8">
+<li>DISTINCT</li>
+</ol>
+<ul>
+<li>在第八步中，会对 TV7 生成的记录进行去重操作，生成 VT8。事实上如果应用了 group by 子句那么 distinct 是多余的，原因同样在于，分组的时候是将列中唯一的值分成一组，同时只为每一组返回一行记录，那么所以的记录都将是不相同的。</li>
+</ul>
+<ol start="9">
+<li>ORDER BY</li>
+</ol>
+<ul>
+<li>应用 order by 子句。按照 order_by_condition 排序 VT8，此时返回的一个游标，而不是虚拟表。sql 是基于集合的理论的，集合不会预先对他的行排序，它只是成员的逻辑集合，成员的顺序是无关紧要的。</li>
+</ul>
+<h3 id="什么是临时表，何时删除临时表"><a href="#什么是临时表，何时删除临时表" class="headerlink" title="什么是临时表，何时删除临时表"></a>什么是临时表，何时删除临时表</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">在 MySQL 中，有三种类型的表</span><br><span class="line">一种是&#96;永久表&#96;，永久表就是创建以后用来长期保存数据的表</span><br><span class="line">一种是&#96;临时表&#96;，临时表也有两类，一种是和永久表一样，只保存临时数据，但是能够长久存在的；还有一种是临时创建的，SQL 语句执行完成就会删除。</span><br><span class="line">一种是&#96;虚表&#96;，虚表其实就是&#96;视图&#96;，数据可能会来自多张表的执行结果。</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>MySQL 会在下面这几种情况产生临时表<ul>
+<li>使用 UNION 查询：UNION 有两种，一种是<code>UNION</code> ，一种是 <code>UNION ALL</code> ，它们都用于联合查询；区别是 使用 UNION 会去掉两个表中的重复数据，相当于对结果集做了一下<code>去重(distinct)</code>。使用 UNION ALL，则不会排重，返回所有的行。使用 UNION 查询会产生临时表。</li>
+<li>使用 <code>TEMPTABLE 算法</code>或者是 UNION 查询中的视图。TEMPTABLE 算法是一种创建临时表的算法，它是将结果放置到临时表中，意味这要 MySQL 要先创建好一个临时表，然后将结果放到临时表中去，然后再使用这个临时表进行相应的查询。</li>
+<li>ORDER BY 和 GROUP BY 的子句不一样时也会产生临时表。</li>
+<li>DISTINCT 查询并且加上 ORDER BY 时；</li>
+<li>SQL 用到 SQL_SMALL_RESULT 选项时；如果查询结果比较小的时候，可以加上 SQL_SMALL_RESULT 来优化，产生临时表</li>
+<li>FROM 中的子查询；</li>
+<li>EXPLAIN 查看执行计划结果的 Extra 列中，如果使用 <code>Using Temporary</code> 就表示会用到临时表。</li>
+</ul>
+</li>
+</ul>
+<h3 id="介绍下InnoDB存储引擎的B-树索引"><a href="#介绍下InnoDB存储引擎的B-树索引" class="headerlink" title="介绍下InnoDB存储引擎的B+树索引"></a>介绍下InnoDB存储引擎的B+树索引</h3><ul>
+<li>每个索引都对应一棵B+树，B+树分为好多层，最下边一层是叶子节点，其余的是内节点。所有用户记录都存储在B+树的叶子节点，所有目录项记录都存储在内节点。</li>
+<li>InnoDB存储引擎会自动为主键（如果没有它会自动帮我们添加）建立聚簇索引，聚簇索引的叶子节点包含完整的用户记录。</li>
+<li>我们可以为自己感兴趣的列建立二级索引，二级索引的叶子节点包含的用户记录由索引列 + 主键组成，所以如果想通过二级索引来查找完整的用户记录的话，需要通过回表操作，也就是在通过二级索引找到主键值之后再到聚簇索引中查找完整的用户记录。</li>
+<li>B+树中每层节点都是按照索引列值从小到大的顺序排序而组成了双向链表，而且每个页内的记录（不论是用户记录还是目录项记录）都是按照索引列的值从小到大的顺序而形成了一个单链表。如果是联合索引的话，则页面和记录先按照联合索引前边的列排序，如果该列值相同，再按照联合索引后边的列排序。</li>
+<li>通过索引查找记录是从B+树的根节点开始，一层一层向下搜索。由于每个页面都按照索引列的值建立了Page Directory（页目录），所以在这些页面中的查找非常快。</li>
+<li>二者SELECT COUNT(*)哪个更快，为什么<ul>
+<li>myisam更快，因为myisam内部维护了一个计数器，可以直接调取。</li>
+</ul>
 </li>
 </ul>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2018/04/21/%E5%88%9D%E6%8E%A2Eureka%E4%B8%8EZookeeper/#more" rel="contents">
+              <a class="btn" href="/2020/07/03/%E9%9D%A2%E8%AF%95%E9%A2%98-Mysql/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -1160,7 +847,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/05/07/%E5%88%9D%E6%8E%A2Modbus/">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/07/01/%E9%9D%A2%E8%AF%95%E9%A2%98-%E7%BA%BF%E7%A8%8B%E6%B1%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -1174,7 +861,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2018/05/07/%E5%88%9D%E6%8E%A2Modbus/" class="post-title-link" itemprop="url">初探Modbus</a>
+            <a href="/2020/07/01/%E9%9D%A2%E8%AF%95%E9%A2%98-%E7%BA%BF%E7%A8%8B%E6%B1%A0/" class="post-title-link" itemprop="url">面试题-线程池</a>
         </h2>
 
         <div class="post-meta">
@@ -1184,14 +871,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2018-05-07 00:00:00" itemprop="dateCreated datePublished" datetime="2018-05-07T00:00:00+08:00">2018-05-07</time>
+              <time title="Created: 2020-07-01 02:12:50" itemprop="dateCreated datePublished" datetime="2020-07-01T02:12:50+08:00">2020-07-01</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-15 09:21:16" itemprop="dateModified" datetime="2020-08-15T09:21:16+08:00">2020-08-15</time>
+                <time title="Modified: 2020-08-15 09:06:01" itemprop="dateModified" datetime="2020-08-15T09:06:01+08:00">2020-08-15</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1199,7 +886,7 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA/" itemprop="url" rel="index"><span itemprop="name">基础理论</span></a>
+                  <a href="/categories/%E9%9D%A2%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">面试</span></a>
                 </span>
             </span>
 
@@ -1215,176 +902,73 @@
 
       
           <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-<p>以下部分超链接需要科学上网。</p>
+<p>本章属于持续学习、长期更修。</p>
 </blockquote>
-<h2 id="ModBus"><a href="#ModBus" class="headerlink" title="ModBus"></a>ModBus</h2><p>modbus是一种通讯协议，是Modicon公司1979年为使用可编程逻辑控制器（PLC）通讯而发表。Modbus是工业领域通讯协议的业界标准之一，目前也我国国家标准工业通讯协议中的重要成员之一。</p>
-<h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><ul>
-<li><p>Modbus采用主从（Master-Salve）通信模式，仅有主设备（Master）能对传输进行初始化，从设备（Slave）根据主设备的请求进行应答。 __在主从关系中，通信总是成对发生。一个设备必须发起请求，然后等待响应 - 并且发起设备（主设备）负责发起每次交互。 通常，主设备是人机界面（HMI）或监控和数据采集（SCADA）系统，从设备是传感器、可编程逻辑控制器（PLC）或可编程自动化控制器（PAC）。 这些请求和响应的内容以及发送这些消息的网络层由协议的不同层来定义__。 </p>
 <ul>
-<li>在串行链路的主从通信中，Modbus主设备可以连接一个或N（最大为247）个从设备，主从设备之间的通信包括单播模式和广播模式。 </li>
-<li>在广播模式中，Modbus主设备可同时向多个从设备发送请求（设备地址0用于广播模式），从设备对广播请求不进行响应。 </li>
-<li>在单播模式中，主设备发送请求至某个特定的从设备（每个Modbus从设备具有唯一地址），请求的消息帧中会包含功能代码和数据，比如功能代码“01”用来读取离散量线圈的状态。从设备接到请求后，进行应答并把消息反馈主设备。 </li>
-<li>__主设备不发送数据，从数据是不会自己发出数据的；即必须是主设备发出查询请求才能建立通讯。 __</li>
+<li><a href="https://z201.cn/2020/07/30/%E9%9D%A2%E8%AF%95%E9%A2%98-%E5%A4%9A%E7%BA%BF%E7%A8%8B/" target="_blank" rel="noopener">面试题-多线程</a></li>
 </ul>
-</li>
-<li><p>消息帧校验方式</p>
+<blockquote>
+<p>为避免线程频繁创建和销毁带来的性能问题，而池化的一种方案。</p>
+</blockquote>
 <ul>
-<li>ASCII消息帧：<code>LRC（纵向冗长检测）</code></li>
-<li>CRCi消息帧：<code>CRC(循环冗长检测)</code></li>
+<li><p>利用线程池管理并复用线程、控制最大并发数等。</p>
+</li>
+<li><p>实现任务线程队列缓存策略和拒绝机制。</p>
+</li>
+<li><p>实现某些与时间相关的功能，如定时执行、周期执行等。</p>
+</li>
+<li><p>隔离线程环境。比如，交易服务和搜索服务在同一台服务器上，分别开启两个线程池，交易线程的资源消耗明显要大；因此，通过配置独立的线程池将较慢的交易服务与搜索服务隔离开，避免各服务线程相互影响。</p>
+</li>
 </ul>
-</li>
-<li><p>ModBus是OSI模型第七层上即__应用层__报文传输协议。</p>
-</li>
-<li><p>ModBus支持多工业设备、包括<code>PLC</code>、<code>DSC</code>、<code>变频器</code>、智能仪表等都在应用。</p>
-</li>
-<li><p>ModBus支持多种电气接口，如<code>RS-232</code>、<code>RS-485</code>等，还可以在各种介质上传送，如双绞线、光纤、无线。</p>
-</li>
-<li><p>ModBus协议完全免费；<code>帧格式</code>简单，紧凑。</p>
-</li>
-<li><p>ModBus对线缆的要求、长度、波特率，终端电阻，接地，连接器，通信状态的LED指示，都有电气标准。</p>
-</li>
-<li><p>ModBus数据可以分为两大类，分别为Coil和Register，每一种数据，根据读写方式的不同，又可细分为两种（只读，读写）。 </p>
+<blockquote>
+<p>这里直接参考阿里巴巴的手册。线程池不允许使用 Executors 去创建，而是通过 ThreadPoolExecutor 的方式，这样的处理方式让写的读者更加明确线程池的运行规则，规避资源耗尽的风险。</p>
+</blockquote>
+<h3 id="常⽤线程池：ExecutorService-是主要的实现类"><a href="#常⽤线程池：ExecutorService-是主要的实现类" class="headerlink" title="常⽤线程池：ExecutorService 是主要的实现类"></a>常⽤线程池：ExecutorService 是主要的实现类</h3><ul>
+<li>Executors.newSingleT hreadPool()</li>
+<li>newFixedThreadPool()</li>
+<li>newcachedTheadPool()</li>
+<li>newScheduledThreadPool()</li>
+</ul>
+<h3 id="Executors-返回的线程池对象的弊端"><a href="#Executors-返回的线程池对象的弊端" class="headerlink" title="Executors 返回的线程池对象的弊端"></a>Executors 返回的线程池对象的弊端</h3><ul>
+<li>FixedThreadPool 和 SingleThreadPool：允许的请求队列长度为 Integer.MAX_VALUE，可能会堆积大量的请求，从而导致 OOM。</li>
+<li>CachedThreadPool 和 ScheduledThreadPool：允许的创建线程数量为 Integer.MAX_VALUE，可能会创建大量的线程，从而导致 OOM。</li>
+<li>查看 Executors 的源码会发现，Executors.newFixedThreadPool()、Executors.newSingleThreadExecutor() 和 Executors.newCachedThreadPool() 等方法的底层都是通过 ThreadPoolExecutor 实现的。</li>
+</ul>
+<h3 id="ThreadPoolExecutor的核心参数"><a href="#ThreadPoolExecutor的核心参数" class="headerlink" title="ThreadPoolExecutor的核心参数"></a>ThreadPoolExecutor的核心参数</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ThreadPoolExecutor</span><span class="params">(<span class="keyword">int</span> corePoolSize,</span></span></span><br><span class="line"><span class="function"><span class="params">                          <span class="keyword">int</span> maximumPoolSize,</span></span></span><br><span class="line"><span class="function"><span class="params">                          <span class="keyword">long</span> keepAliveTime,</span></span></span><br><span class="line"><span class="function"><span class="params">                          TimeUnit unit,</span></span></span><br><span class="line"><span class="function"><span class="params">                          BlockingQueue&lt;Runnable&gt; workQueue,</span></span></span><br><span class="line"><span class="function"><span class="params">                          ThreadFactory threadFactory,</span></span></span><br><span class="line"><span class="function"><span class="params">                          RejectedExecutionHandler handler)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (corePoolSize &lt; <span class="number">0</span> ||</span><br><span class="line">        <span class="comment">// maximumPoolSize 必须大于 0，且必须大于 corePoolSize</span></span><br><span class="line">        maximumPoolSize &lt;= <span class="number">0</span> ||</span><br><span class="line">        maximumPoolSize &lt; corePoolSize ||</span><br><span class="line">        keepAliveTime &lt; <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException();</span><br><span class="line">    <span class="keyword">if</span> (workQueue == <span class="keyword">null</span> || threadFactory == <span class="keyword">null</span> || handler == <span class="keyword">null</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br><span class="line">    <span class="keyword">this</span>.acc = System.getSecurityManager() == <span class="keyword">null</span> ?</span><br><span class="line">            <span class="keyword">null</span> :</span><br><span class="line">            AccessController.getContext();</span><br><span class="line">    <span class="keyword">this</span>.corePoolSize = corePoolSize;</span><br><span class="line">    <span class="keyword">this</span>.maximumPoolSize = maximumPoolSize;</span><br><span class="line">    <span class="keyword">this</span>.workQueue = workQueue;</span><br><span class="line">    <span class="keyword">this</span>.keepAliveTime = unit.toNanos(keepAliveTime);</span><br><span class="line">    <span class="keyword">this</span>.threadFactory = threadFactory;</span><br><span class="line">    <span class="keyword">this</span>.handler = handler;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <ul>
-<li>Coli是位（bit）变量。</li>
-<li>Register是整型（word ,即 16 - bit ）。</li>
+<li>第 1 个参数：corePoolSize 表示线程池的常驻核心线程数。如果设置为 0，则表示在没有任何任务时，销毁线程池；如果大于 0，即使没有任务时也会保证线程池的线程数量等于此值。但需要注意，此值如果设置的比较小，则会频繁的创建和销毁线程（创建和销毁的原因会在本课时的下半部分讲到）；如果设置的比较大，则会浪费系统资源，所以开发者需要根据自己的实际业务来调整此值。</li>
+<li>第 2 个参数：maximumPoolSize 表示线程池在任务最多时，最大可以创建的线程数。官方规定此值必须大于 0，也必须大于等于 corePoolSize，此值只有在任务比较多，且不能存放在任务队列时，才会用到。</li>
+<li>第 3 个参数：keepAliveTime 表示线程的存活时间，当线程池空闲时并且超过了此时间，多余的线程就会销毁，直到线程池中的线程数量销毁的等于 corePoolSize 为止，如果 maximumPoolSize 等于 corePoolSize，那么线程池在空闲的时候也不会销毁任何线程。</li>
+<li>第 4 个参数：unit 表示存活时间的单位，它是配合 keepAliveTime 参数共同使用的。</li>
+<li>第 5 个参数：workQueue 表示线程池执行的任务队列，当线程池的所有线程都在处理任务时，如果来了新任务就会缓存到此任务队列中排队等待执行。</li>
+<li>第 6 个参数：threadFactory 表示线程的创建工厂，此参数一般用的比较少，我们通常在创建线程池时不指定此参数，它会使用默认的线程创建工厂的方法来创建线程。</li>
+<li>第 7 个参数：RejectedExecutionHandler 表示指定线程池的拒绝策略，当线程池的任务已经在缓存队列 workQueue 中存储满了之后，并且不能创建新的线程来执行此任务时，就会用到此拒绝策略，它属于一种限流保护的机制。</li>
+<li>原理<ul>
+<li>如果当前池⼤⼩ poolSize ⼩于 corePoolSize，则创建新线程执⾏任务。</li>
+<li>如果当前池⼤⼩poolSize⼤于corePoolSize，且等待队列未满，则进⼊等待队列。</li>
+<li>如果当前池⼤⼩ poolSize ⼤于 corePoolSize 且⼩于 maximumPoolSize ，且等待队列已满，则创建新线程执⾏任务。</li>
+<li>如果当前池⼤⼩ poolSize ⼤于 corePoolSize 且⼤于 maximumPoolSize ，且等待队列已满，则调⽤拒绝策略来处理该任务。<ul>
+<li>线程池⾥的每个线程执⾏完任务后不会⽴刻退出，⽽是会去检查下等待队列⾥是否还有线程任务需要执⾏，如果在 keepAliveTime ⾥等不到新的任务了，那么线程就会退出。</li>
 </ul>
 </li>
 </ul>
-<table>
-<thead>
-<tr>
-<th>Primary tabels</th>
-<th>Object Type</th>
-<th>Type Of</th>
-<th>comments</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Discretes Input 离线输入量</td>
-<td>Single bit</td>
-<td>只读</td>
-<td>IO系统提供这种类型的数据</td>
-</tr>
-<tr>
-<td>Coils 线圈</td>
-<td>Single bit</td>
-<td>只写</td>
-<td>通用应用程序改变这种类型的数据</td>
-</tr>
-<tr>
-<td>Input Registers  输入寄存器</td>
-<td>16-bit word</td>
-<td>只读</td>
-<td>IO系统提供这种类型的数据</td>
-</tr>
-<tr>
-<td>Holding Registers 保持寄存器</td>
-<td>16-bit word</td>
-<td>只写</td>
-<td>通用应用程序改变这种类型的数据</td>
-</tr>
-</tbody></table>
+</li>
+<li><strong><code>ThreadPoolExecutor</code> 3 个最重要的参数：</strong><ul>
+<li><strong><code>corePoolSize</code> :</strong> 核心线程数线程数定义了最小可以同时运行的线程数量。</li>
+<li><strong><code>maximumPoolSize</code> :</strong> 当队列中存放的任务达到队列容量的时候，当前可以同时运行的线程数量变为最大线程数。</li>
+<li><strong><code>workQueue</code>:</strong> 当新任务来的时候会先判断当前运行的线程数量是否达到核心线程数，如果达到的话，新任务就会被存放在队列中。</li>
+</ul>
+</li>
+</ul>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2018/05/07/%E5%88%9D%E6%8E%A2Modbus/#more" rel="contents">
+              <a class="btn" href="/2020/07/01/%E9%9D%A2%E8%AF%95%E9%A2%98-%E7%BA%BF%E7%A8%8B%E6%B1%A0/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
           <!--/noindex-->
         
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaServlet/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaServlet/" class="post-title-link" itemprop="url">查缺补漏-JavaServlet</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-15 09:21:09" itemprop="dateModified" datetime="2020-08-15T09:21:09+08:00">2020-08-15</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-<h3 id="描述下Servlet-Cookie-与Session。"><a href="#描述下Servlet-Cookie-与Session。" class="headerlink" title="描述下Servlet Cookie 与Session。"></a>描述下Servlet Cookie 与Session。</h3><ul>
-<li><p>具体来说cookie机制采用的是在客户端保持状态的方案，而session机制采用的是在服务器端保持状态的方案。</p>
-<ul>
-<li>服务器端保持状态的方案在客户端也需要保存一个标识，所以session机制可能需要借助于cookie机制来达到保存标识的目的。</li>
-</ul>
-</li>
-<li><p>Session是以cookie为基础的。在一些web开发的书中，往往只是简单的把Session和cookie作为两种并列的http传送信息的方式，session cookies位于服务器端，persistent cookie位于客户端。</p>
-</li>
-</ul>
-<ul>
-<li>Cookie不是很安全，别人可以分析存放在本地的cookie并进行cookie欺骗考虑到安全应当使用session。</li>
-<li>Session会在一定时间内保存在服务器上。当访问增多，会比较占用你服务器的性能考虑到减轻服务器性能方面，应当使用cookie。</li>
-<li>单个Cookie保存的数据不能超过4K，很多浏览器都限制一个站点最多保存20个cookie。</li>
-<li>关闭浏览器不会导致服务端session被删除，服务器为session设置了一个失效时间，当距离客户上一次使用session的时间超过了这个失效时间时，服务器就可以认为客户端已经停止了活动，才会把session删除以节省存储空间。</li>
-<li>关闭浏览器，只会是浏览器端内存里的session cookie消失，但不会使保存在服务器端的session对象消失，同样也不会使已经保存到硬盘上的持久化cookie消失。</li>
-</ul>
-
       
     </div>
 
@@ -1402,7 +986,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1469,18 +1053,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">104</span>
+          <span class="site-state-item-count">105</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-count">18</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">94</span>
+        <span class="site-state-item-count">96</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
