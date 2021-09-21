@@ -239,6 +239,176 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/02/15/Mac%E4%BD%BF%E7%94%A8Jenv%E7%AE%A1%E7%90%86%E5%A4%9A%E7%89%88%E6%9C%ACJdk/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/02/15/Mac%E4%BD%BF%E7%94%A8Jenv%E7%AE%A1%E7%90%86%E5%A4%9A%E7%89%88%E6%9C%ACJdk/" class="post-title-link" itemprop="url">Mac使用Jenv管理多版本Jdk</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-02-15 01:09:36" itemprop="dateCreated datePublished" datetime="2021-02-15T01:09:36+08:00">2021-02-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-21 22:50:27" itemprop="dateModified" datetime="2021-09-21T22:50:27+08:00">2021-09-21</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>简单记录下mac下多版本jdk管理 </p>
+</blockquote>
+<ul>
+<li><a href="https://adoptopenjdk.net/" target="_blank" rel="noopener">https://adoptopenjdk.net/</a></li>
+<li><a href="https://www.jianshu.com/p/1a147d5515f0" target="_blank" rel="noopener">https://www.jianshu.com/p/1a147d5515f0</a></li>
+</ul>
+<h2 id="检查环境"><a href="#检查环境" class="headerlink" title="检查环境"></a>检查环境</h2><h3 id="查看当前安装的jdk版本"><a href="#查看当前安装的jdk版本" class="headerlink" title="查看当前安装的jdk版本"></a>查看当前安装的jdk版本</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/usr/libexec/java_home -V</span><br><span class="line"><span class="meta">#</span><span class="bash"> 如果有安装过jdk版本这里会输出信息</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="使用brew-安装jenv"><a href="#使用brew-安装jenv" class="headerlink" title="使用brew 安装jenv"></a>使用brew 安装jenv</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">brew install jenv</span><br><span class="line"><span class="meta">#</span><span class="bash">检查</span></span><br><span class="line">jenv doctor </span><br><span class="line"><span class="meta">#</span><span class="bash"> 刚安装会提示很多信息</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="初始化jenv"><a href="#初始化jenv" class="headerlink" title="初始化jenv"></a>初始化jenv</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">brew install jenv</span><br><span class="line">jenv init -</span><br><span class="line">echo 'eval "$(jenv init -)"' &gt;&gt; ~/.bash_profile</span><br><span class="line">echo 'eval "$(jenv init -)"' &gt;&gt; ~/.zprofile</span><br><span class="line">jenv add &lt;path-to-java8-Home-Dir&gt; # 这里从/usr/libexec/java_home -V 获取javaHome</span><br></pre></td></tr></table></figure>
+
+<h3 id="切换jdk"><a href="#切换jdk" class="headerlink" title="切换jdk"></a>切换jdk</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ jenv versions</span><br><span class="line">* system (set by /Users/zengqingfeng/.jenv/version)</span><br><span class="line">  1.8</span><br><span class="line">  1.8.0.275</span><br><span class="line">  openjdk64-1.8.0.275</span><br><span class="line">  </span><br><span class="line">➜  ~ jenv local system # 切换版本</span><br></pre></td></tr></table></figure>
+
+<h3 id="可能出现的问题"><a href="#可能出现的问题" class="headerlink" title="可能出现的问题"></a>可能出现的问题</h3><ul>
+<li>使用 jenv 过程可能会发现，当切换 JDK 版本之后， <code>${JAVA_HOME}</code> 环境变量没有改变，还是上一个 JDK 版本配置。</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">这时可以运行 exec $SHELL -l ， $&#123;JAVA_HOME&#125; 将会变成当前版本。</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/02/21/Microservice-Practice/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/02/21/Microservice-Practice/" class="post-title-link" itemprop="url">Microservice-Practice</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-02-21 16:44:03" itemprop="dateCreated datePublished" datetime="2021-02-21T16:44:03+08:00">2021-02-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-21 16:45:27" itemprop="dateModified" datetime="2021-09-21T16:45:27+08:00">2021-09-21</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%B7%A5%E7%A8%8B%E5%8C%96/" itemprop="url" rel="index"><span itemprop="name">工程化</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>关于微服务的实践</p>
+</blockquote>
+<h2 id="参考文件"><a href="#参考文件" class="headerlink" title="参考文件"></a>参考文件</h2><p><a href="https://12factor.net/zh_cn/" target="_blank" rel="noopener">12-factors</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/05/25/Centos7-jenkins%E9%83%A8%E7%BD%B2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -270,7 +440,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-21 15:01:09" itemprop="dateModified" datetime="2021-09-21T15:01:09+08:00">2021-09-21</time>
+                <time title="Modified: 2021-09-21 15:04:54" itemprop="dateModified" datetime="2021-09-21T15:04:54+08:00">2021-09-21</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1217,180 +1387,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/02/15/Mac%E4%B8%8BOpenJdk11-JavaFx%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/02/15/Mac%E4%B8%8BOpenJdk11-JavaFx%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" class="post-title-link" itemprop="url">Mac下OpenJdk11-JavaFx开发环境配置</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-02-15 03:12:07" itemprop="dateCreated datePublished" datetime="2021-02-15T03:12:07+08:00">2021-02-15</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-19 20:29:55" itemprop="dateModified" datetime="2021-09-19T20:29:55+08:00">2021-09-19</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>OpenJdk 11 环境下JavaFx开发环境设置</p>
-</blockquote>
-<ul>
-<li><a href="https://www.coder.work/article/884639" target="_blank" rel="noopener">https://www.coder.work/article/884639</a></li>
-<li><a href="https://stackoverflow.com/questions/54291958/javafx-11-illegalaccesserror-when-creating-label" target="_blank" rel="noopener">https://stackoverflow.com/questions/54291958/javafx-11-illegalaccesserror-when-creating-label</a></li>
-<li><a href="https://gluonhq.com/products/javafx/" target="_blank" rel="noopener">https://gluonhq.com/products/javafx/</a></li>
-</ul>
-<h2 id="pom依赖"><a href="#pom依赖" class="headerlink" title="pom依赖"></a>pom依赖</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.openjfx<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>javafx-controls<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>11<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.openjfx<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>javafx-fxml<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>11<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="idea设置"><a href="#idea设置" class="headerlink" title="idea设置"></a>idea设置</h3><blockquote>
-<p>下载javafx版本，然后引入依赖。项目lib中引入。启动的时候在vm中添加启动参数</p>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">--module-path</span><br><span class="line"><span class="meta">/Users/$</span><span class="bash">USER/word/libhome/javafx-sdk-11.0.2/lib</span></span><br><span class="line">--add-modules</span><br><span class="line">javafx.controls</span><br><span class="line">--add-modules</span><br><span class="line">javafx.base</span><br><span class="line">--add-modules</span><br><span class="line">javafx.graphics</span><br><span class="line">--add-modules</span><br><span class="line">javafx.fxml</span><br><span class="line">--add-modules</span><br><span class="line">javafx.media</span><br></pre></td></tr></table></figure>
-
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/02/15/Mac%E4%BD%BF%E7%94%A8Jenv%E7%AE%A1%E7%90%86%E5%A4%9A%E7%89%88%E6%9C%ACJdk/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/02/15/Mac%E4%BD%BF%E7%94%A8Jenv%E7%AE%A1%E7%90%86%E5%A4%9A%E7%89%88%E6%9C%ACJdk/" class="post-title-link" itemprop="url">Mac使用Jenv管理多版本Jdk</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-02-15 01:09:36" itemprop="dateCreated datePublished" datetime="2021-02-15T01:09:36+08:00">2021-02-15</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-19 20:29:50" itemprop="dateModified" datetime="2021-09-19T20:29:50+08:00">2021-09-19</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>简单记录下mac下多版本jdk管理 </p>
-</blockquote>
-<ul>
-<li><a href="https://adoptopenjdk.net/" target="_blank" rel="noopener">https://adoptopenjdk.net/</a></li>
-<li><a href="https://www.jianshu.com/p/1a147d5515f0" target="_blank" rel="noopener">https://www.jianshu.com/p/1a147d5515f0</a></li>
-</ul>
-<h2 id="检查环境"><a href="#检查环境" class="headerlink" title="检查环境"></a>检查环境</h2><h3 id="查看当前安装的jdk版本"><a href="#查看当前安装的jdk版本" class="headerlink" title="查看当前安装的jdk版本"></a>查看当前安装的jdk版本</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/usr/libexec/java_home -V</span><br><span class="line"><span class="meta">#</span><span class="bash"> 如果有安装过jdk版本这里会输出信息</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="使用brew-安装jenv"><a href="#使用brew-安装jenv" class="headerlink" title="使用brew 安装jenv"></a>使用brew 安装jenv</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">brew install jenv</span><br><span class="line"><span class="meta">#</span><span class="bash">检查</span></span><br><span class="line">jenv doctor </span><br><span class="line"><span class="meta">#</span><span class="bash"> 刚安装会提示很多信息</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="初始化jenv"><a href="#初始化jenv" class="headerlink" title="初始化jenv"></a>初始化jenv</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">brew install jenv</span><br><span class="line">jenv init -</span><br><span class="line">echo 'eval "$(jenv init -)"' &gt;&gt; ~/.bash_profile</span><br><span class="line">echo 'eval "$(jenv init -)"' &gt;&gt; ~/.zprofile</span><br><span class="line">jenv add &lt;path-to-java8-Home-Dir&gt; # 这里从/usr/libexec/java_home -V 获取javaHome</span><br></pre></td></tr></table></figure>
-
-<h3 id="切换jdk"><a href="#切换jdk" class="headerlink" title="切换jdk"></a>切换jdk</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ jenv versions</span><br><span class="line">* system (set by /Users/zengqingfeng/.jenv/version)</span><br><span class="line">  1.8</span><br><span class="line">  1.8.0.275</span><br><span class="line">  openjdk64-1.8.0.275</span><br><span class="line">  </span><br><span class="line">➜  ~ jenv local system # 切换版本</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1461,13 +1457,13 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">105</span>
+          <span class="site-state-item-count">106</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-count">19</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
