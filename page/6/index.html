@@ -239,131 +239,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/23/Linux%E5%9F%BA%E7%A1%80%E5%91%BD%E4%BB%A4/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/04/23/Linux%E5%9F%BA%E7%A1%80%E5%91%BD%E4%BB%A4/" class="post-title-link" itemprop="url">Linux基础命令</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-04-23 08:58:34" itemprop="dateCreated datePublished" datetime="2018-04-23T08:58:34+08:00">2018-04-23</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-15 09:17:23" itemprop="dateModified" datetime="2020-08-15T09:17:23+08:00">2020-08-15</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>linux作为个人工作经常使用的系统、做下简单的记录方便以后工作参考。</p>
-</blockquote>
-<h2 id="ps"><a href="#ps" class="headerlink" title="ps"></a><a href="http://man.linuxde.net/ps" target="_blank" rel="noopener">ps</a></h2><blockquote>
-<p>ps命令用于报告系统某个时间内进程的情况</p>
-</blockquote>
-<ul>
-<li>参数</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">-A : 所有的进程均显示出来</span><br><span class="line">-a : 不与terminal有关的所有进程</span><br><span class="line">-u : 有效用户的相关进程</span><br><span class="line">-x : 一般与a参数一起使用，可以列出比较完整的信息。</span><br><span class="line">-l : 较详细地将PID的信息列出。</span><br></pre></td></tr></table></figure>
-
-<h3 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h3><p>查询某程序的情况</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> [root@VM_115_109_centos ~]<span class="comment"># ps -ef | grep mysqld</span></span></span><br><span class="line">root      8013 17307  0 05:34 pts/0    00:00:00 grep --color=auto mysqld</span><br><span class="line">mysql    28882     1  0 Apr02 ?        00:07:03 /usr/sbin/mysqld --daemonize --pid-file=/var/run/mysqld/mysqld.pid</span><br></pre></td></tr></table></figure>
-
-<p>UID      PID   PPID     C STIME   TTY    TIME     CMD (类目描述)</p>
-<ul>
-<li>UID 程序被该 UID 所拥有</li>
-<li>PID 就是这个程序的 ID </li>
-<li>PPID 则是其上级父程序的ID</li>
-<li>C CPU 使用的资源百分比</li>
-<li>STIME 系统启动时间</li>
-<li>TTY 登入者的终端机位置</li>
-<li>TIME 使用掉的 CPU 时间。</li>
-<li>CMD 所下达的指令</li>
-</ul>
-<p>查看内存占用前1的进程</p>
-<ul>
-<li>ps auxw | head -1;ps auxw|sort -rn -k4|head -1  </li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">  ps auxw | head -1;ps auxw|sort -rn -k4|head -1</span></span><br><span class="line">USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</span><br><span class="line">mysql    28882  0.0 10.9 1143416 205484 ?      Sl   Apr02   7:20 /usr/sbin/mysqld --daemonize --pid-file=/var/run/mysqld/mysqld.pid</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>内存的单位是kb，VSZ是虚拟内存的占用，RSS是真实的内存的占用。</li>
-</ul>
-<ul>
-<li>命令分解：</li>
-<li>ps auxw显示系统资源占用情况；</li>
-<li>head -1表示显示第一列，即标题列；</li>
-<li>sort -r 表示反向排序，-n表示按数字排序，-k4表示列的第4个字符。</li>
-</ul>
-<p>查看CPU占用前1的进程</p>
-<ul>
-<li>ps auxw|head -1;ps auxw|sort -rn -k3|head -1</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ps auxw|head -1;ps auxw|sort -rn -k3|head -5</span></span><br><span class="line">USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</span><br><span class="line">root      1690  0.1  0.6 536692 12436 ?        Sl   Apr10  29:58 barad_agent</span><br><span class="line">USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</span><br><span class="line">root         9  0.0  0.0      0     0 ?        R    Mar08   1:45 [rcu_sched]</span><br><span class="line">root       884  0.0  0.0 110044   808 ttyS0    Ss+  Mar08   0:00 /sbin/agetty --keep-baud 115200 38400 9600 ttyS0 vt220</span><br><span class="line">root       883  0.0  0.0 110044   788 tty1     Ss+  Mar08   0:00 /sbin/agetty --noclear tty1 linux</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/04/23/Linux%E5%9F%BA%E7%A1%80%E5%91%BD%E4%BB%A4/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/05/27/%E6%80%BB%E7%BB%93%E4%BB%A3%E7%A0%81%E9%A3%8E%E6%A0%BC/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2004,6 +1879,82 @@
   
   
 
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaConcurrent/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaConcurrent/" class="post-title-link" itemprop="url">查缺补漏-JavaConcurrent</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-14 09:10:49" itemprop="dateModified" datetime="2020-08-14T09:10:49+08:00">2020-08-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>本章是整理知识内容，为强化知识长期更新。</p>
+</blockquote>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
 
   
   <nav class="pagination">
@@ -2074,13 +2025,13 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">106</span>
+          <span class="site-state-item-count">105</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-count">18</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
