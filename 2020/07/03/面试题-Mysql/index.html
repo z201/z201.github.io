@@ -29,7 +29,7 @@
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/SQL%E8%AF%AD%E5%8F%A5%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F.png">
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/MysqlInnoDB%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84.png">
 <meta property="article:published_time" content="2020-07-02T20:33:01.000Z">
-<meta property="article:modified_time" content="2021-09-21T05:37:28.619Z">
+<meta property="article:modified_time" content="2021-09-22T15:27:59.223Z">
 <meta property="article:author" content="小峰同学">
 <meta property="article:tag" content="Mysql">
 <meta name="twitter:card" content="summary">
@@ -275,7 +275,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-21 13:37:28" itemprop="dateModified" datetime="2021-09-21T13:37:28+08:00">2021-09-21</time>
+                <time title="Modified: 2021-09-22 23:27:59" itemprop="dateModified" datetime="2021-09-22T23:27:59+08:00">2021-09-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -348,9 +348,6 @@
 </ol>
 <h3 id="什么是事务？"><a href="#什么是事务？" class="headerlink" title="什么是事务？"></a>什么是事务？</h3><ul>
 <li>事务（Transaction）是并发控制的基本单位。所谓的事务，它是一个操作序列，这些操作要么都执行，要么都不执行，它是一个不可分割的工作单位。事务是数据库维护数据一致性的单位，在每个事务结束时，都能保持数据一致性。</li>
-</ul>
-<h3 id="覆盖索引和回表"><a href="#覆盖索引和回表" class="headerlink" title="覆盖索引和回表"></a>覆盖索引和回表</h3><ul>
-<li>覆盖索引指的是在一次查询中，如果一个索引包含或者说覆盖所有需要查询的字段的值，我们就称之为覆盖索引，而不再需要回表查询。而要确定一个查询是否是覆盖索引，我们只需要explain sql语句看Extra的结果是否是“Using index”即可。</li>
 </ul>
 <h3 id="MySQL-事务四大特性"><a href="#MySQL-事务四大特性" class="headerlink" title="MySQL 事务四大特性"></a>MySQL 事务四大特性</h3><blockquote>
 <p>一说到 MySQL 事务，你肯定能想起来四大特性：<code>原子性</code>、<code>一致性</code>、<code>隔离性</code>、<code>持久性</code>。什么是 MySQL 中的事务？</p>
@@ -448,19 +445,10 @@
 <li>ORDER BY</li>
 </ol>
 <ul>
-<li>应用 order by 子句。按照 order_by_condition 排序 VT8，此时返回的一个游标，而不是虚拟表。sql 是基于集合的理论的，集合不会预先对他的行排序，它只是成员的逻辑集合，成员的顺序是无关紧要的。</li>
-</ul>
-<h3 id="什么是临时表，何时删除临时表"><a href="#什么是临时表，何时删除临时表" class="headerlink" title="什么是临时表，何时删除临时表"></a>什么是临时表，何时删除临时表</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">在 MySQL 中，有三种类型的表</span><br><span class="line">一种是&#96;永久表&#96;，永久表就是创建以后用来长期保存数据的表</span><br><span class="line">一种是&#96;临时表&#96;，临时表也有两类，一种是和永久表一样，只保存临时数据，但是能够长久存在的；还有一种是临时创建的，SQL 语句执行完成就会删除。</span><br><span class="line">一种是&#96;虚表&#96;，虚表其实就是&#96;视图&#96;，数据可能会来自多张表的执行结果。</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>MySQL 会在下面这几种情况产生临时表<ul>
-<li>使用 UNION 查询：UNION 有两种，一种是<code>UNION</code> ，一种是 <code>UNION ALL</code> ，它们都用于联合查询；区别是 使用 UNION 会去掉两个表中的重复数据，相当于对结果集做了一下<code>去重(distinct)</code>。使用 UNION ALL，则不会排重，返回所有的行。使用 UNION 查询会产生临时表。</li>
-<li>使用 <code>TEMPTABLE 算法</code>或者是 UNION 查询中的视图。TEMPTABLE 算法是一种创建临时表的算法，它是将结果放置到临时表中，意味这要 MySQL 要先创建好一个临时表，然后将结果放到临时表中去，然后再使用这个临时表进行相应的查询。</li>
-<li>ORDER BY 和 GROUP BY 的子句不一样时也会产生临时表。</li>
-<li>DISTINCT 查询并且加上 ORDER BY 时；</li>
-<li>SQL 用到 SQL_SMALL_RESULT 选项时；如果查询结果比较小的时候，可以加上 SQL_SMALL_RESULT 来优化，产生临时表</li>
-<li>FROM 中的子查询；</li>
-<li>EXPLAIN 查看执行计划结果的 Extra 列中，如果使用 <code>Using Temporary</code> 就表示会用到临时表。</li>
+<li><p>应用 order by 子句。按照 order_by_condition 排序 VT8，此时返回的一个游标，而不是虚拟表。sql 是基于集合的理论的，集合不会预先对他的行排序，它只是成员的逻辑集合，成员的顺序是无关紧要的。</p>
+</li>
+<li><ul>
+<li></li>
 </ul>
 </li>
 </ul>
@@ -480,6 +468,78 @@
 <li>Hash索引是采用一定的Hash算法，把健值换成哈希值，检索的时候不需要类似b+树从根节点逐渐查找，值需要一次哈希运算即可，是无序的。</li>
 <li>Hash索引适合等值查询，哈希索引具有绝对优势（前提是：没有⼤量重复键值，如果⼤量重复键值时，哈希索引的效率很低，因为存在所谓的 哈希碰撞问题。不使用范围查询、也不支持索引完成排序。不支持联合索引最左匹配原则。通过列的基数很大也不建议使用Hash索引。</li>
 </ol>
+<h3 id="索引是什么？有什么作用以及优缺点？"><a href="#索引是什么？有什么作用以及优缺点？" class="headerlink" title="索引是什么？有什么作用以及优缺点？"></a>索引是什么？有什么作用以及优缺点？</h3><ul>
+<li><p>1、索引是对数据库表中一或多个列的值进行排序的结构，是帮助MySQL高效获取数据的数据结构</p>
+</li>
+<li><p>2、索引就是加快检索表中数据的方法。数据库的索引类似于书籍的索引。在书籍中，索引允许用户不必翻阅完整个书就能迅速地找到所需要的信息。在数据库中，索引也允许数据库程序迅速地找到表中的数据，而不必扫描整个数据库。</p>
+</li>
+<li><p>MySQL数据库几个基本的索引类型：普通索引、唯一索引、主键索引、全文索引</p>
+<ol>
+<li>索引加快数据库的检索速度。</li>
+<li>索引降低了插入、删除、修改等维护任务的速度。</li>
+<li>唯一索引可以确保每一行数据的唯一性。</li>
+<li>通过使用索引，可以在查询的过程中使用优化隐藏器，提高系统的性能。</li>
+<li>索引需要占物理和数据空间。</li>
+</ol>
+</li>
+</ul>
+<h3 id="使用索引查询一定能提高查询的性能吗？为什么"><a href="#使用索引查询一定能提高查询的性能吗？为什么" class="headerlink" title="使用索引查询一定能提高查询的性能吗？为什么"></a>使用索引查询一定能提高查询的性能吗？为什么</h3><blockquote>
+<p>通常,通过索引查询数据比全表扫描要快.但是我们也必须注意到它的代价.</p>
+</blockquote>
+<ul>
+<li>索引需要空间来存储,也需要定期维护, 每当有记录在表中增减或索引列被修改时,索引本身也会被修改. 这意味着每条记录的INSERT,DELETE,UPDATE将为此多付出4,5 次的磁盘I/O. 因为索引需要额外的存储空间和处理,那些不必要的索引反而会使查询反应时间变慢.使用索引查询不一定能提高查询性能,索引范围查询(INDEX RANGE SCAN)适用于两种情况:</li>
+<li>基于一个范围的检索,一般查询返回结果集小于表中记录数的30%</li>
+<li>基于非唯一性索引的检索</li>
+</ul>
+<h3 id="覆盖索引和回表"><a href="#覆盖索引和回表" class="headerlink" title="覆盖索引和回表"></a>覆盖索引和回表</h3><ul>
+<li>覆盖索引指的是在一次查询中，如果一个索引包含或者说覆盖所有需要查询的字段的值，我们就称之为覆盖索引，而不再需要回表查询。而要确定一个查询是否是覆盖索引，我们只需要explain sql语句看Extra的结果是否是“Using index”即可。</li>
+</ul>
+<h3 id="索引失效"><a href="#索引失效" class="headerlink" title="索引失效"></a>索引失效</h3><ul>
+<li>两张表联合查询的时候表的编码集不一样会导致索引失效。</li>
+<li>如果字段A做了索引 WHERE A = 1 OR B = 2 这时候也不回走索引。</li>
+<li>like未使用最左前缀，where A like “%China”。</li>
+<li>在索引上使用函数 、!= 、&lt;&gt; 、not in 。</li>
+<li>where a = b + 1 查询条件做运算</li>
+</ul>
+<h3 id="什么是临时表，何时删除临时表"><a href="#什么是临时表，何时删除临时表" class="headerlink" title="什么是临时表，何时删除临时表"></a>什么是临时表，何时删除临时表</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">在 MySQL 中，有三种类型的表</span><br><span class="line">一种是&#96;永久表&#96;，永久表就是创建以后用来长期保存数据的表</span><br><span class="line">一种是&#96;临时表&#96;，临时表也有两类，一种是和永久表一样，只保存临时数据，但是能够长久存在的；还有一种是临时创建的，SQL 语句执行完成就会删除。</span><br><span class="line">一种是&#96;虚表&#96;，虚表其实就是&#96;视图&#96;，数据可能会来自多张表的执行结果。</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>MySQL 会在下面这几种情况产生临时表<ul>
+<li>使用 UNION 查询：UNION 有两种，一种是<code>UNION</code> ，一种是 <code>UNION ALL</code> ，它们都用于联合查询；区别是 使用 UNION 会去掉两个表中的重复数据，相当于对结果集做了一下<code>去重(distinct)</code>。使用 UNION ALL，则不会排重，返回所有的行。使用 UNION 查询会产生临时表。</li>
+<li>使用 <code>TEMPTABLE 算法</code>或者是 UNION 查询中的视图。TEMPTABLE 算法是一种创建临时表的算法，它是将结果放置到临时表中，意味这要 MySQL 要先创建好一个临时表，然后将结果放到临时表中去，然后再使用这个临时表进行相应的查询。</li>
+<li>ORDER BY 和 GROUP BY 的子句不一样时也会产生临时表。</li>
+<li>DISTINCT 查询并且加上 ORDER BY 时；</li>
+<li>SQL 用到 SQL_SMALL_RESULT 选项时；如果查询结果比较小的时候，可以加上 SQL_SMALL_RESULT 来优化，产生临时表</li>
+<li>FROM 中的子查询；</li>
+<li>EXPLAIN 查看执行计划结果的 Extra 列中，如果使用 <code>Using Temporary</code> 就表示会用到临时表。</li>
+</ul>
+</li>
+</ul>
+<h3 id="in-not-in-exists-not-exists-它们有什么区别，效率如何？"><a href="#in-not-in-exists-not-exists-它们有什么区别，效率如何？" class="headerlink" title="in, not in , exists , not exists 它们有什么区别，效率如何？"></a>in, not in , exists , not exists 它们有什么区别，效率如何？</h3><ul>
+<li><a href="https://segmentfault.com/a/1190000023825926" target="_blank" rel="noopener">参考文献</a></li>
+</ul>
+<h3 id="查询优化"><a href="#查询优化" class="headerlink" title="查询优化"></a>查询优化</h3><ul>
+<li><p>避免使用 select * 而是查询需要的字段，这样可以提升速度，以及减少网络传输的带宽压力。</p>
+</li>
+<li><p>尽量使用 Join 语句来替代子查询，因为子查询是嵌套查询，而嵌套查询会新创建一张临时表，而临时表的创建与销毁会占用一定的系统资源以及花费一定的时间，但 Join 语句并不会创建临时表，因此性能会更高。</p>
+</li>
+<li><p>尽量使用覆盖查询。通过创建联合主键的方式减少回表操作。</p>
+</li>
+<li><p>不要在列上进行运算操作</p>
+</li>
+<li><p>适当增加冗余字段，防止多度连表查询，通常不建议join超过三张表。</p>
+</li>
+<li><p>最小数据长度，一般说来数据库的表越小，那么它的查询速度就越快，因此为了提高表的效率</p>
+</li>
+<li><p>使用最简单数据类型，能使用 int 类型就不要使用 varchar 类型，因为 int 类型比 varchar 类型的查询效率更高。</p>
+</li>
+<li><p>尽量少定义 text 类型，text 类型的查询效率很低，如果必须要使用 text 定义字段，可以把此字段分离成子表，需要查询此字段时使用联合查询，这样可以提高主表的查询效率。</p>
+</li>
+<li><p>适当分表、分库策略，分表和分库方案也是我们经常说的垂直分隔（分表）和水平分隔（分库）。</p>
+<p>分表是指当一张表中的字段更多时，可以尝试将一张大表拆分为多张子表，把使用比较高频的主信息放入主表中，其他的放入子表，这样我们大部分查询只需要查询字段更少的主表就可以完成了，从而有效的提高了查询的效率。</p>
+<p>分库是指将一个数据库分为多个数据库。比如我们把一个数据库拆分为了多个数据库，一个主数据库用于写入和修改数据，其他的用于同步主数据并提供给客户端查询，这样就把一个库的读和写的压力，分摊给了多个库，从而提高了数据库整体的运行效率。</p>
+</li>
+</ul>
 <a id="more"></a>
 
 <h3 id="MySQL-常见索引类型"><a href="#MySQL-常见索引类型" class="headerlink" title="MySQL 常见索引类型"></a>MySQL 常见索引类型</h3><blockquote>
@@ -627,29 +687,6 @@
 <li>1、更加直白的理解：存储过程可以说是一个记录集，它是由一些T-SQL语句组成的代码块，这些T-SQL语句代码像一个方法一样实现一些功能（对单表或多表的增删改查），然后再给这个代码块取一个名字，在用到这个功能的时候调用他就行了。</li>
 <li>2、存储过程是一个预编译的代码块，执行效率比较高,一个存储过程替代大量T_SQL语句 ，可以降低网络通信量，提高通信速率,可以一定程度上确保数据安全。</li>
 </ul>
-<h3 id="索引是什么？有什么作用以及优缺点？"><a href="#索引是什么？有什么作用以及优缺点？" class="headerlink" title="索引是什么？有什么作用以及优缺点？"></a>索引是什么？有什么作用以及优缺点？</h3><ul>
-<li><p>1、索引是对数据库表中一或多个列的值进行排序的结构，是帮助MySQL高效获取数据的数据结构</p>
-</li>
-<li><p>2、索引就是加快检索表中数据的方法。数据库的索引类似于书籍的索引。在书籍中，索引允许用户不必翻阅完整个书就能迅速地找到所需要的信息。在数据库中，索引也允许数据库程序迅速地找到表中的数据，而不必扫描整个数据库。</p>
-</li>
-<li><p>MySQL数据库几个基本的索引类型：普通索引、唯一索引、主键索引、全文索引</p>
-<ol>
-<li>索引加快数据库的检索速度。</li>
-<li>索引降低了插入、删除、修改等维护任务的速度。</li>
-<li>唯一索引可以确保每一行数据的唯一性。</li>
-<li>通过使用索引，可以在查询的过程中使用优化隐藏器，提高系统的性能。</li>
-<li>索引需要占物理和数据空间。</li>
-</ol>
-</li>
-</ul>
-<h3 id="使用索引查询一定能提高查询的性能吗？为什么"><a href="#使用索引查询一定能提高查询的性能吗？为什么" class="headerlink" title="使用索引查询一定能提高查询的性能吗？为什么"></a>使用索引查询一定能提高查询的性能吗？为什么</h3><blockquote>
-<p>通常,通过索引查询数据比全表扫描要快.但是我们也必须注意到它的代价.</p>
-</blockquote>
-<ul>
-<li>索引需要空间来存储,也需要定期维护, 每当有记录在表中增减或索引列被修改时,索引本身也会被修改. 这意味着每条记录的INSERT,DELETE,UPDATE将为此多付出4,5 次的磁盘I/O. 因为索引需要额外的存储空间和处理,那些不必要的索引反而会使查询反应时间变慢.使用索引查询不一定能提高查询性能,索引范围查询(INDEX RANGE SCAN)适用于两种情况:</li>
-<li>基于一个范围的检索,一般查询返回结果集小于表中记录数的30%</li>
-<li>基于非唯一性索引的检索</li>
-</ul>
 <h3 id="简单说一说drop、delete与truncate的区"><a href="#简单说一说drop、delete与truncate的区" class="headerlink" title="简单说一说drop、delete与truncate的区"></a>简单说一说drop、delete与truncate的区</h3><blockquote>
 <p>SQL中的drop、delete、truncate都表示删除，但是三者有一些差别</p>
 </blockquote>
@@ -738,17 +775,6 @@
 <li>字段设计尽可能使用 <code>NOT NULL</code></li>
 <li>进行水平切割或者垂直分割</li>
 </ul>
-<h3 id="开放性问题"><a href="#开放性问题" class="headerlink" title="开放性问题"></a>开放性问题</h3><p>一个6亿的表a，一个3亿的表b，通过外间tid关联，你如何最快的查询出满足条件的第50000到第50200中的这200条数据记录。</p>
-<ul>
-<li>1、如果A表TID是自增长,并且是连续的,B表的ID为索引</li>
-</ul>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> a,b <span class="keyword">where</span> a.tid = b.id <span class="keyword">and</span> a.tid&gt;<span class="number">500000</span> <span class="keyword">limit</span> <span class="number">200</span>;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>2、如果A表的TID不是连续的,那么就需要使用覆盖索引.TID要么是主键,要么是辅助索引,B表ID也需要有索引。</li>
-</ul>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> b , (<span class="keyword">select</span> tid <span class="keyword">from</span> a <span class="keyword">limit</span> <span class="number">50000</span>,<span class="number">200</span>) a <span class="keyword">where</span> b.id = a .tid;</span><br></pre></td></tr></table></figure>
-
 <h3 id="MySQL-binlog的几种日志录入格式以及区别"><a href="#MySQL-binlog的几种日志录入格式以及区别" class="headerlink" title="MySQL binlog的几种日志录入格式以及区别"></a>MySQL binlog的几种日志录入格式以及区别</h3><blockquote>
 <p><strong>Statement</strong>：每一条会修改数据的sql都会记录在binlog中。</p>
 </blockquote>
@@ -821,6 +847,17 @@
 <li>2、只暴露部分字段给访问者，所以就建一个虚表，就是视图。</li>
 <li>3、查询的数据来源于不同的表，而查询者希望以统一的方式查询，这样也可以建立一个视图，把多个表查询结果联合起来，查询者只需要直接从视图中获取数据，不必考虑数据来源于不同表所带来的差异。</li>
 </ul>
+<h3 id="开放性问题"><a href="#开放性问题" class="headerlink" title="开放性问题"></a>开放性问题</h3><p>一个6亿的表a，一个3亿的表b，通过外间tid关联，你如何最快的查询出满足条件的第50000到第50200中的这200条数据记录。</p>
+<ul>
+<li>1、如果A表TID是自增长,并且是连续的,B表的ID为索引</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> a,b <span class="keyword">where</span> a.tid = b.id <span class="keyword">and</span> a.tid&gt;<span class="number">500000</span> <span class="keyword">limit</span> <span class="number">200</span>;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>2、如果A表的TID不是连续的,那么就需要使用覆盖索引.TID要么是主键,要么是辅助索引,B表ID也需要有索引。</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> b , (<span class="keyword">select</span> tid <span class="keyword">from</span> a <span class="keyword">limit</span> <span class="number">50000</span>,<span class="number">200</span>) a <span class="keyword">where</span> b.id = a .tid;</span><br></pre></td></tr></table></figure>
+
 
     </div>
 
@@ -921,7 +958,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库的三范式是什么"><span class="nav-number">1.</span> <span class="nav-text">数据库的三范式是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#说下mysql有几种数据库引擎"><span class="nav-number">2.</span> <span class="nav-text">说下mysql有几种数据库引擎</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#说下mysql-Master-slave-的原理"><span class="nav-number">3.</span> <span class="nav-text">说下mysql Master slave 的原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL中myisam与innodb的区别"><span class="nav-number">4.</span> <span class="nav-text">MySQL中myisam与innodb的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#innodb引擎的4大特性"><span class="nav-number">5.</span> <span class="nav-text">innodb引擎的4大特性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么要使用自增列作为主键？"><span class="nav-number">6.</span> <span class="nav-text">为什么要使用自增列作为主键？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是事务？"><span class="nav-number">7.</span> <span class="nav-text">什么是事务？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#覆盖索引和回表"><span class="nav-number">8.</span> <span class="nav-text">覆盖索引和回表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL-事务四大特性"><span class="nav-number">9.</span> <span class="nav-text">MySQL 事务四大特性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SQL语句的执行顺序"><span class="nav-number">10.</span> <span class="nav-text">SQL语句的执行顺序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是临时表，何时删除临时表"><span class="nav-number">11.</span> <span class="nav-text">什么是临时表，何时删除临时表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#介绍下InnoDB存储引擎的B-树索引"><span class="nav-number">12.</span> <span class="nav-text">介绍下InnoDB存储引擎的B+树索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#B-Tree与Hash索引的区别"><span class="nav-number">13.</span> <span class="nav-text">B+Tree与Hash索引的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL-常见索引类型"><span class="nav-number">14.</span> <span class="nav-text">MySQL 常见索引类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#主键和候选键有什么区别？"><span class="nav-number">15.</span> <span class="nav-text">主键和候选键有什么区别？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#超键、候选键、主键、外键分别是什么？"><span class="nav-number">16.</span> <span class="nav-text">超键、候选键、主键、外键分别是什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL中varchar与char的区别以及varchar-50-中的50代表的涵义"><span class="nav-number">17.</span> <span class="nav-text">MySQL中varchar与char的区别以及varchar(50)中的50代表的涵义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问了innodb的事务与日志的实现方式"><span class="nav-number">18.</span> <span class="nav-text">问了innodb的事务与日志的实现方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SQL优化explain"><span class="nav-number">19.</span> <span class="nav-text">SQL优化explain</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#innodb的读写参数优化"><span class="nav-number">20.</span> <span class="nav-text">innodb的读写参数优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#表中有大字段X-例如：text类型-，且字段X不会经常更新，以读为为主，请问"><span class="nav-number">21.</span> <span class="nav-text">表中有大字段X(例如：text类型)，且字段X不会经常更新，以读为为主，请问</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL中InnoDB引擎的行锁是通过加在什么上完成-或称实现-的？为什么是这样子的？"><span class="nav-number">22.</span> <span class="nav-text">MySQL中InnoDB引擎的行锁是通过加在什么上完成(或称实现)的？为什么是这样子的？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是存储过程？有哪些优缺点？"><span class="nav-number">23.</span> <span class="nav-text">什么是存储过程？有哪些优缺点？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#索引是什么？有什么作用以及优缺点？"><span class="nav-number">24.</span> <span class="nav-text">索引是什么？有什么作用以及优缺点？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用索引查询一定能提高查询的性能吗？为什么"><span class="nav-number">25.</span> <span class="nav-text">使用索引查询一定能提高查询的性能吗？为什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#简单说一说drop、delete与truncate的区"><span class="nav-number">26.</span> <span class="nav-text">简单说一说drop、delete与truncate的区</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#drop、delete与truncate分别在什么场景之下使用？"><span class="nav-number">27.</span> <span class="nav-text">drop、delete与truncate分别在什么场景之下使用？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库的乐观锁和悲观锁是什么？"><span class="nav-number">28.</span> <span class="nav-text">数据库的乐观锁和悲观锁是什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#InnoDB的MVCC的机制是什么"><span class="nav-number">29.</span> <span class="nav-text">InnoDB的MVCC的机制是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#表空间、段、区、数据页是什么？"><span class="nav-number">30.</span> <span class="nav-text">表空间、段、区、数据页是什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#快照读与当前读区别"><span class="nav-number">31.</span> <span class="nav-text">快照读与当前读区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#谈谈-SQL-优化的经验"><span class="nav-number">32.</span> <span class="nav-text">谈谈 SQL 优化的经验</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开放性问题"><span class="nav-number">33.</span> <span class="nav-text">开放性问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL-binlog的几种日志录入格式以及区别"><span class="nav-number">34.</span> <span class="nav-text">MySQL binlog的几种日志录入格式以及区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL数据库cpu飙升到500-的话他怎么处理？"><span class="nav-number">35.</span> <span class="nav-text">MySQL数据库cpu飙升到500%的话他怎么处理？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#备份计划，mysqldump以及xtranbackup的实现原理"><span class="nav-number">36.</span> <span class="nav-text">备份计划，mysqldump以及xtranbackup的实现原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mysqldump中备份出来的sql，如果我想sql文件中，一行只有一个insert…-value-的话，怎么办？如果备份需要带上master的复制点信息怎么办？"><span class="nav-number">37.</span> <span class="nav-text">mysqldump中备份出来的sql，如果我想sql文件中，一行只有一个insert….value()的话，怎么办？如果备份需要带上master的复制点信息怎么办？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#你是否做过主从一致性校验，如果有，怎么做的，如果没有，你打算怎么做？"><span class="nav-number">38.</span> <span class="nav-text">你是否做过主从一致性校验，如果有，怎么做的，如果没有，你打算怎么做？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#你们数据库是否支持emoji表情，如果不支持，如何操作？"><span class="nav-number">39.</span> <span class="nav-text">你们数据库是否支持emoji表情，如果不支持，如何操作？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是视图？以及视图的使用场景有哪些？"><span class="nav-number">40.</span> <span class="nav-text">什么是视图？以及视图的使用场景有哪些？</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库的三范式是什么"><span class="nav-number">1.</span> <span class="nav-text">数据库的三范式是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#说下mysql有几种数据库引擎"><span class="nav-number">2.</span> <span class="nav-text">说下mysql有几种数据库引擎</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#说下mysql-Master-slave-的原理"><span class="nav-number">3.</span> <span class="nav-text">说下mysql Master slave 的原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL中myisam与innodb的区别"><span class="nav-number">4.</span> <span class="nav-text">MySQL中myisam与innodb的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#innodb引擎的4大特性"><span class="nav-number">5.</span> <span class="nav-text">innodb引擎的4大特性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么要使用自增列作为主键？"><span class="nav-number">6.</span> <span class="nav-text">为什么要使用自增列作为主键？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是事务？"><span class="nav-number">7.</span> <span class="nav-text">什么是事务？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL-事务四大特性"><span class="nav-number">8.</span> <span class="nav-text">MySQL 事务四大特性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SQL语句的执行顺序"><span class="nav-number">9.</span> <span class="nav-text">SQL语句的执行顺序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#介绍下InnoDB存储引擎的B-树索引"><span class="nav-number">10.</span> <span class="nav-text">介绍下InnoDB存储引擎的B+树索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#B-Tree与Hash索引的区别"><span class="nav-number">11.</span> <span class="nav-text">B+Tree与Hash索引的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#索引是什么？有什么作用以及优缺点？"><span class="nav-number">12.</span> <span class="nav-text">索引是什么？有什么作用以及优缺点？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用索引查询一定能提高查询的性能吗？为什么"><span class="nav-number">13.</span> <span class="nav-text">使用索引查询一定能提高查询的性能吗？为什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#覆盖索引和回表"><span class="nav-number">14.</span> <span class="nav-text">覆盖索引和回表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#索引失效"><span class="nav-number">15.</span> <span class="nav-text">索引失效</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是临时表，何时删除临时表"><span class="nav-number">16.</span> <span class="nav-text">什么是临时表，何时删除临时表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#in-not-in-exists-not-exists-它们有什么区别，效率如何？"><span class="nav-number">17.</span> <span class="nav-text">in, not in , exists , not exists 它们有什么区别，效率如何？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查询优化"><span class="nav-number">18.</span> <span class="nav-text">查询优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL-常见索引类型"><span class="nav-number">19.</span> <span class="nav-text">MySQL 常见索引类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#主键和候选键有什么区别？"><span class="nav-number">20.</span> <span class="nav-text">主键和候选键有什么区别？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#超键、候选键、主键、外键分别是什么？"><span class="nav-number">21.</span> <span class="nav-text">超键、候选键、主键、外键分别是什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL中varchar与char的区别以及varchar-50-中的50代表的涵义"><span class="nav-number">22.</span> <span class="nav-text">MySQL中varchar与char的区别以及varchar(50)中的50代表的涵义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问了innodb的事务与日志的实现方式"><span class="nav-number">23.</span> <span class="nav-text">问了innodb的事务与日志的实现方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SQL优化explain"><span class="nav-number">24.</span> <span class="nav-text">SQL优化explain</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#innodb的读写参数优化"><span class="nav-number">25.</span> <span class="nav-text">innodb的读写参数优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#表中有大字段X-例如：text类型-，且字段X不会经常更新，以读为为主，请问"><span class="nav-number">26.</span> <span class="nav-text">表中有大字段X(例如：text类型)，且字段X不会经常更新，以读为为主，请问</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL中InnoDB引擎的行锁是通过加在什么上完成-或称实现-的？为什么是这样子的？"><span class="nav-number">27.</span> <span class="nav-text">MySQL中InnoDB引擎的行锁是通过加在什么上完成(或称实现)的？为什么是这样子的？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是存储过程？有哪些优缺点？"><span class="nav-number">28.</span> <span class="nav-text">什么是存储过程？有哪些优缺点？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#简单说一说drop、delete与truncate的区"><span class="nav-number">29.</span> <span class="nav-text">简单说一说drop、delete与truncate的区</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#drop、delete与truncate分别在什么场景之下使用？"><span class="nav-number">30.</span> <span class="nav-text">drop、delete与truncate分别在什么场景之下使用？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库的乐观锁和悲观锁是什么？"><span class="nav-number">31.</span> <span class="nav-text">数据库的乐观锁和悲观锁是什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#InnoDB的MVCC的机制是什么"><span class="nav-number">32.</span> <span class="nav-text">InnoDB的MVCC的机制是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#表空间、段、区、数据页是什么？"><span class="nav-number">33.</span> <span class="nav-text">表空间、段、区、数据页是什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#快照读与当前读区别"><span class="nav-number">34.</span> <span class="nav-text">快照读与当前读区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#谈谈-SQL-优化的经验"><span class="nav-number">35.</span> <span class="nav-text">谈谈 SQL 优化的经验</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL-binlog的几种日志录入格式以及区别"><span class="nav-number">36.</span> <span class="nav-text">MySQL binlog的几种日志录入格式以及区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL数据库cpu飙升到500-的话他怎么处理？"><span class="nav-number">37.</span> <span class="nav-text">MySQL数据库cpu飙升到500%的话他怎么处理？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#备份计划，mysqldump以及xtranbackup的实现原理"><span class="nav-number">38.</span> <span class="nav-text">备份计划，mysqldump以及xtranbackup的实现原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mysqldump中备份出来的sql，如果我想sql文件中，一行只有一个insert…-value-的话，怎么办？如果备份需要带上master的复制点信息怎么办？"><span class="nav-number">39.</span> <span class="nav-text">mysqldump中备份出来的sql，如果我想sql文件中，一行只有一个insert….value()的话，怎么办？如果备份需要带上master的复制点信息怎么办？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#你是否做过主从一致性校验，如果有，怎么做的，如果没有，你打算怎么做？"><span class="nav-number">40.</span> <span class="nav-text">你是否做过主从一致性校验，如果有，怎么做的，如果没有，你打算怎么做？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#你们数据库是否支持emoji表情，如果不支持，如何操作？"><span class="nav-number">41.</span> <span class="nav-text">你们数据库是否支持emoji表情，如果不支持，如何操作？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是视图？以及视图的使用场景有哪些？"><span class="nav-number">42.</span> <span class="nav-text">什么是视图？以及视图的使用场景有哪些？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开放性问题"><span class="nav-number">43.</span> <span class="nav-text">开放性问题</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

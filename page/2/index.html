@@ -239,6 +239,210 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/09/20/Permission-design/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/09/20/Permission-design/" class="post-title-link" itemprop="url">Permission-Design</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-20 21:38:35 / Modified: 22:19:13" itemprop="dateCreated datePublished" datetime="2021-09-20T21:38:35+08:00">2021-09-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/" itemprop="url" rel="index"><span itemprop="name">系统设计</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><blockquote>
+<p>权限管理是一个几乎所有大中型 B 端系统都会涉及的重要组成部分，其目的是对整个系统进行权限控制，避免造成误操作及数据泄露等风险问题。</p>
+</blockquote>
+<h2 id="权限与权限管理"><a href="#权限与权限管理" class="headerlink" title="权限与权限管理"></a>权限与权限管理</h2><h3 id="名词定义"><a href="#名词定义" class="headerlink" title="名词定义"></a>名词定义</h3><blockquote>
+<p>权限相关的基本概念：</p>
+</blockquote>
+<ul>
+<li>权限：用户可操作行为的最小单位。</li>
+<li>用户：每个用户都有唯一标识，并被授予一个或多个角色。</li>
+<li>角色：由不同的权限组合而成，最终分配给具体用户。</li>
+<li>权限管理：控制用户的权限，只能访问授权内容。</li>
+</ul>
+<h3 id="模型选择"><a href="#模型选择" class="headerlink" title="模型选择"></a>模型选择</h3><ul>
+<li>ACL（Access Control List）：基于用户级别的权限控制。<ul>
+<li>将系统的各种权限直接授予具体的用户。抽象来说，为每个用户维护了单独的权限列表，当需要分配权限、收回权限时，需要修改对应用户的权限信息。</li>
+</ul>
+</li>
+<li>RBAC（Role Base Access Control）：基于角色级别的权限控制。<ul>
+<li>与 ACL 对比，RBAC不用给用户单个分配权限，权限与用户之前通过角色关联。通过给不同的角色分配不同的权限，只需要将用户指向对应的角色就会有对应的权限。分配权限、收回权限只需要通过修改用户的角色即可。</li>
+</ul>
+</li>
+<li>ABAC（Attribute Base Access Control）：基于属性级别的权限控制。<ul>
+<li>不同于常见的将用户通过某种方式直接关联到权限的方式，ABAC 是通过动态计算一个或一组属性来是否满足某种条件来进行权限判断。属性一般分为四类：用户属性（自然人属性，如年龄、性别等），环境属性（物理环境，如时间、地点、气候），操作属性（读、写）和对象属性（操作对象，如资金、某张图片、某个特定的页面，又称资源属性）。</li>
+</ul>
+</li>
+<li>因此理论上能够实现灵活的权限控制、将在权限与用户之前通过一组或多组属性实现关联，几乎能满足所有类型的需求。</li>
+</ul>
+<h3 id="权限管控"><a href="#权限管控" class="headerlink" title="权限管控"></a>权限管控</h3><blockquote>
+<p>抽象来看权限体系可以分为如下两类：功能权限 与 数据权限 两部分。</p>
+</blockquote>
+<ul>
+<li>功能权限指的是在系统中的功能可否使用，通常我们将功能权限分为查看、编辑、删除等，同时编辑、删除权限又包含了查看。通过小的权限点拆分更精细的赋予了员工能否进入某个页面查看信息、编辑信息的能力。</li>
+<li>数据权限指数据中存在的数据是否能查看，是一个更细粒度的权限。比如一个页面，不同角色查看不同的数据就需要通过数据权限控制。<br>从管理对象维度又可以分为：企业能力 与 员工能力。</li>
+<li>企业能力店铺维度的权限，比如开通某服务，可以通过企业能力去体现。</li>
+<li>企业能力赋予用户的权限，比如收电子发票、资金管理等。</li>
+<li>企业能力优先级绝对高于员工能力，所有场景的权限判断，店铺能力必须先于员工能力。简单地说，企业能力决定了“企业能做什么”，员工能力决定了“用户能做什么”。</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/09/20/Git-Develop-Branch/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/09/20/Git-Develop-Branch/" class="post-title-link" itemprop="url">git-develop-branch</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-20 21:34:52 / Modified: 21:39:54" itemprop="dateCreated datePublished" datetime="2021-09-20T21:34:52+08:00">2021-09-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Git/" itemprop="url" rel="index"><span itemprop="name">Git</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="规范代码开发流程"><a href="#规范代码开发流程" class="headerlink" title="规范代码开发流程"></a>规范代码开发流程</h2><blockquote>
+<p>git 分支分为集成分支、功能分支和修复分支，分别命名为 develop、feature 和 hotfix，均为单数。不可使用 features、future、hotfixes、hotfixs 等错误名称。</p>
+</blockquote>
+<p>1.git主分支(master)。它是自动建立，用于发布重大版本更新（github 现在默认是是main 因种族歧视问题）<br>2.git开发主分支(develop)。日常开发在此分支上进行<br>3.git临时性分支：用于应对一些特定目的的版本开发(验证OK后，应该删除此分支)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- 功能（feature）分支：它是为了开发某种特定功能，从Develop分支上面分出来的。开发完成后，要再并入Develop。可以采用feature-的形式命名。</span><br><span class="line">- 预发布（release）分支：指发布正式版本之前（即合并到Master分支之前），我们可能需要有一个预发布的版本进行测试。预发布分支是从Develop分支上面分出来的，预发布结束以后，</span><br><span class="line">必须合并进Develop和Master分支。它的命名，可以采用release-的形式。</span><br><span class="line">- 修补bug（hotfix）分支：软件正式发布以后，难免会出现bug。这时就需要创建一个分支，进行bug修补。修补bug分支是从Master或Develop分支上面分出来的。修补结束以后，</span><br><span class="line">再合并进Master和Develop分支。它的命名，可以采用hotfix-***的形式。</span><br></pre></td></tr></table></figure>
+
+<p>开发流程</p>
+<blockquote>
+<p>暂定临时分支feature、hotfix两种启用。暂不启用RP、code review。</p>
+</blockquote>
+<p>1.基于develop生成新临时开发分支。<br>2.测试、正式环境上线通过。<br>3.合并至develop分支，并生成对应的tag版本。<br>4.完成特定功能开发后(验证OK后，应该删除此分支)。<br>5.README.md文档中记录tag版本生成时间以及具体的功能名称。</p>
+<p>修复bug流程</p>
+<blockquote>
+<p>根据最新已经上线的分支代码创建hotfix分支。</p>
+</blockquote>
+<p>1.基于develop或者上个tag版本(根据实际情况而定)生成新临时开发分支。<br>2.测试、正式环境上线通过。<br>3.合并至develop分支，并生成对应的tag版本。<br>4.<code>若存在临时开发分支</code>-完成特定功能开发后(验证OK后，应该删除此分支)。<br>5.<code>若存在临时开发分支</code>-临时开发分支合并已经修复bug的develop代码。<br>6.<code>若存在临时开发分支</code>-临时开发分支完成特定功能开发后(验证OK后，应该删除此分支)。<br>7.README.md文档中记录tag版本生成时间以及具体的功能名称。</p>
+<h2 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h2><h3 id="开发尺码"><a href="#开发尺码" class="headerlink" title="开发尺码"></a>开发尺码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">git checkout develop &#x2F;&#x2F; 切换开发分支，git pull origin develop 并同步最新的develop分支代码。（强制）</span><br><span class="line">git checkout -b feature-sizeGroup &#x2F;&#x2F;基于develop分支创建新的开发分支（强制）</span><br><span class="line">git checkout develop &#x2F;&#x2F; feature-sizeGroup完成上线后develop分支准备合并分支（强制）</span><br><span class="line">git merge feature-sizeGroup &#x2F;&#x2F; 合并开发功能分支（强制）</span><br><span class="line">git tag -a v1.4 -m &quot;my version 1.4&quot; &#x2F;&#x2F; 合并完成创建标签备注中简单说明开发功能（强制）</span><br><span class="line">git push origin v1.4 &#x2F;&#x2F; 推送tag标签到远程仓库（强制）</span><br><span class="line">git branch -d feature-sizeGroup &#x2F;&#x2F;删除本地的临时开发分支(非强制)</span><br><span class="line">git push origin --delete feature-sizeGroup &#x2F;&#x2F; 删除远程的临时开发分支（强制）</span><br><span class="line">vim README.md &#x2F;&#x2F; 保存新增tag版本记录（强制）</span><br><span class="line">git add README.md &#x2F;&#x2F; 追踪README.md文件。（强制）</span><br><span class="line">git commit -m &quot;发布新的tag&quot; &#x2F;&#x2F; 将暂存区里的改动给提交到本地的版本库（强制）</span><br><span class="line">git push origin develop &#x2F;&#x2F; 推送改动后的develop（强制）</span><br></pre></td></tr></table></figure>
+
+<h3 id="master-合并周期"><a href="#master-合并周期" class="headerlink" title="master 合并周期"></a>master 合并周期</h3><blockquote>
+<p>每月月底最后几个工作日完成对master 对develop分支的合并。</p>
+</blockquote>
+<h3 id="tag-版本命名"><a href="#tag-版本命名" class="headerlink" title="tag 版本命名"></a>tag 版本命名</h3><blockquote>
+<p>版本命名规范</p>
+</blockquote>
+<ul>
+<li>版本: v1.1.1 ( Build 101001 )</li>
+<li>版本格式 bigVersion.middleVersion.smallVersion</li>
+<li>bigVersion 大版本(年度或者重大更新（强制更新，老版本存在不兼容等情况）) 取值范围 1-99</li>
+<li>middleVersion 迭代版本 取值范围 1-99</li>
+<li>smallVersion bug修复增强发布。 取值范围 1-999</li>
+<li>Build为版本纯数字格式化。</li>
+</ul>
+<h3 id="git帮助文档"><a href="#git帮助文档" class="headerlink" title="git帮助文档"></a>git帮助文档</h3><p><a href="https://gitee.com/all-about-git" target="_blank" rel="noopener">git 大全</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/21/Git-Branch/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1033,224 +1237,6 @@
             </div>
           <!--/noindex-->
         
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/08/19/Jvm-optimization/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/08/19/Jvm-optimization/" class="post-title-link" itemprop="url">Jvm-optimization</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2021-08-19 14:09:45 / Modified: 16:36:55" itemprop="dateCreated datePublished" datetime="2021-08-19T14:09:45+08:00">2021-08-19</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Jvm/" itemprop="url" rel="index"><span itemprop="name">Jvm</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>jvm调优是日常工作中经常会使用的技巧，整理下。</p>
-</blockquote>
-<h3 id="项目启动的时候加上的参数都是些啥意思？"><a href="#项目启动的时候加上的参数都是些啥意思？" class="headerlink" title="项目启动的时候加上的参数都是些啥意思？"></a>项目启动的时候加上的参数都是些啥意思？</h3><blockquote>
-<p>刚开始工作的时候发现同事会在jar启动的命令上增加很多参数,很长一段时间都不清楚是干啥的。</p>
-</blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:MetaspaceSize=<span class="number">128</span>m -XX:MaxMetaspaceSize=<span class="number">128</span>m -Xms1024m -Xmx1024m -Xmn256m -Xss256k -XX:SurvivorRatio=<span class="number">8</span> -XX:+UseConcMarkSweepGC</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>简单介绍下参数</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">-XX:MetaspaceSize=<span class="number">128</span>m （元空间默认大小）</span><br><span class="line">-XX:MaxMetaspaceSize=<span class="number">128</span>m （元空间最大大小）</span><br><span class="line">-Xms1024m （堆最大大小）</span><br><span class="line">-Xmx1024m （堆默认大小）</span><br><span class="line">-Xmn256m （新生代大小）</span><br><span class="line">-Xss256k （棧最大深度大小）</span><br><span class="line">-XX:SurvivorRatio=<span class="number">8</span> （新生代分区比例 <span class="number">8</span>:<span class="number">2</span>）</span><br><span class="line">-XX:+UseConcMarkSweepGC （指定使用的垃圾收集器，这里使用CMS收集器）</span><br><span class="line">-XX:+PrintGCDetails （打印详细的GC日志）</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>虽然有了介绍但是依然不清楚具体是干啥的。并且Java虚拟机提供了非常多的参数命令。下面代码可以输出支持的参数数量</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">java -XX:+PrintFlagsFinal -XX:+UnlockDiagnosticVMOptions -version | wc -l</span><br><span class="line">openjdk version <span class="string">"1.8.0_275"</span></span><br><span class="line"><span class="function">OpenJDK Runtime <span class="title">Environment</span> <span class="params">(AdoptOpenJDK)</span><span class="params">(build <span class="number">1.8</span><span class="number">.0</span>_275-b01)</span></span></span><br><span class="line"><span class="function">OpenJDK 64-Bit Server <span class="title">VM</span> <span class="params">(AdoptOpenJDK)</span><span class="params">(build <span class="number">25.275</span>-b01, mixed mode)</span></span></span><br><span class="line"><span class="function">     838</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="如何理解这些参数的含义？"><a href="#如何理解这些参数的含义？" class="headerlink" title="如何理解这些参数的含义？"></a>如何理解这些参数的含义？</h3><blockquote>
-<p>首先我们需要理解java是如何运行的，为什么需要java虚拟机？    </p>
-<p>我们常用方式一般是安装java运行环境(jre)用命令行的方式启动或者直接双击jar运行。jre包含的java运行的必要环境。</p>
-<p>Java 作为一门高级程序语言，它的语法非常复杂，抽象程度也很高。编译出来的也不是机器可以直接直接运行代码。所以使用面向Java语言的虚拟机运行Java编译以后的特定代码。这里的特定代码指的是Java字节指令码。</p>
-</blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/08/19/Jvm-optimization/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/08/18/Nginx-log-format/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/08/18/Nginx-log-format/" class="post-title-link" itemprop="url">Nginx-log-format</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-08-18 18:11:55" itemprop="dateCreated datePublished" datetime="2021-08-18T18:11:55+08:00">2021-08-18</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-08-19 14:07:24" itemprop="dateModified" datetime="2021-08-19T14:07:24+08:00">2021-08-19</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Nginx/" itemprop="url" rel="index"><span itemprop="name">Nginx</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>Ngxin 日志格式化</p>
-</blockquote>
-<ul>
-<li>Nginx提供的访问日志里就蕴藏着大量有用信息。今天这篇要说的就是如果修改Nginx默认日志格式，以便于我们更好的挖掘有效指标。</li>
-</ul>
-<p>编辑<code>/etc/nginx.conf</code>配置文件，在日志部分添加下面两段代码，编辑完成后重启Nginx服务即可。</p>
-<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">log_format</span> main <span class="string">'<span class="variable">$host</span> - <span class="variable">$remote_addr</span> - [<span class="variable">$time_local</span>] "<span class="variable">$request</span>" '</span></span><br><span class="line">                <span class="string">'<span class="variable">$status</span> <span class="variable">$upstream_response_time</span> <span class="variable">$request_time</span> "<span class="variable">$http_referer</span>"'</span></span><br><span class="line">                <span class="string">'"<span class="variable">$http_user_agent</span>" "<span class="variable">$http_x_forwarded_for</span>" <span class="variable">$body_bytes_sent</span> '</span>;</span><br><span class="line"><span class="attribute">access_log</span> /var/log/nginx/access.log main;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>简单罗列一下变量的含义:</p>
-</blockquote>
-<ul>
-<li><code>$host</code> 访问域名</li>
-<li><code>$remote_addr</code> 客户端IP地址</li>
-<li><code>$time_local</code> 访问时间</li>
-<li><code>$status</code> 访问状态码</li>
-<li><code>$upstream_response_time</code> 应用返回到Nginx的时间</li>
-<li><code>$request_time</code> 请求时间</li>
-<li><code>$http_referer</code> 请求来源</li>
-<li><code>$http_user_agent</code> 访问客户端</li>
-<li><code>$http_x_forwarded_for</code> 客户端IP地址</li>
-<li><code>$body_bytes_sent</code> 返回给客户端大小</li>
-</ul>
-<blockquote>
-<p>在server中不生效的问题</p>
-</blockquote>
-<ul>
-<li>在server中增加 <code>access_log /var/log/nginx/access.log main;</code></li>
-</ul>
-<blockquote>
-<p>日期显示问题</p>
-</blockquote>
-<ul>
-<li><p><code>[01/Jul/2020:03:25:17 +0800]  </code>官方默认是这种</p>
-</li>
-<li><p>修改默认格式</p>
-</li>
-</ul>
-<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">log_format</span> main <span class="string">'<span class="variable">$host</span> - <span class="variable">$remote_addr</span> - [<span class="variable">$time_iso8601</span>] "<span class="variable">$request</span>" '</span></span><br><span class="line">                <span class="string">'<span class="variable">$status</span> <span class="variable">$upstream_response_time</span> <span class="variable">$request_time</span> "<span class="variable">$http_referer</span>"'</span></span><br><span class="line">                <span class="string">'"<span class="variable">$http_user_agent</span>" "<span class="variable">$http_x_forwarded_for</span>" <span class="variable">$body_bytes_sent</span> '</span>;</span><br><span class="line"><span class="attribute">access_log</span> /var/log/nginx/access.log main;</span><br></pre></td></tr></table></figure>
-
-
-
-<ul>
-<li>在server中增加下面代码</li>
-</ul>
-<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="section">server</span> &#123;</span><br><span class="line"></span><br><span class="line">	if ($time_iso8601 ~ "^(\d&#123;4&#125;)-(\d&#123;2&#125;)-(\d&#123;2&#125;) (\d&#123;2&#125;):(\d&#123;2&#125;):(\d&#123;2&#125;)") &#123;</span><br><span class="line">			<span class="attribute">set</span> <span class="variable">$year</span> <span class="variable">$1</span>;</span><br><span class="line">			<span class="attribute">set</span> <span class="variable">$month</span> <span class="variable">$2</span>;</span><br><span class="line">			<span class="attribute">set</span> <span class="variable">$day</span> <span class="variable">$3</span>;</span><br><span class="line">			<span class="attribute">set</span> <span class="variable">$hour</span> <span class="variable">$4</span>;</span><br><span class="line">			<span class="attribute">set</span> <span class="variable">$minutes</span> <span class="variable">$5</span>;</span><br><span class="line">			<span class="attribute">set</span> <span class="variable">$seconds</span> <span class="variable">$6</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
       
     </div>
 
