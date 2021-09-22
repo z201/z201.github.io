@@ -239,6 +239,233 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/11/20/Docker-Compose-Redis5-0-Mysql5-7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/11/20/Docker-Compose-Redis5-0-Mysql5-7/" class="post-title-link" itemprop="url">Docker-Compose-Redis5.0+Mysql5.7</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-11-20 15:58:13" itemprop="dateCreated datePublished" datetime="2020-11-20T15:58:13+08:00">2020-11-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-01-13 14:46:29" itemprop="dateModified" datetime="2021-01-13T14:46:29+08:00">2021-01-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Docker/" itemprop="url" rel="index"><span itemprop="name">Docker</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>记录下使用docker-compose构建管理Redis、mysql。</p>
+</blockquote>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><ol>
+<li>创建工作目录</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -p docker docker/mysql docker/mysql/data docker/redis docker/redis/data</span><br><span class="line"><span class="comment"># 使用 tree docker 查看目录结构 yum -y install tree 安装</span></span><br><span class="line">$ tree docker</span><br><span class="line">docker</span><br><span class="line">├── mysql</span><br><span class="line">│   └── data</span><br><span class="line">└── redis</span><br><span class="line">    └── data</span><br><span class="line">$ touch docker/mysql/my.cnf docker/redis/redis.conf </span><br><span class="line">$ tree docker</span><br><span class="line">docker</span><br><span class="line">├── mysql</span><br><span class="line">│   ├── data</span><br><span class="line">│   └── my.cnf</span><br><span class="line">└── redis</span><br><span class="line">    ├── data</span><br><span class="line">    └── redis.conf</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>准备my.conf 、redis.conf<ol>
+<li>my.conf</li>
+</ol>
+</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">[client]</span><br><span class="line"> port = 3306</span><br><span class="line"> socket = /var/lib/mysql/data/mysql.sock</span><br><span class="line">[mysqld]</span><br><span class="line"> <span class="comment"># 针对5.7版本执行group by字句出错问题解决</span></span><br><span class="line">sql_mode=<span class="string">'STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'</span></span><br><span class="line"> <span class="comment"># 一般配置选项</span></span><br><span class="line"> basedir = /var/lib/mysql</span><br><span class="line"> datadir = /var/lib/mysql/data</span><br><span class="line"> port = 3306</span><br><span class="line"> socket = /var/lib/mysql/data/mysql.sock</span><br><span class="line"> lc-messages-dir = /usr/share/mysql <span class="comment"># 务必配置此项，否则执行sql出错时，只能显示错误代码而不显示具体错误消息</span></span><br><span class="line"> character-set-server=utf8</span><br><span class="line"> back_log = 300</span><br><span class="line"> max_connections = 3000</span><br><span class="line"> max_connect_errors = 50</span><br><span class="line"> table_open_cache = 4096</span><br><span class="line"> max_allowed_packet = 32M</span><br><span class="line"> <span class="comment">#binlog_cache_size = 4M</span></span><br><span class="line"> max_heap_table_size = 128M</span><br><span class="line"> read_rnd_buffer_size = 16M</span><br><span class="line"> sort_buffer_size = 16M</span><br><span class="line"> join_buffer_size = 16M</span><br><span class="line"> thread_cache_size = 16</span><br><span class="line"> query_cache_size = 64M</span><br><span class="line"> query_cache_limit = 4M</span><br><span class="line"> ft_min_word_len = 8</span><br><span class="line"> thread_stack = 512K</span><br><span class="line"> transaction_isolation = REPEATABLE-READ</span><br><span class="line"> tmp_table_size = 64M</span><br><span class="line"> <span class="comment">#log-bin=mysql-bin</span></span><br><span class="line"> long_query_time = 6</span><br><span class="line"> server_id=1</span><br><span class="line"> innodb_buffer_pool_size = 256M</span><br><span class="line"> innodb_thread_concurrency = 16</span><br><span class="line"> innodb_log_buffer_size = 16M</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>redis.conf 可以去这里下载 <a href="https://redis.io/topics/config" target="_blank" rel="noopener">官网</a></li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">wget https://raw.githubusercontent.com/redis/redis/5.0/redis.conf</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改内容</span></span><br><span class="line">daemonize no     <span class="comment">## 若使用开机启动，生成pid，该项必须设置为诶yes，否则redis将不能够正常执行开机启动(systemctl start redis,执行后一直卡着，直到超时)</span></span><br><span class="line"><span class="comment">#bind 127.0.0.1  ##注释掉，允许所有其他ip访问，真实使用最好坐下限制，只允许某些主机访问</span></span><br><span class="line">protected-mode no  <span class="comment">## 允许其他机器上的客户端连接当前redis，配置文件设置该项，则开机启动处就可以去掉--protected no </span></span><br><span class="line">requirepass root  <span class="comment">##设置密码</span></span><br><span class="line"><span class="comment"># daemonize yes，他的作用是开启守护进程模式，在该模式下，redis会在后台运行，并将进程pid号写入至redis.conf选项pidfile设置的文件中，此时redis将一直运行，除非手动kill该进程。但是在后面的命令中“-d”选项也是开启daemonize，这是docker自家的方式。</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="编写Docker-Compose文件"><a href="#编写Docker-Compose文件" class="headerlink" title="编写Docker-Compose文件"></a>编写Docker-Compose文件</h2><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">version : <span class="string">'3'</span></span><br><span class="line">services:</span><br><span class="line">  mysql:</span><br><span class="line">    image: mysql/mysql-server:<span class="number">5.7</span>.<span class="number">18</span></span><br><span class="line">    container_name: mysql5.<span class="number">7.18</span>-dev</span><br><span class="line">    networks:</span><br><span class="line">      - net-shop-db</span><br><span class="line">    ports:</span><br><span class="line">      - <span class="string">"3306:3306"</span></span><br><span class="line">    volumes:</span><br><span class="line">      - /opt/docker/mysql/my.cnf:/etc/my.cnf <span class="comment"># 映射数据库配置文件</span></span><br><span class="line">      - /opt/docker/mysql/data:/var/lib/mysql/data  <span class="comment"># 映射数据库保存目录到宿主机，防止数据丢失</span></span><br><span class="line">      - /opt/docker/mysql/log:/var/log/mysql <span class="comment"># 日志文件</span></span><br><span class="line">      - /etc/localtime:/etc/localtime:ro <span class="comment"># 设置容器时区与宿主机保持一致</span></span><br><span class="line">    restart: always <span class="comment"># 设置容器自启模式</span></span><br><span class="line">    command: [</span><br><span class="line">      <span class="string">'--character-set-server=utf8mb4'</span>,</span><br><span class="line">      <span class="string">'--collation-server=utf8mb4_unicode_ci'</span>,</span><br><span class="line">      <span class="string">'--lower_case_table_names=1'</span>,</span><br><span class="line">      <span class="string">'--default-time-zone=+8:00'</span>]</span><br><span class="line">    environment:</span><br><span class="line">      - TZ=Asia/Shanghai <span class="comment"># 设置容器时区与宿主机保持一致</span></span><br><span class="line">      - MYSQL_ROOT_PASSWORD=root <span class="comment"># 设置root密码</span></span><br><span class="line">  redis:</span><br><span class="line">    image: redis:<span class="number">5.0</span>.<span class="number">5</span></span><br><span class="line">    container_name: redis5.<span class="number">0.6</span>-dev</span><br><span class="line">    networks:</span><br><span class="line">      - net-shop-db</span><br><span class="line">    ports:</span><br><span class="line">      - <span class="string">"6379:6379"</span></span><br><span class="line">    volumes:</span><br><span class="line">      - /etc/localtime:/etc/localtime:ro <span class="comment"># 设置容器时区与宿主机保持一致</span></span><br><span class="line">      - /opt/docker/redis/data:/data</span><br><span class="line">      - /opt/docker/redis/redis.conf:/etc/redis.conf</span><br><span class="line">    command: redis-server /etc/redis.conf <span class="comment"># 启动redis命令</span></span><br><span class="line">    environment:</span><br><span class="line">      - TZ=Asia/Shanghai <span class="comment"># 设置容器时区与宿主机保持一致</span></span><br><span class="line">    restart: always <span class="comment"># 设置容器自启模式</span></span><br><span class="line"></span><br><span class="line">networks:</span><br><span class="line">  net-shop-db:</span><br><span class="line">    driver: bridge</span><br></pre></td></tr></table></figure>
+
+<h2 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h2><blockquote>
+<p>注意需要提前启动docker</p>
+</blockquote>
+<ol>
+<li>创建并启动容器 <code>docker-compose -f docker-compose.yml up -d</code></li>
+<li>批量停止容器并清除容器 <code>docker-compose -f docker-compose.yml down</code></li>
+<li>重新构建容器 <code>docker-compose -f docker-compose.yml up --build -d</code></li>
+<li>启动失败，可以查看容器日志信息获取帮助 <code>docker logs 容器名词或容器ID # 既docker-compose.yml文件参数container_name指定的值</code></li>
+</ol>
+<h2 id="备注"><a href="#备注" class="headerlink" title="备注"></a>备注</h2><ol>
+<li>docker-compose 命令不存在、未找到命令。直接从github上下载，国内下载巨慢。</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 注意查看docker 版本 和 docker-compose 的版本</span></span><br><span class="line"><span class="built_in">cd</span> /usr/<span class="built_in">local</span>/bin/</span><br><span class="line"></span><br><span class="line">curl -L https://github.com/docker/compose/releases/download/1.27.4/docker-compose-`uname -s`-`uname -m` -o /usr/<span class="built_in">local</span>/bin/docker-compose</span><br><span class="line"><span class="comment">#。直接用国内的镜像</span></span><br><span class="line">curl -L https://get.daocloud.io/docker/compose/releases/download/1.27.4/docker-compose-`uname -s`-`uname -m` &gt; /usr/<span class="built_in">local</span>/bin/docker-compose</span><br><span class="line"></span><br><span class="line">chmod +x /usr/<span class="built_in">local</span>/bin/docker-compose</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://yefeihonours.github.io/post/docker/docker_compose/" target="_blank" rel="noopener">docker-compose 命令不存在、未找到命令</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/43654441" target="_blank" rel="noopener">使用 docker-compose 在 Docker 中启动有密码的 Redis 容器</a></p>
+<p><a href="https://cloud.tencent.com/developer/article/1678769" target="_blank" rel="noopener">Docker-Compose搭建mysql、redis、zookeeper、rabbitmq、consul、elasticsearch环境</a></p>
+<p><a href="https://juejin.cn/post/6844903655389265927" target="_blank" rel="noopener">Docker Compose多容器部署</a></p>
+<p><a href="https://colobu.com/2018/05/15/Stop-and-remove-all-docker-containers-and-images/" target="_blank" rel="noopener">停止、删除所有的docker容器和镜像</a></p>
+<p><a href="https://my.oschina.net/u/4362704/blog/3308004" target="_blank" rel="noopener">宿主机连接docker中的mysql</a></p>
+<p><a href="https://developer.aliyun.com/article/618035" target="_blank" rel="noopener">Docker Compose 安装 on centos7</a></p>
+<p><a href="https://cloud.tencent.com/developer/article/1678769" target="_blank" rel="noopener">Docker-Compose搭建mysql、redis、zookeeper、rabbitmq、consul、elasticsearch环境</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/140732202" target="_blank" rel="noopener">docker-compose一键安装redis+mysql+rabbitmq</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/11/20/Centos7-Docker%E9%83%A8%E7%BD%B2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/11/20/Centos7-Docker%E9%83%A8%E7%BD%B2/" class="post-title-link" itemprop="url">Centos7.*-Docker部署</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-11-20 14:26:04" itemprop="dateCreated datePublished" datetime="2020-11-20T14:26:04+08:00">2020-11-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-01-12 15:16:48" itemprop="dateModified" datetime="2021-01-12T15:16:48+08:00">2021-01-12</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index"><span itemprop="name">Linux运维</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>记录下自己在阿里云部署docker记录。</p>
+</blockquote>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><ol>
+<li>准备一台ESC服务器，并可以使用控制台登录。</li>
+<li>检查ESC是否安装了docker，可以选择是否卸载重装。<ol>
+<li>检查docker是否安装,<code>docker 显示相关信息则表示安装</code></li>
+<li>卸载docker，若不重装直接忽略，<code>yum list installed | grep docker</code>查看安装内容</li>
+</ol>
+</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ yum list installed | grep docker</span><br><span class="line">containerd.io.x86_64                1.3.7-3.1.el7                   @docker-ce-stable</span><br><span class="line">docker-ce.x86_64                    3:19.03.13-3.el7                @docker-ce-stable</span><br><span class="line">docker-ce-cli.x86_64                1:19.03.13-3.el7                @docker-ce-stable</span><br><span class="line"><span class="comment"># 依次卸载</span></span><br><span class="line">$ yum -y remove docker-ce.x86_64</span><br><span class="line">$ yum -y remove docker-ce-cli.x86_64</span><br><span class="line">$ yum -y remove containerd.io.x86_64</span><br><span class="line"><span class="comment"># 检查卸载结果</span></span><br><span class="line">$ yum list installed | grep docker</span><br><span class="line"><span class="comment"># 无输出内容</span></span><br><span class="line">$ docker </span><br><span class="line"><span class="comment"># -bash: docekr: 未找到命令 则表示卸载干净了</span></span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>安装docker<ol>
+<li>更新yum <code>yum update</code></li>
+<li>获取官方源<code>wget -P /etc/yum.repos.d/ https://download.docker.com/linux/centos/docker-ce.repo</code></li>
+<li>查看可以安装的版本<code>yum list docker-ce --showduplicates | sort -r</code></li>
+<li>选择安装 <code>yum install -y docker-ce-18.03.0.ce-1.el7.centos</code></li>
+<li>安装docker <code>yum install docker -y</code><ol>
+<li>检查<code>docker -v</code>输出版本信息</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<h2 id="设置docker相关信息"><a href="#设置docker相关信息" class="headerlink" title="设置docker相关信息"></a>设置docker相关信息</h2><ol>
+<li>设置docker开机启动项<code>systemctl enable docker.service</code></li>
+<li>关闭docker开机启动项 <code>systemctl stop docker.service</code></li>
+<li>检查docker当前运行情况 <code>systemctl status docker</code></li>
+<li>若未启动则启动docker <code>systemctl start docker</code> ,若启动了可以重启<code>systemctl restart docker</code></li>
+<li>检查docker运行情况<code>service docker status</code></li>
+</ol>
+<h2 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h2><p><a href="https://developer.aliyun.com/article/336442" target="_blank" rel="noopener">阿里云CentOS 7上安装配置Docker</a></p>
+<p><a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-compose-on-centos-7" target="_blank" rel="noopener">How To Install and Use Docker Compose on CentOS 7</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/12/15/Redis-cli%E4%BD%BF%E7%94%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1081,213 +1308,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/06/30/%E9%9D%A2%E8%AF%95%E9%A2%98-Spring/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/16/%E7%88%AC%E8%99%AB%E5%85%A5%E9%97%A8selenium/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/03/16/%E7%88%AC%E8%99%AB%E5%85%A5%E9%97%A8selenium/" class="post-title-link" itemprop="url">爬虫入门selenium</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-03-16 10:44:05" itemprop="dateCreated datePublished" datetime="2019-03-16T10:44:05+08:00">2019-03-16</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-31 10:11:59" itemprop="dateModified" datetime="2020-08-31T10:11:59+08:00">2020-08-31</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%88%AC%E8%99%AB/" itemprop="url" rel="index"><span itemprop="name">爬虫</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="Selenium"><a href="#Selenium" class="headerlink" title="Selenium"></a>Selenium</h2><blockquote>
-<p>Selenium是最广泛使用的开源Web UI（用户界面）自动化测试套件之一。它最初由Jason Huggins于2004年开发，作为Thought Works的内部工具。Selenium支持跨不同浏览器，平台和编程语言的自动化。</p>
-</blockquote>
-<ul>
-<li><p>Selenium可以轻松部署在Windows，Linux，Solaris和Macintosh等平台上。此外，它支持iOS（iOS，Windows Mobile和Android）等移动应用程序的OS（操作系统）。</p>
-</li>
-<li><p>Selenium通过使用特定于每种语言的驱动程序支持各种编程语言.Selenium支持的语言包括C＃，Java，Perl，PHP，Python和Ruby。目前，Selenium Web驱动程序最受Java和C＃欢迎。Selenium测试脚本可以使用任何支持的编程语言进行编码，并且可以直接在大多数现代Web浏览器中运行。Selenium支持的浏览器包括Internet Explorer，Mozilla Firefox，Google Chrome和Safari。</p>
-</li>
-</ul>
-<h3 id="Selenium-WebDriver"><a href="#Selenium-WebDriver" class="headerlink" title="Selenium WebDriver"></a>Selenium WebDriver</h3><blockquote>
-<p>Selenium WebDriver是Selenium RC的继承者。Selenium WebDriver接受命令（在Selenese中发送，或通过客户端API）并将它们发送到浏览器。这是通过特定于浏览器的浏览器驱动程序实现的，该驱动程序将命令发送到浏览器并检索结果。大多数浏览器驱动程序实际上启动并访问浏览器应用程序。</p>
-</blockquote>
-<ul>
-<li>Selenium WebDriver是Selenium Tool套件中最重要的组件。最新版本“Selenium 2.0”与WebDriver API集成，提供更简单，更简洁的编程接口。</li>
-</ul>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Selenium/selenium-webdriver.png"></p>
-<h3 id="环境配置"><a href="#环境配置" class="headerlink" title="环境配置"></a>环境配置</h3><blockquote>
-<p>这里选用的是Google Chrome测试套件。</p>
-</blockquote>
-<ul>
-<li><p>注意，使用jdk8。</p>
-</li>
-<li><p>下载ChromeDriver</p>
-<ul>
-<li>由三个独立的部分组成。有浏览器本身（“chrome”），Selenium项目提供的语言绑定（“驱动程序”）和从Chromium项目下载的可执行文件，它充当“chrome”和“driver”之间的桥梁。此可执行文件称为“chromedriver”，但我们将尝试将其称为此页面中的“服务器”以减少混淆。</li>
-<li>根据电脑安装的chrome版本选择合适的版本<a href="https://sites.google.com/a/chromium.org/chromedriver/downloads" target="_blank" rel="noopener">下载地址</a></li>
-</ul>
-</li>
-</ul>
-<h4 id="快速安装"><a href="#快速安装" class="headerlink" title="快速安装"></a>快速安装</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Mac users with Homebrew installed: </span></span><br><span class="line">brew tap homebrew/cask &amp;&amp; brew cask install chromedriver</span><br><span class="line"><span class="comment"># Debian based Linux distros: </span></span><br><span class="line">sudo apt-get install chromium-chromedriver</span><br></pre></td></tr></table></figure>
-
-<h4 id="快速更新"><a href="#快速更新" class="headerlink" title="快速更新"></a>快速更新</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Mac users with Homebrew reInstall </span></span><br><span class="line">brew cask reinstall chromedriver</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/03/16/%E7%88%AC%E8%99%AB%E5%85%A5%E9%97%A8selenium/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/04/%E7%88%AC%E8%99%AB%E5%85%A5%E9%97%A8xpath/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/03/04/%E7%88%AC%E8%99%AB%E5%85%A5%E9%97%A8xpath/" class="post-title-link" itemprop="url">爬虫入门xpath</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-03-04 11:37:52" itemprop="dateCreated datePublished" datetime="2019-03-04T11:37:52+08:00">2019-03-04</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-31 10:08:26" itemprop="dateModified" datetime="2020-08-31T10:08:26+08:00">2020-08-31</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%88%AC%E8%99%AB/" itemprop="url" rel="index"><span itemprop="name">爬虫</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>​     衔接上一篇<a href="https://z201.cn/2019/03/02/%E7%88%AC%E8%99%AB%E5%85%A5%E9%97%A8/" target="_blank" rel="noopener">爬虫入门</a>。为了更好爬输出，有必要Xpath用法有一定了解。</p>
-<p>​    了解Xpath之前先了解下XML、HTML。如果完全不知道是什么，建议系统学习HTML、XML下阅读下文。</p>
-</blockquote>
-<h2 id="XML"><a href="#XML" class="headerlink" title="XML"></a>XML</h2><blockquote>
-<p><strong>可扩展标记语言</strong>（英语：E<strong>x</strong>tensible <strong>M</strong>arkup <strong>L</strong>anguage，简称：<strong>XML</strong>），是一种标记语言。标记指计算机所能理解的信息符号，通过此种标记，计算机之间可以处理包含各种信息的文章等。如何定义这些标记，既可以选择国际通用的标记语言，比如HTML，也可以使用像XML这样由相关人士自由决定的标记语言，这就是语言的可扩展性。XML是从标准通用标记语言（SGML）中简化修改出来的。它主要用到的有可扩展标记语言、可扩展样式语言（XSL）、XBRL和XPath等。 </p>
-</blockquote>
-<p>示例-0</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">note</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">to</span>&gt;</span>George<span class="tag">&lt;/<span class="name">to</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">from</span>&gt;</span>John<span class="tag">&lt;/<span class="name">from</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">heading</span>&gt;</span>Reminder<span class="tag">&lt;/<span class="name">heading</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span>Don't forget the meeting!<span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">note</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="HTML"><a href="#HTML" class="headerlink" title="HTML"></a>HTML</h2><blockquote>
-<p><strong>超文本标记语言</strong>（英语：<strong>H</strong>yper<strong>T</strong>ext <strong>M</strong>arkup <strong>L</strong>anguage，简称：<strong>HTML</strong>）是一种用于创建网页的标准标记语言。HTML是一种基础技术，常与CSS、JavaScript一起被众多网站用于设计令人赏心悦目的网页、网页应用程序以及移动应用程序的用户界面。网页浏览器可以读取HTML文件，并将其渲染成可视化网页。HTML描述了一个网站的结构语义随着线索的呈现，使之成为一种标记语言而非编程语言。</p>
-<p>HTML元素是构建网站的基石。HTML允许嵌入图像与对象，并且可以用于创建交互式表单，它被用来结构化信息——例如标题、段落和列表等等，也可用来在一定程度上描述文档的外观和语义。HTML的语言形式为尖括号包围的HTML元素（如<code>&lt;html&gt;</code>），浏览器使用HTML标签和脚本来诠释网页内容，但不会将它们显示在页面上。</p>
-<p>HTML可以嵌入如JavaScript的脚本语言，它们会影响HTML网页的行为。网页浏览器也可以引用层叠样式表（CSS）来定义文本和其它元素的外观与布局。维护HTML和CSS标准的组织万维网联盟（W3C）鼓励人们使用CSS替代一些用于表现的HTML元素。</p>
-</blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/03/04/%E7%88%AC%E8%99%AB%E5%85%A5%E9%97%A8xpath/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>

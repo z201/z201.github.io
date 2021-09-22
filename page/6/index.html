@@ -239,6 +239,255 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/02/27/%E5%AE%9E%E8%B7%B5-mybatis+h2+logback%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/02/27/%E5%AE%9E%E8%B7%B5-mybatis+h2+logback%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/" class="post-title-link" itemprop="url">实践-mybatis+h2+logback单元测试</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-02-27 14:16:34" itemprop="dateCreated datePublished" datetime="2019-02-27T14:16:34+08:00">2019-02-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-15 09:20:05" itemprop="dateModified" datetime="2020-08-15T09:20:05+08:00">2020-08-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p><a href="https://z201.cn/2019/02/26/mybatis%E5%B0%8F%E8%AF%95%E7%89%9B%E5%88%80/" target="_blank" rel="noopener">mybatis小试牛刀</a> 在此基础上添加log日志。</p>
+</blockquote>
+<ul>
+<li><p>官方文档 ： <a href="http://www.mybatis.org/mybatis-3/zh/logging.html" target="_blank" rel="noopener">http://www.mybatis.org/mybatis-3/zh/logging.html</a></p>
+</li>
+<li><p>项目地址 ： <a href="https://github.com/z201/z201.github.io.code/tree/master/mybatis-learning/mybatis-learning-02" target="_blank" rel="noopener">mybatis-learning-02</a></p>
+</li>
+</ul>
+<h3 id="0x01-测试控制台的显示内容"><a href="#0x01-测试控制台的显示内容" class="headerlink" title="0x01 测试控制台的显示内容"></a>0x01 测试控制台的显示内容</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">User(id=1, name=TOM, age=12, gender=0)</span><br><span class="line">User(id=2, name=JON, age=13, gender=1)</span><br><span class="line">User(id=3, name=King, age=11, gender=0)</span><br></pre></td></tr></table></figure>
+
+<h3 id="0x02-增加日志输出"><a href="#0x02-增加日志输出" class="headerlink" title="0x02 增加日志输出"></a>0x02 增加日志输出</h3><blockquote>
+<p>根据官方文档显示，支持的log有很多实现，这里使用Slf4j + Logback 多组合。</p>
+</blockquote>
+<ul>
+<li>根据之前的项目，这里偷懒重新创建一个项目并把之前的代码都复制过来。</li>
+<li>添加maven依赖。</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"> <span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">mybatis.version</span>&gt;</span>3.5.0<span class="tag">&lt;/<span class="name">mybatis.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">junit.version</span>&gt;</span>4.12<span class="tag">&lt;/<span class="name">junit.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">lmbok.version</span>&gt;</span>1.18.4<span class="tag">&lt;/<span class="name">lmbok.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">mysql.version</span>&gt;</span>5.1.47<span class="tag">&lt;/<span class="name">mysql.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">h2.version</span>&gt;</span>1.4.197<span class="tag">&lt;/<span class="name">h2.version</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 新增内容 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">slf4j.version</span>&gt;</span>1.7.25<span class="tag">&lt;/<span class="name">slf4j.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">logback.version</span>&gt;</span>1.2.3<span class="tag">&lt;/<span class="name">logback.version</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- pom文件需要指定打包编码集，[WARNING] File encoding has not been set, using platform encoding GBK, i.e. build is platform dependent!  --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">project.build.sourceEncoding</span>&gt;</span>UTF-8<span class="tag">&lt;/<span class="name">project.build.sourceEncoding</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.slf4j<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>slf4j-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;slf4j.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>ch.qos.logback<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>logback-classic<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;logback.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>添加logback配置文件</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">appender</span> <span class="attr">name</span>=<span class="string">"STDOUT"</span> <span class="attr">class</span>=<span class="string">"ch.qos.logback.core.ConsoleAppender"</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- encoders are assigned the type</span></span><br><span class="line"><span class="comment">             ch.qos.logback.classic.encoder.PatternLayoutEncoder by default --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">encoder</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">pattern</span>&gt;</span>z201.github.cn %d&#123;HH:mm:ss.SSS&#125; [%thread] %-5level %logger&#123;36&#125; - %msg%n<span class="tag">&lt;/<span class="name">pattern</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">encoder</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">appender</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">root</span> <span class="attr">level</span>=<span class="string">"debug"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">appender-ref</span> <span class="attr">ref</span>=<span class="string">"STDOUT"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">root</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>再次运行单元测试。</li>
+</ul>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.046</span> [main] DEBUG org<span class="variable">.apache</span><span class="variable">.ibatis</span><span class="variable">.logging</span><span class="variable">.LogFactory</span> - Logging initialized using '<span class="keyword">class</span> org<span class="variable">.apache</span><span class="variable">.ibatis</span><span class="variable">.logging</span><span class="variable">.slf4j</span><span class="variable">.Slf4jImpl</span>' adapter.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.049</span> [main] DEBUG org<span class="variable">.apache</span><span class="variable">.ibatis</span><span class="variable">.logging</span><span class="variable">.LogFactory</span> - Logging initialized using '<span class="keyword">class</span> org<span class="variable">.apache</span><span class="variable">.ibatis</span><span class="variable">.logging</span><span class="variable">.slf4j</span><span class="variable">.Slf4jImpl</span>' adapter.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.076</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - PooledDataSource forcefully closed/removed all connections.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.076</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - PooledDataSource forcefully closed/removed all connections.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.076</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - PooledDataSource forcefully closed/removed all connections.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.076</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - PooledDataSource forcefully closed/removed all connections.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.155</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.t</span><span class="variable">.jdbc</span><span class="variable">.JdbcTransaction</span> - Opening JDBC Connection</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.356</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - Created connection <span class="number">1839168128</span>.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.356</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.t</span><span class="variable">.jdbc</span><span class="variable">.JdbcTransaction</span> - Setting autocommit to false on JDBC Connection [conn0: url=jdbc:h2:mem:mybatis_learning_01_db user=ROOT]</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.358</span> [main] DEBUG c<span class="variable">.z201</span><span class="variable">.mybatis</span><span class="variable">.learning</span><span class="variable">.UserDao</span><span class="variable">.list</span> - ==&gt;  Preparing: SELECT * FROM <span class="meta">`user` </span></span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.384</span> [main] DEBUG c<span class="variable">.z201</span><span class="variable">.mybatis</span><span class="variable">.learning</span><span class="variable">.UserDao</span><span class="variable">.list</span> - ==&gt; Parameters: </span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.411</span> [main] DEBUG c<span class="variable">.z201</span><span class="variable">.mybatis</span><span class="variable">.learning</span><span class="variable">.UserDao</span><span class="variable">.list</span> - &lt;==      Total: <span class="number">3</span></span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.414</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.t</span><span class="variable">.jdbc</span><span class="variable">.JdbcTransaction</span> - Resetting autocommit to true on JDBC Connection [conn0: url=jdbc:h2:mem:mybatis_learning_01_db user=ROOT]</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.415</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.t</span><span class="variable">.jdbc</span><span class="variable">.JdbcTransaction</span> - Closing JDBC Connection [conn0: url=jdbc:h2:mem:mybatis_learning_01_db user=ROOT]</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.415</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - Returned connection <span class="number">1839168128</span> to pool.</span><br><span class="line">User(id=<span class="number">1</span>, name=TOM, age=<span class="number">12</span>, gender=<span class="number">0</span>)</span><br><span class="line">User(id=<span class="number">2</span>, name=JON, age=<span class="number">13</span>, gender=<span class="number">1</span>)</span><br><span class="line">User(id=<span class="number">3</span>, name=King, age=<span class="number">11</span>, gender=<span class="number">0</span>)</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.416</span> [main] DEBUG cn<span class="variable">.z201</span><span class="variable">.mybatis</span><span class="variable">.test</span><span class="variable">.MybatisTest01</span> - <span class="keyword">end</span>...</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Jvm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Jvm/" class="post-title-link" itemprop="url">查缺补漏-Jvm</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-15 09:19:58" itemprop="dateModified" datetime="2020-08-15T09:19:58+08:00">2020-08-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>本章是整理知识内容，为强化知识长期更新。</p>
+</blockquote>
+<h3 id="JVM的内存布局"><a href="#JVM的内存布局" class="headerlink" title="JVM的内存布局"></a>JVM的内存布局</h3><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/JVM%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80.png"></p>
+<ol>
+<li><p>堆</p>
+<ul>
+<li><p>堆（Java Heap） 也叫 Java 堆或者是 GC 堆，它是一个线程共享的内存区域，也是 JVM 中占用内存最大的一块区域，Java 中所有的对象都存储在这里。</p>
+<ul>
+<li><strong>Java堆区具有下面几个特点：</strong><ul>
+<li>存储的是我们<strong>new</strong>来的对象，不存放基本类型和对象引用。</li>
+<li>由于创建了大量的对象，垃圾回收器主要工作在这块区域。</li>
+<li>线程共享区域，因此是线程不安全的。</li>
+<li>能够发生内存溢出，主要有OutOfMemoryError和StackOverflowError。</li>
+</ul>
+</li>
+<li>那么什么时候发生OutOfMemoryError，什么时候发生StackOverflowError？虚拟机在扩展栈时无法申请到足够的内存空间，<strong>将抛出OutOfMemoryError异常</strong>，线程请求的栈深度超过虚拟机所允许的最大深度，<strong>将抛出StackOverflowError异常</strong>。</li>
+<li>Java堆区还可以划分为<strong>新生代和老年代</strong>，新生代又可以进一步划分为<strong>Eden区、Survivor 1区、Survivor 2区</strong>。具体比例参数的话，可以看一下下面这张图。</li>
+</ul>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Java%E5%A0%86%E7%9A%84%E5%88%92%E5%88%86.png"></p>
+</li>
+</ul>
+</li>
+<li><p>方法区</p>
+<ul>
+<li>方法区（Method Area） 也被称为非堆区，用于和“Java 堆”的概念进行区分，它也是线程共享的内存区域，用于存储已经被 JVM 加载的类型信息、常量、静态变量、代码缓存等数据。</li>
+</ul>
+</li>
+<li><p>程序计数器</p>
+<ul>
+<li>程序计数器（Program Counter Register） 线程独有一块很小的内存区域，保存当前线程所执行字节码的位置，包括正在执行的指令、跳转、分支、循环、异常处理等。</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<ul>
+<li><p>Java栈具备的特点</p>
+</li>
+<li><p><strong>线程私有区域，每一个线程都有独享一个虚拟机栈，因此这是线程安全的区域。</strong></p>
+</li>
+<li><p>存放基本数据类型以及对象的引用。</p>
+</li>
+<li><p>每一个方法执行的时候会在虚拟机栈中创建一个相应栈帧，方法执行完毕后该栈帧就会被销毁。<strong>方法栈帧是以先进后出的方式虚拟机栈的。</strong></p>
+</li>
+<li><p>每一个栈帧又可以划分为<strong>局部变量表、操作数栈、动态链接、方法出口</strong>以及额外的附加信息。</p>
+<ul>
+<li>这个区域可能有两种异常：如果线程请求的栈深度大于虚拟机所允许的深度，将抛出StackOverflowError异常（通常是递归导致的）；JVM动态扩展时无法申请到足够内存则抛出OutOfMemoryError异常。    </li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<ol start="4">
+<li><p>虚拟机栈</p>
+<ul>
+<li>虚拟机栈也叫 Java 虚拟机栈（Java Virtual Machine Stack），和程序计数器相同它也是线程独享的，用来描述 Java 方法的执行，在每个方法被执行时就会同步创建一个栈帧，用来存储局部变量表、操作栈、动态链接、方法出口等信息。当调用方法时执行入栈，而方法返回时执行出栈。</li>
+</ul>
+</li>
+<li><p>本地方法栈</p>
+<ul>
+<li>本地方法栈（Native Method Stacks）与虚拟机栈类似，它是线程独享的，并且作用也和虚拟机栈类似。只不过虚拟机栈是为虚拟机中执行的 Java 方法服务的，而本地方法栈则是为虚拟机使用到的本地（Native）方法服务。</li>
+</ul>
+</li>
+</ol>
+<ul>
+<li>JVM 的执行流程是，首先先把 Java 代码（.java）转化成字节码（.class），然后通过类加载器将字节码加载到内存中，所谓的内存也就是我们上面介绍的运行时数据区，但字节码并不是可以直接交给操作系统执行的机器码，而是一套 JVM 的指令集。这个时候需要使用特定的命令解析器也就是我们俗称的<strong>执行引擎（Execution Engine）</strong>将字节码翻译成可以被底层操作系统执行的指令再去执行，这样就实现了整个 Java 程序的运行，这也是 JVM 的整体执行流程。</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Jvm/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-%E9%80%9A%E8%AE%AF%E5%8D%8F%E8%AE%AE/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -834,261 +1083,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCore/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCore/" class="post-title-link" itemprop="url">查缺补漏-JavaCore</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-15 08:03:19" itemprop="dateModified" datetime="2020-08-15T08:03:19+08:00">2020-08-15</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-<h3 id="面向对象思想"><a href="#面向对象思想" class="headerlink" title="面向对象思想"></a>面向对象思想</h3><ul>
-<li>面向对象是一个思想，时间万物皆可以被看做一个对象。</li>
-</ul>
-<h3 id="封装"><a href="#封装" class="headerlink" title="封装"></a>封装</h3><ul>
-<li>隐藏对象的属性和实现的具体细节，只对外暴露公共访问方式。</li>
-</ul>
-<h3 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h3><ul>
-<li>当多个类出现相同代码逻辑时，我们通常将相同的代码重构到一个类中，如果是绑定关系就可以使用继承。</li>
-<li>Java中类是单继承。</li>
-</ul>
-<h3 id="多态"><a href="#多态" class="headerlink" title="多态"></a>多态</h3><ul>
-<li>一个事物的的多种状态，比如女人、男人都是人的性别。人的性别就分为女人、男人。</li>
-</ul>
-<h3 id="重写和重载"><a href="#重写和重载" class="headerlink" title="重写和重载"></a>重写和重载</h3><ul>
-<li>重载：同一个类中，方法名相同，参数个数或者类型不相同，返回类型可以不相同。</li>
-<li>重写：类的继承关系中体现，子类重写父类的方法。</li>
-</ul>
-<h3 id="介绍下-Java-基本数据类型"><a href="#介绍下-Java-基本数据类型" class="headerlink" title="介绍下 Java 基本数据类型"></a>介绍下 Java 基本数据类型</h3><ul>
-<li>Java中存在8个原生数据类型，同时又分成四种：整形、浮点型、char、Boolean。它们之间存在自动类型转换，规则是从小到大。并且都存在自动装箱拆箱特性，但是这种操作是隐式操作而且在某些情况会导致CG压力增大。</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th align="center">类型</th>
-<th align="center">存储需求</th>
-<th align="center">取值范围</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">int</td>
-<td align="center">4字节</td>
-<td align="center">-2 147 483 638 ～ 2 147 483 637</td>
-</tr>
-<tr>
-<td align="center">short</td>
-<td align="center">2字节</td>
-<td align="center">-32 768 ～ 32 767</td>
-</tr>
-<tr>
-<td align="center">long</td>
-<td align="center">8字节</td>
-<td align="center">-9 223 372 036 854 775 808 ～ 9 223 372 036 854 775 807</td>
-</tr>
-<tr>
-<td align="center">byte</td>
-<td align="center">1字节</td>
-<td align="center">- 128 ～ 127</td>
-</tr>
-</tbody></table>
-<ul>
-<li>整型的范围与运行Java运行的硬件没有关系，所有的数据类型所占的字节数量与平台无关。</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th align="center">类型</th>
-<th align="center">存储需求</th>
-<th align="center">取值范围</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">float</td>
-<td align="center">4字节</td>
-<td align="center">大约 $\pm$ 3.402 823 37F + 38F (有效位数为7～8位)</td>
-</tr>
-<tr>
-<td align="center">double</td>
-<td align="center">8字节</td>
-<td align="center">大约 $\pm$ 1.797 693 134 862 315 70E + 308 （有效位数为15位）</td>
-</tr>
-</tbody></table>
-<ul>
-<li><p>double这种类型的精度是float的两倍。</p>
-</li>
-<li><p>所有浮点数值计算都遵循IEEE 754规范，下面是溢出和出错的情况的三种特殊的浮点数值。</p>
-<ul>
-<li>正无穷大</li>
-<li>负无穷大</li>
-<li>NaN ( 不是一个数字 )</li>
-<li>一个整整数除以0的结果为正无穷大，计算0/0或者负数的平方根结果为NaN。</li>
-</ul>
-</li>
-<li><p>char类型</p>
-<ul>
-<li>char类型表示单个字符，属于Unicode编码表。因为历史原因，不建议在程序中使用。除非确实要对UTF-16代码单元进行操作。</li>
-<li>char字节大小<ul>
-<li>Java中无论是汉字还是英文字母都是用Unicode编码来表示的，一个Unicode是16位，每字节是8位，所以一个Unicode码占两字节。但是英文字母比较特殊，源自于8位（1字节）的ASCII吗，于是在Unicode码仅使用了低8位（1字节）就可以表示。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>boolean类型</p>
-<ul>
-<li>布尔类型，只有两个值false、true。基本用于判定条件。</li>
-<li>boolean字节大小<ul>
-<li>Java规范中并未明确规定boolean类型的大小。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>自动类型转换</p>
-<ul>
-<li><p><strong>整型、实型（常量）、字符型数据可以混合运算。运算中，不同类型的数据先转化为同一类型，然后进行运算。</strong></p>
-<p>转换从低级到高级。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">byte</span>,<span class="keyword">short</span>,<span class="keyword">char</span>—&gt; <span class="keyword">int</span> —&gt; <span class="keyword">long</span>—&gt; <span class="keyword">float</span> —&gt; <span class="keyword">double</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>不能对boolean进行类型转换、不能把对象类型转换成不相关的对象、把大容量的对象转换成小容量对象时需要强制类型转换、转换过程中间可能出现精度损失。</p>
-</li>
-</ul>
-</li>
-<li><p>装箱和拆箱<strong>boxing or unboxing</strong></p>
-</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th align="center">原语</th>
-<th align="center">对应的JDK类</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">int</td>
-<td align="center">java.lang.Integer</td>
-</tr>
-<tr>
-<td align="center">short</td>
-<td align="center">java.lang.Short</td>
-</tr>
-<tr>
-<td align="center">long</td>
-<td align="center">java.lang.Long</td>
-</tr>
-<tr>
-<td align="center">byte</td>
-<td align="center">java.lang.Byte</td>
-</tr>
-<tr>
-<td align="center">char</td>
-<td align="center">java.lang.Character</td>
-</tr>
-<tr>
-<td align="center">double</td>
-<td align="center">java.lang.Double</td>
-</tr>
-<tr>
-<td align="center">float</td>
-<td align="center">java.lang.Float</td>
-</tr>
-<tr>
-<td align="center">boolean</td>
-<td align="center">java.lang.Boolean</td>
-</tr>
-</tbody></table>
-<ul>
-<li><p>Java中只有原生数据类型是特殊的，它们不是对象。其它的都是对象。那么就一个尴尬的问题，集合类都是存放的对象，JDK5之后考虑到这个问题就自动进行逆行拆箱装箱的操作。</p>
-  <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//比如所在泛型中是不能存放原生数据类型的，如要要存放原生数据类型的数据，需要装箱。</span></span><br><span class="line">Collection&lt;<span class="keyword">int</span>&gt; c = <span class="keyword">new</span> ArrayList&lt;<span class="keyword">int</span>&gt;(); <span class="comment">//这是无法编译成功的。</span></span><br><span class="line">Collection&lt;Integer&gt; cc = <span class="keyword">new</span> ArrayList&lt;Integer&gt;(); <span class="comment">//这样才行。</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>每个 JDK 类都提供了相应方法来解析它的内部表示，并将其转换为相应的原语类型。</p>
-</li>
-<li><p>但是注意装箱拆箱操作其实是非常消耗内存的举动，在该过程中可能会生成生成无用对象增加GC压力。所以尽量避免这中操作。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Integer sum = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> index  = <span class="number">1000</span>; index &lt; <span class="number">5000</span>; index ++)&#123;</span><br><span class="line"> sum+=index;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>  比如这种，每次sum都需要自动拆箱。</p>
-</li>
-</ul>
-<ul>
-<li><p>默认情况下整数的类型都是int、浮点型的数都是double。</p>
-   <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">float</span> d = <span class="number">1.1f</span>; <span class="comment">//在后面添加f,大小写不区分。隐式强制类型转换</span></span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCore/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCollecionsFramework/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1518,404 +1512,6 @@
 </li>
 <li><p>虽然HashMap是线程不安全的，但是它的效率远远高于Hashtable，这样设计是合理的，因为大部分的使用场景都是单线程。当需要多线程操作的时候可以使用线程安全的ConcurrentHashMap。</p>
 </li>
-</ul>
-</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Dubbo/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Dubbo/" class="post-title-link" itemprop="url">查缺补漏-Dubbo</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-15 05:45:59" itemprop="dateModified" datetime="2020-08-15T05:45:59+08:00">2020-08-15</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index"><span itemprop="name">知识点</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-<h3 id="Dubbo概述"><a href="#Dubbo概述" class="headerlink" title="Dubbo概述"></a>Dubbo概述</h3><ul>
-<li>服务治理（SOA）治理框架</li>
-<li>Duboo是一个分布式服务框架<ul>
-<li>远程通讯：提供多种基于长链接的NIO框架抽象封装,包括多种线程模型、序列化“请求-响应”的信息交换方案。</li>
-<li>集群容错：提供基于接口方法的透明远程调用过程，包括多协议支持、软负载均衡、失败容错、地址路由、动态配置等集群支持。</li>
-<li>自动发现：基于注册中心目录服务，使服务消费方能动态地查找提供方，使地址透明，使服务提供方可以平滑增或减少机器。</li>
-<li>介绍：</li>
-<li>致力于提供高性能和透明化的RPC远程服务调用方案，以及SOA服务治理方案。</li>
-<li>Dubbo的命名：澳大利亚达博市</li>
-<li>同类型框架：<ul>
-<li>Apache Thrift、Hessian、RMI、WebService（原生）、HSF（淘宝，不开源）、JSF（京东，不开源）。</li>
-</ul>
-</li>
-<li>Dubbo涉及的基础知识<ul>
-<li>远程调用方面：RMI、Hassion、WebService、Thrift进行底层调用。</li>
-<li>通讯交互：HTTP、Mian、netty。</li>
-<li>序列化：Hession2、Java、Json。</li>
-<li>容器：Jetty、Spring。</li>
-<li>负载均衡：zookeeper、Redis。（大部分都是zookeeper）</li>
-</ul>
-</li>
-<li>简单的使用场景<ul>
-<li>作为对内提供服务应用的容器。</li>
-<li>拆分负载Web应用到服务容器。</li>
-<li>应用负载均和协调。</li>
-<li>引用服务处理。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="架构节点（抽象概念）"><a href="#架构节点（抽象概念）" class="headerlink" title="架构节点（抽象概念）"></a>架构节点（抽象概念）</h3><ul>
-<li>Provider:暴露服务的服务提供方。</li>
-<li>Consumer：调用远程服务的服务消费方。</li>
-<li>Registry：服务注册于发现服务</li>
-<li>Monitor:统计服务的调用次调用时间监控中心</li>
-<li>Container:服务运行容器<ul>
-<li>节点调用关系</li>
-<li>服务提供-服务提供者在启动的时候,向注册中心提供自己提供的服务。</li>
-<li>服务消费-服务消费者在启动的时候,向注册中心订阅自己所需要的服务。<ul>
-<li>注册中心异步返回服务提供者地址列表给消费者,如果有变动,注册中心将给予长连接推送变更数据给消费者。</li>
-</ul>
-</li>
-<li>服务统计-服务者和消费者,在内存中累计调用次数和调用时间,定时每分钟发送一次统计数据到监控中心。<ul>
-<li>异步方式</li>
-</ul>
-</li>
-<li>服务调用关系<ul>
-<li>服务消费者,从提供者地址列表中,基于[软负载均衡算法],选一台提供者进行调用,如果调用失败,在选另一台调用。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="Dubbo源码相关"><a href="#Dubbo源码相关" class="headerlink" title="Dubbo源码相关"></a>Dubbo源码相关</h3><ul>
-<li>源码地址<code>git clone https://github.com/alibaba/dubbo</code></li>
-<li>初次编码不执行Test <code>mvn clean install -Dmaven.test.skip=true</code></li>
-<li>JS错误不修改,请自行忽视。</li>
-<li>修复mavan的警告<br>* 地址：<code>dubbo-parent pom.xml</code><br>* maven-jar-plugin version:2.4<br>* maven-surefire-plugin Version 2.19.1<br>* maven-deploy-plugin Version 3.3.9</li>
-<li>项目导入后修复Dubbo XML校验错误提示</li>
-<li>需要导入dubbo.xsd文件</li>
-<li>下载dubbo-2.5.3.jar 版本尽量保持源码同步,解压dt后导入eclipse中。<ul>
-<li>Preferences-XML-XML Catalog 添加一个自定义的：<ul>
-<li>Location: D:\xsd\dubbo.xsd</li>
-<li>Key: <a href="http://code.alibabatech.com/schema/dubbo/dubbo.xsd" target="_blank" rel="noopener">http://code.alibabatech.com/schema/dubbo/dubbo.xsd</a> （默认生成的不行自行修改）。</li>
-<li>在校验错误的XML头部添加：</li>
-<li><?xml version="1.0" encoding="UTF-8"?> <!DOCTYPE dubbo SYSTEM"http://code.alibabatech.com/schema/dubbo"></li>
-</ul>
-</li>
-</ul>
-</li>
-<li>关于maven-dependency-plugin错误 可能是IDE错误提示，空白处添加空格保存自动消失。<ul>
-<li>错误信息如下：Artifact has not been packaged yet. When used on reactor artifact, unpack should be executed after packaging: see MDEP-98. (org.apache.maven.plugins:maven-dependency-plugin:2.8:unpack:unpack:package)<ul>
-<li>修复方案更改插件配置:</li>
-<li><groupId>org.apache.maven.plugins</groupId><br><artifactId>maven-dependency-plugin</artifactId><br><version>2.10&lt;/version<executions>
-<execution>
-<id>unpack</id>
-<phase>packaged</phase>
-<goals>
-<goal>unpack</goal>
-</goals>
-</execution>
-</executions>
-</plugin></li>
-</ul>
-</li>
-</ul>
-</li>
-<li>Dubbo源码模块<ul>
-<li>Config配置层(Dubbo-config)</li>
-<li>Proxy服务代理层(Dubbo-rpc)</li>
-<li>Registry注册中心层(Dubbo-registry)</li>
-<li>Cluster路由层(Dubbo-cluster)</li>
-<li>Monitor监控层(Dubbo-monitor)</li>
-<li>Protocol远程调用层(Dubbo-rpc)</li>
-<li>Exchange信息交换层(Dubbo-remoting)</li>
-<li>Transport网络传输层(Dubbo-remoting)</li>
-<li>Serialize数据序列化层(Dubbo-common)</li>
-</ul>
-</li>
-</ul>
-<h3 id="Zookeeper"><a href="#Zookeeper" class="headerlink" title="Zookeeper"></a>Zookeeper</h3><blockquote>
-<p>（测试方案采用zookeeper做均衡负载，简单介绍下配置信息）</p>
-</blockquote>
-<ul>
-<li>下载地址 <a href="http://apache.fayea.com/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz" target="_blank" rel="noopener">http://apache.fayea.com/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz</a></li>
-<li>基本配置：<ul>
-<li>单机模式：修改zookeeper-3.4.8/conf zoo.cfg(原始文件名zoo_sanple.cfg复制一份重命名)<ul>
-<li>编辑内容（仅供参考,具体环境自行修改）</li>
-<li>tickTime = 2000<ul>
-<li>tickTime：基本事件单元，以毫秒为单位。这个时间是作为 Zookeeper 服务器之间或客户端与服务器之间维持心跳的时间间隔，也就是每个 tickTime 时间就会发送一个心跳。</li>
-</ul>
-</li>
-<li>initLimit= 5<ul>
-<li>initLimit:这个配置项用来配置Zookeeper接受客户端初始化连接时最长能忍受多少个心跳时间间隔数，当已超过5个心跳的时间（也就是tickTime）长度后Zookeeper服务器还没有收到客户端的返回信息，那么表明这个客户端连接失败。总的时间长度是5 * 2000=4s。</li>
-</ul>
-</li>
-<li>dataDir = D:\zookeeper\data<ul>
-<li>顾名思义就是 Zookeeper 保存数据快照的目录，默认情况下，Zookeeper 将写数据的日志文件也保存在这个目录里）。</li>
-</ul>
-</li>
-<li>dataLogDir= D:\zookeeper\log<ul>
-<li>顾名思义就是 Zookeeper 保存日志的目录。</li>
-</ul>
-</li>
-<li>synclimit = 5<ul>
-<li>这个配置项表示Leader与Follower之间发送消息，请求和应答时间长长度，最长不能超过多少个tickTime的时间长度,总的时间长度是2 * 2000 = 4s。</li>
-</ul>
-</li>
-<li>clientPort = 2181<ul>
-<li>这个端口就是客户端连接 Zookeeper 服务器的端口，Zookeeper 会监听这个端口，接受客户端的访问请求。</li>
-</ul>
-</li>
-<li>Server（待续）<ul>
-<li>格式：server.id=host:port:port（两个port保证可以正常使用就行）<ul>
-<li>id：通常为整数，建议使用整数。</li>
-<li>host：服务器的IP地址。</li>
-<li>port: Follower端口</li>
-<li>port: Leader选举投票。</li>
-</ul>
-</li>
-<li>ZooKeeper建议使用hostname，而非ip。这需要对主机的/etc/hostname和/etc/hosts做host绑定(不用的OS不同修改方式)。</li>
-</ul>
-</li>
-<li>创建一个myid文件（放在 dataDir文件下面）<ul>
-<li>写入一行数据（请查阅zoo.cfg文件）<ul>
-<li>写入当前Zookeeper id位置的数据即可。表示当前系统环境Zookeeper是哪一个Server（通讯用的）。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="Zookeeper概述"><a href="#Zookeeper概述" class="headerlink" title="Zookeeper概述"></a>Zookeeper概述</h3><ul>
-<li><p>背景</p>
-<ul>
-<li>Zookeeper可以让企业的IT架构逐步从集中式向分布式过度，所谓的分布式是指：把一个计算任务分解成若干个计算单元，并且分派到若干不同的计算机中去执行，然后汇总计算结果的过程。</li>
-</ul>
-</li>
-<li><p>Zookeeper介绍</p>
-<ul>
-<li>Zookeeper是源代码开放的分布式协调服务，由雅虎创建，是Google Chubby开源实现。Zookeeper是一个高性能的分布式数据一致性解决方案，它将那些复杂、容易出错的分布式一致性服务封装起来，构成一个搞笑可靠的原语集，并提供一系列简单易用的接口给用户使用。</li>
-</ul>
-</li>
-<li><p>Zookeeper的典型应用场景</p>
-<ul>
-<li>数据发布/订阅 顾名思义就是一方把数据发布出来，另一方通过某种手动可以得到这些数据。<ul>
-<li>通常数据订阅有两种方式：推模式和拉模式，推模式一般是服务器主动向客户端推送消息，拉模式是客户端主动去服务端获取数据（通常采用的是轮询的方式）。</li>
-<li>Zookeeper采用两种方式的结合。<ul>
-<li>发布者将数据发布到Zookeeper集群节点上，订阅者通过一定的方法告诉服务器，我对那个节点的数据感兴趣，那个服务器在这些节点的数据发送变化时，就通知客户端，客户端得到通知后可以去服务器获取数据信息。</li>
-<li>分布式协调/通知<ul>
-<li>心跳检测：在分布式系统中，通常需要机器是否可以用，Zookeeper中我们让所有的机器都注册一个临时节点，所以只需要判断这个节点是否存在就可以了，不需要直接去连接需要检查的机器，降低系统的负载度（节点分为临时和持久）。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>Zookpeeper重量级使用</p>
-<ul>
-<li>Hadoop、HBase、Storm、Solr。</li>
-</ul>
-</li>
-<li><p>集群角色</p>
-<ul>
-<li>Leader、Follower、Observer<ul>
-<li>Leader服务器是整个Zookeeper集群工作机制的核心</li>
-<li>Follower服务器是Zookeeper集群状态的跟随者</li>
-<li>Oserver服务器充当一个观察者的角色</li>
-<li>Leader、Follower设计模式，Observer观察者模式</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>会话</p>
-<ul>
-<li>会话是指客户端Zookeeper服务器的连接，Zookeeper中的会话叫Session，客户端与服务器建立TCP的长连接来维持一个Session,客户端在启动的时候首先会与服务器建立一个TCP连接,通过这个连接客户端能够通过心跳检测与服务器保持有效的会话，也能向Zookeeper服务器发送请求并获得响应。</li>
-</ul>
-</li>
-<li><p>数据节点</p>
-<ul>
-<li>Zookeeper中的节点有两类<ul>
-<li>集群中的一台机器称为一个节点</li>
-<li>数据模型中的数据单元Znode，分别为持久节点和临时节点。（其实数据节点就是一个tree节点就是Znode）</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>版本</p>
-<ul>
-<li>Zookeeper中的版本<ul>
-<li>version<ul>
-<li>当前数据节点数据内容版本</li>
-</ul>
-</li>
-<li>cversion<ul>
-<li>当前数据节点子节点的版本号</li>
-</ul>
-</li>
-<li>aversion<ul>
-<li>当前数据节点ACL变更版本号</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>watcher（事件监听器）</p>
-<ul>
-<li>Zookeeper允许用户在指定节点上注册一些Watcher，当数据节点发生变化的时候，Zookeeper服务器会把这个变化通知发送给感兴趣的客户端。</li>
-</ul>
-</li>
-<li><p>ACL权限控制</p>
-<ul>
-<li>ACL是Access Contril Lists 的缩写,Zookeeper采用ACL策略来进行权限控制,有以下权限：<ul>
-<li>CREATE：创建子节点</li>
-<li>READ：获取子节点</li>
-<li>WRITE:更新子节点数据权限</li>
-<li>DELETE:删除子节点权限</li>
-<li>ADMIN：设置节点ACL权限</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="Zoopeeper环境搭建（集群、单机、伪集群）"><a href="#Zoopeeper环境搭建（集群、单机、伪集群）" class="headerlink" title="Zoopeeper环境搭建（集群、单机、伪集群）"></a>Zoopeeper环境搭建（集群、单机、伪集群）</h3><ul>
-<li>单机模式（设备环境有限暂时单机）<ul>
-<li>准备工作<ul>
-<li>下载Zookeeper（此处自行处理）</li>
-<li>解压 tar xzvf xxx.gz 解压</li>
-<li>重命名文件夹 Zookeeper 命令mv xxx xxx 后面的参数是新名字（可以不做）</li>
-<li>进入文件夹中/conf/</li>
-<li>复制配置文件zoo_sample.cfg（样例文件） 并重命名 zoo.cfg</li>
-</ul>
-</li>
-<li>编辑zoo.cfg内容（仅供参考,具体环境自行修改）</li>
-<li>tickTime = 2000<ul>
-<li>tickTime：基本事件单元，以毫秒为单位。这个时间是作为 Zookeeper 服务器之间或客户端与服务器之间维持心跳的时间间隔，也就是每个 tickTime 时间就会发送一个心跳。</li>
-</ul>
-</li>
-<li>initLimit= 5<ul>
-<li>initLimit:这个配置项用来配置Zookeeper接受客户端初始化连接时最长能忍受多少个心跳时间间隔数，当已超过5个心跳的时间（也就是tickTime）长度后Zookeeper服务器还没有收到客户端的返回信息，那么表明这个客户端连接失败。总的时间长度是5 * 2000=4s。</li>
-</ul>
-</li>
-<li>dataDir = D:\zookeeper\data<ul>
-<li>顾名思义就是 Zookeeper 保存数据快照的目录，默认情况下，Zookeeper 将写数据的日志文件也保存在这个目录里）。</li>
-</ul>
-</li>
-<li>dataLogDir= D:\zookeeper\log<ul>
-<li>顾名思义就是 Zookeeper 保存日志的目录。</li>
-</ul>
-</li>
-<li>synclimit = 5<ul>
-<li>这个配置项表示Leader与Follower之间发送消息，请求和应答时间长长度，最长不能超过多少个tickTime的时间长度,总的时间长度是2 * 2000 = 4s。</li>
-</ul>
-</li>
-<li>clientPort = 2181<ul>
-<li>这个端口就是客户端连接 Zookeeper 服务器的端口，Zookeeper 会监听这个端口，接受客户端的访问请求。</li>
-</ul>
-</li>
-<li>Server（待续）<ul>
-<li>格式：server.id=host:port:port（两个port保证可以正常使用就行）<ul>
-<li>id：通常为整数，并且不能重复使用整数。</li>
-<li>host：服务器的IP地址。</li>
-<li>port: Follower端口</li>
-<li>port: Leader选举投票。</li>
-</ul>
-</li>
-<li>ZooKeeper建议使用hostname，而非ip。这需要对主机的/etc/hostname和/etc/hosts做host绑定(不用的OS不同修改方式)。</li>
-<li>创建一个myid文件（放在 dataDir文件下面）</li>
-<li>写入一行数据（请查阅zoo.cfg文件）<ul>
-<li>写入id位置的数据即可。表示当前系统环境Zookeeper是哪一个Server（通讯用的）。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>启动服务与停止服务</li>
-<li>进入bin/文件</li>
-<li>执行zkServer.cmd 或则 <a href="http://zkserver.sh/" target="_blank" rel="noopener">zkServer.sh</a></li>
-<li>CMD直接双击运行 ,SH则 sudo sh ./zkServer.sh start 启动 stop 关闭</li>
-<li>验证 使用telnet来测试(自行安装)<ul>
-<li>telnet ip port 敲命令 stat 若返回数据表示当前服务器不能对外提供服务表明集群下其他服务器未启动（在Zookeeper中只要有半数的服务器正常工作就可以向外提供服务）。</li>
-</ul>
-</li>
-<li>在此简单说明下何为伪集群就是在一台服务器上的多个Zookeeper的集群叫伪集群（伪集群 两个port不能与其他zookeeper的port一样）。</li>
-<li>单机模式就删除其他服务器运行的时候就是单机模式。</li>
-</ul>
-</li>
-</ul>
-<p>#Dubbo程序运行</p>
-<ul>
-<li>测试运行,默认配置即可。注意与zookeeper一台机器。</li>
-<li>运行Dubbo-admin本机tomcat启动启动成功后127.0.0.1:8080/dubbo-admin（注意默认请设置跟目录,否则部分功能不发正常显示）<ul>
-<li>默认用户名密码(root/root,guest/guest)</li>
 </ul>
 </li>
 </ul>
