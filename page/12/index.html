@@ -1018,7 +1018,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-21 23:53:49" itemprop="dateModified" datetime="2021-09-21T23:53:49+08:00">2021-09-21</time>
+                <time title="Modified: 2021-09-22 23:49:31" itemprop="dateModified" datetime="2021-09-22T23:49:31+08:00">2021-09-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1074,7 +1074,6 @@
 <li>ResultSetHandler封装结果</li>
 </ul>
 </li>
-<li></li>
 <li>MyBatis 拦截签名  拦截器签名是一个名为 @Intercepts 的注解，该注解中可以通过 @Signature 配置多个签名。@Signature 注解中则包含三个属性</li>
 <li><ul>
 <li>type: 拦截器需要拦截的接口，有 4 个可选项，分别是：Executor、ParameterHandler、ResultSetHandler 以及 StatementHandler。</li>
@@ -1189,24 +1188,24 @@
 <li>handleOutputParameters：使用存储过程处理出参的时候该方法会被调用。</li>
 </ul>
 </li>
-<li>插件接口</li>
-<li>org.apache.ibatis.plugin.Interceptor</li>
-<li><ul>
-<li>intercept：它将直接覆盖你所拦截的对象，有个参数Invocation对象，通过该对象，可以反射调度原来对象的方法；</li>
+</ul>
+<h2 id="MyBatis-将插件"><a href="#MyBatis-将插件" class="headerlink" title="MyBatis 将插件"></a>MyBatis 将插件</h2><blockquote>
+<p>MyBatis 将插件单独分离出一个模块，位于 org.apache.ibatis.plugin 包中，在该模块中主要使用了两种设计模式：代理模式和责任链模式。</p>
+</blockquote>
+<ul>
+<li><p>插件接口</p>
+<ul>
+<li><p>org.apache.ibatis.plugin.Interceptor</p>
+</li>
+<li><p>intercept：它将直接覆盖你所拦截的对象，有个参数Invocation对象，通过该对象，可以反射调度原来对象的方法；</p>
+</li>
+<li><p>plugin：target是被拦截的对象，它的作用是给被拦截对象生成一个代理对象；</p>
+</li>
+<li><p>setProperties：允许在plugin元素中配置所需参数，该方法在插件初始化的时候会被调用一次；</p>
+</li>
 </ul>
 </li>
-<li><ul>
-<li>plugin：target是被拦截的对象，它的作用是给被拦截对象生成一个代理对象；</li>
-</ul>
-</li>
-<li><ul>
-<li>setProperties：允许在plugin元素中配置所需参数，该方法在插件初始化的时候会被调用一次；</li>
-</ul>
-</li>
-<li>责任链模式</li>
-<li><ul>
-<li>插件用的是责任链模式，责任链模式是一种对象行为模式。在责任链模式里，</li>
-</ul>
+<li><p>MyBatis允许我们自定义 Interceptor 拦截 SQL 语句执行过程中的某些关键逻辑，允许拦截的方法有：Executor 类中的 update()、query()、flushStatements()、commit()、rollback()、getTransaction()、close()、isClosed()方法，ParameterHandler 中的 setParameters()、getParameterObject() 方法，ResultSetHandler中的 handleOutputParameters()、handleResultSets()方法，以及StatementHandler 中的parameterize()、prepare()、batch()、update()、query()方法。</p>
 </li>
 </ul>
 
