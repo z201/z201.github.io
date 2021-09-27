@@ -270,7 +270,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-28 00:45:41" itemprop="dateModified" datetime="2021-09-28T00:45:41+08:00">2021-09-28</time>
+                <time title="Modified: 2021-09-28 00:51:30" itemprop="dateModified" datetime="2021-09-28T00:51:30+08:00">2021-09-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -914,6 +914,263 @@
 </li>
 </ul>
 
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/02/28/Redis%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%80%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/02/28/Redis%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%80%EF%BC%89/" class="post-title-link" itemprop="url">Redis基础（一）</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-02-28 00:40:49" itemprop="dateCreated datePublished" datetime="2019-02-28T00:40:49+08:00">2019-02-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-27 17:34:33" itemprop="dateModified" datetime="2021-09-27T17:34:33+08:00">2021-09-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA/" itemprop="url" rel="index"><span itemprop="name">基础理论</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>本章是整理知识内容，为强化知识长期更新。 </p>
+</blockquote>
+<h2 id="一、初认Redis"><a href="#一、初认Redis" class="headerlink" title="一、初认Redis"></a>一、初认Redis</h2><ul>
+<li>Redis是一个速度非常快的<code>非关系型数据库(non-relationl databases)</code>,它可以是存储键对值（key-vakue）方式存储数据。它拥有5中数据类型。同时可以将存储在内存中的数据持久化到因硬盘中。</li>
+<li>Redis所有的数据都是以唯一的key字符串为名称，然后可以通过这个key来获取对应的value。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>结构类型</th>
+<th>结构存储的值</th>
+<th>结构的读写能力</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>STRING</td>
+<td>可以是字符串、整数或者浮点类型</td>
+<td>对整个字符串或者字符串的其中一部分执行操作；对整数和浮点数据执行<code>自动</code>或者<code>自减</code>操作</td>
+</tr>
+<tr>
+<td>LIST</td>
+<td>一个链表、链表每个节点上都包含了一个字符串</td>
+<td>从链表的两端推入或者弹出元素；根据偏移量对链表记性修剪<code>trim</code>；读取单个或者多个元素；根据值查询或者移除元素。</td>
+</tr>
+<tr>
+<td>SET</td>
+<td>包含字符串的无序集合，并且每个被包含的字符串都是唯一约束</td>
+<td>添加、查询、移除单个元素；检查一个元素是否存在于集合中；计算交集、并集、差集；从集合里面随机获取元素。</td>
+</tr>
+<tr>
+<td>HASH</td>
+<td>包含键值对的无序散列表</td>
+<td>添加、查询、移除单个键值对；获取全部键对值。</td>
+</tr>
+<tr>
+<td>ZSET（有序集合）</td>
+<td>字符串与浮点分数之间的有序映射，元素的排列顺序由分值大决定。</td>
+<td>添加、查询、移除单个元素；根据分值范围或者成员来获取元素。</td>
+</tr>
+</tbody></table>
+<h3 id="String"><a href="#String" class="headerlink" title="String"></a>String</h3><ul>
+<li>字符串是Redis当中最简单的数据结构。Redis的字符串是动态的字符串，可以被反复修改。内部实现类似Java的ArrayList，采用预分配空间的方式来减少内存频繁分配。预分配大小方式根据字符串的大小决定，字符串小于1m则扩容空间是加倍。若字符串超过1m，扩容一次只会多扩1m的空间。字符串最大长度是512m。</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">192.168.31.7:6379&gt; keys * <span class="comment"># 检查当前空间key</span></span><br><span class="line">(empty list or <span class="built_in">set</span>) <span class="comment"># 空的</span></span><br><span class="line"><span class="comment"># 当个字符串读写</span></span><br><span class="line">192.168.31.7:6379&gt; <span class="built_in">set</span> redis-name redis:latest</span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; keys *</span><br><span class="line">1) <span class="string">"redis-name"</span></span><br><span class="line">192.168.31.7:6379&gt; get redis-name</span><br><span class="line"><span class="string">"redis:latest"</span></span><br><span class="line">192.168.31.7:6379&gt; <span class="built_in">set</span> redis-version 5.0.3</span><br><span class="line">OK</span><br><span class="line"><span class="comment"># 批量获取字符串</span></span><br><span class="line">192.168.31.7:6379&gt; mget redis-name redis-version</span><br><span class="line">1) <span class="string">"redis:latest"</span></span><br><span class="line">2) <span class="string">"5.0.3"</span></span><br><span class="line"><span class="comment"># 批量写入字符串</span></span><br><span class="line">192.168.31.7:6379&gt; mset os mac language Chinese</span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; keys *</span><br><span class="line">1) <span class="string">"redis-version"</span></span><br><span class="line">2) <span class="string">"language"</span></span><br><span class="line">3) <span class="string">"os"</span></span><br><span class="line">4) <span class="string">"redis-name"</span></span><br><span class="line">192.168.31.7:6379&gt; mget redis-name redis-version os language </span><br><span class="line">1) <span class="string">"redis:latest"</span></span><br><span class="line">2) <span class="string">"5.0.3"</span></span><br><span class="line">3) <span class="string">"mac"</span></span><br><span class="line">4) <span class="string">"Chinese"</span></span><br><span class="line">192.168.31.7:6379&gt;</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/02/28/Redis%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%80%EF%BC%89/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-SpringMvc/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-SpringMvc/" class="post-title-link" itemprop="url">查缺补漏-SpringMvc</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-27 17:34:05" itemprop="dateModified" datetime="2021-09-27T17:34:05+08:00">2021-09-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>本章是整理知识内容，为强化知识长期更新。</p>
+</blockquote>
+<h3 id="描述下Controller和RequestMapping注解。"><a href="#描述下Controller和RequestMapping注解。" class="headerlink" title="描述下Controller和RequestMapping注解。"></a>描述下Controller和RequestMapping注解。</h3><ul>
+<li><p>Controller</p>
+<ul>
+<li>声明在类上，该注解表明该类扮演控制器的角色，类似Action。</li>
+</ul>
+</li>
+<li><p>RequestMapping</p>
+<ul>
+<li>该注解是用来映射一个URL到一个类或一个特定的方处理法上。</li>
+</ul>
+</li>
+</ul>
+<h3 id="描述下Spring的作用域以及使用方法。"><a href="#描述下Spring的作用域以及使用方法。" class="headerlink" title="描述下Spring的作用域以及使用方法。"></a>描述下Spring的作用域以及使用方法。</h3><ul>
+<li>当定义一个Bean时，可以给这个Bean声明一个作用域。通过@Scope注解声明在类上。<ul>
+<li>Bean默认作用域是singleton 单例模式，在每个Spring Ioc容器中的一个Bean定义一个实例，也就是无状态Bean，也就是线程不安全的。这个单一实例会被存储到单例缓存（singleton cache）中，并且所有针对该bean的后续请求、访问和引用都将返回被缓存的对象实例。相当于一次创建多次使用。</li>
+<li>prototype 原型模式，在每个Spring Ioc容器中的一个Bean定义多实例，就相当与Java 中new 操作。通常作为有状态的Bean。Prototype作用域的bean会导致在每次对该bean请求（将其注入到另一个bean中，或者以程序的方式调用容器的getBean()方法）时都会创建一个新的bean实例。</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>其它作用域。</p>
+<ul>
+<li>request、session、global session 仅在基于web的应用中使用（不必关心你所采用的是什么web应用框架）。<ul>
+<li>如果不是在web下实现而是通过ApplicationContext这种实现，尝试使用这些作用域将抛出异常IllegalStateException未知作用域。</li>
+<li>request 对每一次HTTP请求都会产生一个新的bean。Spring容器会根据loginAction bean定义创建一个全新的LoginAction bean实例，且该loginAction bean实例仅在当前HTTP request内有效，因此可以根据需要放心的更改所建实例的内部状态，而其他请求中根据loginAction bean定义创建的实例，将不会看到这些特定于某个请求的状态变化。当处理请求结束，request作用域的bean实例将被销毁。</li>
+<li>session 对每一次HTTP请求都会产生一个新的bean，Spring容器会根据userPreferences bean定义创建一个全新的userPreferences bean实例，且该userPreferences bean仅在当前HTTP Session内有效。与request作用域一样，你可以根据需要放心的更改所创建实例的内部状态，而别的HTTP Session中根据userPreferences创建的实例，将不会看到这些特定于某个HTTP Session的状态变化。当HTTP Session最终被废弃的时候，在该HTTP Session作用域内的bean也会被废弃掉。</li>
+<li>‍global session 作用域类似于标准的HTTP Session作用域，不过它仅仅在基于portlet的web应用中才有意义。Portlet规范定义了全局Session的概念，它被所有构成某个portlet web应用的各种不同的portlet所共享。在global session作用域中定义的bean被限定于全局portlet Session的生命周期范围内。在一个标准的基于Servlet的web应用，并且定义了一个或多个具有global session作用域的bean，系统会使用标准的HTTP Session作用域，并且不会引起任何错误。</li>
+</ul>
+</li>
+<li>作用域依赖<ul>
+<li>Spring IoC容器除了管理对象（bean）的实例化，同时还负责协作者（或者叫依赖）的实例化。如果将一个Http request范围的bean注入到另一个bean中，那么需要注入一个AOP代理来替代被注入的作用域bean。也就是说需要注入一个代理对象，该对象具有与被代理对象一样的公共接口，而容器则可以足够智能的从相关作用域中（比如一个HTTP request）获取到真实的目标对象，并把方法调用委派给实际的对象。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="SpringMVc中Restfull风格的使用。"><a href="#SpringMVc中Restfull风格的使用。" class="headerlink" title="SpringMVc中Restfull风格的使用。"></a>SpringMVc中Restfull风格的使用。</h3><ul>
+<li>restfull 支持的请求头GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS, TRACE 。</li>
+<li>通常情况下只使用 GET,PUT,POST,DELETE。<ul>
+<li>GET 通常用来获取数据。</li>
+<li>PUT 通常用来新增数据。</li>
+<li>POST 通常用来更新数据。</li>
+<li>DELETE 通常用来删除数据。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping</span>(value = <span class="string">"/get"</span>, method = RequestMethod.GET)</span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">get</span><span class="params">()</span></span>&#123;</span><br><span class="line">   <span class="keyword">return</span> <span class="string">"200"</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RequestMapping</span>(value = <span class="string">"/post"</span>, method = RequestMethod.POST)</span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">post</span><span class="params">()</span></span>&#123;</span><br><span class="line">   <span class="keyword">return</span> <span class="string">"200"</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RequestMapping</span>(value = <span class="string">"/delete"</span>, method = RequestMethod.DELETE)</span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">delete</span><span class="params">()</span></span>&#123;</span><br><span class="line">   <span class="keyword">return</span> <span class="string">"200"</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RequestMapping</span>(value = <span class="string">"/put"</span>, method = RequestMethod.PUT)</span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">put</span><span class="params">()</span></span>&#123;</span><br><span class="line">   <span class="keyword">return</span> <span class="string">"200"</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="SpringMvc的处理流程"><a href="#SpringMvc的处理流程" class="headerlink" title="SpringMvc的处理流程"></a>SpringMvc的处理流程</h3><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/SpringMvc%E8%AF%B7%E6%B1%82%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B.png"></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-SpringMvc/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1670,314 +1927,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Redis/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCollecionsFramework/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCollecionsFramework/" class="post-title-link" itemprop="url">查缺补漏-JavaCollecionsFramework</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-27 15:55:30" itemprop="dateModified" datetime="2021-09-27T15:55:30+08:00">2021-09-27</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-<h3 id="Java集合"><a href="#Java集合" class="headerlink" title="Java集合"></a>Java集合</h3><p>​    集合是Java提供的工具包、包含常用的数据结构：集合、链表、队列、栈、数组、映射等。Collection的包是java.util.*。</p>
-<h4 id="Collection"><a href="#Collection" class="headerlink" title="Collection"></a>Collection</h4><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Collection/Java-Collection-Framework.svg"></p>
-<h4 id="Map"><a href="#Map" class="headerlink" title="Map"></a>Map</h4><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Collection/Java-Map-Framework.svg">  </p>
-<p><code>实际上还有Cloneable、Serializable接口是都集合类需要实现的，通用所以不不画上去了。 </code> </p>
-<h4 id="Java集合主要划分4个部分："><a href="#Java集合主要划分4个部分：" class="headerlink" title="Java集合主要划分4个部分："></a>Java集合主要划分4个部分：</h4><ul>
-<li>List(列队)</li>
-<li>Set(集合)</li>
-<li>Map(映射)</li>
-<li>工具类(Iterator迭代器、Enumeration枚举类、Arrays、Collections)</li>
-</ul>
-<h4 id="划重点"><a href="#划重点" class="headerlink" title="划重点"></a>划重点</h4><ul>
-<li>Conllection<ul>
-<li>List<ul>
-<li><code>ArrayList</code></li>
-<li><code>Vector</code><ul>
-<li>Stack</li>
-</ul>
-</li>
-<li><code>LinkedList</code></li>
-</ul>
-</li>
-<li>Set<ul>
-<li><code>HashSet</code></li>
-<li><code>TreeSet</code></li>
-<li><code>LinkedHashSet</code></li>
-</ul>
-</li>
-<li>Queue</li>
-</ul>
-</li>
-<li>Map<ul>
-<li><code>HashMap</code></li>
-<li><code>HashTable</code></li>
-<li><code>TreeMap</code></li>
-</ul>
-</li>
-<li>工具<ul>
-<li>Arrays</li>
-<li>Collections</li>
-<li>Enumeration</li>
-</ul>
-</li>
-</ul>
-<h3 id="Java类库中具体集合"><a href="#Java类库中具体集合" class="headerlink" title="Java类库中具体集合"></a>Java类库中具体集合</h3><table>
-<thead>
-<tr>
-<th>集合类型</th>
-<th>概括</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>ArrayList<E></td>
-<td>一种可以动态增长和缩减的索引序列，访问速度很快但是插入和删除比ArrayList慢。</td>
-</tr>
-<tr>
-<td>LinkedList<E></td>
-<td>一种可以在任何位置进行高效地插入和删除操作的有序序列，但是访问比较ArrayList慢。</td>
-</tr>
-<tr>
-<td>ArrayDeque<E></td>
-<td>一种循环数组实现的双端序列。</td>
-</tr>
-<tr>
-<td>HashSet<E></td>
-<td>一种没有重复元素的无序集合。</td>
-</tr>
-<tr>
-<td>TreeSet<E></td>
-<td>一种有序集合。</td>
-</tr>
-<tr>
-<td>EnumSet&lt;E extends Enum<E>&gt;</td>
-<td>一种包含枚举类型的集合。</td>
-</tr>
-<tr>
-<td>LinkedHashSet<E></td>
-<td>一种可以记住元素插入顺序的集合。</td>
-</tr>
-<tr>
-<td>PriorityQueue<E></td>
-<td>一种允许高效删除最小元素的集合。</td>
-</tr>
-<tr>
-<td>HashMap&lt;K , V&gt;</td>
-<td>一个存储 键 / 值 关联的数据结构。</td>
-</tr>
-<tr>
-<td>TreeMap&lt;K , V&gt;</td>
-<td>一种键值有序排列的映射表。</td>
-</tr>
-<tr>
-<td>EnumMap&lt;K extends Enum<K>, V&gt;</td>
-<td>一种键属于枚举类型的映射表。</td>
-</tr>
-<tr>
-<td>LinkedHashMap&lt;K ,V &gt;</td>
-<td>一种可以记住键 / 值 项添加顺序的映射表。</td>
-</tr>
-<tr>
-<td>WeakHashMap&lt;K , V &gt;</td>
-<td>一种其值无用武之地后可以被垃圾回收回收的映射表。</td>
-</tr>
-<tr>
-<td>IdentityHashMap&lt;K , V&gt;</td>
-<td>一种用 == 而不是用用 equals 比较的映射表。</td>
-</tr>
-</tbody></table>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCollecionsFramework/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/08/19/Jvm-optimization/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/08/19/Jvm-optimization/" class="post-title-link" itemprop="url">Jvm-optimization</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-08-19 14:09:45" itemprop="dateCreated datePublished" datetime="2021-08-19T14:09:45+08:00">2021-08-19</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-23 00:04:16" itemprop="dateModified" datetime="2021-09-23T00:04:16+08:00">2021-09-23</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Jvm/" itemprop="url" rel="index"><span itemprop="name">Jvm</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>jvm调优是日常工作中经常会使用的技巧，整理下。</p>
-</blockquote>
-<h3 id="项目启动的时候加上的参数都是些啥意思？"><a href="#项目启动的时候加上的参数都是些啥意思？" class="headerlink" title="项目启动的时候加上的参数都是些啥意思？"></a>项目启动的时候加上的参数都是些啥意思？</h3><blockquote>
-<p>刚开始工作的时候发现同事会在jar启动的命令上增加很多参数,很长一段时间都不清楚是干啥的。</p>
-</blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:MetaspaceSize=<span class="number">128</span>m -XX:MaxMetaspaceSize=<span class="number">128</span>m -Xms1024m -Xmx1024m -Xmn256m -Xss256k -XX:SurvivorRatio=<span class="number">8</span> -XX:+UseConcMarkSweepGC</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>简单介绍下参数</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">-XX:MetaspaceSize=<span class="number">128</span>m （元空间默认大小）</span><br><span class="line">-XX:MaxMetaspaceSize=<span class="number">128</span>m （元空间最大大小）</span><br><span class="line">-Xms1024m （堆最大大小）</span><br><span class="line">-Xmx1024m （堆默认大小）</span><br><span class="line">-Xmn256m （新生代大小）</span><br><span class="line">-Xss256k （棧最大深度大小）</span><br><span class="line">-XX:SurvivorRatio=<span class="number">8</span> （新生代分区比例 <span class="number">8</span>:<span class="number">2</span>）</span><br><span class="line">-XX:+UseConcMarkSweepGC （指定使用的垃圾收集器，这里使用CMS收集器）</span><br><span class="line">-XX:+PrintGCDetails （打印详细的GC日志）</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>虽然有了介绍但是依然不清楚具体是干啥的。并且Java虚拟机提供了非常多的参数命令。下面代码可以输出支持的参数数量</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">java -XX:+PrintFlagsFinal -XX:+UnlockDiagnosticVMOptions -version | wc -l</span><br><span class="line">openjdk version <span class="string">"1.8.0_275"</span></span><br><span class="line"><span class="function">OpenJDK Runtime <span class="title">Environment</span> <span class="params">(AdoptOpenJDK)</span><span class="params">(build <span class="number">1.8</span><span class="number">.0</span>_275-b01)</span></span></span><br><span class="line"><span class="function">OpenJDK 64-Bit Server <span class="title">VM</span> <span class="params">(AdoptOpenJDK)</span><span class="params">(build <span class="number">25.275</span>-b01, mixed mode)</span></span></span><br><span class="line"><span class="function">     838</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="如何理解这些参数的含义？"><a href="#如何理解这些参数的含义？" class="headerlink" title="如何理解这些参数的含义？"></a>如何理解这些参数的含义？</h3><blockquote>
-<p>首先我们需要理解java是如何运行的，为什么需要java虚拟机？    </p>
-<p>我们常用方式一般是安装java运行环境(jre)用命令行的方式启动或者直接双击jar运行。jre包含的java运行的必要环境。</p>
-<p>Java 作为一门高级程序语言，它的语法非常复杂，抽象程度也很高。编译出来的也不是机器可以直接直接运行代码。所以使用面向Java语言的虚拟机运行Java编译以后的特定代码。这里的特定代码指的是Java字节指令码。</p>
-</blockquote>
-<h3 id="JVM-内存分配性能问题"><a href="#JVM-内存分配性能问题" class="headerlink" title="JVM 内存分配性能问题"></a>JVM 内存分配性能问题</h3><ul>
-<li>在应用服务的特定场景下，JVM 内存分配不合理带来的性能表现并不会像内存溢出问题这么突出。如果没有深入到各项性能指标中去，是很难发现其中隐藏的性能损耗。</li>
-<li>JVM 内存分配不合理最直接的表现就是频繁的 GC，这会导致上下文切换等性能问题，从而降低系统的吞吐量、增加系统的响应时间。</li>
-</ul>
-<h3 id="分析-GC-日志"><a href="#分析-GC-日志" class="headerlink" title="分析 GC 日志"></a>分析 GC 日志</h3><ul>
-<li>在进行压测的时候，我们需要对GC日志进行分析。</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:+PrintGCTimeStamps -XX:+PrintGCDetails -Xloggc:/log/heap.log</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>-XX:PrintGCTimeStamps：打印 GC 具体时间；</li>
-<li>-XX:PrintGCDetails ：打印出 GC 详细日志；</li>
-<li>-Xloggc: path：GC 日志生成路径。</li>
-<li>JVM 内存调优通常和 GC 调优是互补的，基于以上调优，可以对年轻代和堆内存的垃圾回收算法进行调优。</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/08/19/Jvm-optimization/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
