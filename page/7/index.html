@@ -239,7 +239,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Dubbo/">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/10/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAArrayList/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -253,7 +253,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Dubbo/" class="post-title-link" itemprop="url">查缺补漏-Dubbo</a>
+            <a href="/2018/04/10/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAArrayList/" class="post-title-link" itemprop="url">深入浅出ArrayList</a>
         </h2>
 
         <div class="post-meta">
@@ -263,14 +263,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
+              <time title="Created: 2018-04-10 01:09:11" itemprop="dateCreated datePublished" datetime="2018-04-10T01:09:11+08:00">2018-04-10</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-15 05:45:59" itemprop="dateModified" datetime="2020-08-15T05:45:59+08:00">2020-08-15</time>
+                <time title="Modified: 2020-07-30 02:25:23" itemprop="dateModified" datetime="2020-07-30T02:25:23+08:00">2020-07-30</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -278,7 +278,7 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index"><span itemprop="name">知识点</span></a>
+                  <a href="/categories/Java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">Java基础</span></a>
                 </span>
             </span>
 
@@ -296,946 +296,19 @@
           <blockquote>
 <p>本章是整理知识内容，为强化知识长期更新。</p>
 </blockquote>
-<h3 id="Dubbo概述"><a href="#Dubbo概述" class="headerlink" title="Dubbo概述"></a>Dubbo概述</h3><ul>
-<li>服务治理（SOA）治理框架</li>
-<li>Duboo是一个分布式服务框架<ul>
-<li>远程通讯：提供多种基于长链接的NIO框架抽象封装,包括多种线程模型、序列化“请求-响应”的信息交换方案。</li>
-<li>集群容错：提供基于接口方法的透明远程调用过程，包括多协议支持、软负载均衡、失败容错、地址路由、动态配置等集群支持。</li>
-<li>自动发现：基于注册中心目录服务，使服务消费方能动态地查找提供方，使地址透明，使服务提供方可以平滑增或减少机器。</li>
-<li>介绍：</li>
-<li>致力于提供高性能和透明化的RPC远程服务调用方案，以及SOA服务治理方案。</li>
-<li>Dubbo的命名：澳大利亚达博市</li>
-<li>同类型框架：<ul>
-<li>Apache Thrift、Hessian、RMI、WebService（原生）、HSF（淘宝，不开源）、JSF（京东，不开源）。</li>
-</ul>
-</li>
-<li>Dubbo涉及的基础知识<ul>
-<li>远程调用方面：RMI、Hassion、WebService、Thrift进行底层调用。</li>
-<li>通讯交互：HTTP、Mian、netty。</li>
-<li>序列化：Hession2、Java、Json。</li>
-<li>容器：Jetty、Spring。</li>
-<li>负载均衡：zookeeper、Redis。（大部分都是zookeeper）</li>
-</ul>
-</li>
-<li>简单的使用场景<ul>
-<li>作为对内提供服务应用的容器。</li>
-<li>拆分负载Web应用到服务容器。</li>
-<li>应用负载均和协调。</li>
-<li>引用服务处理。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="架构节点（抽象概念）"><a href="#架构节点（抽象概念）" class="headerlink" title="架构节点（抽象概念）"></a>架构节点（抽象概念）</h3><ul>
-<li>Provider:暴露服务的服务提供方。</li>
-<li>Consumer：调用远程服务的服务消费方。</li>
-<li>Registry：服务注册于发现服务</li>
-<li>Monitor:统计服务的调用次调用时间监控中心</li>
-<li>Container:服务运行容器<ul>
-<li>节点调用关系</li>
-<li>服务提供-服务提供者在启动的时候,向注册中心提供自己提供的服务。</li>
-<li>服务消费-服务消费者在启动的时候,向注册中心订阅自己所需要的服务。<ul>
-<li>注册中心异步返回服务提供者地址列表给消费者,如果有变动,注册中心将给予长连接推送变更数据给消费者。</li>
-</ul>
-</li>
-<li>服务统计-服务者和消费者,在内存中累计调用次数和调用时间,定时每分钟发送一次统计数据到监控中心。<ul>
-<li>异步方式</li>
-</ul>
-</li>
-<li>服务调用关系<ul>
-<li>服务消费者,从提供者地址列表中,基于[软负载均衡算法],选一台提供者进行调用,如果调用失败,在选另一台调用。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="Dubbo源码相关"><a href="#Dubbo源码相关" class="headerlink" title="Dubbo源码相关"></a>Dubbo源码相关</h3><ul>
-<li>源码地址<code>git clone https://github.com/alibaba/dubbo</code></li>
-<li>初次编码不执行Test <code>mvn clean install -Dmaven.test.skip=true</code></li>
-<li>JS错误不修改,请自行忽视。</li>
-<li>修复mavan的警告<br>* 地址：<code>dubbo-parent pom.xml</code><br>* maven-jar-plugin version:2.4<br>* maven-surefire-plugin Version 2.19.1<br>* maven-deploy-plugin Version 3.3.9</li>
-<li>项目导入后修复Dubbo XML校验错误提示</li>
-<li>需要导入dubbo.xsd文件</li>
-<li>下载dubbo-2.5.3.jar 版本尽量保持源码同步,解压dt后导入eclipse中。<ul>
-<li>Preferences-XML-XML Catalog 添加一个自定义的：<ul>
-<li>Location: D:\xsd\dubbo.xsd</li>
-<li>Key: <a href="http://code.alibabatech.com/schema/dubbo/dubbo.xsd" target="_blank" rel="noopener">http://code.alibabatech.com/schema/dubbo/dubbo.xsd</a> （默认生成的不行自行修改）。</li>
-<li>在校验错误的XML头部添加：</li>
-<li><?xml version="1.0" encoding="UTF-8"?> <!DOCTYPE dubbo SYSTEM"http://code.alibabatech.com/schema/dubbo"></li>
-</ul>
-</li>
-</ul>
-</li>
-<li>关于maven-dependency-plugin错误 可能是IDE错误提示，空白处添加空格保存自动消失。<ul>
-<li>错误信息如下：Artifact has not been packaged yet. When used on reactor artifact, unpack should be executed after packaging: see MDEP-98. (org.apache.maven.plugins:maven-dependency-plugin:2.8:unpack:unpack:package)<ul>
-<li>修复方案更改插件配置:</li>
-<li><groupId>org.apache.maven.plugins</groupId><br><artifactId>maven-dependency-plugin</artifactId><br><version>2.10&lt;/version<executions>
-<execution>
-<id>unpack</id>
-<phase>packaged</phase>
-<goals>
-<goal>unpack</goal>
-</goals>
-</execution>
-</executions>
-</plugin></li>
-</ul>
-</li>
-</ul>
-</li>
-<li>Dubbo源码模块<ul>
-<li>Config配置层(Dubbo-config)</li>
-<li>Proxy服务代理层(Dubbo-rpc)</li>
-<li>Registry注册中心层(Dubbo-registry)</li>
-<li>Cluster路由层(Dubbo-cluster)</li>
-<li>Monitor监控层(Dubbo-monitor)</li>
-<li>Protocol远程调用层(Dubbo-rpc)</li>
-<li>Exchange信息交换层(Dubbo-remoting)</li>
-<li>Transport网络传输层(Dubbo-remoting)</li>
-<li>Serialize数据序列化层(Dubbo-common)</li>
-</ul>
-</li>
-</ul>
-<h3 id="Zookeeper"><a href="#Zookeeper" class="headerlink" title="Zookeeper"></a>Zookeeper</h3><blockquote>
-<p>（测试方案采用zookeeper做均衡负载，简单介绍下配置信息）</p>
-</blockquote>
-<ul>
-<li>下载地址 <a href="http://apache.fayea.com/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz" target="_blank" rel="noopener">http://apache.fayea.com/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz</a></li>
-<li>基本配置：<ul>
-<li>单机模式：修改zookeeper-3.4.8/conf zoo.cfg(原始文件名zoo_sanple.cfg复制一份重命名)<ul>
-<li>编辑内容（仅供参考,具体环境自行修改）</li>
-<li>tickTime = 2000<ul>
-<li>tickTime：基本事件单元，以毫秒为单位。这个时间是作为 Zookeeper 服务器之间或客户端与服务器之间维持心跳的时间间隔，也就是每个 tickTime 时间就会发送一个心跳。</li>
-</ul>
-</li>
-<li>initLimit= 5<ul>
-<li>initLimit:这个配置项用来配置Zookeeper接受客户端初始化连接时最长能忍受多少个心跳时间间隔数，当已超过5个心跳的时间（也就是tickTime）长度后Zookeeper服务器还没有收到客户端的返回信息，那么表明这个客户端连接失败。总的时间长度是5 * 2000=4s。</li>
-</ul>
-</li>
-<li>dataDir = D:\zookeeper\data<ul>
-<li>顾名思义就是 Zookeeper 保存数据快照的目录，默认情况下，Zookeeper 将写数据的日志文件也保存在这个目录里）。</li>
-</ul>
-</li>
-<li>dataLogDir= D:\zookeeper\log<ul>
-<li>顾名思义就是 Zookeeper 保存日志的目录。</li>
-</ul>
-</li>
-<li>synclimit = 5<ul>
-<li>这个配置项表示Leader与Follower之间发送消息，请求和应答时间长长度，最长不能超过多少个tickTime的时间长度,总的时间长度是2 * 2000 = 4s。</li>
-</ul>
-</li>
-<li>clientPort = 2181<ul>
-<li>这个端口就是客户端连接 Zookeeper 服务器的端口，Zookeeper 会监听这个端口，接受客户端的访问请求。</li>
-</ul>
-</li>
-<li>Server（待续）<ul>
-<li>格式：server.id=host:port:port（两个port保证可以正常使用就行）<ul>
-<li>id：通常为整数，建议使用整数。</li>
-<li>host：服务器的IP地址。</li>
-<li>port: Follower端口</li>
-<li>port: Leader选举投票。</li>
-</ul>
-</li>
-<li>ZooKeeper建议使用hostname，而非ip。这需要对主机的/etc/hostname和/etc/hosts做host绑定(不用的OS不同修改方式)。</li>
-</ul>
-</li>
-<li>创建一个myid文件（放在 dataDir文件下面）<ul>
-<li>写入一行数据（请查阅zoo.cfg文件）<ul>
-<li>写入当前Zookeeper id位置的数据即可。表示当前系统环境Zookeeper是哪一个Server（通讯用的）。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="Zookeeper概述"><a href="#Zookeeper概述" class="headerlink" title="Zookeeper概述"></a>Zookeeper概述</h3><ul>
-<li><p>背景</p>
-<ul>
-<li>Zookeeper可以让企业的IT架构逐步从集中式向分布式过度，所谓的分布式是指：把一个计算任务分解成若干个计算单元，并且分派到若干不同的计算机中去执行，然后汇总计算结果的过程。</li>
-</ul>
-</li>
-<li><p>Zookeeper介绍</p>
-<ul>
-<li>Zookeeper是源代码开放的分布式协调服务，由雅虎创建，是Google Chubby开源实现。Zookeeper是一个高性能的分布式数据一致性解决方案，它将那些复杂、容易出错的分布式一致性服务封装起来，构成一个搞笑可靠的原语集，并提供一系列简单易用的接口给用户使用。</li>
-</ul>
-</li>
-<li><p>Zookeeper的典型应用场景</p>
-<ul>
-<li>数据发布/订阅 顾名思义就是一方把数据发布出来，另一方通过某种手动可以得到这些数据。<ul>
-<li>通常数据订阅有两种方式：推模式和拉模式，推模式一般是服务器主动向客户端推送消息，拉模式是客户端主动去服务端获取数据（通常采用的是轮询的方式）。</li>
-<li>Zookeeper采用两种方式的结合。<ul>
-<li>发布者将数据发布到Zookeeper集群节点上，订阅者通过一定的方法告诉服务器，我对那个节点的数据感兴趣，那个服务器在这些节点的数据发送变化时，就通知客户端，客户端得到通知后可以去服务器获取数据信息。</li>
-<li>分布式协调/通知<ul>
-<li>心跳检测：在分布式系统中，通常需要机器是否可以用，Zookeeper中我们让所有的机器都注册一个临时节点，所以只需要判断这个节点是否存在就可以了，不需要直接去连接需要检查的机器，降低系统的负载度（节点分为临时和持久）。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>Zookpeeper重量级使用</p>
-<ul>
-<li>Hadoop、HBase、Storm、Solr。</li>
-</ul>
-</li>
-<li><p>集群角色</p>
-<ul>
-<li>Leader、Follower、Observer<ul>
-<li>Leader服务器是整个Zookeeper集群工作机制的核心</li>
-<li>Follower服务器是Zookeeper集群状态的跟随者</li>
-<li>Oserver服务器充当一个观察者的角色</li>
-<li>Leader、Follower设计模式，Observer观察者模式</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>会话</p>
-<ul>
-<li>会话是指客户端Zookeeper服务器的连接，Zookeeper中的会话叫Session，客户端与服务器建立TCP的长连接来维持一个Session,客户端在启动的时候首先会与服务器建立一个TCP连接,通过这个连接客户端能够通过心跳检测与服务器保持有效的会话，也能向Zookeeper服务器发送请求并获得响应。</li>
-</ul>
-</li>
-<li><p>数据节点</p>
-<ul>
-<li>Zookeeper中的节点有两类<ul>
-<li>集群中的一台机器称为一个节点</li>
-<li>数据模型中的数据单元Znode，分别为持久节点和临时节点。（其实数据节点就是一个tree节点就是Znode）</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>版本</p>
-<ul>
-<li>Zookeeper中的版本<ul>
-<li>version<ul>
-<li>当前数据节点数据内容版本</li>
-</ul>
-</li>
-<li>cversion<ul>
-<li>当前数据节点子节点的版本号</li>
-</ul>
-</li>
-<li>aversion<ul>
-<li>当前数据节点ACL变更版本号</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>watcher（事件监听器）</p>
-<ul>
-<li>Zookeeper允许用户在指定节点上注册一些Watcher，当数据节点发生变化的时候，Zookeeper服务器会把这个变化通知发送给感兴趣的客户端。</li>
-</ul>
-</li>
-<li><p>ACL权限控制</p>
-<ul>
-<li>ACL是Access Contril Lists 的缩写,Zookeeper采用ACL策略来进行权限控制,有以下权限：<ul>
-<li>CREATE：创建子节点</li>
-<li>READ：获取子节点</li>
-<li>WRITE:更新子节点数据权限</li>
-<li>DELETE:删除子节点权限</li>
-<li>ADMIN：设置节点ACL权限</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="Zoopeeper环境搭建（集群、单机、伪集群）"><a href="#Zoopeeper环境搭建（集群、单机、伪集群）" class="headerlink" title="Zoopeeper环境搭建（集群、单机、伪集群）"></a>Zoopeeper环境搭建（集群、单机、伪集群）</h3><ul>
-<li>单机模式（设备环境有限暂时单机）<ul>
-<li>准备工作<ul>
-<li>下载Zookeeper（此处自行处理）</li>
-<li>解压 tar xzvf xxx.gz 解压</li>
-<li>重命名文件夹 Zookeeper 命令mv xxx xxx 后面的参数是新名字（可以不做）</li>
-<li>进入文件夹中/conf/</li>
-<li>复制配置文件zoo_sample.cfg（样例文件） 并重命名 zoo.cfg</li>
-</ul>
-</li>
-<li>编辑zoo.cfg内容（仅供参考,具体环境自行修改）</li>
-<li>tickTime = 2000<ul>
-<li>tickTime：基本事件单元，以毫秒为单位。这个时间是作为 Zookeeper 服务器之间或客户端与服务器之间维持心跳的时间间隔，也就是每个 tickTime 时间就会发送一个心跳。</li>
-</ul>
-</li>
-<li>initLimit= 5<ul>
-<li>initLimit:这个配置项用来配置Zookeeper接受客户端初始化连接时最长能忍受多少个心跳时间间隔数，当已超过5个心跳的时间（也就是tickTime）长度后Zookeeper服务器还没有收到客户端的返回信息，那么表明这个客户端连接失败。总的时间长度是5 * 2000=4s。</li>
-</ul>
-</li>
-<li>dataDir = D:\zookeeper\data<ul>
-<li>顾名思义就是 Zookeeper 保存数据快照的目录，默认情况下，Zookeeper 将写数据的日志文件也保存在这个目录里）。</li>
-</ul>
-</li>
-<li>dataLogDir= D:\zookeeper\log<ul>
-<li>顾名思义就是 Zookeeper 保存日志的目录。</li>
-</ul>
-</li>
-<li>synclimit = 5<ul>
-<li>这个配置项表示Leader与Follower之间发送消息，请求和应答时间长长度，最长不能超过多少个tickTime的时间长度,总的时间长度是2 * 2000 = 4s。</li>
-</ul>
-</li>
-<li>clientPort = 2181<ul>
-<li>这个端口就是客户端连接 Zookeeper 服务器的端口，Zookeeper 会监听这个端口，接受客户端的访问请求。</li>
-</ul>
-</li>
-<li>Server（待续）<ul>
-<li>格式：server.id=host:port:port（两个port保证可以正常使用就行）<ul>
-<li>id：通常为整数，并且不能重复使用整数。</li>
-<li>host：服务器的IP地址。</li>
-<li>port: Follower端口</li>
-<li>port: Leader选举投票。</li>
-</ul>
-</li>
-<li>ZooKeeper建议使用hostname，而非ip。这需要对主机的/etc/hostname和/etc/hosts做host绑定(不用的OS不同修改方式)。</li>
-<li>创建一个myid文件（放在 dataDir文件下面）</li>
-<li>写入一行数据（请查阅zoo.cfg文件）<ul>
-<li>写入id位置的数据即可。表示当前系统环境Zookeeper是哪一个Server（通讯用的）。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>启动服务与停止服务</li>
-<li>进入bin/文件</li>
-<li>执行zkServer.cmd 或则 <a href="http://zkserver.sh/" target="_blank" rel="noopener">zkServer.sh</a></li>
-<li>CMD直接双击运行 ,SH则 sudo sh ./zkServer.sh start 启动 stop 关闭</li>
-<li>验证 使用telnet来测试(自行安装)<ul>
-<li>telnet ip port 敲命令 stat 若返回数据表示当前服务器不能对外提供服务表明集群下其他服务器未启动（在Zookeeper中只要有半数的服务器正常工作就可以向外提供服务）。</li>
-</ul>
-</li>
-<li>在此简单说明下何为伪集群就是在一台服务器上的多个Zookeeper的集群叫伪集群（伪集群 两个port不能与其他zookeeper的port一样）。</li>
-<li>单机模式就删除其他服务器运行的时候就是单机模式。</li>
-</ul>
-</li>
-</ul>
-<p>#Dubbo程序运行</p>
-<ul>
-<li>测试运行,默认配置即可。注意与zookeeper一台机器。</li>
-<li>运行Dubbo-admin本机tomcat启动启动成功后127.0.0.1:8080/dubbo-admin（注意默认请设置跟目录,否则部分功能不发正常显示）<ul>
-<li>默认用户名密码(root/root,guest/guest)</li>
-</ul>
-</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaConcurrent/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaConcurrent/" class="post-title-link" itemprop="url">查缺补漏-JavaConcurrent</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-14 09:10:49" itemprop="dateModified" datetime="2020-08-14T09:10:49+08:00">2020-08-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Spring/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Spring/" class="post-title-link" itemprop="url">查缺补漏-Spring</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-14 09:10:24" itemprop="dateModified" datetime="2020-08-14T09:10:24+08:00">2020-08-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/SpringFrameworkRutime.png"></p>
-<h3 id="Spring-Ioc"><a href="#Spring-Ioc" class="headerlink" title="Spring Ioc"></a>Spring Ioc</h3><h4 id="1-描述下依赖注入。"><a href="#1-描述下依赖注入。" class="headerlink" title="1.描述下依赖注入。"></a>1.描述下依赖注入。</h4><ul>
-<li>平常的Java开发中，程序员在某个类中需要依赖其它类的方法。通常是new一个依赖类再调用类实例的方法，这种开发存在的问题是new的类实例不好统一管理。 Spring提出了依赖注入的思想，即依赖类不由程序员实例化，而是通过Spring容器帮我们new指定实例并且将实例注入到需要该对象的类中。依赖注入的另一种说法是”控制反转”。通俗的理解是：平常我们new一个实例，这个实例的控制权是我们程序员。而控制反转是指new实例工作不由我们程序员来做而是交给Spring容器来做。</li>
-<li>IOC对于Spring框架来说，就是由Spring来负责控制对象的生命周期和对象间的关系。</li>
-<li>所谓依赖注入，就是由IOC容器在运行期间，动态地将某种依赖关系注入到对象之中，所以，以来注入DI 和控制反转IOC 是从不同的角度描述的同一间事情，就是值通过引用IOC容器，利用以来关系注入的方式，实现对象之间的解耦。</li>
-</ul>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/SpringIoc%E5%88%9D%E5%A7%8B%E5%8C%96%E8%BF%87%E7%A8%8B.png"></p>
-<h4 id="2-注入的几种方式？"><a href="#2-注入的几种方式？" class="headerlink" title="2. 注入的几种方式？"></a>2. 注入的几种方式？</h4><ul>
-<li>Set注入。</li>
-<li>构造方法注入。</li>
-<li>工厂的方法注入。</li>
-</ul>
-<h3 id="Spring-AOP"><a href="#Spring-AOP" class="headerlink" title="Spring AOP"></a>Spring AOP</h3><ul>
-<li><p>AOP(Aspect-Oriented Programming:⾯向切⾯编程)能够将那些与业务⽆关，却为业务模块所共同调⽤的逻辑或责任（例如事务处理、⽇志管理、权限控制等）封装起来，便于减少系统的重复代码，降低模块间的耦合度，并有利于未来的可拓展性和可维护性。</p>
-<ul>
-<li><strong>Spring AOP</strong>就是基于动态代理的，如果要代理的对象，实现了某个接⼝，那么Spring AOP会使⽤<strong>JDK</strong> Proxy，去创建代理对象，⽽对于没有实现接⼝的对象，就⽆法使⽤ JDK Proxy 去进⾏代理了，这时候Spring AOP会使⽤<strong>Cglib</strong> ，这时候Spring AOP会使⽤ <strong>Cglib</strong> ⽣成⼀个被代理对象的⼦类来作为代理。</li>
-</ul>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/SpringAopProcess.png"></p>
-<ul>
-<li>Spring Aop是运行时增强。</li>
-<li>Cglib Aop是编译器增强。</li>
-</ul>
-</li>
-<li><p>AOP专门用于处理系统中分布于各个模块中交叉关注点的问题，在JavaEE应用中，常常通过AOP来处理一些横切性质的系统级服务，如事物管理、安全检查、缓存对象池管理。</p>
-<ul>
-<li>1.）切面 -Aspect 切面类 比如日志类</li>
-<li>2.） 连接点 - Join Point 加入切点的那个点</li>
-<li>3.）通知 -Advice 是在切面某个特定的连接点上的动作。</li>
-<li>4.）切入点 - Point Cut 匹配连接点的断点</li>
-<li>5.）引入 - Introduction </li>
-<li>6.）目标对象 - Target Object 被一个或多个通知对象，永远被代理的对象。</li>
-<li>7.） AOP代理 - AOP Proxy AOP创建的对象用来实现切面对象。</li>
-<li>8.）织入 - Weaving </li>
-<li>9.）AOP通俗的理解：<ul>
-<li>一个组建A，不关心其他常用的服务组件B，但是这个组件A使用组件B的时候不是组建A自身去调用，而是通过配置等其他方式，比如Spring中可以通过XML配置文件。这样就使的A压根不需要知道服务组件B是怎么样的，A只关心自己的业务逻辑，具体A使用B的时候，配置文件去做，与具体的A组件无关。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-SpringBoot/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-SpringBoot/" class="post-title-link" itemprop="url">查缺补漏-SpringBoot</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-14 09:10:21" itemprop="dateModified" datetime="2020-08-14T09:10:21+08:00">2020-08-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/07/12/%E9%9D%A2%E8%AF%95%E9%A2%98-%E4%BA%A4%E6%8D%A2%E4%B8%A4%E4%B8%AA%E5%8F%98%E9%87%8F%E7%9A%84%E5%80%BC/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/12/%E9%9D%A2%E8%AF%95%E9%A2%98-%E4%BA%A4%E6%8D%A2%E4%B8%A4%E4%B8%AA%E5%8F%98%E9%87%8F%E7%9A%84%E5%80%BC/" class="post-title-link" itemprop="url">面试题-交换两个变量的值</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-07-12 08:02:14" itemprop="dateCreated datePublished" datetime="2020-07-12T08:02:14+08:00">2020-07-12</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-12 08:10:29" itemprop="dateModified" datetime="2020-08-12T08:10:29+08:00">2020-08-12</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E9%9D%A2%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">面试</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>刚去杭州面试的第二家公司，做笔试的时候的时候遇到的。最近几天在整理以前的笔记发现了。简单记录下。</p>
-</blockquote>
-<h3 id="互换两个变量的值"><a href="#互换两个变量的值" class="headerlink" title="互换两个变量的值"></a>互换两个变量的值</h3><blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a=<span class="number">10</span>;</span><br><span class="line"><span class="keyword">int</span> b=<span class="number">12</span>;</span><br><span class="line"><span class="comment">// 通过两个变量之间的运算输出结果 a = 12 b = 10</span></span><br></pre></td></tr></table></figure>
-</blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">swapTest1</span><span class="params">()</span></span>&#123;</span><br><span class="line">		<span class="keyword">int</span> a=<span class="number">10</span>;</span><br><span class="line">		<span class="keyword">int</span> b=<span class="number">12</span>;</span><br><span class="line">		a=a^b; <span class="comment">//a=1010^b=1100;</span></span><br><span class="line">		b=a^b; <span class="comment">//a=0110^b=1100;</span></span><br><span class="line">		a=a^b; <span class="comment">//a=0110^b=1010;</span></span><br><span class="line">		<span class="comment">//a=1100=12;b=1010;</span></span><br><span class="line">		System.out.println(a);</span><br><span class="line">		System.out.println(b);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">swapTest2</span><span class="params">()</span></span>&#123;</span><br><span class="line">		<span class="keyword">int</span> a = <span class="number">10</span>;</span><br><span class="line">		<span class="keyword">int</span> b = <span class="number">12</span>;</span><br><span class="line">		a = a + b; <span class="comment">// 22 = 10 + 12</span></span><br><span class="line">		b = a - b; <span class="comment">// 10 = 22 - 12</span></span><br><span class="line">		a = a - b; <span class="comment">// 12 = 22 - 10</span></span><br><span class="line">		System.out.println(a);</span><br><span class="line">		System.out.println(b);</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
-
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/01/01/%E5%AE%9E%E8%B7%B5-netty%E7%AE%80%E5%8D%95%E7%9A%84%E8%81%8A%E5%A4%A9%E5%AE%A4/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/01/01/%E5%AE%9E%E8%B7%B5-netty%E7%AE%80%E5%8D%95%E7%9A%84%E8%81%8A%E5%A4%A9%E5%AE%A4/" class="post-title-link" itemprop="url">实践-netty简单的聊天室</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-01-01 07:17:29" itemprop="dateCreated datePublished" datetime="2020-01-01T07:17:29+08:00">2020-01-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-07 07:24:50" itemprop="dateModified" datetime="2020-08-07T07:24:50+08:00">2020-08-07</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>翻出了去年的代码，最开始打算用netty直接实现im系统。当初学习的时候写了个demo项目。</p>
-</blockquote>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/06/04/%E5%AE%9E%E8%B7%B5-nginx%E6%97%A5%E5%BF%97%E7%AE%80%E5%8D%95%E7%9A%84%E7%BB%9F%E8%AE%A1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/06/04/%E5%AE%9E%E8%B7%B5-nginx%E6%97%A5%E5%BF%97%E7%AE%80%E5%8D%95%E7%9A%84%E7%BB%9F%E8%AE%A1/" class="post-title-link" itemprop="url">实践Nginx日志简单的统计</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-06-04 11:21:21" itemprop="dateCreated datePublished" datetime="2019-06-04T11:21:21+08:00">2019-06-04</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-07 05:52:32" itemprop="dateModified" datetime="2020-08-07T05:52:32+08:00">2020-08-07</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Nginx/" itemprop="url" rel="index"><span itemprop="name">Nginx</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>公司没有日志采集平台，又不太可能在业务系统里面搞事情。好在之前有玩过elk日志分析组合。直接从服务器上面撸出日志简单的用linux命令分析下吧。</p>
-</blockquote>
-<p>Nginx日志统计（简单的）</p>
-<p>（日志文件叫access.log 在当前目录下）</p>
-<p><strong>统计 PV，就是日志行数</strong></p>
-<p><code>cat access.log |wc -l</code></p>
-<p><strong>UV, 即是统计 IP 数</strong></p>
-<p><code>cat access.log |awk &#39;{print $1}&#39; |sort |uniq -c |wc -l</code></p>
-<p><strong>使用linux grep 进行统计</strong></p>
-<p><code>grep -E &quot;POST|GET&quot; access.log | awk -F &#39;&quot;&#39; &#39;{print $2,$3}&#39; | awk &#39;{print $2}&#39;| sort | uniq -c | sort -k1nr | head -100</code></p>
-<p><strong>耗时的请求发生时间、所请求的 URI 和耗时</strong></p>
-<p><code>cat access.log | awk &#39;{print $4,$7,$10,$NF}&#39; | sort -k3 -nr | head -100</code></p>
-<p><strong>统计</strong>nginx<strong>访问频次最高的</strong>100<strong>个</strong>Ip**</p>
-<p><code>grep -E &quot;POST|GET&quot; access.log | awk -F &#39;&quot;&#39; &#39;{print $(NF-1)}&#39; | sort | uniq -c | sort -k1nr | head -100</code></p>
-<p><strong>统计</strong>nginx<strong>访问不正常（状态码</strong>400+<strong>）的前</strong>100<strong>个</strong>url<strong>和频次</strong></p>
-<p><code>grep -E &quot;POST|GET&quot; access.log | awk -F &#39;&quot;&#39; &#39;{print $2,$3}&#39; | awk &#39;{if ($4&gt;=&quot;400&quot;) {print $4,$1,$2}}&#39; | sort | uniq -c | sort -k1nr | head -100</code></p>
-<p><strong>统计nginx访问状态码非200的前100个</strong>url<strong>和频次**</strong></p>
-<p><code>grep -E &quot;POST|GET&quot; access.log | awk -F &#39;&quot;&#39; &#39;{print $2,$3}&#39; | awk &#39;{if ($4!=200) {print $4,$1,$2}}&#39; | sort | uniq -c | sort -k1nr | head -100</code></p>
-<p><strong>不同 URI 的平均耗时</strong></p>
-<p><code>grep -E &quot;POST|GET&quot; access.log  | awk &#39;{s[$10] += $NF;c[$10]++}END{for(i in s){print i,s[i]/c[i]}}&#39; |sort -k2 -nr | head</code></p>
-<p><strong>每秒请求量统计</strong></p>
-<p>统计每秒的请求数,top100的时间点(精确到秒)</p>
-<p><code>grep -E &quot;POST|GET&quot; access.log |  awk &#39;{print $4}&#39; access.log |cut -c 14-21|sort|uniq -c|sort -nr|head -n 100</code></p>
-<p><strong>每分钟请求量统计</strong></p>
-<p>统计每分钟的请求数,top100的时间点(精确到分钟)</p>
-<p><code>grep -E &quot;POST|GET&quot; access.log |  awk &#39;{print $4}&#39; access.log |cut -c 14-18|sort|uniq -c|sort -nr|head -n 100</code></p>
-<p><strong>每小时请求量统计</strong></p>
-<p>统计每小时的请求数,top100的时间点(精确到小时)</p>
-<p><code>grep -E &quot;POST|GET&quot; access.log |  awk &#39;{print $4}&#39; access.log |cut -c 14-15|sort|uniq -c|sort -nr|head -n 100</code></p>
-<p><strong>统计蜘蛛抓取次数</strong></p>
-<p><code>grep &#39;Baiduspider&#39; access.log |wc -l</code></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/25/%E5%AE%9E%E8%B7%B5-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E5%87%BB%E7%A9%BF/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/03/25/%E5%AE%9E%E8%B7%B5-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E5%87%BB%E7%A9%BF/" class="post-title-link" itemprop="url">实践-缓存穿透、击穿</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-03-25 20:56:41" itemprop="dateCreated datePublished" datetime="2019-03-25T20:56:41+08:00">2019-03-25</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-07 05:47:55" itemprop="dateModified" datetime="2020-08-07T05:47:55+08:00">2020-08-07</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>成长就是不断发现过去傻逼的过程，这里讲讲平时开发经常用到缓存。</p>
-</blockquote>
-<h2 id="缓存穿透和缓存击穿"><a href="#缓存穿透和缓存击穿" class="headerlink" title="缓存穿透和缓存击穿"></a>缓存穿透和缓存击穿</h2><ul>
-<li>本内容相关代码地址:<a href="https://github.com/z201/z201.github.io.code/tree/master/demonstration-project/cache-breakdown" target="_blank" rel="noopener">cache-breakdown</a></li>
-<li>代码运行需要mysql和redis环境</li>
-</ul>
-<h3 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a>缓存穿透</h3><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF/%E6%9F%A5%E8%AF%A2%E7%BC%93%E5%AD%98.svg"></p>
-<ul>
-<li>理想的情况下我们数据缓存到redis里面，客户访问数据的时候直接去缓存查询，如果没有缓存就去数据库查询。</li>
-<li>仔细想想这里其实有一个bug，必须是缓存有的数据才会去数据库查询，如果一直都是在查询一个没有得数据咋办呢，缓存会一直落空，而且每次都会去数据库查询。</li>
-</ul>
+<p>List 是是一个有序的集合，是Collection的实现类之一。</p>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Collection/Collection-ArrayList.JPG"></p>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><ul>
+<li>list接口是Java Collection Framework的成员。</li>
+<li>列队允许添加重复的元素。</li>
+<li>列队允许null存在。</li>
+<li>列队是从0开始，也就是列队头元素的下标是0。</li>
+<li>列队支持泛型，这样可以避免<code>ClassCastException</code>异常。</li>
+</ul>
+<h3 id="数组与数组列表"><a href="#数组与数组列表" class="headerlink" title="数组与数组列表"></a>数组与数组列表</h3>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2019/03/25/%E5%AE%9E%E8%B7%B5-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E5%87%BB%E7%A9%BF/#more" rel="contents">
+              <a class="btn" href="/2018/04/10/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAArrayList/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -1259,7 +332,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/06/%E5%88%9D%E6%8E%A2FastDFS/">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/07/23/%E5%AE%9E%E8%B7%B5-spring-boot%E6%9B%BF%E6%8D%A2%E5%86%85%E7%BD%AEtomcat%E7%89%88%E6%9C%AC/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -1273,7 +346,97 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2019/03/06/%E5%88%9D%E6%8E%A2FastDFS/" class="post-title-link" itemprop="url">初探FastDFS</a>
+            <a href="/2020/07/23/%E5%AE%9E%E8%B7%B5-spring-boot%E6%9B%BF%E6%8D%A2%E5%86%85%E7%BD%AEtomcat%E7%89%88%E6%9C%AC/" class="post-title-link" itemprop="url">实践-spring-boot替换内置tomcat版本</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-07-23 17:03:27 / Modified: 17:35:21" itemprop="dateCreated datePublished" datetime="2020-07-23T17:03:27+08:00">2020-07-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>本章只是回顾一次eureka版本升级后tomcat资源占用过高的问题，临时解决。</p>
+</blockquote>
+<h3 id="升级springBoot、SpringCloud版本"><a href="#升级springBoot、SpringCloud版本" class="headerlink" title="升级springBoot、SpringCloud版本"></a>升级springBoot、SpringCloud版本</h3><ul>
+<li>升级完成后直接在测试环境测试部署，结果发现eureka的cpu资源占用过高，导致假死。通过arthas发现是tomcat线程阻塞。通过dependepency看了下springboot中内嵌tomcat的版本是9了。之前是8，测试环境一大堆人等着测试接口。首先想着降低tomcat版本。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">查看依赖</span><br><span class="line">gradle dependencies</span><br><span class="line">mvn dependency:tree &gt; output.txt   # 输出到文件里</span><br></pre></td></tr></table></figure>
+
+<h3 id="排除SpringBoot的Tomcat，指定Tomcat版本"><a href="#排除SpringBoot的Tomcat，指定Tomcat版本" class="headerlink" title="排除SpringBoot的Tomcat，指定Tomcat版本"></a>排除SpringBoot的Tomcat，指定Tomcat版本</h3><p>有时候我们需要在特定情况下使用特定的Tomcat版本，这时候总不能因为Tomcat就改变SpringBoot的版本，所以可以采用排除SpringBoot中的Tomcat包，然后手动指定Tomcat的版本，当然还要引入Tomcat相关的包。</p>
+<h5 id="Gradle的配置"><a href="#Gradle的配置" class="headerlink" title="Gradle的配置"></a>Gradle的配置</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">compile(<span class="string">'org.springframework.boot:spring-boot-starter-web'</span>) &#123;</span><br><span class="line">  exclude <span class="keyword">module</span>: <span class="string">"spring-boot-starter-tomcat"</span></span><br><span class="line">&#125;</span><br><span class="line">compile <span class="string">'org.apache.tomcat.embed:tomcat-embed-core:8.5.37'</span></span><br><span class="line">compile <span class="string">'org.apache.tomcat.embed:tomcat-embed-el:8.5.37'</span></span><br><span class="line">compile <span class="string">'org.apache.tomcat.embed:tomcat-embed-logging-juli:8.5.2'</span></span><br><span class="line">compile <span class="string">'org.apache.tomcat.embed:tomcat-embed-websocket:8.5.37'</span></span><br></pre></td></tr></table></figure>
+
+<p>如果不指定版本，则会使用最新的Tomcat版本, 否则直接指定对应的版本号。</p>
+<h5 id="Maven的配置"><a href="#Maven的配置" class="headerlink" title="Maven的配置"></a>Maven的配置</h5><ol>
+<li>在 pom.xml文件里面添加一个标签<properties>，添加期望的版本。</li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">tomcat.version</span>&gt;</span>8.5.37<span class="tag">&lt;/<span class="name">tomcat.version</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>添加必要的Jar包：</li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span> </span><br><span class="line">   <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.tomcat<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span> </span><br><span class="line">   <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>tomcat-juli<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span> </span><br><span class="line">   <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;tomcat.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span> </span><br><span class="line"> <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.tomcat.embed<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>tomcat-embed-logging-juli<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;tomcat.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>重新部署eureka后一切正常。处理时间短暂，没有影响大家工作。时间过了大半年了，也忘记具体是啥原因了。有机会本地复现试试。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/23/%E5%AE%9E%E8%B7%B5-spring-redis-string/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/03/23/%E5%AE%9E%E8%B7%B5-spring-redis-string/" class="post-title-link" itemprop="url">实践-spring-redis-string</a>
         </h2>
 
         <div class="post-meta">
@@ -1283,14 +446,200 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2019-03-06 10:45:11" itemprop="dateCreated datePublished" datetime="2019-03-06T10:45:11+08:00">2019-03-06</time>
+              <time title="Created: 2019-03-23 12:44:56" itemprop="dateCreated datePublished" datetime="2019-03-23T12:44:56+08:00">2019-03-23</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-07 05:08:21" itemprop="dateModified" datetime="2020-08-07T05:08:21+08:00">2020-08-07</time>
+                <time title="Modified: 2019-12-16 01:11:56" itemprop="dateModified" datetime="2019-12-16T01:11:56+08:00">2019-12-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>本章是整理知识内容，为强化知识长期更新。</p>
+</blockquote>
+<h3 id="spring-redis-string"><a href="#spring-redis-string" class="headerlink" title="spring-redis-string"></a>spring-redis-string</h3><blockquote>
+<p>Spring-data-redis 有两个客户端，本章节主要使用lettuce来作为代码演示。尽可能面向redis编程。</p>
+</blockquote>
+<ul>
+<li>参考文献<a href="http://redisdoc.com/string/index.html" target="_blank" rel="noopener">redis-string</a></li>
+</ul>
+<h3 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h3><ul>
+<li>接口</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> cn.z201.learning.redis.operating.service;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> z201.coding@gmail.com</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@see</span> cn.z201.learning.redis.operating.service.impl.RedisStringImpl</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">RedisStringI</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 将字符串值 value 关联到 key 。</span></span><br><span class="line"><span class="comment">     * 如果 key 已经持有其他值， SET 就覆写旧值， 无视类型。</span></span><br><span class="line"><span class="comment">     * 当 SET 命令对一个带有生存时间（TTL）的键进行设置之后， 该键原有的 TTL 将被清除。</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> = http://redisdoc.com/string/set.html &#125;</span></span><br><span class="line"><span class="comment">     * 可用版本： &gt;= 1.0.0</span></span><br><span class="line"><span class="comment">     * 时间复杂度： O(1)</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> key</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Boolean <span class="title">set</span><span class="params">(String key, String value)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 只在键 key 不存在的情况下， 将键 key 的值设置为 value 。</span></span><br><span class="line"><span class="comment">     * 若键 key 已经存在， 则 SETNX 命令不做任何动作。</span></span><br><span class="line"><span class="comment">     * SETNX 是『SET if Not eXists』(如果不存在，则 SET)的简写。</span></span><br><span class="line"><span class="comment">     * 可用版本： &gt;= 1.0.0</span></span><br><span class="line"><span class="comment">     * 时间复杂度： O(1)</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> = http://redisdoc.com/string/setnx.html  &#125;</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> key</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Boolean <span class="title">setNx</span><span class="params">(String key, String value)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 将键 key 的值设置为 value ， 并将键 key 的生存时间设置为 seconds 秒钟。</span></span><br><span class="line"><span class="comment">     * 如果键 key 已经存在， 那么 SETEX 命令将覆盖已有的值。</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> = http://redisdoc.com/string/setex.html&#125;</span></span><br><span class="line"><span class="comment">     * 可用版本： &gt;= 2.0.0</span></span><br><span class="line"><span class="comment">     * 时间复杂度： O(1)</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> key</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> timeout seconds 秒</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Boolean <span class="title">setEx</span><span class="params">(String key, Long timeout, String value)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 这个命令和 SETEX 命令相似， 但它以毫秒为单位设置 key 的生存时间， 而不是像 SETEX 命令那样以秒为单位进行设置。</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> = http://redisdoc.com/string/psetex.html&#125;</span></span><br><span class="line"><span class="comment">     * 可用版本： &gt;= 2.6.0</span></span><br><span class="line"><span class="comment">     * 时间复杂度： O(1)</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> key</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> timeout milliseconds</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Boolean <span class="title">pSetEx</span><span class="params">(String key, Long timeout, String value)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 返回与键 key 相关联的字符串值。</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> = http://redisdoc.com/string/get.html&#125;</span></span><br><span class="line"><span class="comment">     * 可用版本： &gt;= 1.0.0</span></span><br><span class="line"><span class="comment">     * 时间复杂度： O(1)</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> key</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Object <span class="title">get</span><span class="params">(String key)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取key设置的value，并返回之前设置的值。</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> = http://redisdoc.com/string/getset.html&#125;</span></span><br><span class="line"><span class="comment">     * 可用版本： &gt;= 1.0.0</span></span><br><span class="line"><span class="comment">     * 时间复杂度： O(1)</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> key</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Object <span class="title">getSet</span><span class="params">(String key, String value)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 返回key对应value的长度</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> = http://redisdoc.com/string/strlen.html&#125;</span></span><br><span class="line"><span class="comment">     * 可用版本： &gt;= 2.2.0</span></span><br><span class="line"><span class="comment">     * 复杂度： O(1)</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> key</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Long <span class="title">strLen</span><span class="params">(String key)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 如果键 key 已经存在并且它的值是一个字符串， APPEND 命令将把 value 追加到键 key 现有值的末尾。</span></span><br><span class="line"><span class="comment">     * 如果 key 不存在， APPEND 就简单地将键 key 的值设为 value ， 就像执行 SET key value 一样。</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> = http://redisdoc.com/string/append.html&#125;</span></span><br><span class="line"><span class="comment">     * 可用版本： &gt;= 2.0.0</span></span><br><span class="line"><span class="comment">     * 时间复杂度： 平摊O(1)</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> key</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Long <span class="title">appEnd</span><span class="params">(String key, String value)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 从偏移量 offset 开始， 用 value 参数覆写(overwrite)键 key 储存的字符串值。</span></span><br><span class="line"><span class="comment">     * 不存在的键 key 当作空白字符串处理。</span></span><br><span class="line"><span class="comment">     * SETRANGE 命令会确保字符串足够长以便将 value 设置到指定的偏移量上，</span></span><br><span class="line"><span class="comment">     * 如果键 key 原来储存的字符串长度比偏移量小(比如字符串只有 5 个字符长，</span></span><br><span class="line"><span class="comment">     * 但你设置的 offset 是 10 )， 那么原字符和偏移量之间的空白将用零字节(zerobytes, "\x00" )进行填充。</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> = http://redisdoc.com/string/setrange.html&#125;</span></span><br><span class="line"><span class="comment">     * 可用版本： &gt;= 2.2.0</span></span><br><span class="line"><span class="comment">     * 时间复杂度：对于长度较短的字符串，命令的平摊复杂度O(1)；对于长度较大的字符串，命令的复杂度为 O(M) ，其中 M 为 value 的长度。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> key</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> offset</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Boolean <span class="title">setRange</span><span class="params">(String key, Long offset, String value)</span></span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 返回键 key 储存的字符串值的指定部分， 字符串的截取范围由 start 和 end 两个偏移量决定 (包括 start 和 end 在内)。</span></span><br><span class="line"><span class="comment">     * 负数偏移量表示从字符串的末尾开始计数， -1 表示最后一个字符， -2 表示倒数第二个字符， 以此类推。</span></span><br><span class="line"><span class="comment">     * GETRANGE 通过保证子字符串的值域(range)不超过实际字符串的值域来处理超出范围的值域请求。</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> = http://redisdoc.com/string/setrange.html&#125;</span></span><br><span class="line"><span class="comment">     * 可用版本： &gt;= 2.4.0</span></span><br><span class="line"><span class="comment">     * 时间复杂度： O(N)，其中 N 为被返回的字符串的长度。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> key</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> start</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> end</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Object <span class="title">getRange</span><span class="params">(String key, Long start, Long end)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 为键 key 储存的数字值加上一。</span></span><br><span class="line"><span class="comment">     * 如果键 key 不存在， 那么它的值会先被初始化为 0 ， 然后再执行 INCR 命令。</span></span><br><span class="line"><span class="comment">     * 如果键 key 储存的值不能被解释为数字， 那么 INCR 命令将返回一个错误。</span></span><br><span class="line"><span class="comment">     * 本操作的值限制在 64 位(bit)有符号数字表示之内。</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> = http://redisdoc.com/string/incr.html&#125;</span></span><br><span class="line"><span class="comment">     * 可用版本： &gt;= 1.0.0</span></span><br><span class="line"><span class="comment">     * 时间复杂度： O(1)</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> key</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Long <span class="title">incr</span><span class="params">(String key)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 为键 key 储存的数字值加上增量 increment 。</span></span><br><span class="line"><span class="comment">     * 如果键 key 不存在， 那么键 key 的值会先被初始化为 0 ， 然后再执行 INCRBY 命令。</span></span><br><span class="line"><span class="comment">     * 如果键 key 储存的值不能被解释为数字， 那么 INCRBY 命令将返回一个错误。</span></span><br><span class="line"><span class="comment">     * 本操作的值限制在 64 位(bit)有符号数字表示之内。</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> = http://redisdoc.com/string/incrby.html&#125;</span></span><br><span class="line"><span class="comment">     * 可用版本： &gt;= 1.0.0</span></span><br><span class="line"><span class="comment">     * 时间复杂度： O(1)</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> key</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> sum</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Long <span class="title">incrBy</span><span class="params">(String key, Long sum)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 为键 key 储存的值加上浮点数增量 increment 。</span></span><br><span class="line"><span class="comment">     * 如果键 key 不存在， 那么 INCRBYFLOAT 会先将键 key 的值设为 0 ， 然后再执行加法操作。</span></span><br><span class="line"><span class="comment">     * 如果命令执行成功， 那么键 key 的值会被更新为执行加法计算之后的新值， 并且新值会以字符串的形式返回给调用者。</span></span><br><span class="line"><span class="comment">     * 无论是键 key 的值还是增量 increment ， 都可以使用像 2.0e7 、 3e5 、 90e-2 那样的指数符号(exponential notation)来表示， 但是，</span></span><br><span class="line"><span class="comment">     * 执行 INCRBYFLOAT 命令之后的值总是以同样的形式储存， 也即是， 它们总是由一个数字，</span></span><br><span class="line"><span class="comment">     * 一个（可选的）小数点和一个任意长度的小数部分组成（比如 3.14 、 69.768 ，诸如此类)， 小数部分尾随的 0 会被移除，</span></span><br><span class="line"><span class="comment">     * 如果可能的话， 命令还会将浮点数转换为整数（比如 3.0 会被保存成 3 ）。</span></span><br><span class="line"><span class="comment">     * 此外， 无论加法计算所得的浮点数的实际精度有多长， INCRBYFLOAT 命令的计算结果最多只保留小数点的后十七位。</span></span><br><span class="line"><span class="comment">     * 当以下任意一个条件发生时， 命令返回一个错误：</span></span><br><span class="line"><span class="comment">     * 键 key 的值不是字符串类型(因为 Redis 中的数字和浮点数都以字符串的形式保存，所以它们都属于字符串类型）；</span></span><br><span class="line"><span class="comment">     * 键 key 当前的值或者给定的增量 increment 不能被解释(parse)为双精度浮点数。</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> = http://redisdoc.com/string/incrbyfloat.html&#125;</span></span><br><span class="line"><span class="comment">     * 可用版本： &gt;= 1.0.0</span></span><br><span class="line"><span class="comment">     * 时间复杂度： O(1)</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> key</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> sum</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Float <span class="title">incrByFloat</span><span class="params">(String key, Float sum)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 为键 key 储存的数字值减去一。</span></span><br><span class="line"><span class="comment">     * 如果键 key 不存在， 那么键 key 的值会先被初始化为 0 ， 然后再执行 DECR 操作。</span></span><br><span class="line"><span class="comment">     * 如果键 key 储存的值不能被解释为数字， 那么 DECR 命令将返回一个错误。</span></span><br><span class="line"><span class="comment">     * 本操作的值限制在 64 位(bit)有符号数字表示之内。</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> = http://redisdoc.com/string/decr.html&#125;</span></span><br><span class="line"><span class="comment">     * 可用版本： &gt;= 1.0.0</span></span><br><span class="line"><span class="comment">     * 时间复杂度： O(1)</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> key</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Long <span class="title">decr</span><span class="params">(String key)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 将键 key 储存的整数值减去减量 decrement 。</span></span><br><span class="line"><span class="comment">     * 如果键 key 不存在， 那么键 key 的值会先被初始化为 0 ， 然后再执行 DECRBY 命令。</span></span><br><span class="line"><span class="comment">     * 如果键 key 储存的值不能被解释为数字， 那么 DECRBY 命令将返回一个错误。</span></span><br><span class="line"><span class="comment">     * 本操作的值限制在 64 位(bit)有符号数字表示之内。</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * 可用版本： &gt;= 1.0.0</span></span><br><span class="line"><span class="comment">     * 时间复杂度： O(1)</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> key</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> sum</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Long <span class="title">decrBy</span><span class="params">(String key, Long sum)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 同时为多个键设置值。</span></span><br><span class="line"><span class="comment">     * 如果某个给定键已经存在， 那么 MSET 将使用新值去覆盖旧值，</span></span><br><span class="line"><span class="comment">     * 如果这不是你所希望的效果， 请考虑使用 MSETNX 命令， 这个命令只会在所有给定键都不存在的情况下进行设置。</span></span><br><span class="line"><span class="comment">     * MSET 是一个原子性(atomic)操作， 所有给定键都会在同一时间内被设置， 不会出现某些键被设置了但是另一些键没有被设置的情况。</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> = http://redisdoc.com/string/mset.html&#125;</span></span><br><span class="line"><span class="comment">     * 可用版本： &gt;= 1.0.1</span></span><br><span class="line"><span class="comment">     * 时间复杂度： O(N)，其中 N 为被设置的键数量。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> map</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Boolean <span class="title">mSet</span><span class="params">(HashMap&lt;String, Object&gt; map)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 当且仅当所有给定键都不存在时， 为所有给定键设置值。</span></span><br><span class="line"><span class="comment">     * 即使只有一个给定键已经存在， MSETNX 命令也会拒绝执行对所有键的设置操作。</span></span><br><span class="line"><span class="comment">     * MSETNX 是一个原子性(atomic)操作， 所有给定键要么就全部都被设置， 要么就全部都不设置， 不可能出现第三种状态。</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> = http://redisdoc.com/string/msetnx.html&#125;</span></span><br><span class="line"><span class="comment">     * 可用版本： &gt;= 1.0.1</span></span><br><span class="line"><span class="comment">     * 时间复杂度： O(N)， 其中 N 为被设置的键数量。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> map</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Boolean <span class="title">mSetNx</span><span class="params">(HashMap&lt;String, Object&gt; map)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 返回给定的一个或多个字符串键的值。</span></span><br><span class="line"><span class="comment">     * 如果给定的字符串键里面， 有某个键不存在， 那么这个键的值将以特殊值 nil 表示。</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> = http://redisdoc.com/string/mget.html&#125;</span></span><br><span class="line"><span class="comment">     * 可用版本： &gt;= 1.0.0</span></span><br><span class="line"><span class="comment">     * 时间复杂度： O(N) ，其中 N 为给定键的数量。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> key</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">List&lt;Object&gt; <span class="title">mGet</span><span class="params">(String[] key)</span></span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/03/23/%E5%AE%9E%E8%B7%B5-spring-redis-string/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/03/24/Hexo%E5%9F%BA%E7%A1%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/03/24/Hexo%E5%9F%BA%E7%A1%80/" class="post-title-link" itemprop="url">Hexo基础使用方法</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-03-24 22:49:40" itemprop="dateCreated datePublished" datetime="2018-03-24T22:49:40+08:00">2018-03-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-12-15 14:59:35" itemprop="dateModified" datetime="2019-12-15T14:59:35+08:00">2019-12-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9A%8F%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">随记</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
+<h3 id="Create-a-new-draft"><a href="#Create-a-new-draft" class="headerlink" title="Create a new draft"></a>Create a new draft</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new draft <span class="string">"new draft"</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Crete-a-new-page"><a href="#Crete-a-new-page" class="headerlink" title="Crete a new page"></a>Crete a new page</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo <span class="keyword">new</span> page <span class="string">"new page"</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br><span class="line">$ hexo g</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br><span class="line">$ hexo d</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
+<h3 id="Localization-testing"><a href="#Localization-testing" class="headerlink" title="Localization testing"></a>Localization testing</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server -g</span><br></pre></td></tr></table></figure>
+
+<p>visit website : <a href="http://localhost:4000/" target="_blank" rel="noopener">http://localhost:4000</a> </p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/04/03/%E5%88%9D%E6%8E%A2Grpc/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/04/03/%E5%88%9D%E6%8E%A2Grpc/" class="post-title-link" itemprop="url">初探Grpc</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-04-03 22:18:34" itemprop="dateCreated datePublished" datetime="2019-04-03T22:18:34+08:00">2019-04-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-05-06 09:28:57" itemprop="dateModified" datetime="2019-05-06T09:28:57+08:00">2019-05-06</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1313,33 +662,15 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="FastDfs介绍"><a href="#FastDfs介绍" class="headerlink" title="FastDfs介绍"></a>FastDfs介绍</h2><ul>
-<li><p>FastDFS是由国人余庆所开发，其项目地址：<a href="https://github.com/happyfish100" target="_blank" rel="noopener">FastDFS</a>。FastDfs是一个轻量级的开源分布式文件系统，主要解决了大容量的文件存储和高并发访问的问题，文件存取时实现了负载均衡。文件存取时实现了负载均衡FastDFS实现了软件方式的RAID，可以使用廉价的IDE硬盘进行存储支持存储服务器在线扩容支持相同内容的文件只保存一份，节约磁盘空间。</p>
-</li>
-<li><p>FastDFS只能通过Client API访问，不支持POSIX访问方式。</p>
-</li>
-<li><p>FastDFS特别适合大中型网站使用，用来存储资源文件（如：图片、文档、音频、视频等等）。</p>
-</li>
-<li><p>它用纯C语言实现，支持Linux、FreeBSD、AIX等UNIX系统。它只能通过专有API对文件进行存取访问，不支持POSIX接口方式，不能mount使用。准确地讲，Google FS、HDFS、TFS（这三个都是底层上的实现，在文件系统上处理的是数据块）以及FastDFS、mogileFS（这两个是文件级上的实现，处理的是文件）等类Google FS都不是系统级的分布式文件系统，而是应用级的分布式文件存储服务。</p>
-</li>
-<li><p>特性</p>
-<ul>
-<li><pre><code>1、分组存储，灵活简洁、对等结构，不存在单点。
-2、文件ID由FastDFS生成，作为文件访问凭证。FastDFS不需要传统的name server（去重机制在服务端，导致不能达到秒传。）。
-3、和流行的web server无缝衔接，FastDFS已提供apache和nginx扩展模块。
-4、大、中、小文件均可以很好支持，支持海量小文件存储（实际上不建议存储超大文件（大于500M））。
-5、支持多块磁盘，支持单盘数据恢复（理论上，实际出现Storage合并丢操作失数据）。
-6、支持相同文件内容只保存一份，节省存储空间。
-7、存储服务器上可以保存文件附加属性。
-8、下载文件支持多线程方式，支持断点续传。</code></pre>
-</li>
-</ul>
-</li>
-</ul>
-<h2 id="系统架构"><a href="#系统架构" class="headerlink" title="系统架构"></a>系统架构</h2>
+          <blockquote>
+<p>17年年底做的技术调研，文档好想没有写完。</p>
+</blockquote>
+<h2 id="gRPC"><a href="#gRPC" class="headerlink" title="gRPC "></a><a href="https://github.com/grpc/grpc" target="_blank" rel="noopener">gRPC </a></h2><h3 id="流程概念"><a href="#流程概念" class="headerlink" title="流程概念"></a>流程概念</h3><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Grpc/grpc-1.png"></p>
+<h3 id="性能对比"><a href="#性能对比" class="headerlink" title="性能对比"></a>性能对比</h3><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Grpc/grpc-2.png"></p>
+<h3 id="谁在使用"><a href="#谁在使用" class="headerlink" title="谁在使用"></a>谁在使用</h3><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Grpc/grpc-3.png"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2019/03/06/%E5%88%9D%E6%8E%A2FastDFS/#more" rel="contents">
+              <a class="btn" href="/2019/04/03/%E5%88%9D%E6%8E%A2Grpc/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -1363,7 +694,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/14/%E5%AE%9E%E8%B7%B5-Junit%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6/">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/04/21/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-skywalking%E6%BA%90%E7%A0%81%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -1377,7 +708,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2019/03/14/%E5%AE%9E%E8%B7%B5-Junit%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6/" class="post-title-link" itemprop="url">实践-Junit单元测试框架</a>
+            <a href="/2019/04/21/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-skywalking%E6%BA%90%E7%A0%81%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" class="post-title-link" itemprop="url">源码分析-skywalking源码环境搭建</a>
         </h2>
 
         <div class="post-meta">
@@ -1387,14 +718,121 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2019-03-14 10:50:21" itemprop="dateCreated datePublished" datetime="2019-03-14T10:50:21+08:00">2019-03-14</time>
+              <time title="Created: 2019-04-21 18:40:55" itemprop="dateCreated datePublished" datetime="2019-04-21T18:40:55+08:00">2019-04-21</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-03 04:42:41" itemprop="dateModified" datetime="2020-08-03T04:42:41+08:00">2020-08-03</time>
+                <time title="Modified: 2019-04-23 00:03:29" itemprop="dateModified" datetime="2019-04-23T00:03:29+08:00">2019-04-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">源码分析</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="0x00-阅读源代码"><a href="#0x00-阅读源代码" class="headerlink" title="0x00 阅读源代码"></a>0x00 阅读源代码</h2><blockquote>
+<p>长达9天的断网终于结束了。</p>
+</blockquote>
+<h3 id="下载源代码"><a href="#下载源代码" class="headerlink" title="下载源代码"></a>下载源代码</h3><ul>
+<li>代码仓库地址 <a href="https://gitee.com/Z201/skywalking.git" target="_blank" rel="noopener">https://gitee.com/Z201/skywalking.git</a></li>
+<li>阅读版本号 <code>v6.0.0-GA</code></li>
+<li>下载版本<code>git clone -b v6.0.0-GA https://github.com/apache/skywalking.git</code><ul>
+<li>由于github下载速度是在太慢了，这里用gitee克隆一个镜像。</li>
+<li>下载版本<code>git clone -b v6.0.0-GA https://gitee.com/Z201/skywalking.git</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="查看源代码结构"><a href="#查看源代码结构" class="headerlink" title="查看源代码结构"></a>查看源代码结构</h3><blockquote>
+<p>源码设计子项目过多，这里简单暂时2级目录。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">tree -d L 2</span><br><span class="line">.</span><br><span class="line">├── src  </span><br><span class="line">│   ├── main # 源代码</span><br><span class="line">│   ├── site # 站点稳当</span><br><span class="line">│   └── test # 单元测试</span><br><span class="line">└── travis   # 官方的ci集成</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>查看项目源码主目录</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">➜  skywalking git:(8b638258b) tree -d -L 1</span><br><span class="line">.</span><br><span class="line">├── apm-application-toolkit</span><br><span class="line">├── apm-checkstyle</span><br><span class="line">├── apm-commons</span><br><span class="line">├── apm-dist</span><br><span class="line">├── apm-protocol <span class="comment"># pd文件</span></span><br><span class="line">├── apm-sniffer <span class="comment"># 插件</span></span><br><span class="line">├── apm-webapp  </span><br><span class="line">├── docker</span><br><span class="line">├── docs</span><br><span class="line">├── licenses</span><br><span class="line">├── oap-server <span class="comment"># 这里和5.x 有很大的不同改动了很多东西。</span></span><br><span class="line">├── skywalking-ui </span><br><span class="line">└── tools</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>将项目导入idea中。</li>
+</ul>
+<p>官方文档:<a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/How-to-build.md" target="_blank" rel="noopener">如何构建</a></p>
+<p><code>git submodule init</code></p>
+<p><code>git submodule update</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">➜  skywalking git:(8b638258b) git submodule init</span><br><span class="line">Submodule <span class="string">'apm-protocol/apm-network/src/main/proto'</span> (https://github.com/apache/incubator-skywalking-data-collect-protocol.git) registered <span class="keyword">for</span> path <span class="string">'apm-protocol/apm-network/src/main/proto'</span></span><br><span class="line">Submodule <span class="string">'oap-server/server-query-plugin/query-graphql-plugin/src/main/resources/query-protocol'</span> (https://github.com/apache/incubator-skywalking-query-protocol.git) registered <span class="keyword">for</span> path <span class="string">'oap-server/server-query-plugin/query-graphql-plugin/src/main/resources/query-protocol'</span></span><br><span class="line">Submodule <span class="string">'skywalking-ui'</span> (https://github.com/apache/incubator-skywalking-ui) registered <span class="keyword">for</span> path <span class="string">'skywalking-ui'</span></span><br><span class="line">➜  skywalking git:(8b638258b) git submodule update</span><br><span class="line">Cloning into <span class="string">'/Users/zengqingfeng/word/source-code/skywalking/apm-protocol/apm-network/src/main/proto'</span>...</span><br><span class="line">Cloning into <span class="string">'/Users/zengqingfeng/word/source-code/skywalking/oap-server/server-query-plugin/query-graphql-plugin/src/main/resources/query-protocol'</span>...</span><br><span class="line">Cloning into <span class="string">'/Users/zengqingfeng/word/source-code/skywalking/skywalking-ui'</span>...</span><br><span class="line">Submodule path <span class="string">'apm-protocol/apm-network/src/main/proto'</span>: checked out <span class="string">'b66fa070fd647662f06497e4ed3657eb258cb6e9'</span></span><br><span class="line">Submodule path <span class="string">'oap-server/server-query-plugin/query-graphql-plugin/src/main/resources/query-protocol'</span>: checked out <span class="string">'c65a23bd6b9bba8d1df30d4de261624952df2b7b'</span></span><br><span class="line">Submodule path <span class="string">'skywalking-ui'</span>: checked out <span class="string">'c44642f73b9f73a54b0d716cade5094304e1a67b'</span></span><br></pre></td></tr></table></figure>
+
+<p><code>clean package -DskipTests</code></p>
+<blockquote>
+<p>这个时候慢慢等吧v6.0.0-GA有120个子项目。更新完之后导入IDEA就好了。</p>
+</blockquote>
+<h3 id="END"><a href="#END" class="headerlink" title="END"></a>END</h3>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/21/%E5%AE%9E%E8%B7%B5-spring-boot-dubbo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/03/21/%E5%AE%9E%E8%B7%B5-spring-boot-dubbo/" class="post-title-link" itemprop="url">实践-spring-boot-dubbo</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-03-21 09:38:05" itemprop="dateCreated datePublished" datetime="2019-03-21T09:38:05+08:00">2019-03-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-04-10 23:52:02" itemprop="dateModified" datetime="2019-04-10T23:52:02+08:00">2019-04-10</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1418,29 +856,297 @@
 
       
           <blockquote>
-<p>本文主要是为了记录很久以前对Junit的回顾。</p>
+<p>离职两个月，太久没写项目了，重新温故下。</p>
 </blockquote>
-<h2 id="Junit"><a href="#Junit" class="headerlink" title="Junit"></a>Junit</h2><blockquote>
-<p>Java开发中使用的最多的测试框架，工作中经常会大量使用。</p>
-</blockquote>
-<h3 id="建议遵守约定"><a href="#建议遵守约定" class="headerlink" title="建议遵守约定"></a>建议遵守约定</h3><ul>
-<li>测试类在test包下（如果是maven结构的项目建议建议不要方在源码中，早期的项目很多是没有区分开的）</li>
-<li>测试类命名xxxTest结尾。</li>
-<li>方法命名testxxxx命名。</li>
-<li>测试方法上必须使用@Test进行修饰。</li>
-<li>测试方法必须使用public void 进行修饰，不能带任何的参数。</li>
-<li>测试类的包应该和被测试类保持一致。</li>
-<li>测试单元中的每个方法必须独立测试，测试方法间不能有任何的依赖。</li>
+<ul>
+<li><p>这里的代码是最简单的演示效果。</p>
+</li>
+<li><p>项目下载地址 <code>git cloen -b v1.0.0 https://github.com/z201/learning-spring-dubbo-micro-service.git</code></p>
+</li>
+<li><p><code>v1.0.0</code>分支dubbo xml 配置演示基于zk做注册中心。</p>
+</li>
+<li><p><code>v2.0.0</code>分支dubbo annotation 配置演示基于zk做注册中心。</p>
+</li>
+<li><p><code>v3.0.0</code>分支dubbo xml 配置演示基于nacos做注册中心。</p>
+</li>
 </ul>
-<h3 id="常用注解"><a href="#常用注解" class="headerlink" title="常用注解"></a>常用注解</h3><ul>
-<li>@Test(expected = ArithmeticException.class) 预期将抛出一个算术异常。</li>
-<li>@Test(timeout = 10) 改方法调用预期的时间范围 10毫秒，若超时算失败。</li>
-<li>@Ignore 被改注解修饰的方法不会被执行。</li>
-<li>@RunWith 可以更改测试运行器，制定的测试运行器需要继承 org.junit.runner.Runner。</li>
+<h3 id="项目模块"><a href="#项目模块" class="headerlink" title="项目模块"></a>项目模块</h3><ul>
+<li>现在演示的<code>v1.0.0</code>的代码</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">modules</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">module</span>&gt;</span>dubbo-micro-service-consumer<span class="tag">&lt;/<span class="name">module</span>&gt;</span>  // 消费者</span><br><span class="line">    <span class="tag">&lt;<span class="name">module</span>&gt;</span>dubbo-micro-service-provider<span class="tag">&lt;/<span class="name">module</span>&gt;</span>  // 生产者</span><br><span class="line">    <span class="tag">&lt;<span class="name">module</span>&gt;</span>dubbo-micro-service-zookeeper<span class="tag">&lt;/<span class="name">module</span>&gt;</span> // 注册中心</span><br><span class="line">    <span class="tag">&lt;<span class="name">module</span>&gt;</span>dubbo-micro-service-api<span class="tag">&lt;/<span class="name">module</span>&gt;</span>       // 公用api</span><br><span class="line"><span class="tag">&lt;/<span class="name">modules</span>&gt;</span></span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/03/21/%E5%AE%9E%E8%B7%B5-spring-boot-dubbo/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/07/09/%E5%AE%9E%E8%B7%B5-Spring%E5%8D%87%E7%BA%A7%E6%94%B9%E9%80%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/07/09/%E5%AE%9E%E8%B7%B5-Spring%E5%8D%87%E7%BA%A7%E6%94%B9%E9%80%A0/" class="post-title-link" itemprop="url">实践-Spring升级改造</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-07-09 09:38:05" itemprop="dateCreated datePublished" datetime="2018-07-09T09:38:05+08:00">2018-07-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-04-10 23:44:18" itemprop="dateModified" datetime="2019-04-10T23:44:18+08:00">2019-04-10</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>2018年在公司负责了一段时间老项目改造升级工作。因此记录下折腾的过程。</p>
+</blockquote>
+<ul>
+<li>Spring boot 最近挺火的，之前的工作并没有机会去实战。但是即使不使用Spring boot 也是可以做零配置的。</li>
+</ul>
+<h3 id="约定大于配置"><a href="#约定大于配置" class="headerlink" title="约定大于配置"></a>约定大于配置</h3><ul>
+<li>servlet3.*的规范已经支持不使用web.xml了。</li>
+<li>annotation的配置方式在Spring其实也存在很久了。 </li>
 </ul>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2019/03/14/%E5%AE%9E%E8%B7%B5-Junit%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6/#more" rel="contents">
+              <a class="btn" href="/2018/07/09/%E5%AE%9E%E8%B7%B5-Spring%E5%8D%87%E7%BA%A7%E6%94%B9%E9%80%A0/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/02/26/%E5%AE%9E%E8%B7%B5-mybatis+h2%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/02/26/%E5%AE%9E%E8%B7%B5-mybatis+h2%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/" class="post-title-link" itemprop="url">实践-mybatis+h2单元测试</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-02-26 20:46:08" itemprop="dateCreated datePublished" datetime="2019-02-26T20:46:08+08:00">2019-02-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-04-10 23:44:02" itemprop="dateModified" datetime="2019-04-10T23:44:02+08:00">2019-04-10</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>接着上章内容<a href="https://z201.cn/2019/02/26/mybatis%E6%BA%90%E7%A0%81%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" target="_blank" rel="noopener">mybatis源码环境搭建</a>,根据官方文档，运行一个demo项目。</p>
+</blockquote>
+<h3 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h3><ul>
+<li>项目源代码:<a href="https://github.com/z201/z201.github.io.code/tree/master/mybatis-learning/mybatis-learning-01" target="_blank" rel="noopener">mybatis-learning-01</a></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">mybatis-learning/mybatis-learning-01</span><br><span class="line">├── mybatis-learning-01.iml</span><br><span class="line">├── pom.xml  <span class="comment">#项目依赖管理 1</span></span><br><span class="line">└── src</span><br><span class="line">    ├── main</span><br><span class="line">    │   ├── java</span><br><span class="line">    │   │   ├── cn</span><br><span class="line">    │   │   │   └── z201</span><br><span class="line">    │   │   │       └── mybatis</span><br><span class="line">    │   │   │           └── learning</span><br><span class="line">    │   │   │               ├── SetUpSessionFactory.java <span class="comment"># mybatis 初始化  3</span></span><br><span class="line">    │   │   │               ├── User.java <span class="comment"># 实体 5</span></span><br><span class="line">    │   │   │               └── UserDao.java <span class="comment"># 实体dao 6</span></span><br><span class="line">    │   │   └── package-info.java</span><br><span class="line">    │   └── resources</span><br><span class="line">    │       ├── init_table.sql <span class="comment"># h2数据库初始化sql 4</span></span><br><span class="line">    │       ├── mybatis</span><br><span class="line">    │       │   └── UserDao.xml <span class="comment"># dao 对应的mapper 7</span></span><br><span class="line">    │       └── mybatis-config.xml <span class="comment"># mybatis 配置文件 2</span></span><br><span class="line">    └── <span class="built_in">test</span></span><br><span class="line">        └── java</span><br><span class="line">            └── cn</span><br><span class="line">                └── z201</span><br><span class="line">                    └── mybatis</span><br><span class="line">                        └── <span class="built_in">test</span></span><br><span class="line">                            ├── MybatisTest01.java <span class="comment"># 单元测试 8</span></span><br><span class="line">                            └── package-info.java</span><br><span class="line"></span><br><span class="line">15 directories, 11 files</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>根据上面注释的顺序，我们依次介绍项目代码。</p>
+</blockquote>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/02/26/%E5%AE%9E%E8%B7%B5-mybatis+h2%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/06/12/%E5%AE%9E%E8%B7%B5-log4j%E7%9A%84%E4%BD%BF%E7%94%A8%EF%BC%88%E4%B8%80%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/06/12/%E5%AE%9E%E8%B7%B5-log4j%E7%9A%84%E4%BD%BF%E7%94%A8%EF%BC%88%E4%B8%80%EF%BC%89/" class="post-title-link" itemprop="url">实践-log4j的使用（一）</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-06-12 23:24:24" itemprop="dateCreated datePublished" datetime="2018-06-12T23:24:24+08:00">2018-06-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-04-10 23:43:54" itemprop="dateModified" datetime="2019-04-10T23:43:54+08:00">2019-04-10</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>本章内容阐述个人理解，以及使用方法。若有不正确的内容欢迎斧正。睡觉之前赶快记录下来免得有忘记了。</p>
+</blockquote>
+<h4 id="什么是Log"><a href="#什么是Log" class="headerlink" title="什么是Log?"></a>什么是Log?</h4><ul>
+<li>日志记录的是什么？市面上流行的软件基本都有日志记录功能，作为开发人员的好帮手。日志可以有效的记录程序运行的状态以及运行的异常，比如说操作系统蓝屏了、手机死机了、软件卡死、程序崩溃、写了BUG等等都会有对应的日志留下。</li>
+</ul>
+<h4 id="如何利用log？"><a href="#如何利用log？" class="headerlink" title="如何利用log？"></a>如何利用log？</h4><ul>
+<li>笔者是一个Java开发人员，本章内容代码部分已Java代码用例。大家都知道日志非常重要，但是经验不足的开发人员往往忽视了这个重要的手段，比如在控制台输出日志，所有输出信息都集中在一起。排除问题非常困难，一旦出现了线上异常信息首先要看的就是日志信息。所以有必要就日志手段多了解下。</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/06/12/%E5%AE%9E%E8%B7%B5-log4j%E7%9A%84%E4%BD%BF%E7%94%A8%EF%BC%88%E4%B8%80%EF%BC%89/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -1463,7 +1169,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/6/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/8/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/6/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/8/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1530,7 +1236,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">105</span>
+          <span class="site-state-item-count">91</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1541,7 +1247,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">97</span>
+        <span class="site-state-item-count">93</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

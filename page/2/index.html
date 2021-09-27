@@ -239,7 +239,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/07/03/%E9%9D%A2%E8%AF%95%E9%A2%98-Mysql/">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/09/20/Git-Develop-Branch/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -253,7 +253,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2020/07/03/%E9%9D%A2%E8%AF%95%E9%A2%98-Mysql/" class="post-title-link" itemprop="url">面试题-Mysql</a>
+            <a href="/2021/09/20/Git-Develop-Branch/" class="post-title-link" itemprop="url">Git-Develop-Branch</a>
         </h2>
 
         <div class="post-meta">
@@ -263,14 +263,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2020-07-03 04:33:01" itemprop="dateCreated datePublished" datetime="2020-07-03T04:33:01+08:00">2020-07-03</time>
+              <time title="Created: 2021-09-20 21:34:52" itemprop="dateCreated datePublished" datetime="2021-09-20T21:34:52+08:00">2021-09-20</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-22 23:27:59" itemprop="dateModified" datetime="2021-09-22T23:27:59+08:00">2021-09-22</time>
+                <time title="Modified: 2021-09-22 23:40:44" itemprop="dateModified" datetime="2021-09-22T23:40:44+08:00">2021-09-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -278,7 +278,7 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E9%9D%A2%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">面试</span></a>
+                  <a href="/categories/Git/" itemprop="url" rel="index"><span itemprop="name">Git</span></a>
                 </span>
             </span>
 
@@ -293,256 +293,40 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <blockquote>
-<p>本章属于持续学习、长期更修。</p>
+          <h2 id="规范代码开发流程"><a href="#规范代码开发流程" class="headerlink" title="规范代码开发流程"></a>规范代码开发流程</h2><blockquote>
+<p>git 分支分为集成分支、功能分支和修复分支，分别命名为 develop、feature 和 hotfix，均为单数。不可使用 features、future、hotfixes、hotfixs 等错误名称。</p>
 </blockquote>
-<h3 id="数据库的三范式是什么"><a href="#数据库的三范式是什么" class="headerlink" title="数据库的三范式是什么"></a>数据库的三范式是什么</h3><ul>
-<li>第一范式：列不可再分</li>
-<li>第二范式：行可以唯一区分，主键约束</li>
-<li>第三范式：表的非主属性不能依赖与其他表的非主属性 外键约束</li>
-<li>且三大范式是一级一级依赖的，第二范式建立在第一范式上，第三范式建立第一第二范式上。</li>
-<li>第一范式（1NF）：数据库表中的字段都是单一属性的，不可再分。这个单一属性由基本类型构成，包括整型、实数、字符型、逻辑型、日期型等。</li>
-<li>第二范式（2NF）：数据库表中不存在非关键字段对任一候选关键字段的部分函数依赖（部分函数依赖指的是存在组合关键字中的某些字段决定非关键字段的情况），也即所有非关键字段都完全依赖于任意一组候选关键字。</li>
-<li>第三范式（3NF）：在第二范式的基础上，数据表中如果不存在非关键字段对任一候选关键字段的传递函数依赖则符合第三范式。所谓传递函数依赖，指的是如 果存在”A → B → C”的决定关系，则C传递函数依赖于A。因此，满足第三范式的数据库表应该不存在如下依赖关系： 关键字段 → 非关键字段 x → 非关键字段y</li>
-</ul>
-<h3 id="说下mysql有几种数据库引擎"><a href="#说下mysql有几种数据库引擎" class="headerlink" title="说下mysql有几种数据库引擎"></a>说下mysql有几种数据库引擎</h3><blockquote>
-<p>不清楚，因为每个版本发布都会新增一些。但是我最熟悉是的innodb。</p>
-</blockquote>
-<h3 id="说下mysql-Master-slave-的原理"><a href="#说下mysql-Master-slave-的原理" class="headerlink" title="说下mysql Master slave 的原理"></a>说下mysql Master slave 的原理</h3><ul>
-<li><p><strong>主</strong>：binlog线程——记录下所有改变了数据库数据的语句，放进master上的binlog中；</p>
-</li>
-<li><p><strong>从</strong>：io线程——在使用start slave 之后，负责从master上拉取 binlog 内容，放进 自己的relay log中；</p>
-</li>
-<li><p><strong>从</strong>：sql执行线程——执行relay log中的语句；</p>
-</li>
-</ul>
-<h3 id="MySQL中myisam与innodb的区别"><a href="#MySQL中myisam与innodb的区别" class="headerlink" title="MySQL中myisam与innodb的区别"></a>MySQL中myisam与innodb的区别</h3><ul>
-<li>InnoDB支持事物，而MyISAM不支持事物</li>
-<li>InnoDB支持行级锁，而MyISAM支持表级锁</li>
-<li>InnoDB支持MVCC, 而MyISAM不支持</li>
-<li>InnoDB支持外键，而MyISAM不支持</li>
-<li>InnoDB不支持全文索引，而MyISAM支持。</li>
-</ul>
-<h3 id="innodb引擎的4大特性"><a href="#innodb引擎的4大特性" class="headerlink" title="innodb引擎的4大特性"></a>innodb引擎的4大特性</h3><ul>
-<li>插入缓冲（insert buffer),</li>
-<li>二次写(double write),</li>
-<li>自适应哈希索引(ahi),</li>
-<li>预读(read ahead)</li>
-<li>支持事务操作，具有事务 ACID 隔离特性，默认的隔离级别是<code>可重复读(repetable-read)</code>、通过MVCC（并发版本控制）来实现的。能够解决<code>脏读</code>和<code>不可重复读</code>的问题。</li>
-<li>InnoDB 支持外键操作。</li>
-<li>InnoDB 默认的锁粒度<code>行级锁</code>，并发性能比较好，会发生死锁的情况。</li>
-<li>和 MyISAM 一样的是，InnoDB 存储引擎也有 <code>.frm文件存储表结构</code> 定义，但是不同的是，InnoDB 的表数据与索引数据是存储在一起的，都位于 B+ 数的叶子节点上，而 MyISAM 的表数据和索引数据是分开的。</li>
-<li>InnoDB 有安全的日志文件，这个日志文件用于恢复因数据库崩溃或其他情况导致的数据丢失问题，保证数据的一致性。</li>
-<li>InnoDB 和 MyISAM 支持的索引类型相同，但具体实现因为文件结构的不同有很大差异。</li>
-<li>增删改查性能方面，如果执行大量的增删改操作，推荐使用 InnoDB 存储引擎，它在删除操作时是对行删除，不会重建表。</li>
-</ul>
-<h3 id="为什么要使用自增列作为主键？"><a href="#为什么要使用自增列作为主键？" class="headerlink" title="为什么要使用自增列作为主键？"></a>为什么要使用自增列作为主键？</h3><ol>
-<li>如果没有显示的指定主键，则InnoDB会选择一个不包含NULL值的唯一索引作为主键索引。如果满足条件，InnoDB会选择内置6字节长度的ROWID作为隐含的聚集索引。</li>
-<li>InnoDB数据记录本身存放主索引（B+Tree）的叶子结点上面，同一个叶子结点内的各条数据是按照主键顺序存放。因此每次插入数据的时候，mysql会根据其主键插入适当的位置，如果页达到装载因子条件，则开辟一个新的页。</li>
-<li>使用非自增，每次插入的值都是几乎无序的，导致叶节点不够紧凑，频繁移动分叶造成大量碎片。增加维护工作。</li>
-</ol>
-<h3 id="什么是事务？"><a href="#什么是事务？" class="headerlink" title="什么是事务？"></a>什么是事务？</h3><ul>
-<li>事务（Transaction）是并发控制的基本单位。所谓的事务，它是一个操作序列，这些操作要么都执行，要么都不执行，它是一个不可分割的工作单位。事务是数据库维护数据一致性的单位，在每个事务结束时，都能保持数据一致性。</li>
-</ul>
-<h3 id="MySQL-事务四大特性"><a href="#MySQL-事务四大特性" class="headerlink" title="MySQL 事务四大特性"></a>MySQL 事务四大特性</h3><blockquote>
-<p>一说到 MySQL 事务，你肯定能想起来四大特性：<code>原子性</code>、<code>一致性</code>、<code>隔离性</code>、<code>持久性</code>。什么是 MySQL 中的事务？</p>
-<p>事务是一组操作，组成这组操作的各个单元，要不全都成功要不全都失败，这个特性就是事务。</p>
-<p>在 MySQL 中，事务是在引擎层实现的，只有使用 <code>innodb</code> 引擎的数据库或表才支持事务。</p>
-</blockquote>
-<ul>
-<li><code>原子性(Atomicity)</code>: 原子性指的就是 MySQL 中的包含事务的操作要么<code>全部成功</code>、要么全部<code>失败回滚</code>，因此事务的操作如果成功就必须要全部应用到数据库，如果操作失败则不能对数据库有任何影响。</li>
-<li><code>一致性(Consistency)</code>：一致性指的是一个事务在执行前后其状态一致。比如 A 和 B 加起来的钱一共是 1000 元，那么不管 A 和 B 之间如何转账，转多少次，事务结束后两个用户的钱加起来还得是 1000，这就是事务的一致性。</li>
-<li><code>持久性(Durability)</code>: 持久性指的是一旦事务提交，那么发生的改变就是永久性的，即使数据库遇到特殊情况比如故障的时候也不会产生干扰。</li>
-<li><code>隔离性(Isolation)</code>：当多个事务同时进行时，就有可能出现<code>脏读(dirty read)</code>、<code>不可重复读(non-repeatable read)</code>、<code>幻读(phantom read)</code> 的情况，为了解决这些并发问题，提出了隔离性的概念。<ul>
-<li>重点说下隔离性它们分别是<code>读未提交(read uncommitted)</code>、<code>读已提交(read committed)</code>、<code>可重复读(repetable read)</code> 和 <code>串行化(serializable)</code>。下面分别来解释一下。</li>
-<li><code>读未提交</code>：读未提交指的是一个事务在提交之前，它所做的修改就能够被其他事务所看到。</li>
-<li><code>读已提交</code>：读已提交指的是一个事务在提交之后，它所做的变更才能够让其他事务看到。</li>
-<li><code>可重复读</code>：可重复读指的是一个事务在执行的过程中，看到的数据是和启动时看到的数据是一致的。未提交的变更对其他事务不可见。</li>
-<li><code>串行化</code>：顾名思义是对于同一行记录，<code>写</code>会加<code>写锁</code>，<code>读</code>会加<code>读锁</code>。当出现读写锁冲突的时候，后访问的事务必须等前一个事务执行完成，才能继续执行。</li>
-</ul>
-</li>
-</ul>
-<h3 id="SQL语句的执行顺序"><a href="#SQL语句的执行顺序" class="headerlink" title="SQL语句的执行顺序"></a>SQL语句的执行顺序</h3><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/SQL%E8%AF%AD%E5%8F%A5%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F.png"></p>
-<blockquote>
-<p>我们在编写一个查询语句的时候</p>
-</blockquote>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span></span><br><span class="line">    &lt; select_list &gt;</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">    &lt; left_table &gt; &lt; join_type &gt;</span><br><span class="line"><span class="keyword">JOIN</span> &lt; right_table &gt; <span class="keyword">ON</span> &lt; join_condition &gt;</span><br><span class="line"><span class="keyword">WHERE</span></span><br><span class="line">    &lt; where_condition &gt;</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span></span><br><span class="line">    &lt; group_by_list &gt;</span><br><span class="line"><span class="keyword">HAVING</span></span><br><span class="line">    &lt; having_condition &gt;</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span></span><br><span class="line">    &lt; order_by_condition &gt;</span><br><span class="line"><span class="keyword">LIMIT</span> &lt; limit_number &gt;</span><br></pre></td></tr></table></figure>
+<p>1.git主分支(master)。它是自动建立，用于发布重大版本更新（github 现在默认是是main 因种族歧视问题）<br>2.git开发主分支(develop)。日常开发在此分支上进行<br>3.git临时性分支：用于应对一些特定目的的版本开发(验证OK后，应该删除此分支)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- 功能（feature）分支：它是为了开发某种特定功能，从Develop分支上面分出来的。开发完成后，要再并入Develop。可以采用feature-的形式命名。</span><br><span class="line">- 预发布（release）分支：指发布正式版本之前（即合并到Master分支之前），我们可能需要有一个预发布的版本进行测试。预发布分支是从Develop分支上面分出来的，预发布结束以后，</span><br><span class="line">必须合并进Develop和Master分支。它的命名，可以采用release-的形式。</span><br><span class="line">- 修补bug（hotfix）分支：软件正式发布以后，难免会出现bug。这时就需要创建一个分支，进行bug修补。修补bug分支是从Master或Develop分支上面分出来的。修补结束以后，</span><br><span class="line">再合并进Master和Develop分支。它的命名，可以采用hotfix-***的形式。</span><br></pre></td></tr></table></figure>
 
-<ol>
-<li>FROM 连接</li>
-</ol>
-<ul>
-<li>首先，对 SELECT 语句执行查询时，对<code>FROM</code> 关键字两边的表执行连接，会形成<code>笛卡尔积</code>，这时候会产生一个<code>虚表VT1(virtual table)</code></li>
-</ul>
+<p>开发流程</p>
 <blockquote>
-<p>首先先来解释一下什么是<code>笛卡尔积</code></p>
-<p>现在我们有两个集合 A = {0,1} , B = {2,3,4}</p>
-<p>那么，集合 A * B 得到的结果就是</p>
-<p>A * B = {(0,2)、(1,2)、(0,3)、(1,3)、(0,4)、(1,4)};</p>
-<p>B * A = {(2,0)、{2,1}、{3,0}、{3,1}、{4,0}、(4,1)};</p>
-<p>上面 A * B 和 B * A 的结果就可以称为两个集合相乘的 <code>笛卡尔积</code></p>
-<p>我们可以得出结论，A 集合和 B 集合相乘，包含了集合 A 中的元素和集合 B 中元素之和，也就是 A 元素的个数 * B 元素的个数</p>
+<p>暂定临时分支feature、hotfix两种启用。暂不启用RP、code review。</p>
 </blockquote>
-<ol start="2">
-<li>ON 过滤</li>
-</ol>
-<ul>
-<li>然后对 FROM 连接的结果进行 ON 筛选，创建 VT2，把符合记录的条件存在 VT2 中。</li>
-</ul>
-<ol start="3">
-<li>JOIN 连接</li>
-</ol>
-<p>第三步，如果是 <code>OUTER JOIN(left join、right join)</code> ，那么这一步就将添加外部行，如果是 left join 就把 ON 过滤条件的左表添加进来，如果是 right join ，就把右表添加进来，从而生成新的虚拟表 VT3。</p>
-<ol start="4">
-<li>WHERE 过滤</li>
-</ol>
-<ul>
-<li><p>第四步，是执行 WHERE 过滤器，对上一步生产的虚拟表引用 WHERE 筛选，生成虚拟表 VT4。</p>
-</li>
-<li><p>WHERE 和 ON 的区别</p>
-<ul>
-<li>如果有外部列，ON 针对过滤的是关联表，主表(保留表)会返回所有的列;</li>
-<li>如果没有添加外部列，两者的效果是一样的;</li>
-</ul>
-</li>
-<li><p>应用</p>
-<ul>
-<li>对主表的过滤应该使用 WHERE;</li>
-<li>对于关联表，先条件查询后连接则用 ON，先连接后条件查询则用 WHERE;</li>
-</ul>
-</li>
-</ul>
-<ol start="5">
-<li>GROUP BY</li>
-</ol>
-<ul>
-<li>根据 group by 字句中的列，会对 VT4 中的记录进行分组操作，产生虚拟机表 VT5。果应用了group by，那么后面的所有步骤都只能得到的 VT5 的列或者是聚合函数（count、sum、avg等）。</li>
-</ul>
-<ol start="6">
-<li>HAVING</li>
-</ol>
-<ul>
-<li>紧跟着 GROUP BY 字句后面的是 HAVING，使用 HAVING 过滤，会把符合条件的放在 VT6</li>
-</ul>
-<ol start="7">
-<li>SELECT</li>
-</ol>
-<ul>
-<li>第七步才会执行 SELECT 语句，将 VT6 中的结果按照 SELECT 进行刷选，生成 VT7</li>
-</ul>
-<ol start="8">
-<li>DISTINCT</li>
-</ol>
-<ul>
-<li>在第八步中，会对 TV7 生成的记录进行去重操作，生成 VT8。事实上如果应用了 group by 子句那么 distinct 是多余的，原因同样在于，分组的时候是将列中唯一的值分成一组，同时只为每一组返回一行记录，那么所以的记录都将是不相同的。</li>
-</ul>
-<ol start="9">
-<li>ORDER BY</li>
-</ol>
-<ul>
-<li><p>应用 order by 子句。按照 order_by_condition 排序 VT8，此时返回的一个游标，而不是虚拟表。sql 是基于集合的理论的，集合不会预先对他的行排序，它只是成员的逻辑集合，成员的顺序是无关紧要的。</p>
-</li>
-<li><ul>
-<li></li>
-</ul>
-</li>
-</ul>
-<h3 id="介绍下InnoDB存储引擎的B-树索引"><a href="#介绍下InnoDB存储引擎的B-树索引" class="headerlink" title="介绍下InnoDB存储引擎的B+树索引"></a>介绍下InnoDB存储引擎的B+树索引</h3><ul>
-<li>每个索引都对应一棵B+树，B+树分为好多层，最下边一层是叶子节点，其余的是内节点。所有用户记录都存储在B+树的叶子节点，所有目录项记录都存储在内节点。</li>
-<li>InnoDB存储引擎会自动为主键（如果没有它会自动帮我们添加）建立聚簇索引，聚簇索引的叶子节点包含完整的用户记录。</li>
-<li>我们可以为自己感兴趣的列建立二级索引，二级索引的叶子节点包含的用户记录由索引列 + 主键组成，所以如果想通过二级索引来查找完整的用户记录的话，需要通过回表操作，也就是在通过二级索引找到主键值之后再到聚簇索引中查找完整的用户记录。</li>
-<li>B+树中每层节点都是按照索引列值从小到大的顺序排序而组成了双向链表，而且每个页内的记录（不论是用户记录还是目录项记录）都是按照索引列的值从小到大的顺序而形成了一个单链表。如果是联合索引的话，则页面和记录先按照联合索引前边的列排序，如果该列值相同，再按照联合索引后边的列排序。</li>
-<li>通过索引查找记录是从B+树的根节点开始，一层一层向下搜索。由于每个页面都按照索引列的值建立了Page Directory（页目录），所以在这些页面中的查找非常快。</li>
-<li>二者SELECT COUNT(*)哪个更快，为什么<ul>
-<li>myisam更快，因为myisam内部维护了一个计数器，可以直接调取。</li>
-</ul>
-</li>
-</ul>
-<h3 id="B-Tree与Hash索引的区别"><a href="#B-Tree与Hash索引的区别" class="headerlink" title="B+Tree与Hash索引的区别"></a>B+Tree与Hash索引的区别</h3><ol>
-<li>B+Tree是一个平衡多叉树，从根节点到每个叶子节点点高度差值不超过1，同层级的节点互相有指针互相链接，是有序的。</li>
-<li>Hash索引是采用一定的Hash算法，把健值换成哈希值，检索的时候不需要类似b+树从根节点逐渐查找，值需要一次哈希运算即可，是无序的。</li>
-<li>Hash索引适合等值查询，哈希索引具有绝对优势（前提是：没有⼤量重复键值，如果⼤量重复键值时，哈希索引的效率很低，因为存在所谓的 哈希碰撞问题。不使用范围查询、也不支持索引完成排序。不支持联合索引最左匹配原则。通过列的基数很大也不建议使用Hash索引。</li>
-</ol>
-<h3 id="索引是什么？有什么作用以及优缺点？"><a href="#索引是什么？有什么作用以及优缺点？" class="headerlink" title="索引是什么？有什么作用以及优缺点？"></a>索引是什么？有什么作用以及优缺点？</h3><ul>
-<li><p>1、索引是对数据库表中一或多个列的值进行排序的结构，是帮助MySQL高效获取数据的数据结构</p>
-</li>
-<li><p>2、索引就是加快检索表中数据的方法。数据库的索引类似于书籍的索引。在书籍中，索引允许用户不必翻阅完整个书就能迅速地找到所需要的信息。在数据库中，索引也允许数据库程序迅速地找到表中的数据，而不必扫描整个数据库。</p>
-</li>
-<li><p>MySQL数据库几个基本的索引类型：普通索引、唯一索引、主键索引、全文索引</p>
-<ol>
-<li>索引加快数据库的检索速度。</li>
-<li>索引降低了插入、删除、修改等维护任务的速度。</li>
-<li>唯一索引可以确保每一行数据的唯一性。</li>
-<li>通过使用索引，可以在查询的过程中使用优化隐藏器，提高系统的性能。</li>
-<li>索引需要占物理和数据空间。</li>
-</ol>
-</li>
-</ul>
-<h3 id="使用索引查询一定能提高查询的性能吗？为什么"><a href="#使用索引查询一定能提高查询的性能吗？为什么" class="headerlink" title="使用索引查询一定能提高查询的性能吗？为什么"></a>使用索引查询一定能提高查询的性能吗？为什么</h3><blockquote>
-<p>通常,通过索引查询数据比全表扫描要快.但是我们也必须注意到它的代价.</p>
+<p>1.基于develop生成新临时开发分支。<br>2.测试、正式环境上线通过。<br>3.合并至develop分支，并生成对应的tag版本。<br>4.完成特定功能开发后(验证OK后，应该删除此分支)。<br>5.README.md文档中记录tag版本生成时间以及具体的功能名称。</p>
+<p>修复bug流程</p>
+<blockquote>
+<p>根据最新已经上线的分支代码创建hotfix分支。</p>
 </blockquote>
-<ul>
-<li>索引需要空间来存储,也需要定期维护, 每当有记录在表中增减或索引列被修改时,索引本身也会被修改. 这意味着每条记录的INSERT,DELETE,UPDATE将为此多付出4,5 次的磁盘I/O. 因为索引需要额外的存储空间和处理,那些不必要的索引反而会使查询反应时间变慢.使用索引查询不一定能提高查询性能,索引范围查询(INDEX RANGE SCAN)适用于两种情况:</li>
-<li>基于一个范围的检索,一般查询返回结果集小于表中记录数的30%</li>
-<li>基于非唯一性索引的检索</li>
-</ul>
-<h3 id="覆盖索引和回表"><a href="#覆盖索引和回表" class="headerlink" title="覆盖索引和回表"></a>覆盖索引和回表</h3><ul>
-<li>覆盖索引指的是在一次查询中，如果一个索引包含或者说覆盖所有需要查询的字段的值，我们就称之为覆盖索引，而不再需要回表查询。而要确定一个查询是否是覆盖索引，我们只需要explain sql语句看Extra的结果是否是“Using index”即可。</li>
-</ul>
-<h3 id="索引失效"><a href="#索引失效" class="headerlink" title="索引失效"></a>索引失效</h3><ul>
-<li>两张表联合查询的时候表的编码集不一样会导致索引失效。</li>
-<li>如果字段A做了索引 WHERE A = 1 OR B = 2 这时候也不回走索引。</li>
-<li>like未使用最左前缀，where A like “%China”。</li>
-<li>在索引上使用函数 、!= 、&lt;&gt; 、not in 。</li>
-<li>where a = b + 1 查询条件做运算</li>
-</ul>
-<h3 id="什么是临时表，何时删除临时表"><a href="#什么是临时表，何时删除临时表" class="headerlink" title="什么是临时表，何时删除临时表"></a>什么是临时表，何时删除临时表</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">在 MySQL 中，有三种类型的表</span><br><span class="line">一种是&#96;永久表&#96;，永久表就是创建以后用来长期保存数据的表</span><br><span class="line">一种是&#96;临时表&#96;，临时表也有两类，一种是和永久表一样，只保存临时数据，但是能够长久存在的；还有一种是临时创建的，SQL 语句执行完成就会删除。</span><br><span class="line">一种是&#96;虚表&#96;，虚表其实就是&#96;视图&#96;，数据可能会来自多张表的执行结果。</span><br></pre></td></tr></table></figure>
+<p>1.基于develop或者上个tag版本(根据实际情况而定)生成新临时开发分支。<br>2.测试、正式环境上线通过。<br>3.合并至develop分支，并生成对应的tag版本。<br>4.<code>若存在临时开发分支</code>-完成特定功能开发后(验证OK后，应该删除此分支)。<br>5.<code>若存在临时开发分支</code>-临时开发分支合并已经修复bug的develop代码。<br>6.<code>若存在临时开发分支</code>-临时开发分支完成特定功能开发后(验证OK后，应该删除此分支)。<br>7.README.md文档中记录tag版本生成时间以及具体的功能名称。</p>
+<h2 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h2><h3 id="开发尺码"><a href="#开发尺码" class="headerlink" title="开发尺码"></a>开发尺码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">git checkout develop &#x2F;&#x2F; 切换开发分支，git pull origin develop 并同步最新的develop分支代码。（强制）</span><br><span class="line">git checkout -b feature-sizeGroup &#x2F;&#x2F;基于develop分支创建新的开发分支（强制）</span><br><span class="line">git checkout develop &#x2F;&#x2F; feature-sizeGroup完成上线后develop分支准备合并分支（强制）</span><br><span class="line">git merge feature-sizeGroup &#x2F;&#x2F; 合并开发功能分支（强制）</span><br><span class="line">git tag -a v1.4 -m &quot;my version 1.4&quot; &#x2F;&#x2F; 合并完成创建标签备注中简单说明开发功能（强制）</span><br><span class="line">git push origin v1.4 &#x2F;&#x2F; 推送tag标签到远程仓库（强制）</span><br><span class="line">git branch -d feature-sizeGroup &#x2F;&#x2F;删除本地的临时开发分支(非强制)</span><br><span class="line">git push origin --delete feature-sizeGroup &#x2F;&#x2F; 删除远程的临时开发分支（强制）</span><br><span class="line">vim README.md &#x2F;&#x2F; 保存新增tag版本记录（强制）</span><br><span class="line">git add README.md &#x2F;&#x2F; 追踪README.md文件。（强制）</span><br><span class="line">git commit -m &quot;发布新的tag&quot; &#x2F;&#x2F; 将暂存区里的改动给提交到本地的版本库（强制）</span><br><span class="line">git push origin develop &#x2F;&#x2F; 推送改动后的develop（强制）</span><br></pre></td></tr></table></figure>
 
+<h3 id="master-合并周期"><a href="#master-合并周期" class="headerlink" title="master 合并周期"></a>master 合并周期</h3><blockquote>
+<p>每月月底最后几个工作日完成对master 对develop分支的合并。</p>
+</blockquote>
+<h3 id="tag-版本命名"><a href="#tag-版本命名" class="headerlink" title="tag 版本命名"></a>tag 版本命名</h3><blockquote>
+<p>版本命名规范</p>
+</blockquote>
 <ul>
-<li>MySQL 会在下面这几种情况产生临时表<ul>
-<li>使用 UNION 查询：UNION 有两种，一种是<code>UNION</code> ，一种是 <code>UNION ALL</code> ，它们都用于联合查询；区别是 使用 UNION 会去掉两个表中的重复数据，相当于对结果集做了一下<code>去重(distinct)</code>。使用 UNION ALL，则不会排重，返回所有的行。使用 UNION 查询会产生临时表。</li>
-<li>使用 <code>TEMPTABLE 算法</code>或者是 UNION 查询中的视图。TEMPTABLE 算法是一种创建临时表的算法，它是将结果放置到临时表中，意味这要 MySQL 要先创建好一个临时表，然后将结果放到临时表中去，然后再使用这个临时表进行相应的查询。</li>
-<li>ORDER BY 和 GROUP BY 的子句不一样时也会产生临时表。</li>
-<li>DISTINCT 查询并且加上 ORDER BY 时；</li>
-<li>SQL 用到 SQL_SMALL_RESULT 选项时；如果查询结果比较小的时候，可以加上 SQL_SMALL_RESULT 来优化，产生临时表</li>
-<li>FROM 中的子查询；</li>
-<li>EXPLAIN 查看执行计划结果的 Extra 列中，如果使用 <code>Using Temporary</code> 就表示会用到临时表。</li>
+<li>版本: v1.1.1 ( Build 101001 )</li>
+<li>版本格式 bigVersion.middleVersion.smallVersion</li>
+<li>bigVersion 大版本(年度或者重大更新（强制更新，老版本存在不兼容等情况）) 取值范围 1-99</li>
+<li>middleVersion 迭代版本 取值范围 1-99</li>
+<li>smallVersion bug修复增强发布。 取值范围 1-999</li>
+<li>Build为版本纯数字格式化。</li>
 </ul>
-</li>
-</ul>
-<h3 id="in-not-in-exists-not-exists-它们有什么区别，效率如何？"><a href="#in-not-in-exists-not-exists-它们有什么区别，效率如何？" class="headerlink" title="in, not in , exists , not exists 它们有什么区别，效率如何？"></a>in, not in , exists , not exists 它们有什么区别，效率如何？</h3><ul>
-<li><a href="https://segmentfault.com/a/1190000023825926" target="_blank" rel="noopener">参考文献</a></li>
-</ul>
-<h3 id="查询优化"><a href="#查询优化" class="headerlink" title="查询优化"></a>查询优化</h3><ul>
-<li><p>避免使用 select * 而是查询需要的字段，这样可以提升速度，以及减少网络传输的带宽压力。</p>
-</li>
-<li><p>尽量使用 Join 语句来替代子查询，因为子查询是嵌套查询，而嵌套查询会新创建一张临时表，而临时表的创建与销毁会占用一定的系统资源以及花费一定的时间，但 Join 语句并不会创建临时表，因此性能会更高。</p>
-</li>
-<li><p>尽量使用覆盖查询。通过创建联合主键的方式减少回表操作。</p>
-</li>
-<li><p>不要在列上进行运算操作</p>
-</li>
-<li><p>适当增加冗余字段，防止多度连表查询，通常不建议join超过三张表。</p>
-</li>
-<li><p>最小数据长度，一般说来数据库的表越小，那么它的查询速度就越快，因此为了提高表的效率</p>
-</li>
-<li><p>使用最简单数据类型，能使用 int 类型就不要使用 varchar 类型，因为 int 类型比 varchar 类型的查询效率更高。</p>
-</li>
-<li><p>尽量少定义 text 类型，text 类型的查询效率很低，如果必须要使用 text 定义字段，可以把此字段分离成子表，需要查询此字段时使用联合查询，这样可以提高主表的查询效率。</p>
-</li>
-<li><p>适当分表、分库策略，分表和分库方案也是我们经常说的垂直分隔（分表）和水平分隔（分库）。</p>
-<p>分表是指当一张表中的字段更多时，可以尝试将一张大表拆分为多张子表，把使用比较高频的主信息放入主表中，其他的放入子表，这样我们大部分查询只需要查询字段更少的主表就可以完成了，从而有效的提高了查询的效率。</p>
-<p>分库是指将一个数据库分为多个数据库。比如我们把一个数据库拆分为了多个数据库，一个主数据库用于写入和修改数据，其他的用于同步主数据并提供给客户端查询，这样就把一个库的读和写的压力，分摊给了多个库，从而提高了数据库整体的运行效率。</p>
-</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/07/03/%E9%9D%A2%E8%AF%95%E9%A2%98-Mysql/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
+<h3 id="git帮助文档"><a href="#git帮助文档" class="headerlink" title="git帮助文档"></a>git帮助文档</h3><p><a href="https://gitee.com/all-about-git" target="_blank" rel="noopener">git 大全</a></p>
+
       
     </div>
 
@@ -561,7 +345,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/06/30/%E9%9D%A2%E8%AF%95%E9%A2%98-%E5%A4%9A%E7%BA%BF%E7%A8%8B/">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/02/21/Jenkins-local-deployment-level/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -575,7 +359,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2020/06/30/%E9%9D%A2%E8%AF%95%E9%A2%98-%E5%A4%9A%E7%BA%BF%E7%A8%8B/" class="post-title-link" itemprop="url">面试题-多线程</a>
+            <a href="/2021/02/21/Jenkins-local-deployment-level/" class="post-title-link" itemprop="url">Jenkins-local-deployment-level</a>
         </h2>
 
         <div class="post-meta">
@@ -585,14 +369,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2020-06-30 00:41:13" itemprop="dateCreated datePublished" datetime="2020-06-30T00:41:13+08:00">2020-06-30</time>
+              <time title="Created: 2021-02-21 14:40:48" itemprop="dateCreated datePublished" datetime="2021-02-21T14:40:48+08:00">2021-02-21</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-22 17:59:20" itemprop="dateModified" datetime="2021-09-22T17:59:20+08:00">2021-09-22</time>
+                <time title="Modified: 2021-09-22 23:40:33" itemprop="dateModified" datetime="2021-09-22T23:40:33+08:00">2021-09-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -600,7 +384,7 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E9%9D%A2%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">面试</span></a>
+                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
                 </span>
             </span>
 
@@ -616,36 +400,49 @@
 
       
           <blockquote>
-<p>本章属于持续学习、长期更修。</p>
+<p>整理下Jenkins本地部署程序的过程。</p>
 </blockquote>
-<h3 id="线程的状态有哪些？又如何工作的？"><a href="#线程的状态有哪些？又如何工作的？" class="headerlink" title="线程的状态有哪些？又如何工作的？"></a>线程的状态有哪些？又如何工作的？</h3><ul>
-<li><p>线程的状态在枚举的方式被定义在 Thread 的源码中，它总共包含以下 6 个状态：</p>
 <ul>
-<li>NEW，新建状态，线程被创建出来，但尚未启动时的线程状态；</li>
-<li>RUNNABLE，就绪状态，表示可以运行的线程状态，它可能正在运行，或者是在排队等待操作系统给它分配 CPU 资源；</li>
-<li>BLOCKED，阻塞等待锁的线程状态，表示处于阻塞状态的线程正在等待监视器锁，比如等待执行 synchronized 代码块或者使用 synchronized 标记的方法；</li>
-<li>WAITING，等待状态，一个处于等待状态的线程正在等待另一个线程执行某个特定的动作，比如，一个线程调用了 Object.wait() 方法，那它就在等待另一个线程调用 Object.notify() 或 Object.notifyAll() 方法；</li>
-<li>TIMED_WAITING，计时等待状态，和等待状态（WAITING）类似，它只是多了超时时间，比如调用了有超时时间设置的方法 Object.wait(long timeout) 和 Thread.join(long timeout) 等这些方法时，它才会进入此状态；</li>
-<li>TERMINATED，终止状态，表示线程已经执行完成。</li>
-</ul>
+<li><p>在开发阶段，许多编译工具会将我们的源码编译可使用的文件。例如 <code>vue-cli</code> 的项目会被 <code>webpack</code> 打包编译为浏览器的文件，<code>Java</code> 项目会被编译为 <code>.class/jar</code> 文件以供服务器使用。</p>
+<ol>
+<li><p>开发人员将源代码，经过编译、压缩等一系列流程打包</p>
+</li>
+<li><p>上传到服务器。</p>
+</li>
+<li><p>在服务器将编译后的文件，手动可用的容器服务内（例如 <code>Nginx，Tomcat，Apache</code> 等服务）</p>
+</li>
+</ol>
 </li>
 </ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> State &#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 新建状态，线程被创建出来，但尚未启动时的线程状态</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    NEW,</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 就绪状态，表示可以运行的线程状态，但它在排队等待来自操作系统的 CPU 资源</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    RUNNABLE,</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 阻塞等待锁的线程状态，表示正在处于阻塞状态的线程</span></span><br><span class="line"><span class="comment">     * 正在等待监视器锁，比如等待执行 synchronized 代码块或者</span></span><br><span class="line"><span class="comment">     * 使用 synchronized 标记的方法</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    BLOCKED,</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 等待状态，一个处于等待状态的线程正在等待另一个线程执行某个特定的动作。</span></span><br><span class="line"><span class="comment">     * 例如，一个线程调用了 Object.wait() 它在等待另一个线程调用</span></span><br><span class="line"><span class="comment">     * Object.notify() 或 Object.notifyAll()</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    WAITING,</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 计时等待状态，和等待状态 (WAITING) 类似，只是多了超时时间，比如</span></span><br><span class="line"><span class="comment">     * 调用了有超时时间设置的方法 Object.wait(long timeout) 和 </span></span><br><span class="line"><span class="comment">     * Thread.join(long timeout) 就会进入此状态</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    TIMED_WAITING,</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 终止状态，表示线程已经执行完成</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">  	TERMINATED</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="单机部署"><a href="#单机部署" class="headerlink" title="单机部署"></a>单机部署</h3><blockquote>
+<p>在jenkins所在的机器上部署程序</p>
+</blockquote>
+<ol>
+<li><a href="https://z201.cn/2021/05/25/Centos7-jenkins%E9%83%A8%E7%BD%B2/" target="_blank" rel="noopener">部署jenkins</a>并配置环境</li>
+<li>设置jenkins-credentials (后续用于从git仓库中获取代码)</li>
+<li>创建任务<ol>
+<li>设置仓库地址</li>
+<li>设置程序部署shell脚本</li>
+</ol>
+</li>
+</ol>
+<ul>
+<li><p>jenkins shell</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mvn clean install -Dmaven.test.skip=true</span><br><span class="line">cp x x x/target/xxx-1.0.0-SNAPSHOT.jar /opt/xxx/upgrade</span><br><span class="line">cd /opt/xxx</span><br><span class="line">BUILD_ID=dontKillMe sh xxx.sh</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>编写程序运行shell脚本。</p>
+</li>
+<li><p>部署java</p>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line">app=xxx</span><br><span class="line">appName=$&#123;app&#125;-1.0.0-SNAPSHOT</span><br><span class="line">projPath=/opt/xxx</span><br><span class="line">upgradePath=$&#123;projPath&#125;/upgrade</span><br><span class="line">backPath=$&#123;projPath&#125;/backup</span><br><span class="line">logFile=$&#123;projPath&#125;/data/logs/$&#123;app&#125;.log</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 检查升级文件是否存在</span></span><br><span class="line">echo "checking upgrade file..."</span><br><span class="line">if [ ! -f $&#123;upgradePath&#125;/$&#123;appName&#125;.jar ]; then</span><br><span class="line">    echo "cann't found file $&#123;upgradePath&#125;/$&#123;appName&#125;.jar!"</span><br><span class="line">    exit</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 结束进程</span></span><br><span class="line">pid=`ps aux | grep $&#123;projPath&#125;/$&#123;appName&#125;.jar | grep -v grep | grep -v kill | awk '&#123;print $2&#125;'`</span><br><span class="line">if [ $&#123;pid&#125; ]; then</span><br><span class="line">    echo "kill $&#123;appName&#125;!"</span><br><span class="line">    kill -9 $pid</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 备份原升级文件,如果存在的话</span></span><br><span class="line">if [ -f $&#123;projPath&#125;/$&#123;appName&#125;.jar ]; then</span><br><span class="line">    timeStr=`date +%Y%m%d%H%M%S`</span><br><span class="line">    mv $&#123;projPath&#125;/$&#123;appName&#125;.jar $&#123;backPath&#125;/$&#123;appName&#125;.jar.bak_$&#123;timeStr&#125;</span><br><span class="line">    echo "load $&#123;appName&#125; success!"</span><br><span class="line">    echo "backup $&#123;appName&#125; success!"</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 拷贝升级文件</span></span><br><span class="line">echo "copy $&#123;appName&#125;.jar..."</span><br><span class="line">cp $&#123;upgradePath&#125;/$&#123;appName&#125;.jar $&#123;projPath&#125;/$&#123;appName&#125;.jar</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 启动进程</span></span><br><span class="line">echo "start $&#123;appName&#125;..."</span><br><span class="line">nohup java -Djava.security.egd=file:/dev/./urandom -Xms512m -Xmx512m -XX:MetaspaceSize=256m -XX:MaxMetaspaceSize=256m -jar $&#123;projPath&#125;/$&#123;appName&#125;.jar --spring.profiles.active=test &gt;/dev/null 2&gt;&amp;1 &amp;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 查看日志</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 判断当天日志文件是否存在</span></span><br><span class="line">if [ ! -f $&#123;logFile&#125; ]; then</span><br><span class="line">    # 文件不存在则创建文件，再执行tail命令</span><br><span class="line">    touch $&#123;logFile&#125;</span><br><span class="line">fi</span><br><span class="line">echo "tail -f $&#123;logFile&#125;"</span><br></pre></td></tr></table></figure>
 
-<h3 id="线程的执行流程"><a href="#线程的执行流程" class="headerlink" title="线程的执行流程"></a>线程的执行流程</h3><ul>
-<li>首先先要创建线程并指定线程需要执行的业务方法，然后再调用线程的 start() 方法，此时线程就从 NEW（新建）状态变成了 RUNNABLE（就绪）状态，此时线程会判断要执行的方法中有没有 synchronized 同步代码块，如果有并且其他线程也在使用此锁，那么线程就会变为 BLOCKED（阻塞等待）状态，当其他线程使用完此锁之后，线程会继续执行剩余的方法。当遇到 Object.wait() 或 Thread.join() 方法时，线程会变为 WAITING（等待状态）状态，如果是带了超时时间的等待方法，那么线程会进入 TIMED_WAITING（计时等待）状态，当有其他线程执行了 notify() 或 notifyAll() 方法之后，线程被唤醒继续执行剩余的业务方法，直到方法执行完成为止，此时整个线程的流程就执行完了</li>
+<ul>
+<li>部署vue</li>
 </ul>
-<h3 id="BLOCKED（阻塞等待）和-WAITING（等待）有什么区别？"><a href="#BLOCKED（阻塞等待）和-WAITING（等待）有什么区别？" class="headerlink" title="BLOCKED（阻塞等待）和 WAITING（等待）有什么区别？"></a>BLOCKED（阻塞等待）和 WAITING（等待）有什么区别？</h3><ul>
-<li>虽然 BLOCKED 和 WAITING 都有等待的含义，但二者有着本质的区别，首先它们状态形成的调用方法不同，其次 BLOCKED 可以理解为当前线程还处于活跃状态，只是在阻塞等待其他线程使用完某个锁资源；而 WAITING 则是因为自身调用了 Object.wait() 或着是 Thread.join() 又或者是 LockSupport.park() 而进入等待状态，只能等待其他线程执行某个特定的动作才能被继续唤醒，比如当线程因为调用了 Object.wait() 而进入 WAITING 状态之后，则需要等待另一个线程执行 Object.notify() 或 Object.notifyAll() 才能被唤醒。</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/06/30/%E9%9D%A2%E8%AF%95%E9%A2%98-%E5%A4%9A%E7%BA%BF%E7%A8%8B/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> git revert</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> git restore .</span></span><br><span class="line"></span><br><span class="line">applicationPath=/opt/view/xxxx</span><br><span class="line"></span><br><span class="line">echo 'delete old files...'</span><br><span class="line">rm -rf $&#123;applicationPath&#125;/*</span><br><span class="line"></span><br><span class="line">echo 'copy files after npm build!'</span><br><span class="line">cp -rf dist/* $&#123;applicationPath&#125;</span><br></pre></td></tr></table></figure>
+
+
       
     </div>
 
@@ -861,7 +658,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/02/21/Jenkins-local-deployment-level/">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Git/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -875,7 +672,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/02/21/Jenkins-local-deployment-level/" class="post-title-link" itemprop="url">Jenkins-local-deployment-level</a>
+            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Git/" class="post-title-link" itemprop="url">查缺补漏-Git</a>
         </h2>
 
         <div class="post-meta">
@@ -885,14 +682,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2021-02-21 14:40:48" itemprop="dateCreated datePublished" datetime="2021-02-21T14:40:48+08:00">2021-02-21</time>
+              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-21 14:57:26" itemprop="dateModified" datetime="2021-09-21T14:57:26+08:00">2021-09-21</time>
+                <time title="Modified: 2021-09-21 13:47:29" itemprop="dateModified" datetime="2021-09-21T13:47:29+08:00">2021-09-21</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -900,7 +697,7 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
+                  <a href="/categories/%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index"><span itemprop="name">知识点</span></a>
                 </span>
             </span>
 
@@ -916,49 +713,71 @@
 
       
           <blockquote>
-<p>整理下Jenkins本地部署程序的过程。</p>
+<p>本章是整理知识内容，为强化知识长期更新。</p>
 </blockquote>
-<ul>
-<li><p>在开发阶段，许多编译工具会将我们的源码编译可使用的文件。例如 <code>vue-cli</code> 的项目会被 <code>webpack</code> 打包编译为浏览器的文件，<code>Java</code> 项目会被编译为 <code>.class/jar</code> 文件以供服务器使用。</p>
-<ol>
-<li><p>开发人员将源代码，经过编译、压缩等一系列流程打包</p>
-</li>
-<li><p>上传到服务器。</p>
-</li>
-<li><p>在服务器将编译后的文件，手动可用的容器服务内（例如 <code>Nginx，Tomcat，Apache</code> 等服务）</p>
-</li>
-</ol>
-</li>
-</ul>
-<h3 id="单机部署"><a href="#单机部署" class="headerlink" title="单机部署"></a>单机部署</h3><blockquote>
-<p>在jenkins所在的机器上部署程序</p>
+<h2 id="Git速度查询表"><a href="#Git速度查询表" class="headerlink" title="Git速度查询表"></a>Git速度查询表</h2><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Git/Git.jpg"></p>
+<h3 id="git清理分支提交记录"><a href="#git清理分支提交记录" class="headerlink" title="git清理分支提交记录"></a>git清理分支提交记录</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">1.Checkout </span><br><span class="line">   git checkout --orphan latest_branch</span><br><span class="line">2. Add all the files</span><br><span class="line">   git add -A</span><br><span class="line">3. Commit the changes</span><br><span class="line">   git commit -am "commit message"</span><br><span class="line">4. Delete the branch</span><br><span class="line">   git branch -D master</span><br><span class="line">5.Rename the current branch to master</span><br><span class="line">   git branch -m master</span><br><span class="line">6.Finally, force update your repository</span><br><span class="line">   git push -f origin master</span><br></pre></td></tr></table></figure>
+
+<h3 id="撤销文件追踪"><a href="#撤销文件追踪" class="headerlink" title="撤销文件追踪"></a>撤销文件追踪</h3><blockquote>
+<p>有些时候不想提交部分文件，但是git add .的时候添加进去了。</p>
 </blockquote>
-<ol>
-<li><a href="https://z201.cn/2021/05/25/Centos7-jenkins%E9%83%A8%E7%BD%B2/" target="_blank" rel="noopener">部署jenkins</a>并配置环境</li>
-<li>设置jenkins-credentials (后续用于从git仓库中获取代码)</li>
-<li>创建任务<ol>
-<li>设置仓库地址</li>
-<li>设置程序部署shell脚本</li>
-</ol>
-</li>
-</ol>
-<ul>
-<li><p>jenkins shell</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mvn clean install -Dmaven.test.skip=true</span><br><span class="line">cp x x x/target/xxx-1.0.0-SNAPSHOT.jar /opt/xxx/upgrade</span><br><span class="line">cd /opt/xxx</span><br><span class="line">BUILD_ID=dontKillMe sh xxx.sh</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>编写程序运行shell脚本。</p>
-</li>
-<li><p>部署java</p>
-</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line">app=xxx</span><br><span class="line">appName=$&#123;app&#125;-1.0.0-SNAPSHOT</span><br><span class="line">projPath=/opt/xxx</span><br><span class="line">upgradePath=$&#123;projPath&#125;/upgrade</span><br><span class="line">backPath=$&#123;projPath&#125;/backup</span><br><span class="line">logFile=$&#123;projPath&#125;/data/logs/$&#123;app&#125;.log</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 检查升级文件是否存在</span></span><br><span class="line">echo "checking upgrade file..."</span><br><span class="line">if [ ! -f $&#123;upgradePath&#125;/$&#123;appName&#125;.jar ]; then</span><br><span class="line">    echo "cann't found file $&#123;upgradePath&#125;/$&#123;appName&#125;.jar!"</span><br><span class="line">    exit</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 结束进程</span></span><br><span class="line">pid=`ps aux | grep $&#123;projPath&#125;/$&#123;appName&#125;.jar | grep -v grep | grep -v kill | awk '&#123;print $2&#125;'`</span><br><span class="line">if [ $&#123;pid&#125; ]; then</span><br><span class="line">    echo "kill $&#123;appName&#125;!"</span><br><span class="line">    kill -9 $pid</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 备份原升级文件,如果存在的话</span></span><br><span class="line">if [ -f $&#123;projPath&#125;/$&#123;appName&#125;.jar ]; then</span><br><span class="line">    timeStr=`date +%Y%m%d%H%M%S`</span><br><span class="line">    mv $&#123;projPath&#125;/$&#123;appName&#125;.jar $&#123;backPath&#125;/$&#123;appName&#125;.jar.bak_$&#123;timeStr&#125;</span><br><span class="line">    echo "load $&#123;appName&#125; success!"</span><br><span class="line">    echo "backup $&#123;appName&#125; success!"</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 拷贝升级文件</span></span><br><span class="line">echo "copy $&#123;appName&#125;.jar..."</span><br><span class="line">cp $&#123;upgradePath&#125;/$&#123;appName&#125;.jar $&#123;projPath&#125;/$&#123;appName&#125;.jar</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 启动进程</span></span><br><span class="line">echo "start $&#123;appName&#125;..."</span><br><span class="line">nohup java -Djava.security.egd=file:/dev/./urandom -Xms512m -Xmx512m -XX:MetaspaceSize=256m -XX:MaxMetaspaceSize=256m -jar $&#123;projPath&#125;/$&#123;appName&#125;.jar --spring.profiles.active=test &gt;/dev/null 2&gt;&amp;1 &amp;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 查看日志</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 判断当天日志文件是否存在</span></span><br><span class="line">if [ ! -f $&#123;logFile&#125; ]; then</span><br><span class="line">    # 文件不存在则创建文件，再执行tail命令</span><br><span class="line">    touch $&#123;logFile&#125;</span><br><span class="line">fi</span><br><span class="line">echo "tail -f $&#123;logFile&#125;"</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 如果是对所有文件都取消跟踪的话，就是</span></span></span><br><span class="line">git rm -r --cached . 　　       ## 不删除本地文件</span><br><span class="line">git rm -r --f . 　　            ## 删除本地文件</span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment">#对某个文件取消跟踪</span></span></span><br><span class="line">git rm --cached readme1.txt    ## 删除readme1.txt的跟踪，并保留在本地。</span><br><span class="line">git rm --f readme1.txt         ## 删除readme1.txt的跟踪，并且删除本地文件s</span><br></pre></td></tr></table></figure>
 
-<ul>
-<li>部署vue</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> git revert</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> git restore .</span></span><br><span class="line"></span><br><span class="line">applicationPath=/opt/view/xxxx</span><br><span class="line"></span><br><span class="line">echo 'delete old files...'</span><br><span class="line">rm -rf $&#123;applicationPath&#125;/*</span><br><span class="line"></span><br><span class="line">echo 'copy files after npm build!'</span><br><span class="line">cp -rf dist/* $&#123;applicationPath&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="git的最小配置"><a href="#git的最小配置" class="headerlink" title="git的最小配置"></a>git的最小配置</h3><blockquote>
+<p>为什么要最小配置,每次提交代码需要告诉git。所以需要简单设置下user信息。</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.name <span class="string">'your name'</span></span><br><span class="line">git config --global user.email <span class="string">'your email'</span></span><br></pre></td></tr></table></figure>
 
+<p>这里需要注意config的三个作用域</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git config --<span class="built_in">local</span>  <span class="comment">#某个git本地仓库有效</span></span><br><span class="line">git config --global <span class="comment">#当前用户所有仓库有效，就是你系统的登陆用户。</span></span><br><span class="line">git config --system <span class="comment">#对系统所有的仓库都有效果。</span></span><br></pre></td></tr></table></figure>
 
+<p>我们一般只会使用local 和 global这两个配置。当我们配置好user.name user.email之后，我们可以检查下配置信息。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git config --list --<span class="built_in">local</span> <span class="comment"># 注意，必须在某个仓库里面才能看到。</span></span><br><span class="line">git config --list --global</span><br><span class="line">git config --list --system</span><br></pre></td></tr></table></figure>
+
+<h3 id="git创建一个本地仓库"><a href="#git创建一个本地仓库" class="headerlink" title="git创建一个本地仓库"></a>git创建一个本地仓库</h3><blockquote>
+<p>一般来说git仓库有两种情况，一种是没有仓库，另外一种就是已经有仓库了。这里对第一种情况演示，因为工作中习惯在web上创建仓库。这里还是了解下。</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git init git_learning</span><br></pre></td></tr></table></figure>
+
+<p>创建一个README文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">touch README.md</span><br></pre></td></tr></table></figure>
+
+<p>这里需要说明下，本地仓库创建完成后需要与远程仓库进行管理。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote add origin github.com:yourname&#x2F;git_learning.git # 这里的yourname 是你的git账号</span><br></pre></td></tr></table></figure>
+
+<p>建议手动去github上面创建一个叫git_learning的仓库。上面的命令就是做下关联。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git add . <span class="comment"># 将当前文件添加至暂存区</span></span><br><span class="line">git commit -m <span class="string">"upload file"</span> <span class="comment"># 将暂存区的文件提交到本地仓库</span></span><br><span class="line">git push origin mastet <span class="comment"># 将本地仓库的改动信息推送到远程仓库中</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="git-log日志查看"><a href="#git-log日志查看" class="headerlink" title="git log日志查看"></a>git log日志查看</h3><blockquote>
+<p>如果我们需要查看commit 提交日志可以使用log命令，这里简单介绍下log。</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">log</span> --oneline <span class="comment">#log信息一行显示</span></span><br></pre></td></tr></table></figure>
+
+<p>这里为了演示，模拟commit。比如现在commit了4次。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">log</span> --oneline -n2 <span class="comment">#log信息一行显示。且显示2条记录。</span></span><br></pre></td></tr></table></figure>
+
+<p>也可以用自带的图形化命令看提交记录。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">log</span> --oneline --graph</span><br></pre></td></tr></table></figure>
+
+<h3 id="commit的message"><a href="#commit的message" class="headerlink" title="commit的message"></a>commit的message</h3><blockquote>
+<p>如果发现message写错了，可以修改下。</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git commit --amend  <span class="comment"># 修改最新一次commit提交message。</span></span><br></pre></td></tr></table></figure>
+
+<p>如果想修改以往的commit的message。注意是不连续的commit。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># 首先查看log 里面的信息,然后获取commitid进行合并</span><br></pre></td></tr></table></figure>
+
+<h3 id="git-clone-www-git"><a href="#git-clone-www-git" class="headerlink" title="git clone www./.git"></a>git clone www.<strong>/</strong>.git</h3><blockquote>
+<p>从仓库克隆项目。</p>
+</blockquote>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Git/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1044,131 +863,6 @@
 <p>​        响应 <strong>{</strong>“value”: “hello annotationApp  “<strong>}</strong></p>
 </blockquote>
 <h3 id="END"><a href="#END" class="headerlink" title="END"></a>END</h3>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/04/06/Mysql%E5%B0%8F%E7%82%92/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/04/06/Mysql%E5%B0%8F%E7%82%92/" class="post-title-link" itemprop="url">Mysql小炒</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-04-06 09:05:03" itemprop="dateCreated datePublished" datetime="2021-04-06T09:05:03+08:00">2021-04-06</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-21 13:43:47" itemprop="dateModified" datetime="2021-09-21T13:43:47+08:00">2021-09-21</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>mysql小炒，记录日常的积累。</p>
-</blockquote>
-<h3 id="Mysql-大小写问题"><a href="#Mysql-大小写问题" class="headerlink" title="Mysql 大小写问题"></a>Mysql 大小写问题</h3><ul>
-<li>表名、表别名、字段名、字段别名都小写。SQL保留字段、函数名、绑定变量名都大写。</li>
-</ul>
-<h3 id="Exists与in"><a href="#Exists与in" class="headerlink" title="Exists与in"></a>Exists与in</h3><ul>
-<li>将设A、B两表，走索引的情况下。根据A、B表的大小比较，如果A表大于B表那么IN的查询效率比EXISTS高。</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM A WHERE cc IN (SELECT cc FROM B)</span><br><span class="line"></span><br><span class="line">SELECT * FROM A WHERE EXISTS (SELECT cc FROM B WHERE B.cc&#x3D;A.cc)</span><br></pre></td></tr></table></figure>
-
-<h3 id="测试环境打开profiling"><a href="#测试环境打开profiling" class="headerlink" title="测试环境打开profiling"></a>测试环境打开profiling</h3><ul>
-<li>首先我们需要看下 profiling 是否开启，开启它可以让 MySQL 收集在 SQL 执行时所使用的资源情况，命令如下：</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select @@profiling;</span><br><span class="line"># profiling&#x3D;0 代表关闭，我们需要把 profiling 打开，即设置为 1：</span><br><span class="line">mysql&gt; set profiling&#x3D;1;</span><br><span class="line"># 然后我们执行一个 SQL 查询（你可以执行任何一个 SQL 查询）：</span><br><span class="line">mysql&gt; select * from wucai.heros;</span><br></pre></td></tr></table></figure>
-
-<h3 id="DDL设计数据表的原则"><a href="#DDL设计数据表的原则" class="headerlink" title="DDL设计数据表的原则"></a>DDL设计数据表的原则</h3><ol>
-<li>数据表越少越好</li>
-<li>数据表中的字段越少越好</li>
-<li>数据表中联合主键的字段越少越好</li>
-<li>使用主键和外键越多越好</li>
-</ol>
-<h3 id="去除重复行"><a href="#去除重复行" class="headerlink" title="去除重复行"></a>去除重复行</h3><ol>
-<li>DISTINCT 需要放到所有列名的前面</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 这么写会报错</span><br><span class="line">SELECT name, DISTINCT age FROM us</span><br></pre></td></tr></table></figure>
-
-<ol start="2">
-<li>DISTINCT 其实是对后面所有列名的组合进行去重。</li>
-</ol>
-<h3 id="ORDER-BY-子句有以下几个点需要掌握"><a href="#ORDER-BY-子句有以下几个点需要掌握" class="headerlink" title="ORDER BY 子句有以下几个点需要掌握"></a>ORDER BY 子句有以下几个点需要掌握</h3><ol>
-<li>排序的列名：ORDER BY 后面可以有一个或多个列名，如果是多个列名进行排序，会按照后面第一个列先进行排序，当第一列的值相同的时候，再按照第二列进行排序，以此类推。</li>
-<li>排序的顺序：ORDER BY 后面可以注明排序规则，ASC 代表递增排序，DESC 代表递减排序。如果没有注明排序规则，默认情况下是按照 ASC 递增排序。我们很容易理解 ORDER BY 对数值类型字段的排序规则，但如果排序字段类型为文本数据，就需要参考数据库的设置方式了，这样才能判断 A 是在 B 之前，还是在 B 之后。比如使用 MySQL 在创建字段的时候设置为 BINARY 属性，就代表区分大小写。</li>
-<li>非选择列排序：ORDER BY 可以使用非选择列进行排序，所以即使在 SELECT 后面没有这个列名，你同样可以放到 ORDER BY 后面进行排序。</li>
-<li>ORDER BY 的位置：ORDER BY 通常位于 SELECT 语句的最后一条子句，否则会报错。</li>
-</ol>
-<h3 id="SELECT-的执行顺序"><a href="#SELECT-的执行顺序" class="headerlink" title="SELECT 的执行顺序"></a>SELECT 的执行顺序</h3><ol>
-<li>关键字的顺序</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT ... FROM ... WHERE ... GROUP BY ... HAVING ... ORDER BY ...</span><br></pre></td></tr></table></figure>
-
-<ol start="2">
-<li>.SELECT 语句的执行顺序（在 MySQL 和 Oracle 中，SELECT 执行顺序基本相同）：</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FROM &gt; WHERE &gt; GROUP BY &gt; HAVING &gt; SELECT的字段 &gt; DISTINCT &gt; ORDER BY &gt; LIMIT</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/04/06/Mysql%E5%B0%8F%E7%82%92/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
       
     </div>
 
@@ -1461,10 +1155,135 @@
   
   
 
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/19/%E9%9D%A2%E8%AF%95%E9%A2%98-%E9%80%92%E5%BD%92/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/03/19/%E9%9D%A2%E8%AF%95%E9%A2%98-%E9%80%92%E5%BD%92/" class="post-title-link" itemprop="url">面试题-递归</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-03-19 18:17:51" itemprop="dateCreated datePublished" datetime="2019-03-19T18:17:51+08:00">2019-03-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-15 16:01:59" itemprop="dateModified" datetime="2021-09-15T16:01:59+08:00">2021-09-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9D%A2%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">面试</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>上周的一道笔试题</p>
+</blockquote>
+<h3 id="递归计算"><a href="#递归计算" class="headerlink" title="递归计算"></a>递归计算</h3><blockquote>
+<p>根据两组参数，使用递归完成编程。</p>
+<p>递归方法 </p>
+<p>​    参数1 [1,3]</p>
+<p>​    参数2 n</p>
+<p>当参数2 &lt; 小于参数1中元素个数的时候，不输出。</p>
+<p>当n = 3 时 输出 [1,3,4]</p>
+<p>当n = 4 时 输出 [1,3,4,7]</p>
+<p>当 n = 11 使用递归程序输出</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">(List&lt;Integer&gt; list , Integer end)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(list.isEmpty() || list.size() &lt; <span class="number">1</span> || end == <span class="keyword">null</span> || end &lt; <span class="number">0</span>)&#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"初始化参数异常"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (list.size() &lt; end) &#123;</span><br><span class="line">        <span class="keyword">int</span> length = list.size();</span><br><span class="line">        list.add(list.get(length - <span class="number">1</span>) + list.get(length - <span class="number">2</span>));</span><br><span class="line">        test(list , end);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    Integer[] arr = <span class="keyword">new</span> Integer[]&#123;<span class="number">1</span>,<span class="number">3</span>&#125;;</span><br><span class="line">    List&lt;Integer&gt; list = <span class="keyword">new</span> ArrayList(Arrays.asList(arr));</span><br><span class="line">    test(list , <span class="number">11</span>);</span><br><span class="line">    System.out.println(list.toString());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&gt;&gt; </span><br><span class="line">[<span class="number">1</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">7</span>, <span class="number">11</span>, <span class="number">18</span>, <span class="number">29</span>, <span class="number">47</span>, <span class="number">76</span>, <span class="number">123</span>, <span class="number">199</span>]</span><br></pre></td></tr></table></figure>
+
+<p>不过当时写的时候并没有判断异常。当时紧张硬编码。</p>
+<h3 id="古典问题：⼀对兔⼦"><a href="#古典问题：⼀对兔⼦" class="headerlink" title="古典问题：⼀对兔⼦"></a>古典问题：⼀对兔⼦</h3><blockquote>
+<p>有⼀对兔⼦，从出⽣后第 3 个⽉起每个⽉都⽣⼀对兔⼦，⼩兔⼦⻓到第三个⽉后每个⽉⼜⽣⼀对兔⼦，</p>
+<p>假如兔⼦都不死，问每个⽉的兔⼦对数为多少？</p>
+<p>思路：斐波那契数列（Fibonacci sequence）</p>
+<p>程序分析： 兔⼦的规律为数列 1,1,2,3,5,8,13,21…，当 n=1 或 n=2时，分别为 1。 </p>
+<p>从 n=3 开始 f(n) = f(n-1) + f(n-2)。所以转化为程序则如下：</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">int</span> n = <span class="number">10</span>;</span><br><span class="line">	System.out.println(<span class="string">"第"</span> + n + <span class="string">"个⽉兔⼦总数为"</span> + fun(n));</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">fun</span><span class="params">(<span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (n == <span class="number">1</span> || n == <span class="number">2</span>)</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	<span class="keyword">return</span> fun(n - <span class="number">1</span>) + fun(n - <span class="number">2</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="使⽤递归实现-n-的阶乘"><a href="#使⽤递归实现-n-的阶乘" class="headerlink" title="使⽤递归实现 n! 的阶乘"></a>使⽤递归实现 <strong>n!</strong> 的阶乘</h3><blockquote>
+<p>思路：求⼀个数的阶乘，既可以使⽤循环，也可以使⽤递归。本地要求使⽤递归。</p>
+<p>把公式分解后 n! = n*(n-1)! ；但是 1的阶乘为 1。所以我们可以定义⼀个⽅法 jie(int n)，假定⽅法就是</p>
+<p>求阶乘的⽅法，则每次 n! = n * jie(n-1)。这样就实现了⽅法逻辑了。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">int</span> n = <span class="number">10</span>;</span><br><span class="line">	System.out.println(n+<span class="string">"阶乘为："</span> + jie(n));</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">jie</span><span class="params">(<span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">if</span>(n==<span class="number">1</span>) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line"> 	&#125;<span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> n*jie(n-<span class="number">1</span>);</span><br><span class="line"> 	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="⽤递归实现字符串倒转"><a href="#⽤递归实现字符串倒转" class="headerlink" title="⽤递归实现字符串倒转"></a>⽤递归实现字符串倒转</h3><blockquote>
+<p>思路：字符串倒序可以有多种实现⽅法，但是本地要求递归。所以我们需要找出相同的可以重复的⽅法来递归完成。</p>
+<p>例如：“hello”</p>
+<ul>
+<li><p>第⼀次：截取第⼀个字符“h”，截取剩下“ello”，使⽤“ello”+“h”；</p>
+</li>
+<li><p>第⼆次：那么“ello”字符串，可以使⽤相同的⽅法，“llo”+“e”；</p>
+</li>
+<li><p>第三次：“lo”+“l”；</p>
+</li>
+<li><p>第四次：“o”+“l”；</p>
+</li>
+<li><p>第五次：“o”⻓度已经是⼀个了，所以依次返回给上⼀步“olleh”。</p>
+</li>
+</ul>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StringReverse</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">reverse</span><span class="params">(String originStr)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">if</span>(originStr == <span class="keyword">null</span> || originStr.length()== <span class="number">1</span>) &#123;</span><br><span class="line">			<span class="keyword">return</span> originStr;</span><br><span class="line"> 		&#125;</span><br><span class="line">	<span class="keyword">return</span> reverse(originStr.substring(<span class="number">1</span>))+ originStr.charAt(<span class="number">0</span>);</span><br><span class="line">	&#125;</span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">	System.out.println(reverse(<span class="string">"hello"</span>));</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1531,7 +1350,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">105</span>
+          <span class="site-state-item-count">91</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1542,7 +1361,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">97</span>
+        <span class="site-state-item-count">93</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

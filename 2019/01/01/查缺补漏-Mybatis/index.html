@@ -27,7 +27,7 @@
 <meta property="og:site_name" content="枫叶的小博客">
 <meta property="og:description" content="本章是整理知识内容，为强化知识长期更新。  Mybatis 执行流程 1、获取sqlSessionFactory对象:解析文件的每一个信息保存在Configuration中，返回包含Configuration的DefaultSqlSession；注意：MappedStatement：代表一个增删改查的详细信息。 2.获取sqlSession对象,返回一个DefaultSQlSession对象，包">
 <meta property="article:published_time" content="2018-12-31T16:00:01.000Z">
-<meta property="article:modified_time" content="2021-09-22T15:51:48.716Z">
+<meta property="article:modified_time" content="2021-09-27T08:00:14.060Z">
 <meta property="article:author" content="小峰同学">
 <meta property="article:tag" content="Mybatis">
 <meta name="twitter:card" content="summary">
@@ -272,7 +272,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-22 23:51:48" itemprop="dateModified" datetime="2021-09-22T23:51:48+08:00">2021-09-22</time>
+                <time title="Modified: 2021-09-27 16:00:14" itemprop="dateModified" datetime="2021-09-27T16:00:14+08:00">2021-09-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -462,6 +462,60 @@
 <li><p>MyBatis允许我们自定义 Interceptor 拦截 SQL 语句执行过程中的某些关键逻辑，允许拦截的方法有：Executor 类中的 update()、query()、flushStatements()、commit()、rollback()、getTransaction()、close()、isClosed()方法，ParameterHandler 中的 setParameters()、getParameterObject() 方法，ResultSetHandler中的 handleOutputParameters()、handleResultSets()方法，以及StatementHandler 中的parameterize()、prepare()、batch()、update()、query()方法。</p>
 </li>
 </ul>
+<h3 id="MyBatis-中的设计模式"><a href="#MyBatis-中的设计模式" class="headerlink" title="MyBatis 中的设计模式"></a>MyBatis 中的设计模式</h3><ul>
+<li>工厂模式<ul>
+<li>工厂模式在 MyBatis 中的典型代表是 SqlSessionFactory。</li>
+<li>SqlSession 是 MyBatis 中的重要 Java 接口，可以通过该接口来执行 SQL 命令、获取映射器示例和管理事务，而 SqlSessionFactory 正是用来产生 SqlSession 对象的，所以它在 MyBatis 中是比较核心的接口之一。</li>
+<li>工厂模式应用解析：SqlSessionFactory 是一个接口类，它的子类 DefaultSqlSessionFactory 有一个 openSession(ExecutorType execType) 的方法，其中使用了工厂模式。</li>
+</ul>
+</li>
+<li>建造者模式<ul>
+<li>MyBatis 中的典型代表是 SqlSessionFactoryBuilder。</li>
+<li>普通的对象都是通过 new 关键字直接创建的，但是如果创建对象需要的构造参数很多，且不能保证每个参数都是正确的或者不能一次性得到构建所需的所有参数，那么就需要将构建逻辑从对象本身抽离出来，让对象只关注功能，把构建交给构建类，这样可以简化对象的构建，也可以达到分步构建对象的目的，而 SqlSessionFactoryBuilder 的构建过程正是如此。</li>
+<li>在 SqlSessionFactoryBuilder 中构建 SqlSessionFactory 对象的过程是这样的，首先需要通过 XMLConfigBuilder 对象读取并解析 XML 的配置文件，然后再将读取到的配置信息存入到 Configuration 类中，然后再通过 build 方法生成我们需要的 DefaultSqlSessionFactory 对象。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> SqlSessionFactory <span class="title">build</span><span class="params">(InputStream inputStream, String environment, Properties properties)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        XMLConfigBuilder parser = <span class="keyword">new</span> XMLConfigBuilder(inputStream, environment, properties);</span><br><span class="line">        <span class="keyword">return</span> build(parser.parse());</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        <span class="keyword">throw</span> ExceptionFactory.wrapException(<span class="string">"Error building SqlSession."</span>, e);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        ErrorContext.instance().reset();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">        inputStream.close();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">        <span class="comment">// Intentionally ignore. Prefer previous error.</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> SqlSessionFactory <span class="title">build</span><span class="params">(Configuration config)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> DefaultSqlSessionFactory(config);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>单例模式<ul>
+<li>单例模式在 MyBatis 中的典型代表是 ErrorContext。</li>
+<li>使用 private 修饰的 ThreadLocal 来保证每个线程拥有一个 ErrorContext 对象，在调用 instance() 方法时再从 ThreadLocal 中获取此单例对象。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ErrorContext</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String LINE_SEPARATOR = System.lineSeparator();</span><br><span class="line">  <span class="comment">// 每个线程存储的容器</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ThreadLocal&lt;ErrorContext&gt; LOCAL = ThreadLocal.withInitial(ErrorContext::<span class="keyword">new</span>);</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ErrorContext <span class="title">instance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> LOCAL.get();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>适配器模式</p>
+<ul>
+<li>MyBatis 中的典型代表是 Log。<ul>
+<li>SLF4J</li>
+<li>Apache Commons Logging</li>
+<li>Log4j 2</li>
+<li>Log4j</li>
+<li>JDK logging</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>代理模式</p>
+<ul>
+<li>代理模式在 MyBatis 中的典型代表是 MapperProxyFactory。</li>
+</ul>
+</li>
+<li><p>模版方法模式</p>
+<ul>
+<li>模板方法在 MyBatis 中的典型代表是 BaseExecutor。</li>
+</ul>
+</li>
+<li><p>装饰器模式</p>
+<ul>
+<li>装饰器模式在 MyBatis 中的典型代表是 Cache。</li>
+</ul>
+</li>
+</ul>
 
     </div>
 
@@ -497,12 +551,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-MySQL/" rel="prev" title="查缺补漏-MySQL">
-      <i class="fa fa-chevron-left"></i> 查缺补漏-MySQL
+    <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Redis/" rel="prev" title="查缺补漏-Redis">
+      <i class="fa fa-chevron-left"></i> 查缺补漏-Redis
     </a></div>
       <div class="post-nav-item">
-    <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Maven/" rel="next" title="查缺补漏-Maven">
-      查缺补漏-Maven <i class="fa fa-chevron-right"></i>
+    <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaConcurrent/" rel="next" title="查缺补漏-JavaConcurrent">
+      查缺补漏-JavaConcurrent <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -562,7 +616,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Mybatis-执行流程"><span class="nav-number">1.</span> <span class="nav-text">Mybatis 执行流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mybatis-拦截器"><span class="nav-number">2.</span> <span class="nav-text">Mybatis 拦截器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MyBatis插件"><span class="nav-number">3.</span> <span class="nav-text">MyBatis插件</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Mybatis-执行流程"><span class="nav-number">1.</span> <span class="nav-text">Mybatis 执行流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mybatis-拦截器"><span class="nav-number">2.</span> <span class="nav-text">Mybatis 拦截器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MyBatis插件"><span class="nav-number">3.</span> <span class="nav-text">MyBatis插件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#MyBatis-中的设计模式"><span class="nav-number">3.1.</span> <span class="nav-text">MyBatis 中的设计模式</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -577,7 +631,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">105</span>
+          <span class="site-state-item-count">91</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -588,7 +642,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">97</span>
+        <span class="site-state-item-count">93</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

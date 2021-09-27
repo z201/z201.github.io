@@ -239,7 +239,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/08/23/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAHashMap/">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/25/Centos7-Mongodb3-4%E5%8D%95%E5%AE%9E%E4%BE%8B%E9%83%A8%E7%BD%B2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -253,7 +253,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2018/08/23/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAHashMap/" class="post-title-link" itemprop="url">深入浅出HashMap</a>
+            <a href="/2018/04/25/Centos7-Mongodb3-4%E5%8D%95%E5%AE%9E%E4%BE%8B%E9%83%A8%E7%BD%B2/" class="post-title-link" itemprop="url">Centos7.*-Mongodb3.4单实例部署</a>
         </h2>
 
         <div class="post-meta">
@@ -263,14 +263,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2018-08-23 11:08:00" itemprop="dateCreated datePublished" datetime="2018-08-23T11:08:00+08:00">2018-08-23</time>
+              <time title="Created: 2018-04-25 05:16:12" itemprop="dateCreated datePublished" datetime="2018-04-25T05:16:12+08:00">2018-04-25</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-15 15:39:38" itemprop="dateModified" datetime="2021-09-15T15:39:38+08:00">2021-09-15</time>
+                <time title="Modified: 2019-03-09 03:05:53" itemprop="dateModified" datetime="2019-03-09T03:05:53+08:00">2019-03-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -278,7 +278,7 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">Java基础</span></a>
+                  <a href="/categories/Linux%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index"><span itemprop="name">Linux运维</span></a>
                 </span>
             </span>
 
@@ -294,30 +294,49 @@
 
       
           <blockquote>
-<p>本章属于持续学习、长期更修。</p>
+<p>mongodb的安装方式比较简单，下面演示在CentOS7上用yum方式安装。</p>
 </blockquote>
-<h2 id="HashMap"><a href="#HashMap" class="headerlink" title="HashMap"></a>HashMap</h2><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/HashMap/HashMap.png"></p>
-<h3 id="特征"><a href="#特征" class="headerlink" title="特征"></a>特征</h3><ul>
-<li>HashMap 允许<code>null</code>键和<code>null</code>值</li>
-<li>HashMao 并不是有序的存放。在使用<code>iterate</code>迭代的时候，并不能得到存放顺序。</li>
-<li>HashMap使用它的内部类Node &lt;K，V&gt;来存储映射。</li>
-<li>HashMap将<code>entries</code>存储到多个单链表中，称为存储桶或存储桶。默认的箱数为16，默认负载因子0.75，它的扩展系数为2，当键值对数量大于阈值，则容量扩容到原来的2倍。</li>
-<li>HashMap不是线程安全的，对于多线程环境，您应该使用ConcurrentHashMap类或使用<code>Collections.synchronizedMap()</code>方法获取同步映射。</li>
-<li>底层实现是链表，但是jdk1.8后添加了红黑谁的转换。</li>
-<li>HashMap的Key用存放，所以key默认不允许重复的，如果想重复就重写key的hashcode和equals方法。</li>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><ul>
+<li>下载地址 <a href="https://www.mongodb.com/download-center#community" target="_blank" rel="noopener">https://www.mongodb.com/download-center#community</a></li>
+<li>在线文档 <a href="https://docs.mongodb.com/manual/introduction/" target="_blank" rel="noopener">https://docs.mongodb.com/manual/introduction/</a></li>
 </ul>
-<h2 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h2><blockquote>
-<p>HashMap中的常量以及变量</p>
+<h2 id="使用yum方式安装"><a href="#使用yum方式安装" class="headerlink" title="使用yum方式安装"></a>使用yum方式安装</h2><blockquote>
+<p>仅供学习参考，若在生产环境中部署请注意修改安全配置。</p>
 </blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 未指定容量大小的情况下，默认初始化16。容量都是2的幂。第一次扩容大概率情况下是64。</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> DEFAULT_INITIAL_CAPACITY = <span class="number">1</span> &lt;&lt; <span class="number">4</span>; <span class="comment">// aka 16</span></span><br><span class="line"><span class="comment">// 容量最大长个数。</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MAXIMUM_CAPACITY = <span class="number">1</span> &lt;&lt; <span class="number">30</span>;</span><br><span class="line"><span class="comment">// 默认负载因子，</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">float</span> DEFAULT_LOAD_FACTOR = <span class="number">0.75f</span>;</span><br><span class="line"><span class="comment">// HashMap使用单链表来存储元素，这些元素称为bin或buckets。当我们调用put方法时，key的hashCode用于确定将用于存储映射的存储区。</span></span><br><span class="line"><span class="comment">// 链表转换红黑树的阀值。当某个bin\buckets的长度大于8的时候进行转换。</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TREEIFY_THRESHOLD = <span class="number">8</span>;</span><br><span class="line"><span class="comment">// 红黑树转换链表的阀值。当某个bin\buckets的长度小于8的时候进行转换。</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> UNTREEIFY_THRESHOLD = <span class="number">6</span>;</span><br><span class="line"><span class="comment">// 桶中bin最小hash容量，如果大于这个值会进行resize扩容操作，此值至少是TREEIFY_THRESHOLD的4倍</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MIN_TREEIFY_CAPACITY = <span class="number">64</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 被transient修饰的变量不回被序列化。</span></span><br><span class="line"><span class="comment">// HashMap内部类实现了Map的内部类Entry,用于存储K,V，第一次使用的时候被创建，根据需要可以进行resize。分配长度为2的冥次方</span></span><br><span class="line"><span class="keyword">transient</span> Node&lt;K,V&gt;[] table;</span><br><span class="line"><span class="comment">// 当被调用entrySet时被赋值。通过keySet()方法可以得到map key的集合，通过values方法可以得到map value的集合</span></span><br><span class="line"><span class="keyword">transient</span> Set&lt;Map.Entry&lt;K,V&gt;&gt; entrySet;</span><br><span class="line"></span><br><span class="line"><span class="comment">// size表示HashMap中存放KV的数量（为链表和树中的KV的总和）。</span></span><br><span class="line"><span class="keyword">transient</span> <span class="keyword">int</span> size;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 操作次数，通常用过fail-fast。每次扩容和更改map结构的计数器</span></span><br><span class="line"><span class="keyword">transient</span> <span class="keyword">int</span> modCount;</span><br><span class="line"></span><br><span class="line"><span class="comment">// threshold=capacity*loadFactor threshold表示当HashMap的size大于threshold时会执行resize操作。 </span></span><br><span class="line"><span class="keyword">int</span> threshold;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Load Factor用于确定何时重新散列HashMap并增加存储桶大小。存储桶或容量的默认值为16，负载系数为0.75。通过乘以容量和负载因子来计算重新散列的阈值</span></span><br><span class="line"><span class="keyword">final</span> <span class="keyword">float</span> loadFactor;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>Node</p>
-</blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">implements</span> <span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> hash; <span class="comment">// node哈希值</span></span><br><span class="line">        <span class="keyword">final</span> K key;    </span><br><span class="line">        V value;</span><br><span class="line">        Node&lt;K,V&gt; next; <span class="comment">// 下一个node的地址</span></span><br><span class="line"></span><br><span class="line">        Node(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">            <span class="keyword">this</span>.hash = hash;</span><br><span class="line">            <span class="keyword">this</span>.key = key;</span><br><span class="line">            <span class="keyword">this</span>.value = value;</span><br><span class="line">            <span class="keyword">this</span>.next = next;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> K <span class="title">getKey</span><span class="params">()</span>        </span>&#123; <span class="keyword">return</span> key; &#125;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> V <span class="title">getValue</span><span class="params">()</span>      </span>&#123; <span class="keyword">return</span> value; &#125;</span><br><span class="line">        <span class="comment">// 这里重写方法，所以map.toString()不是内存地址。</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> key + <span class="string">"="</span> + value; &#125;</span><br><span class="line">  </span><br><span class="line">			  <span class="comment">// 这里重写了hashCode()方法</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> Objects.hashCode(key) ^ Objects.hashCode(value);</span><br><span class="line">        &#125;</span><br><span class="line">				</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> V <span class="title">setValue</span><span class="params">(V newValue)</span> </span>&#123;</span><br><span class="line">            V oldValue = value;</span><br><span class="line">            value = newValue;</span><br><span class="line">            <span class="keyword">return</span> oldValue;</span><br><span class="line">        &#125;</span><br><span class="line">  </span><br><span class="line">				<span class="comment">// 这里重写了equals()方法</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object o)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (o == <span class="keyword">this</span>)</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            <span class="comment">//Map.Entry 相等的条件：键相等、值相等、个数相等、顺序相等</span></span><br><span class="line">            <span class="keyword">if</span> (o <span class="keyword">instanceof</span> Map.Entry) &#123;</span><br><span class="line">                Map.Entry&lt;?,?&gt; e = (Map.Entry&lt;?,?&gt;)o;</span><br><span class="line">                <span class="keyword">if</span> (Objects.equals(key, e.getKey()) &amp;&amp;</span><br><span class="line">                    Objects.equals(value, e.getValue()))</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>整个mongodb（社区版）包含如下软件</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>软件名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>mongodb-org-server</td>
+<td>包含mongod守护程序和关联的配置和init脚本</td>
+</tr>
+<tr>
+<td>mongodb-org-mongos</td>
+<td>包含mongos守护程序</td>
+</tr>
+<tr>
+<td>mongodb-org-shell</td>
+<td>包含mongo shell，它是一个连接mongodb的命令行客户端，允许用户直接输入nosql语法管理数据库。</td>
+</tr>
+<tr>
+<td>mongodb-org-tools</td>
+<td>包含以下工具的MongoDB：数据导入、导出、备份、恢复等等</td>
+</tr>
+</tbody></table>
+<ul>
+<li>创建yum源文件</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/yum.repos.d/mongodb-org-3.4.repo1</span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2018/08/23/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAHashMap/#more" rel="contents">
+              <a class="btn" href="/2018/04/25/Centos7-Mongodb3-4%E5%8D%95%E5%AE%9E%E4%BE%8B%E9%83%A8%E7%BD%B2/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -341,7 +360,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/08/10/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAHashSet/">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/23/Linux%E5%9F%BA%E7%A1%80%E5%91%BD%E4%BB%A4/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -355,7 +374,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2018/08/10/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAHashSet/" class="post-title-link" itemprop="url">深入浅出HashSet</a>
+            <a href="/2018/04/23/Linux%E5%9F%BA%E7%A1%80%E5%91%BD%E4%BB%A4/" class="post-title-link" itemprop="url">Linux基础命令</a>
         </h2>
 
         <div class="post-meta">
@@ -365,100 +384,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2018-08-10 12:08:00" itemprop="dateCreated datePublished" datetime="2018-08-10T12:08:00+08:00">2018-08-10</time>
+              <time title="Created: 2018-04-23 08:58:34" itemprop="dateCreated datePublished" datetime="2018-04-23T08:58:34+08:00">2018-04-23</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-03-20 09:47:46" itemprop="dateModified" datetime="2019-03-20T09:47:46+08:00">2019-03-20</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">Java基础</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章属于持续学习、长期更修。</p>
-</blockquote>
-<h2 id="HashSet"><a href="#HashSet" class="headerlink" title="HashSet"></a>HashSet</h2><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/hashSet/HashSet.png"></p>
-<h2 id=""><a href="#" class="headerlink" title=""></a></h2><h3 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h3><ul>
-<li>HashSet不允许重复数据。</li>
-<li>HashSet不允许null，因为null也是可以重复的。</li>
-<li>HashSet不保证数据的插入顺序。</li>
-<li>HashSet不是线程安全的，如果想使用线程的安全的HashSet可以通过<code>Collections.synchronizedSet</code> 来获取线程安全的HashSet。也可以使用<code>CopyOnWriteArraySet</code>。但是性能会有很大的损失。</li>
-<li>HashSet迭代器方法是快速失败的。因此，在创建迭代器之后对集合进行任何结构修改都会抛出ConcurrentModificationException。</li>
-<li>HashSet支持泛型，这是在运行时避免ClassCastException的推荐方法。</li>
-<li>HashSet使用<code>HashMap</code>存储元素，因此对象应该提供hashCode（）和equals（）方法的良好实现，以避免不必要的结果。</li>
-</ul>
-<h3 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h3>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/07/09/%E5%AE%9E%E8%B7%B5-Spring%E5%8D%87%E7%BA%A7%E6%94%B9%E9%80%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/07/09/%E5%AE%9E%E8%B7%B5-Spring%E5%8D%87%E7%BA%A7%E6%94%B9%E9%80%A0/" class="post-title-link" itemprop="url">实践-Spring升级改造</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-07-09 09:38:05" itemprop="dateCreated datePublished" datetime="2018-07-09T09:38:05+08:00">2018-07-09</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-04-10 23:44:18" itemprop="dateModified" datetime="2019-04-10T23:44:18+08:00">2019-04-10</time>
+                <time title="Modified: 2020-08-15 09:17:23" itemprop="dateModified" datetime="2020-08-15T09:17:23+08:00">2020-08-15</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -482,18 +415,53 @@
 
       
           <blockquote>
-<p>2018年在公司负责了一段时间老项目改造升级工作。因此记录下折腾的过程。</p>
+<p>linux作为个人工作经常使用的系统、做下简单的记录方便以后工作参考。</p>
+</blockquote>
+<h2 id="ps"><a href="#ps" class="headerlink" title="ps"></a><a href="http://man.linuxde.net/ps" target="_blank" rel="noopener">ps</a></h2><blockquote>
+<p>ps命令用于报告系统某个时间内进程的情况</p>
 </blockquote>
 <ul>
-<li>Spring boot 最近挺火的，之前的工作并没有机会去实战。但是即使不使用Spring boot 也是可以做零配置的。</li>
+<li>参数</li>
 </ul>
-<h3 id="约定大于配置"><a href="#约定大于配置" class="headerlink" title="约定大于配置"></a>约定大于配置</h3><ul>
-<li>servlet3.*的规范已经支持不使用web.xml了。</li>
-<li>annotation的配置方式在Spring其实也存在很久了。 </li>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">-A : 所有的进程均显示出来</span><br><span class="line">-a : 不与terminal有关的所有进程</span><br><span class="line">-u : 有效用户的相关进程</span><br><span class="line">-x : 一般与a参数一起使用，可以列出比较完整的信息。</span><br><span class="line">-l : 较详细地将PID的信息列出。</span><br></pre></td></tr></table></figure>
+
+<h3 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h3><p>查询某程序的情况</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> [root@VM_115_109_centos ~]<span class="comment"># ps -ef | grep mysqld</span></span></span><br><span class="line">root      8013 17307  0 05:34 pts/0    00:00:00 grep --color=auto mysqld</span><br><span class="line">mysql    28882     1  0 Apr02 ?        00:07:03 /usr/sbin/mysqld --daemonize --pid-file=/var/run/mysqld/mysqld.pid</span><br></pre></td></tr></table></figure>
+
+<p>UID      PID   PPID     C STIME   TTY    TIME     CMD (类目描述)</p>
+<ul>
+<li>UID 程序被该 UID 所拥有</li>
+<li>PID 就是这个程序的 ID </li>
+<li>PPID 则是其上级父程序的ID</li>
+<li>C CPU 使用的资源百分比</li>
+<li>STIME 系统启动时间</li>
+<li>TTY 登入者的终端机位置</li>
+<li>TIME 使用掉的 CPU 时间。</li>
+<li>CMD 所下达的指令</li>
 </ul>
+<p>查看内存占用前1的进程</p>
+<ul>
+<li>ps auxw | head -1;ps auxw|sort -rn -k4|head -1  </li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">  ps auxw | head -1;ps auxw|sort -rn -k4|head -1</span></span><br><span class="line">USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</span><br><span class="line">mysql    28882  0.0 10.9 1143416 205484 ?      Sl   Apr02   7:20 /usr/sbin/mysqld --daemonize --pid-file=/var/run/mysqld/mysqld.pid</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>内存的单位是kb，VSZ是虚拟内存的占用，RSS是真实的内存的占用。</li>
+</ul>
+<ul>
+<li>命令分解：</li>
+<li>ps auxw显示系统资源占用情况；</li>
+<li>head -1表示显示第一列，即标题列；</li>
+<li>sort -r 表示反向排序，-n表示按数字排序，-k4表示列的第4个字符。</li>
+</ul>
+<p>查看CPU占用前1的进程</p>
+<ul>
+<li>ps auxw|head -1;ps auxw|sort -rn -k3|head -1</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ps auxw|head -1;ps auxw|sort -rn -k3|head -5</span></span><br><span class="line">USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</span><br><span class="line">root      1690  0.1  0.6 536692 12436 ?        Sl   Apr10  29:58 barad_agent</span><br><span class="line">USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</span><br><span class="line">root         9  0.0  0.0      0     0 ?        R    Mar08   1:45 [rcu_sched]</span><br><span class="line">root       884  0.0  0.0 110044   808 ttyS0    Ss+  Mar08   0:00 /sbin/agetty --keep-baud 115200 38400 9600 ttyS0 vt220</span><br><span class="line">root       883  0.0  0.0 110044   788 tty1     Ss+  Mar08   0:00 /sbin/agetty --noclear tty1 linux</span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2018/07/09/%E5%AE%9E%E8%B7%B5-Spring%E5%8D%87%E7%BA%A7%E6%94%B9%E9%80%A0/#more" rel="contents">
+              <a class="btn" href="/2018/04/23/Linux%E5%9F%BA%E7%A1%80%E5%91%BD%E4%BB%A4/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -517,7 +485,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/06/24/Mac%E4%B8%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/23/2014-10-10-%E5%8D%81%E5%A0%B0%E5%AE%9E%E4%B9%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -531,7 +499,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2018/06/24/Mac%E4%B8%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/" class="post-title-link" itemprop="url">Mac下开发环境</a>
+            <a href="/2018/04/23/2014-10-10-%E5%8D%81%E5%A0%B0%E5%AE%9E%E4%B9%A0/" class="post-title-link" itemprop="url">2014-10-10-十堰实习的日子</a>
         </h2>
 
         <div class="post-meta">
@@ -541,14 +509,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2018-06-24 15:30:34" itemprop="dateCreated datePublished" datetime="2018-06-24T15:30:34+08:00">2018-06-24</time>
+              <time title="Created: 2018-04-23 05:10:36" itemprop="dateCreated datePublished" datetime="2018-04-23T05:10:36+08:00">2018-04-23</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-11-16 21:36:46" itemprop="dateModified" datetime="2020-11-16T21:36:46+08:00">2020-11-16</time>
+                <time title="Modified: 2019-03-23 14:10:41" itemprop="dateModified" datetime="2019-03-23T14:10:41+08:00">2019-03-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -556,7 +524,7 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/" itemprop="url" rel="index"><span itemprop="name">开发环境</span></a>
+                  <a href="/categories/%E9%9A%8F%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">随记</span></a>
                 </span>
             </span>
 
@@ -572,31 +540,12 @@
 
       
           <blockquote>
-<p>最近开始用mac来开发。记录下环境安装过程方便以后快速恢复熟悉的开发环境。</p>
+<p>2014-10-10出发实习，职场萌新第一次去大型野外工地浪。长期在小城市里面突然跑到野外，关键还没啥人。放飞自我。</p>
 </blockquote>
-<p>这里提前修改一下控制台前缀</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[dev mc]$ sudo vim &#x2F;etc&#x2F;bashrc</span><br><span class="line">#修改以下内容</span><br><span class="line">PS1&#x3D;&#39;\h:\W \u\$ &#39;</span><br><span class="line">#修改成</span><br><span class="line">PS1&#x3D;&#39;[dev \u]$ &#39;</span><br></pre></td></tr></table></figure>
-
-<h3 id="好用的工具"><a href="#好用的工具" class="headerlink" title="好用的工具"></a>好用的工具</h3><ul>
-<li>pages <code>同事推荐的软件</code>暂时用来写周报。</li>
-<li>brew <code>这是一个神器,和linux 上的yum 类似的工具。</code></li>
-<li>sublime text <code>我之前在windows上都是使用notepad++。上App Store上没找到,该用这个了。</code></li>
-</ul>
-<h3 id="pages"><a href="#pages" class="headerlink" title="pages"></a>pages</h3><ul>
-<li>直接在app store安装就好了</li>
-</ul>
-<h3 id="brew"><a href="#brew" class="headerlink" title="brew"></a>brew</h3><ul>
-<li>安装过程使用终端安装。</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#  这里并没有换行，复制的时候请注意。</span><br><span class="line">&#x2F;usr&#x2F;bin&#x2F;ruby -e &quot;$(curl -fsSL https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;Homebrew&#x2F;install&#x2F;master&#x2F;install)&quot;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>基本操作方式</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># 更新</span><br><span class="line">brew update </span><br><span class="line"># 安装软件 </span><br><span class="line">brew install xxx（软件名）</span><br><span class="line"></span><br><span class="line">#常见命令整理如下，以下命令都可带上 cask 参数：	</span><br><span class="line"></span><br><span class="line">brew search name：联网搜索软件是否存在 brew 中</span><br><span class="line">brew install name：安装软件</span><br><span class="line">brew upgrade name：更新软件</span><br><span class="line">brew uninstall name：卸载软件</span><br><span class="line">brew reinstall name：重新安装软件</span><br><span class="line">brew info name：查看软件安装地址</span><br><span class="line">brew cleanup：清理缓存等</span><br><span class="line">brew doctor：查看建议，例如升级等</span><br></pre></td></tr></table></figure>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/%E6%97%85%E6%B8%B8/%E5%8D%81%E5%A0%B0%E5%AE%9E%E4%B9%A0%E7%9A%84%E6%97%A5%E5%AD%90/NWP_121016_0001-min.jpg"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2018/06/24/Mac%E4%B8%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/#more" rel="contents">
+              <a class="btn" href="/2018/04/23/2014-10-10-%E5%8D%81%E5%A0%B0%E5%AE%9E%E4%B9%A0/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -620,7 +569,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/06/12/%E5%AE%9E%E8%B7%B5-log4j%E7%9A%84%E4%BD%BF%E7%94%A8%EF%BC%88%E4%B8%80%EF%BC%89/">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/21/%E5%88%9D%E6%8E%A2Eureka%E4%B8%8EZookeeper/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -634,7 +583,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2018/06/12/%E5%AE%9E%E8%B7%B5-log4j%E7%9A%84%E4%BD%BF%E7%94%A8%EF%BC%88%E4%B8%80%EF%BC%89/" class="post-title-link" itemprop="url">实践-log4j的使用（一）</a>
+            <a href="/2018/04/21/%E5%88%9D%E6%8E%A2Eureka%E4%B8%8EZookeeper/" class="post-title-link" itemprop="url">初探Eureka与Zookeeper</a>
         </h2>
 
         <div class="post-meta">
@@ -644,103 +593,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2018-06-12 23:24:24" itemprop="dateCreated datePublished" datetime="2018-06-12T23:24:24+08:00">2018-06-12</time>
+              <time title="Created: 2018-04-21 06:14:16" itemprop="dateCreated datePublished" datetime="2018-04-21T06:14:16+08:00">2018-04-21</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-04-10 23:43:54" itemprop="dateModified" datetime="2019-04-10T23:43:54+08:00">2019-04-10</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章内容阐述个人理解，以及使用方法。若有不正确的内容欢迎斧正。睡觉之前赶快记录下来免得有忘记了。</p>
-</blockquote>
-<h4 id="什么是Log"><a href="#什么是Log" class="headerlink" title="什么是Log?"></a>什么是Log?</h4><ul>
-<li>日志记录的是什么？市面上流行的软件基本都有日志记录功能，作为开发人员的好帮手。日志可以有效的记录程序运行的状态以及运行的异常，比如说操作系统蓝屏了、手机死机了、软件卡死、程序崩溃、写了BUG等等都会有对应的日志留下。</li>
-</ul>
-<h4 id="如何利用log？"><a href="#如何利用log？" class="headerlink" title="如何利用log？"></a>如何利用log？</h4><ul>
-<li>笔者是一个Java开发人员，本章内容代码部分已Java代码用例。大家都知道日志非常重要，但是经验不足的开发人员往往忽视了这个重要的手段，比如在控制台输出日志，所有输出信息都集中在一起。排除问题非常困难，一旦出现了线上异常信息首先要看的就是日志信息。所以有必要就日志手段多了解下。</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/06/12/%E5%AE%9E%E8%B7%B5-log4j%E7%9A%84%E4%BD%BF%E7%94%A8%EF%BC%88%E4%B8%80%EF%BC%89/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/05/07/%E5%88%9D%E6%8E%A2Modbus/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="小峰同学">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/05/07/%E5%88%9D%E6%8E%A2Modbus/" class="post-title-link" itemprop="url">初探Modbus</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-05-07 00:00:00" itemprop="dateCreated datePublished" datetime="2018-05-07T00:00:00+08:00">2018-05-07</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-15 09:21:16" itemprop="dateModified" datetime="2020-08-15T09:21:16+08:00">2020-08-15</time>
+                <time title="Modified: 2020-08-17 10:23:45" itemprop="dateModified" datetime="2020-08-17T10:23:45+08:00">2020-08-17</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -764,79 +624,230 @@
 
       
           <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-<p>以下部分超链接需要科学上网。</p>
+<p>服务注册中心，给客户端提供可供调用的服务列表，客户端在进行远程服务调用时，根据服务列表然后选择服务提供方的服务地址进行服务调用。服务注册中心在分布式系统中大量应用，是分布式系统中不可或缺的组件，例如rocketmq的name server，hdfs中的namenode，dubbo中的zk注册中心，spring cloud中的服务注册中心eureka。  在spring cloud中，除了可以使用eureka作为注册中心外，还可以通过配置的方式使用zookeeper作为注册中心。既然这样，我们该如何选择注册中心的实现呢？</p>
 </blockquote>
-<h2 id="ModBus"><a href="#ModBus" class="headerlink" title="ModBus"></a>ModBus</h2><p>modbus是一种通讯协议，是Modicon公司1979年为使用可编程逻辑控制器（PLC）通讯而发表。Modbus是工业领域通讯协议的业界标准之一，目前也我国国家标准工业通讯协议中的重要成员之一。</p>
-<h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><ul>
-<li><p>Modbus采用主从（Master-Salve）通信模式，仅有主设备（Master）能对传输进行初始化，从设备（Slave）根据主设备的请求进行应答。 __在主从关系中，通信总是成对发生。一个设备必须发起请求，然后等待响应 - 并且发起设备（主设备）负责发起每次交互。 通常，主设备是人机界面（HMI）或监控和数据采集（SCADA）系统，从设备是传感器、可编程逻辑控制器（PLC）或可编程自动化控制器（PAC）。 这些请求和响应的内容以及发送这些消息的网络层由协议的不同层来定义__。 </p>
-<ul>
-<li>在串行链路的主从通信中，Modbus主设备可以连接一个或N（最大为247）个从设备，主从设备之间的通信包括单播模式和广播模式。 </li>
-<li>在广播模式中，Modbus主设备可同时向多个从设备发送请求（设备地址0用于广播模式），从设备对广播请求不进行响应。 </li>
-<li>在单播模式中，主设备发送请求至某个特定的从设备（每个Modbus从设备具有唯一地址），请求的消息帧中会包含功能代码和数据，比如功能代码“01”用来读取离散量线圈的状态。从设备接到请求后，进行应答并把消息反馈主设备。 </li>
-<li>__主设备不发送数据，从数据是不会自己发出数据的；即必须是主设备发出查询请求才能建立通讯。 __</li>
+<h3 id="CAP定理"><a href="#CAP定理" class="headerlink" title="CAP定理"></a>CAP定理</h3><blockquote>
+<p>又被称作布鲁尔定理（Eric Brewer）它指出对于一个分布式计算系统来说，不可能同时满足以下三点：</p>
+</blockquote>
+<ol>
+<li>强一致性（Consistency）：系统在执行某项操作后数据状态仍然处于一致，例如在分布式系统中，更新操作执行成功后所有的用户都应该读取到最新的值，这样的系统被认为具有强一致性。</li>
+<li>可用性（Availability）：每一个操作总是能够在一定的时间内返回结果</li>
+<li>分区容错性（Partition tolerance）：单个节点故障不应导致整个系统崩溃，也就是说尽管网络在节点之间丢弃（或延迟）任意数量的消息，但是系统继续操作。</li>
+</ol>
+<blockquote>
+<p>根据CAP原理将数据库分成了满足CA原则、满足CP原则和满足AP原则三大类</p>
+</blockquote>
+<ol>
+<li>CA：单点集群，满足一致性，可用性，通常在可扩展性上不太强大，比如RDB。</li>
+<li>CP：满足一致性和分区容错性，通常性能不是特别高，如分布式数据库。</li>
+<li>AP：满足可用性和分区容错性，通常可能对一致性要求低一些，如大多数的NoSQL。</li>
+</ol>
+<h3 id="BASE（Basically-Available，Soft-state，Eventual-consistency）"><a href="#BASE（Basically-Available，Soft-state，Eventual-consistency）" class="headerlink" title="BASE（Basically Available，Soft-state，Eventual consistency）"></a>BASE（Basically Available，Soft-state，Eventual consistency）</h3><blockquote>
+<p>eBay的架构师Dan Pritchett源于对大规模分布式系统的实践总结，在ACM上发表文章提出BASE理论，BASE理论是对CAP理论的延伸，核心思想是即使无法做到强一致性（Strong Consistency，CAP的一致性就是强一致性），但应用可以采用适合的方式达到最终一致性（Eventual Consitency）。</p>
+</blockquote>
+<ol>
+<li>基本可用（Basically Available）：系统能够基本运行并一直提供服务。</li>
+<li>软状态（Soft-state）：系统不要求一直保持强一致状态。</li>
+<li>最终一致性（Eventual consistency）：系统需要在某一时刻后达到一致性要求。</li>
+</ol>
+<h3 id="Zookeeper保证CP"><a href="#Zookeeper保证CP" class="headerlink" title="Zookeeper保证CP"></a><strong>Zookeeper保证CP</strong></h3><ul>
+<li>当向注册中心查询服务列表时，我们可以容忍注册中心返回的是几分钟以前的注册信息，但不能接受服务直接down掉不可用。也就是说，服务注册功能对可用性的要求要高于一致性。但是zk会出现这样一种情况，当master节点因为网络故障与其他节点失去联系时，剩余节点会重新进行leader选举。问题在于，选举leader的时间太长，30 ~ 120s, 且选举期间整个zk集群都是不可用的，这就导致在选举期间注册服务瘫痪。在云部署的环境下，因网络问题使得zk集群失去master节点是较大概率会发生的事，虽然服务能够最终恢复，但是漫长的选举时间导致的注册长期不可用是不能容忍的。</li>
 </ul>
+<h3 id="Eureka保证AP"><a href="#Eureka保证AP" class="headerlink" title="Eureka保证AP"></a>Eureka保证AP</h3><ul>
+<li><p>Eureka各个节点都是平等的，几个节点挂掉不会影响正常节点的工作，剩余的节点依然可以提供注册和查询服务。而Eureka的客户端在向某个Eureka注册或如果发现连接失败，则会自动切换至其它节点，只要有一台Eureka还在，就能保证注册服务可用(保证可用性)，只不过查到的信息可能不是最新的(不保证强一致性)。除此之外，Eureka还有一种自我保护机制，如果在15分钟内超过85%的节点都没有正常的心跳，那么Eureka就认为客户端与注册中心出现了网络故障，此时会出现以下几种情况： </p>
+<ol>
+<li>Eureka不再从注册列表中移除因为长时间没收到心跳而应该过期的服务 </li>
+<li>Eureka仍然能够接受新服务的注册和查询请求，但是不会被同步到其它节点上(即保证当前节点依然可用) </li>
+<li>当网络稳定时，当前实例新的注册信息会被同步到其它节点中</li>
+</ol>
 </li>
-<li><p>消息帧校验方式</p>
-<ul>
-<li>ASCII消息帧：<code>LRC（纵向冗长检测）</code></li>
-<li>CRCi消息帧：<code>CRC(循环冗长检测)</code></li>
-</ul>
-</li>
-<li><p>ModBus是OSI模型第七层上即__应用层__报文传输协议。</p>
-</li>
-<li><p>ModBus支持多工业设备、包括<code>PLC</code>、<code>DSC</code>、<code>变频器</code>、智能仪表等都在应用。</p>
-</li>
-<li><p>ModBus支持多种电气接口，如<code>RS-232</code>、<code>RS-485</code>等，还可以在各种介质上传送，如双绞线、光纤、无线。</p>
-</li>
-<li><p>ModBus协议完全免费；<code>帧格式</code>简单，紧凑。</p>
-</li>
-<li><p>ModBus对线缆的要求、长度、波特率，终端电阻，接地，连接器，通信状态的LED指示，都有电气标准。</p>
-</li>
-<li><p>ModBus数据可以分为两大类，分别为Coil和Register，每一种数据，根据读写方式的不同，又可细分为两种（只读，读写）。 </p>
-<ul>
-<li>Coli是位（bit）变量。</li>
-<li>Register是整型（word ,即 16 - bit ）。</li>
-</ul>
+<li><p>因此， Eureka可以很好的应对因网络故障导致部分节点失去联系的情况，而不会像zookeeper那样使整个注册服务瘫痪。</p>
 </li>
 </ul>
-<table>
-<thead>
-<tr>
-<th>Primary tabels</th>
-<th>Object Type</th>
-<th>Type Of</th>
-<th>comments</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Discretes Input 离线输入量</td>
-<td>Single bit</td>
-<td>只读</td>
-<td>IO系统提供这种类型的数据</td>
-</tr>
-<tr>
-<td>Coils 线圈</td>
-<td>Single bit</td>
-<td>只写</td>
-<td>通用应用程序改变这种类型的数据</td>
-</tr>
-<tr>
-<td>Input Registers  输入寄存器</td>
-<td>16-bit word</td>
-<td>只读</td>
-<td>IO系统提供这种类型的数据</td>
-</tr>
-<tr>
-<td>Holding Registers 保持寄存器</td>
-<td>16-bit word</td>
-<td>只写</td>
-<td>通用应用程序改变这种类型的数据</td>
-</tr>
-</tbody></table>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2018/05/07/%E5%88%9D%E6%8E%A2Modbus/#more" rel="contents">
+              <a class="btn" href="/2018/04/21/%E5%88%9D%E6%8E%A2Eureka%E4%B8%8EZookeeper/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/21/Centos7-Mysql5.7%E5%8D%95%E5%AE%9E%E4%BE%8B%E9%83%A8%E7%BD%B2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/04/21/Centos7-Mysql5.7%E5%8D%95%E5%AE%9E%E4%BE%8B%E9%83%A8%E7%BD%B2/" class="post-title-link" itemprop="url">Centos7.*-Mysql5.7单实例部署</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-04-21 06:04:28" itemprop="dateCreated datePublished" datetime="2018-04-21T06:04:28+08:00">2018-04-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-21 20:41:28" itemprop="dateModified" datetime="2020-11-21T20:41:28+08:00">2020-11-21</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index"><span itemprop="name">Linux运维</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>Centos7的yum源中默认是没有mysql,因为现在已经用mariaDB代替mysql了。</p>
+</blockquote>
+<h2 id="安装前检查"><a href="#安装前检查" class="headerlink" title="安装前检查"></a>安装前检查</h2><h3 id="检查linux系统版本"><a href="#检查linux系统版本" class="headerlink" title="检查linux系统版本"></a>检查linux系统版本</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost backup]<span class="comment"># cat /etc/system-release</span></span><br><span class="line">CentOS Linux release 7.4.1708 (Core)</span><br></pre></td></tr></table></figure>
+
+<h3 id="检查是否已经安装mysql"><a href="#检查是否已经安装mysql" class="headerlink" title="检查是否已经安装mysql"></a>检查是否已经安装mysql</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost backup]<span class="comment"># rpm -qa | grep mysql</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>如果存在Mysql可以考虑卸载</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -e --nodeps mysql-connector-odbc-x.x.x-x.el7.x86_64</span><br></pre></td></tr></table></figure>
+
+<p>将/var/lib/mysql文件夹下的所有文件都删除干净。</p>
+</li>
+</ul>
+<h3 id="检查是否安装mariaDB"><a href="#检查是否安装mariaDB" class="headerlink" title="检查是否安装mariaDB"></a>检查是否安装mariaDB</h3>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/04/21/Centos7-Mysql5.7%E5%8D%95%E5%AE%9E%E4%BE%8B%E9%83%A8%E7%BD%B2/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/21/Git-Branch/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="小峰同学">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/04/21/Git-Branch/" class="post-title-link" itemprop="url">Git-Branch</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-04-21 05:16:53" itemprop="dateCreated datePublished" datetime="2018-04-21T05:16:53+08:00">2018-04-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-20 21:39:43" itemprop="dateModified" datetime="2021-09-20T21:39:43+08:00">2021-09-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Git/" itemprop="url" rel="index"><span itemprop="name">Git</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>​    使用git进行合并分支说难也不难，因为就使用一下那几个命令而已！但是不小心操作总会有一些难以预料的问题出现、但是coder们总是会做出奇怪的举动。</p>
+<p>​    合并分支的时候O(∩_∩)O</p>
+</blockquote>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/git/hbfz.gif" alt="合并分支">   </p>
+<h2 id="快速了解下分支流程。"><a href="#快速了解下分支流程。" class="headerlink" title="快速了解下分支流程。"></a>快速了解下分支流程。</h2>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/04/21/Git-Branch/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -859,7 +870,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/13/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><span class="page-number current">14</span><a class="page-number" href="/page/15/">15</a><span class="space">&hellip;</span><a class="page-number" href="/page/18/">18</a><a class="extend next" rel="next" href="/page/15/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/13/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><span class="page-number current">14</span><a class="page-number" href="/page/15/">15</a><a class="page-number" href="/page/16/">16</a><a class="extend next" rel="next" href="/page/15/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -926,7 +937,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">105</span>
+          <span class="site-state-item-count">91</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -937,7 +948,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">97</span>
+        <span class="site-state-item-count">93</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
