@@ -239,6 +239,342 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Redis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Redis/" class="post-title-link" itemprop="url">查缺补漏-Redis</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-28 22:49:09" itemprop="dateModified" datetime="2021-09-28T22:49:09+08:00">2021-09-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>本章是整理知识内容，为强化知识长期更新。</p>
+</blockquote>
+<h1 id="Redis-简介"><a href="#Redis-简介" class="headerlink" title="Redis 简介"></a>Redis 简介</h1><blockquote>
+<p>Redis 是完全开源免费的，遵守 BSD 协议，是一个高性能的 key - value 数据库</p>
+</blockquote>
+<ul>
+<li>Redis 与 其他 key - value 缓存产品有以下三个特点：<ul>
+<li>Redis 支持数据持久化，可以将内存中的数据保存在磁盘中，重启的时候可以再次加载进行使用。</li>
+<li>Redis 不仅仅支持简单的 key - value 类型的数据，同时还提供 list，set，zset，hash 等数据结构的存储</li>
+<li>Redis 支持数据的备份，即 master - slave 模式的数据备份。</li>
+</ul>
+</li>
+<li>Redis是内存数据库，所有操作都在内存上完成，内存的访问速度本身就很快，读的速度是 110000 次 /s, 写的速度是 81000 次 /s。另一方面是因为它的数据结构。键值对是按一定的数据结构来组织的，操作键值对最终就是对数据结构进行增删改查操作，所以高效的数据结构是 Redis 快速处理数据的基础。</li>
+<li>Redis使用基于哈西槽(slot)的数据划分方式。</li>
+</ul>
+<h3 id="Redis单线程"><a href="#Redis单线程" class="headerlink" title="Redis单线程"></a>Redis单线程</h3><ul>
+<li>我们通常说，Redis 是单线程，主要是指 Redis 的网络 IO 和键值对读写是由一个线程来完成的，这也是 Redis 对外提供键值存储服务的主要流程。但 Redis 的其他功能，比如持久化、异步删除、集群数据同步等，其实是由额外的线程执行的。Redis 的单线程设计机制以及多路复用机制</li>
+<li>Linux 中的 IO 多路复用机制<ul>
+<li>Linux 中的 IO 多路复用机制是指一个线程处理多个 IO 流，就是我们经常听到的 select/epoll 机制。简单来说，在 Redis 只运行单线程的情况下，该机制允许内核中，同时存在多个监听套接字和已连接套接字。内核会一直监听这些套接字上的连接请求或数据请求。一旦有请求到达，就会交给 Redis 线程处理，这就实现了一个 Redis 线程处理多个 IO 流的效果。</li>
+</ul>
+</li>
+</ul>
+<h3 id="Redis单线程处理IO请求性能瓶颈"><a href="#Redis单线程处理IO请求性能瓶颈" class="headerlink" title="Redis单线程处理IO请求性能瓶颈"></a>Redis单线程处理IO请求性能瓶颈</h3><ul>
+<li>任意一个请求在server中一旦发生耗时，都会影响整个server的性能，也就是说后面的请求都要等前面这个耗时请求处理完成，自己才能被处理到。耗时的操作包括以下几种：<ul>
+<li>操作bigkey：写入一个bigkey在分配内存时需要消耗更多的时间，同样，删除bigkey释放内存同样会产生耗时；</li>
+<li>使用复杂度过高的命令：例如SORT/SUNION/ZUNIONSTORE，或者O(N)命令，但是N很大，例如lrange key 0 -1一次查询全量数据；</li>
+<li>大量key集中过期：Redis的过期机制也是在主线程中执行的，大量key集中过期会导致处理一个请求时，耗时都在删除过期key，耗时变长；</li>
+<li>淘汰策略：淘汰策略也是在主线程执行的，当内存超过Redis内存上限后，每次写入都需要淘汰一些key，也会造成耗时变长；</li>
+<li>AOF刷盘开启always机制：每次写入都需要把这个操作刷到磁盘，写磁盘的速度远比写内存慢，会拖慢Redis的性能；</li>
+<li>主从全量同步生成RDB：虽然采用fork子进程生成数据快照，但fork这一瞬间也是会阻塞整个线程的，实例越大，阻塞时间越久；</li>
+</ul>
+</li>
+<li>并发量非常大时，单线程读写客户端IO数据存在性能瓶颈，虽然采用IO多路复用机制，但是读写客户端数据依旧是同步IO，只能单线程依次读取客户端的数据，无法利用到CPU多核。</li>
+<li>Redis在4.0推出了lazy-free机制，把bigkey释放内存的耗时操作放在了异步线程中执行，降低对主线程的影响。</li>
+<li>Redis在6.0推出了多线程，可以在高并发场景下利用CPU多核多线程读写客户端数据，进一步提升server性能，当然，只是针对客户端的读写是并行的，每个命令的真正操作依旧是单线程的。</li>
+</ul>
+<h3 id="Redis持久化机制"><a href="#Redis持久化机制" class="headerlink" title="Redis持久化机制"></a>Redis持久化机制</h3><ul>
+<li>Redis是一个支持持久化的内存数据库，通过持久化机制把内存中的数据同步到硬盘文件来保证数据持久化。当Redis重启后通过把硬盘文件重新加载到内存，就能达到恢复数据的目的。<ul>
+<li>实现：单独创建fork()一个子进程，将当前父进程的数据库数据复制到子进程的内存中，然后由子进程内存释放。</li>
+</ul>
+</li>
+<li>RDB是Redis默认的持久化方式。按照一定的时间周期策略把内存的数据以快照的形式保存到硬盘的二进制文件。即Snapshot快照存储，对应产生的数据文件为dump.rdb，通过配置文件中的save参数来定义快照的周期。（ 快照可以是其所表示的数据的一个副本，也可以是数据的一个复制品。）</li>
+<li>AOF：Redis会将每一个收到的写命令都通过Write函数追加到文件最后，类似于MySQL的binlog。当Redis重启是会通过重新执行文件中保存的写命令来在内存中重建整个数据库的内容。当两种方式同时开启时，数据恢复Redis会优先选择AOF恢复。</li>
+</ul>
+<h3 id="AOF日志"><a href="#AOF日志" class="headerlink" title="AOF日志"></a>AOF日志</h3><ul>
+<li>写后日志，“写后”的意思是 Redis 是先执行命令，把数据写入内存，然后才记录日志。</li>
+<li>AOF 也有两个潜在的风险<ul>
+<li>如果刚执行完一个命令，还没有来得及记日志就宕机了，那么这个命令和相应的数据就有丢失的风险。如果此时 Redis 是用作缓存，还可以从后端数据库重新读入数据进行恢复，但是，如果 Redis 是直接用作数据库的话，此时，因为命令没有记入日志，所以就无法用日志进行恢复了。</li>
+<li>AOF 虽然避免了对当前命令的阻塞，但可能会给下一个操作带来阻塞风险。这是因为，AOF 日志也是在主线程中执行的，如果在把日志文件写入磁盘时，磁盘写压力大，就会导致写盘很慢，进而导致后续的操作也无法执行了。</li>
+</ul>
+</li>
+<li>AOF三种写回策略<ul>
+<li>Always，同步写回：每个写命令执行完，立马同步地将日志写回磁盘；<ul>
+<li>同步写回可以做到基本不丢数据，但是它在每一个写命令后都有一个慢速的落盘操作，不可避免地会影响主线程性能。</li>
+</ul>
+</li>
+<li>Everysec，每秒写回：每个写命令执行完，只是先把日志写到 AOF 文件的内存缓冲区，每隔一秒把缓冲区中的内容写入磁盘；<ul>
+<li>每秒写回采用一秒写回一次的频率，避免了“同步写回”的性能开销，虽然减少了对系统性能的影响，但是如果发生宕机，上一秒内未落盘的命令操作仍然会丢失。所以，这只能算是，在避免影响主线程性能和避免数据丢失两者间取了个折中。</li>
+</ul>
+</li>
+<li>No，操作系统控制的写回：每个写命令执行完，只是先把日志写到 AOF 文件的内存缓冲区，由操作系统决定何时将缓冲区内容写回磁盘。<ul>
+<li>操作系统控制的写回在写完缓冲区后，就可以继续执行后续的命令，但是落盘的时机已经不在 Redis 手中了，只要 AOF 记录没有写回磁盘，一旦宕机对应的数据就丢失了。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="RDB快照"><a href="#RDB快照" class="headerlink" title="RDB快照"></a>RDB快照</h3><ul>
+<li>Redis 的数据都在内存中，为了提供所有数据的可靠性保证，它执行的是全量快照，也就是说，把内存中的所有数据都记录到磁盘中。全量数据越多，RDB 文件就越大，往磁盘上写数据的时间开销就越大。</li>
+<li>对于 Redis 而言，它的单线程模型就决定了，我们要尽量避免所有会阻塞主线程的操作，所以，针对任何操作，我们都会提一个灵魂之问：“它会阻塞主线程吗?”RDB 文件的生成是否会阻塞主线程，这就关系到是否会降低 Redis 的性能。</li>
+<li>Redis 提供了两个命令来生成 RDB 文件，分别是 save 和 bgsave。<ul>
+<li>save：在主线程中执行，会导致阻塞；</li>
+<li>bgsave：创建一个子进程，专门用于写入 RDB 文件，避免了主线程的阻塞，这也是 Redis RDB 文件生成的默认配置。</li>
+</ul>
+</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Redis/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Spring/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Spring/" class="post-title-link" itemprop="url">查缺补漏-Spring</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-28 22:22:18" itemprop="dateModified" datetime="2021-09-28T22:22:18+08:00">2021-09-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>本章是整理知识内容，为强化知识长期更新。</p>
+</blockquote>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/SpringFrameworkRutime.png"></p>
+<h3 id="Spring-Ioc"><a href="#Spring-Ioc" class="headerlink" title="Spring Ioc"></a>Spring Ioc</h3><h4 id="1-描述下依赖注入。"><a href="#1-描述下依赖注入。" class="headerlink" title="1.描述下依赖注入。"></a>1.描述下依赖注入。</h4><ul>
+<li>平常的Java开发中，程序员在某个类中需要依赖其它类的方法。通常是new一个依赖类再调用类实例的方法，这种开发存在的问题是new的类实例不好统一管理。 Spring提出了依赖注入的思想，即依赖类不由程序员实例化，而是通过Spring容器帮我们new指定实例并且将实例注入到需要该对象的类中。依赖注入的另一种说法是”控制反转”。通俗的理解是：平常我们new一个实例，这个实例的控制权是我们程序员。而控制反转是指new实例工作不由我们程序员来做而是交给Spring容器来做。</li>
+<li>IOC对于Spring框架来说，就是由Spring来负责控制对象的生命周期和对象间的关系。</li>
+<li>所谓依赖注入，就是由IOC容器在运行期间，动态地将某种依赖关系注入到对象之中，所以，以来注入DI 和控制反转IOC 是从不同的角度描述的同一间事情，就是值通过引用IOC容器，利用以来关系注入的方式，实现对象之间的解耦。</li>
+</ul>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/SpringIoc%E5%88%9D%E5%A7%8B%E5%8C%96%E8%BF%87%E7%A8%8B.png"></p>
+<h4 id="2-注入的几种方式？"><a href="#2-注入的几种方式？" class="headerlink" title="2. 注入的几种方式？"></a>2. 注入的几种方式？</h4><ul>
+<li>Set注入。</li>
+<li>构造方法注入。</li>
+<li>工厂的方法注入。</li>
+</ul>
+<h3 id="Spring-AOP"><a href="#Spring-AOP" class="headerlink" title="Spring AOP"></a>Spring AOP</h3><ul>
+<li><p>AOP(Aspect-Oriented Programming:⾯向切⾯编程)能够将那些与业务⽆关，却为业务模块所共同调⽤的逻辑或责任（例如事务处理、⽇志管理、权限控制等）封装起来，便于减少系统的重复代码，降低模块间的耦合度，并有利于未来的可拓展性和可维护性。</p>
+<ul>
+<li><strong>Spring AOP</strong>就是基于动态代理的，如果要代理的对象，实现了某个接⼝，那么Spring AOP会使⽤<strong>JDK</strong> Proxy，去创建代理对象，⽽对于没有实现接⼝的对象，就⽆法使⽤ JDK Proxy 去进⾏代理了，这时候Spring AOP会使⽤<strong>Cglib</strong> ，这时候Spring AOP会使⽤ <strong>Cglib</strong> ⽣成⼀个被代理对象的⼦类来作为代理。</li>
+</ul>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/SpringAopProcess.png"></p>
+<ul>
+<li>Spring Aop是运行时增强。</li>
+<li>Cglib Aop是编译器增强。</li>
+</ul>
+</li>
+<li><p>AOP专门用于处理系统中分布于各个模块中交叉关注点的问题，在JavaEE应用中，常常通过AOP来处理一些横切性质的系统级服务，如事物管理、安全检查、缓存对象池管理。</p>
+<ul>
+<li>1.）切面 -Aspect 切面类 比如日志类</li>
+<li>2.） 连接点 - Join Point 加入切点的那个点</li>
+<li>3.）通知 -Advice 是在切面某个特定的连接点上的动作。</li>
+<li>4.）切入点 - Point Cut 匹配连接点的断点</li>
+<li>5.）引入 - Introduction </li>
+<li>6.）目标对象 - Target Object 被一个或多个通知对象，永远被代理的对象。</li>
+<li>7.） AOP代理 - AOP Proxy AOP创建的对象用来实现切面对象。</li>
+<li>8.）织入 - Weaving </li>
+<li>9.）AOP通俗的理解：<ul>
+<li>一个组建A，不关心其他常用的服务组件B，但是这个组件A使用组件B的时候不是组建A自身去调用，而是通过配置等其他方式，比如Spring中可以通过XML配置文件。这样就使的A压根不需要知道服务组件B是怎么样的，A只关心自己的业务逻辑，具体A使用B的时候，配置文件去做，与具体的A组件无关。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="谈谈对Spring理解"><a href="#谈谈对Spring理解" class="headerlink" title="谈谈对Spring理解"></a>谈谈对Spring理解</h3><ul>
+<li>Spring是一个轻量级的IoC和AOP容器框架。是为Java应用程序提供基础性服务的一套框架，目的是用于简化企业应用程序的开发，它使得开发者只需要关心业务需求。</li>
+<li>主要由以下几个模块组成：<ul>
+<li>Spring Core：核心类库，提供IOC服务</li>
+<li>Spring Context：提供框架式的Bean访问方式，以及企业级功能（JNDI、定时任务等）</li>
+<li>Spring AOP：AOP服务切面编程</li>
+<li>Spring DAO：对JDBC的抽象，简化了数据访问异常的处理</li>
+<li>Spring ORM：对现有的ORM框架的支持</li>
+<li>Spring Web：提供了基本的面向Web的综合特性，例如多方文件上传</li>
+<li>Spring MVC：提供面向Web应用的Model-View-Controller实现</li>
+</ul>
+</li>
+</ul>
+<h3 id="谈谈对-IoC-和-DI-的理解"><a href="#谈谈对-IoC-和-DI-的理解" class="headerlink" title="谈谈对 IoC 和 DI 的理解"></a>谈谈对 IoC 和 DI 的理解</h3><ul>
+<li>IoC（Inversion of Control，翻译为“控制反转”）不是一个具体的技术，而是一种设计思想。与传统控制流相比，IoC 会颠倒控制流，在传统的编程中需要开发者自行创建并销毁对象，而在 IoC 中会把这些操作交给框架来处理，这样开发者就不用关注具体的实现细节了，拿来直接用就可以了，这就是控制反转。</li>
+<li>IoC 很好的体现出了面向对象的设计法则之一——好莱坞法则：“别找我们，我们找你”。即由 IoC 容器帮对象找到相应的依赖对象并注入，而不是由对象主动去找。</li>
+<li>DI（Dependency Injection，翻译为“依赖注入”）表示组件间的依赖关系交由容器在运行期自动生成，也就是说，由容器动态的将某个依赖关系注入到组件之中，这样就能提升组件的重用频率。通过依赖注入机制，我们只需要通过简单的配置，就可指定目标需要的资源，完成自身的业务逻辑，而不需要关心资源来自哪里、由谁实现等问题。</li>
+<li>IoC 和 DI 其实是同一个概念从不同角度的描述的，由于控制反转这个概念比较含糊（可能只理解成了容器控制对象这一个层面，很难让人想到谁来维护对象关系），所以 2004 年被开发者尊称为“教父”的 Martin Fowler（世界顶级专家，敏捷开发方法的创始人之一）又给出了一个新的名字“依赖注入”，相对 IoC 而言，“依赖注入”明确描述了“被注入对象依赖 IoC 容器配置依赖对象”。</li>
+</ul>
+<h3 id="Spring-中的单例-bean-的线程安全问题了解吗？"><a href="#Spring-中的单例-bean-的线程安全问题了解吗？" class="headerlink" title="Spring 中的单例 bean 的线程安全问题了解吗？"></a>Spring 中的单例 bean 的线程安全问题了解吗？</h3><ul>
+<li>单例 bean 存在线程问题，主要是因为当多个线程操作同⼀个对象的时候，对这个对象的⾮静态成员变量的写操作会存在线程安全问题。在类中定义⼀个ThreadLocal成员变量，将需要的可变成员变量保存在 ThreadLocal 中（推荐的⼀种⽅式）。</li>
+</ul>
+<h3 id="Spring框架中都用到了哪些设计模式"><a href="#Spring框架中都用到了哪些设计模式" class="headerlink" title="Spring框架中都用到了哪些设计模式"></a>Spring框架中都用到了哪些设计模式</h3><ul>
+<li>工厂模式：BeanFactory就是简单工厂模式的体现，用来创建对象的实例</li>
+<li>单例模式：Bean默认为单例模式</li>
+<li>代理模式：Spring的AOP功能用到了JDK的动态代理和CGLIB字节码生成技术</li>
+<li>模板方法：用来解决代码重复的问题。比如. RestTemplate, JmsTemplate, JpaTemplate</li>
+<li>观察者模式：定义对象键一种一对多的依赖关系，当一个对象的状态发生改变时，所有依赖于它的对象都会得到通知被制动更新，如Spring中listener的实现–ApplicationListener，Spring 事件驱动模型就是观察者模式很经典的⼀个应⽤。</li>
+<li>适配器模式 :Spring AOP 的增强或通知(Advice)使⽤到了适配器模式、spring MVC 中也是⽤到了适配器模式适配 Controller 。</li>
+<li>策略模式： Bean的实例化的时候决定采用何种方式初始化bean实例（反射或者CGLIB动态字节码生成）</li>
+</ul>
+<h3 id="Spring中Autowired和Resource关键字的区别？"><a href="#Spring中Autowired和Resource关键字的区别？" class="headerlink" title="Spring中Autowired和Resource关键字的区别？"></a>Spring中Autowired和Resource关键字的区别？</h3><ul>
+<li>@Resource和@Autowired都是做bean的注入时使用，其实@Resource并不是Spring的注解，它的包是javax.annotation.Resource，需要导入，但是Spring支持该注解的注入。</li>
+<li>Autowired注解是按照类型（byType）装配依赖对象，默认情况下它要求依赖对象必须存在，如果允许null值，可以设置它的required属性为false。如果我们想使用按照名称（byName）来装配，可以结合@Qualififier注解一起使用：</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestServiceImpl</span> </span>&#123; </span><br><span class="line">  <span class="comment">// 下面两种@Autowired只要使用一种即可 </span></span><br><span class="line">  <span class="meta">@Autowired</span> </span><br><span class="line">  <span class="keyword">private</span> UserDao userDao; <span class="comment">// 用于字段上 </span></span><br><span class="line">  </span><br><span class="line">  <span class="meta">@Autowired</span>  <span class="comment">// 用于属性的方法上</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUserDao</span><span class="params">(UserDao userDao)</span> </span></span><br><span class="line"><span class="function">  </span>&#123;  </span><br><span class="line">    <span class="keyword">this</span>.userDao = userDao; </span><br><span class="line">  &#125; </span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// @Autowired注解是按照类型（byType）装配依赖对象，默认情况下它要求依赖对象必须存在，如果允</span></span><br><span class="line"><span class="comment">// 许null值，可以设置它的required属性为false。如果我们想使用按照名称（byName）来装配，可以结</span></span><br><span class="line"><span class="comment">// 合@Qualifier注解一起使用。如下：</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestServiceImpl</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Autowired</span> </span><br><span class="line">  <span class="meta">@Qualifier</span>(<span class="string">"userDao"</span>) <span class="keyword">private</span> UserDao userDao;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Resource默认按照ByName自动注入，由J2EE提供，需要导入包javax.annotation.Resource。@Resource有两个重要的属性：name和type，而Spring将@Resource注解的name属性解析为bean的名字，而type属性则解析为bean的类型。所以，如果使用name属性，则使用byName的自动注入策略，而使用type属性时则使用byType自动注入策略。如果既不制定name也不制定type属性，这时将通过反射机制使用byName自动注入策略。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestServiceImpl</span> </span>&#123; </span><br><span class="line">  <span class="comment">// 下面两种@Resource只要使用一种即可 </span></span><br><span class="line">  </span><br><span class="line">  <span class="comment">// 用于字段上 </span></span><br><span class="line">  <span class="meta">@Resource</span>(name=<span class="string">"userDao"</span>) </span><br><span class="line">  <span class="keyword">private</span> UserDao userDao; </span><br><span class="line">  </span><br><span class="line">  <span class="comment">// 用于属性的setter方法上 </span></span><br><span class="line">  <span class="meta">@Resource</span>(name=<span class="string">"userDao"</span>) </span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUserDao</span><span class="params">(UserDao userDao)</span> </span>&#123; </span><br><span class="line">    <span class="keyword">this</span>.userDao = userDao;</span><br><span class="line">  &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Bean注册方式有几种？"><a href="#Bean注册方式有几种？" class="headerlink" title="Bean注册方式有几种？"></a>Bean注册方式有几种？</h3><ul>
+<li>XML 配置文件的注册方式</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"person"</span> <span class="attr">class</span>=<span class="string">"org.springframework.beans.Person"</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"id"</span> <span class="attr">value</span>=<span class="string">"1"</span>/&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"name"</span> <span class="attr">value</span>=<span class="string">"Java"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Java 注解的注册方式</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 可以使用 @Component 注解方式来注册 Bean</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">   <span class="keyword">private</span> Integer id;</span><br><span class="line">   <span class="keyword">private</span> String name</span><br><span class="line">   <span class="comment">// 忽略其他方法</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// @Bean 注解方式来注册 Bean</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">   <span class="meta">@Bean</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> Person  <span class="title">person</span><span class="params">()</span></span>&#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">new</span> Person();</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="comment">// 忽略其他方法</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Java API 的注册方式</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用 BeanDefinitionRegistry.registerBeanDefinition() 方法的方式注册 Bean	</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomBeanDefinitionRegistry</span> <span class="keyword">implements</span> <span class="title">BeanDefinitionRegistryPostProcessor</span> </span>&#123;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">postProcessBeanFactory</span><span class="params">(ConfigurableListableBeanFactory beanFactory)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">postProcessBeanDefinitionRegistry</span><span class="params">(BeanDefinitionRegistry registry)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">		RootBeanDefinition personBean = <span class="keyword">new</span> RootBeanDefinition(Person<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">		<span class="comment">// 新增 Bean</span></span><br><span class="line">		registry.registerBeanDefinition(<span class="string">"person"</span>, personBean);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Spring/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Mybatis/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1510,341 +1846,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2019/01/01/%E5%AE%9E%E8%B7%B5-Maven/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Spring/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Spring/" class="post-title-link" itemprop="url">查缺补漏-Spring</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-27 16:06:54" itemprop="dateModified" datetime="2021-09-27T16:06:54+08:00">2021-09-27</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/SpringFrameworkRutime.png"></p>
-<h3 id="Spring-Ioc"><a href="#Spring-Ioc" class="headerlink" title="Spring Ioc"></a>Spring Ioc</h3><h4 id="1-描述下依赖注入。"><a href="#1-描述下依赖注入。" class="headerlink" title="1.描述下依赖注入。"></a>1.描述下依赖注入。</h4><ul>
-<li>平常的Java开发中，程序员在某个类中需要依赖其它类的方法。通常是new一个依赖类再调用类实例的方法，这种开发存在的问题是new的类实例不好统一管理。 Spring提出了依赖注入的思想，即依赖类不由程序员实例化，而是通过Spring容器帮我们new指定实例并且将实例注入到需要该对象的类中。依赖注入的另一种说法是”控制反转”。通俗的理解是：平常我们new一个实例，这个实例的控制权是我们程序员。而控制反转是指new实例工作不由我们程序员来做而是交给Spring容器来做。</li>
-<li>IOC对于Spring框架来说，就是由Spring来负责控制对象的生命周期和对象间的关系。</li>
-<li>所谓依赖注入，就是由IOC容器在运行期间，动态地将某种依赖关系注入到对象之中，所以，以来注入DI 和控制反转IOC 是从不同的角度描述的同一间事情，就是值通过引用IOC容器，利用以来关系注入的方式，实现对象之间的解耦。</li>
-</ul>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/SpringIoc%E5%88%9D%E5%A7%8B%E5%8C%96%E8%BF%87%E7%A8%8B.png"></p>
-<h4 id="2-注入的几种方式？"><a href="#2-注入的几种方式？" class="headerlink" title="2. 注入的几种方式？"></a>2. 注入的几种方式？</h4><ul>
-<li>Set注入。</li>
-<li>构造方法注入。</li>
-<li>工厂的方法注入。</li>
-</ul>
-<h3 id="Spring-AOP"><a href="#Spring-AOP" class="headerlink" title="Spring AOP"></a>Spring AOP</h3><ul>
-<li><p>AOP(Aspect-Oriented Programming:⾯向切⾯编程)能够将那些与业务⽆关，却为业务模块所共同调⽤的逻辑或责任（例如事务处理、⽇志管理、权限控制等）封装起来，便于减少系统的重复代码，降低模块间的耦合度，并有利于未来的可拓展性和可维护性。</p>
-<ul>
-<li><strong>Spring AOP</strong>就是基于动态代理的，如果要代理的对象，实现了某个接⼝，那么Spring AOP会使⽤<strong>JDK</strong> Proxy，去创建代理对象，⽽对于没有实现接⼝的对象，就⽆法使⽤ JDK Proxy 去进⾏代理了，这时候Spring AOP会使⽤<strong>Cglib</strong> ，这时候Spring AOP会使⽤ <strong>Cglib</strong> ⽣成⼀个被代理对象的⼦类来作为代理。</li>
-</ul>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/SpringAopProcess.png"></p>
-<ul>
-<li>Spring Aop是运行时增强。</li>
-<li>Cglib Aop是编译器增强。</li>
-</ul>
-</li>
-<li><p>AOP专门用于处理系统中分布于各个模块中交叉关注点的问题，在JavaEE应用中，常常通过AOP来处理一些横切性质的系统级服务，如事物管理、安全检查、缓存对象池管理。</p>
-<ul>
-<li>1.）切面 -Aspect 切面类 比如日志类</li>
-<li>2.） 连接点 - Join Point 加入切点的那个点</li>
-<li>3.）通知 -Advice 是在切面某个特定的连接点上的动作。</li>
-<li>4.）切入点 - Point Cut 匹配连接点的断点</li>
-<li>5.）引入 - Introduction </li>
-<li>6.）目标对象 - Target Object 被一个或多个通知对象，永远被代理的对象。</li>
-<li>7.） AOP代理 - AOP Proxy AOP创建的对象用来实现切面对象。</li>
-<li>8.）织入 - Weaving </li>
-<li>9.）AOP通俗的理解：<ul>
-<li>一个组建A，不关心其他常用的服务组件B，但是这个组件A使用组件B的时候不是组建A自身去调用，而是通过配置等其他方式，比如Spring中可以通过XML配置文件。这样就使的A压根不需要知道服务组件B是怎么样的，A只关心自己的业务逻辑，具体A使用B的时候，配置文件去做，与具体的A组件无关。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="谈谈对Spring理解"><a href="#谈谈对Spring理解" class="headerlink" title="谈谈对Spring理解"></a>谈谈对Spring理解</h3><ul>
-<li>Spring是一个轻量级的IoC和AOP容器框架。是为Java应用程序提供基础性服务的一套框架，目的是用于简化企业应用程序的开发，它使得开发者只需要关心业务需求。</li>
-<li>主要由以下几个模块组成：<ul>
-<li>Spring Core：核心类库，提供IOC服务</li>
-<li>Spring Context：提供框架式的Bean访问方式，以及企业级功能（JNDI、定时任务等）</li>
-<li>Spring AOP：AOP服务切面编程</li>
-<li>Spring DAO：对JDBC的抽象，简化了数据访问异常的处理</li>
-<li>Spring ORM：对现有的ORM框架的支持</li>
-<li>Spring Web：提供了基本的面向Web的综合特性，例如多方文件上传</li>
-<li>Spring MVC：提供面向Web应用的Model-View-Controller实现</li>
-</ul>
-</li>
-</ul>
-<h3 id="谈谈对-IoC-和-DI-的理解"><a href="#谈谈对-IoC-和-DI-的理解" class="headerlink" title="谈谈对 IoC 和 DI 的理解"></a>谈谈对 IoC 和 DI 的理解</h3><ul>
-<li>IoC（Inversion of Control，翻译为“控制反转”）不是一个具体的技术，而是一种设计思想。与传统控制流相比，IoC 会颠倒控制流，在传统的编程中需要开发者自行创建并销毁对象，而在 IoC 中会把这些操作交给框架来处理，这样开发者就不用关注具体的实现细节了，拿来直接用就可以了，这就是控制反转。</li>
-<li>IoC 很好的体现出了面向对象的设计法则之一——好莱坞法则：“别找我们，我们找你”。即由 IoC 容器帮对象找到相应的依赖对象并注入，而不是由对象主动去找。</li>
-<li>DI（Dependency Injection，翻译为“依赖注入”）表示组件间的依赖关系交由容器在运行期自动生成，也就是说，由容器动态的将某个依赖关系注入到组件之中，这样就能提升组件的重用频率。通过依赖注入机制，我们只需要通过简单的配置，就可指定目标需要的资源，完成自身的业务逻辑，而不需要关心资源来自哪里、由谁实现等问题。</li>
-<li>IoC 和 DI 其实是同一个概念从不同角度的描述的，由于控制反转这个概念比较含糊（可能只理解成了容器控制对象这一个层面，很难让人想到谁来维护对象关系），所以 2004 年被开发者尊称为“教父”的 Martin Fowler（世界顶级专家，敏捷开发方法的创始人之一）又给出了一个新的名字“依赖注入”，相对 IoC 而言，“依赖注入”明确描述了“被注入对象依赖 IoC 容器配置依赖对象”。</li>
-</ul>
-<h3 id="Spring-中的单例-bean-的线程安全问题了解吗？"><a href="#Spring-中的单例-bean-的线程安全问题了解吗？" class="headerlink" title="Spring 中的单例 bean 的线程安全问题了解吗？"></a>Spring 中的单例 bean 的线程安全问题了解吗？</h3><ul>
-<li>单例 bean 存在线程问题，主要是因为当多个线程操作同⼀个对象的时候，对这个对象的⾮静态成员变量的写操作会存在线程安全问题。在类中定义⼀个ThreadLocal成员变量，将需要的可变成员变量保存在 ThreadLocal 中（推荐的⼀种⽅式）。</li>
-</ul>
-<h3 id="Spring框架中都用到了哪些设计模式"><a href="#Spring框架中都用到了哪些设计模式" class="headerlink" title="Spring框架中都用到了哪些设计模式"></a>Spring框架中都用到了哪些设计模式</h3><ul>
-<li>工厂模式：BeanFactory就是简单工厂模式的体现，用来创建对象的实例</li>
-<li>单例模式：Bean默认为单例模式</li>
-<li>代理模式：Spring的AOP功能用到了JDK的动态代理和CGLIB字节码生成技术</li>
-<li>模板方法：用来解决代码重复的问题。比如. RestTemplate, JmsTemplate, JpaTemplate</li>
-<li>观察者模式：定义对象键一种一对多的依赖关系，当一个对象的状态发生改变时，所有依赖于它的对象都会得到通知被制动更新，如Spring中listener的实现–ApplicationListener，Spring 事件驱动模型就是观察者模式很经典的⼀个应⽤。</li>
-<li>适配器模式 :Spring AOP 的增强或通知(Advice)使⽤到了适配器模式、spring MVC 中也是⽤到了适配器模式适配 Controller 。</li>
-<li>策略模式： Bean的实例化的时候决定采用何种方式初始化bean实例（反射或者CGLIB动态字节码生成）</li>
-</ul>
-<h3 id="Spring中Autowired和Resource关键字的区别？"><a href="#Spring中Autowired和Resource关键字的区别？" class="headerlink" title="Spring中Autowired和Resource关键字的区别？"></a>Spring中Autowired和Resource关键字的区别？</h3><ul>
-<li>@Resource和@Autowired都是做bean的注入时使用，其实@Resource并不是Spring的注解，它的包是javax.annotation.Resource，需要导入，但是Spring支持该注解的注入。</li>
-<li>Autowired注解是按照类型（byType）装配依赖对象，默认情况下它要求依赖对象必须存在，如果允许null值，可以设置它的required属性为false。如果我们想使用按照名称（byName）来装配，可以结合@Qualififier注解一起使用：</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestServiceImpl</span> </span>&#123; </span><br><span class="line">  <span class="comment">// 下面两种@Autowired只要使用一种即可 </span></span><br><span class="line">  <span class="meta">@Autowired</span> </span><br><span class="line">  <span class="keyword">private</span> UserDao userDao; <span class="comment">// 用于字段上 </span></span><br><span class="line">  </span><br><span class="line">  <span class="meta">@Autowired</span>  <span class="comment">// 用于属性的方法上</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUserDao</span><span class="params">(UserDao userDao)</span> </span></span><br><span class="line"><span class="function">  </span>&#123;  </span><br><span class="line">    <span class="keyword">this</span>.userDao = userDao; </span><br><span class="line">  &#125; </span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// @Autowired注解是按照类型（byType）装配依赖对象，默认情况下它要求依赖对象必须存在，如果允</span></span><br><span class="line"><span class="comment">// 许null值，可以设置它的required属性为false。如果我们想使用按照名称（byName）来装配，可以结</span></span><br><span class="line"><span class="comment">// 合@Qualifier注解一起使用。如下：</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestServiceImpl</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Autowired</span> </span><br><span class="line">  <span class="meta">@Qualifier</span>(<span class="string">"userDao"</span>) <span class="keyword">private</span> UserDao userDao;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>Resource默认按照ByName自动注入，由J2EE提供，需要导入包javax.annotation.Resource。@Resource有两个重要的属性：name和type，而Spring将@Resource注解的name属性解析为bean的名字，而type属性则解析为bean的类型。所以，如果使用name属性，则使用byName的自动注入策略，而使用type属性时则使用byType自动注入策略。如果既不制定name也不制定type属性，这时将通过反射机制使用byName自动注入策略。</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestServiceImpl</span> </span>&#123; </span><br><span class="line">  <span class="comment">// 下面两种@Resource只要使用一种即可 </span></span><br><span class="line">  </span><br><span class="line">  <span class="comment">// 用于字段上 </span></span><br><span class="line">  <span class="meta">@Resource</span>(name=<span class="string">"userDao"</span>) </span><br><span class="line">  <span class="keyword">private</span> UserDao userDao; </span><br><span class="line">  </span><br><span class="line">  <span class="comment">// 用于属性的setter方法上 </span></span><br><span class="line">  <span class="meta">@Resource</span>(name=<span class="string">"userDao"</span>) </span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUserDao</span><span class="params">(UserDao userDao)</span> </span>&#123; </span><br><span class="line">    <span class="keyword">this</span>.userDao = userDao;</span><br><span class="line">  &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="Bean注册方式有几种？"><a href="#Bean注册方式有几种？" class="headerlink" title="Bean注册方式有几种？"></a>Bean注册方式有几种？</h3><ul>
-<li>XML 配置文件的注册方式</li>
-</ul>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"person"</span> <span class="attr">class</span>=<span class="string">"org.springframework.beans.Person"</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"id"</span> <span class="attr">value</span>=<span class="string">"1"</span>/&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"name"</span> <span class="attr">value</span>=<span class="string">"Java"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>Java 注解的注册方式</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 可以使用 @Component 注解方式来注册 Bean</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">   <span class="keyword">private</span> Integer id;</span><br><span class="line">   <span class="keyword">private</span> String name</span><br><span class="line">   <span class="comment">// 忽略其他方法</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// @Bean 注解方式来注册 Bean</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">   <span class="meta">@Bean</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> Person  <span class="title">person</span><span class="params">()</span></span>&#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">new</span> Person();</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="comment">// 忽略其他方法</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>Java API 的注册方式</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用 BeanDefinitionRegistry.registerBeanDefinition() 方法的方式注册 Bean	</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomBeanDefinitionRegistry</span> <span class="keyword">implements</span> <span class="title">BeanDefinitionRegistryPostProcessor</span> </span>&#123;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">postProcessBeanFactory</span><span class="params">(ConfigurableListableBeanFactory beanFactory)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">postProcessBeanDefinitionRegistry</span><span class="params">(BeanDefinitionRegistry registry)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">		RootBeanDefinition personBean = <span class="keyword">new</span> RootBeanDefinition(Person<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">		<span class="comment">// 新增 Bean</span></span><br><span class="line">		registry.registerBeanDefinition(<span class="string">"person"</span>, personBean);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Spring/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Redis/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Redis/" class="post-title-link" itemprop="url">查缺补漏-Redis</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-27 16:00:47" itemprop="dateModified" datetime="2021-09-27T16:00:47+08:00">2021-09-27</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-<h1 id="Redis-简介"><a href="#Redis-简介" class="headerlink" title="Redis 简介"></a>Redis 简介</h1><blockquote>
-<p>Redis 是完全开源免费的，遵守 BSD 协议，是一个高性能的 key - value 数据库</p>
-</blockquote>
-<ul>
-<li>Redis 与 其他 key - value 缓存产品有以下三个特点：<ul>
-<li>Redis 支持数据持久化，可以将内存中的数据保存在磁盘中，重启的时候可以再次加载进行使用。</li>
-<li>Redis 不仅仅支持简单的 key - value 类型的数据，同时还提供 list，set，zset，hash 等数据结构的存储</li>
-<li>Redis 支持数据的备份，即 master - slave 模式的数据备份。</li>
-</ul>
-</li>
-<li>Redis是内存数据库，所有操作都在内存上完成，内存的访问速度本身就很快，读的速度是 110000 次 /s, 写的速度是 81000 次 /s。另一方面是因为它的数据结构。键值对是按一定的数据结构来组织的，操作键值对最终就是对数据结构进行增删改查操作，所以高效的数据结构是 Redis 快速处理数据的基础。</li>
-</ul>
-<h3 id="Redis单线程"><a href="#Redis单线程" class="headerlink" title="Redis单线程"></a>Redis单线程</h3><ul>
-<li>我们通常说，Redis 是单线程，主要是指 Redis 的网络 IO 和键值对读写是由一个线程来完成的，这也是 Redis 对外提供键值存储服务的主要流程。但 Redis 的其他功能，比如持久化、异步删除、集群数据同步等，其实是由额外的线程执行的。Redis 的单线程设计机制以及多路复用机制</li>
-<li>Linux 中的 IO 多路复用机制<ul>
-<li>Linux 中的 IO 多路复用机制是指一个线程处理多个 IO 流，就是我们经常听到的 select/epoll 机制。简单来说，在 Redis 只运行单线程的情况下，该机制允许内核中，同时存在多个监听套接字和已连接套接字。内核会一直监听这些套接字上的连接请求或数据请求。一旦有请求到达，就会交给 Redis 线程处理，这就实现了一个 Redis 线程处理多个 IO 流的效果。</li>
-</ul>
-</li>
-</ul>
-<h3 id="Redis单线程处理IO请求性能瓶颈"><a href="#Redis单线程处理IO请求性能瓶颈" class="headerlink" title="Redis单线程处理IO请求性能瓶颈"></a>Redis单线程处理IO请求性能瓶颈</h3><ul>
-<li>任意一个请求在server中一旦发生耗时，都会影响整个server的性能，也就是说后面的请求都要等前面这个耗时请求处理完成，自己才能被处理到。耗时的操作包括以下几种：<ul>
-<li>操作bigkey：写入一个bigkey在分配内存时需要消耗更多的时间，同样，删除bigkey释放内存同样会产生耗时；</li>
-<li>使用复杂度过高的命令：例如SORT/SUNION/ZUNIONSTORE，或者O(N)命令，但是N很大，例如lrange key 0 -1一次查询全量数据；</li>
-<li>大量key集中过期：Redis的过期机制也是在主线程中执行的，大量key集中过期会导致处理一个请求时，耗时都在删除过期key，耗时变长；</li>
-<li>淘汰策略：淘汰策略也是在主线程执行的，当内存超过Redis内存上限后，每次写入都需要淘汰一些key，也会造成耗时变长；</li>
-<li>AOF刷盘开启always机制：每次写入都需要把这个操作刷到磁盘，写磁盘的速度远比写内存慢，会拖慢Redis的性能；</li>
-<li>主从全量同步生成RDB：虽然采用fork子进程生成数据快照，但fork这一瞬间也是会阻塞整个线程的，实例越大，阻塞时间越久；</li>
-</ul>
-</li>
-<li>并发量非常大时，单线程读写客户端IO数据存在性能瓶颈，虽然采用IO多路复用机制，但是读写客户端数据依旧是同步IO，只能单线程依次读取客户端的数据，无法利用到CPU多核。</li>
-<li>Redis在4.0推出了lazy-free机制，把bigkey释放内存的耗时操作放在了异步线程中执行，降低对主线程的影响。</li>
-<li>Redis在6.0推出了多线程，可以在高并发场景下利用CPU多核多线程读写客户端数据，进一步提升server性能，当然，只是针对客户端的读写是并行的，每个命令的真正操作依旧是单线程的。</li>
-</ul>
-<h3 id="Redis持久化机制"><a href="#Redis持久化机制" class="headerlink" title="Redis持久化机制"></a>Redis持久化机制</h3><ul>
-<li>Redis是一个支持持久化的内存数据库，通过持久化机制把内存中的数据同步到硬盘文件来保证数据持久化。当Redis重启后通过把硬盘文件重新加载到内存，就能达到恢复数据的目的。<ul>
-<li>实现：单独创建fork()一个子进程，将当前父进程的数据库数据复制到子进程的内存中，然后由子进程内存释放。</li>
-</ul>
-</li>
-<li>RDB是Redis默认的持久化方式。按照一定的时间周期策略把内存的数据以快照的形式保存到硬盘的二进制文件。即Snapshot快照存储，对应产生的数据文件为dump.rdb，通过配置文件中的save参数来定义快照的周期。（ 快照可以是其所表示的数据的一个副本，也可以是数据的一个复制品。）</li>
-<li>AOF：Redis会将每一个收到的写命令都通过Write函数追加到文件最后，类似于MySQL的binlog。当Redis重启是会通过重新执行文件中保存的写命令来在内存中重建整个数据库的内容。当两种方式同时开启时，数据恢复Redis会优先选择AOF恢复。</li>
-</ul>
-<h3 id="AOF日志"><a href="#AOF日志" class="headerlink" title="AOF日志"></a>AOF日志</h3><ul>
-<li>写后日志，“写后”的意思是 Redis 是先执行命令，把数据写入内存，然后才记录日志。</li>
-<li>AOF 也有两个潜在的风险<ul>
-<li>如果刚执行完一个命令，还没有来得及记日志就宕机了，那么这个命令和相应的数据就有丢失的风险。如果此时 Redis 是用作缓存，还可以从后端数据库重新读入数据进行恢复，但是，如果 Redis 是直接用作数据库的话，此时，因为命令没有记入日志，所以就无法用日志进行恢复了。</li>
-<li>AOF 虽然避免了对当前命令的阻塞，但可能会给下一个操作带来阻塞风险。这是因为，AOF 日志也是在主线程中执行的，如果在把日志文件写入磁盘时，磁盘写压力大，就会导致写盘很慢，进而导致后续的操作也无法执行了。</li>
-</ul>
-</li>
-<li>AOF三种写回策略<ul>
-<li>Always，同步写回：每个写命令执行完，立马同步地将日志写回磁盘；<ul>
-<li>同步写回可以做到基本不丢数据，但是它在每一个写命令后都有一个慢速的落盘操作，不可避免地会影响主线程性能。</li>
-</ul>
-</li>
-<li>Everysec，每秒写回：每个写命令执行完，只是先把日志写到 AOF 文件的内存缓冲区，每隔一秒把缓冲区中的内容写入磁盘；<ul>
-<li>每秒写回采用一秒写回一次的频率，避免了“同步写回”的性能开销，虽然减少了对系统性能的影响，但是如果发生宕机，上一秒内未落盘的命令操作仍然会丢失。所以，这只能算是，在避免影响主线程性能和避免数据丢失两者间取了个折中。</li>
-</ul>
-</li>
-<li>No，操作系统控制的写回：每个写命令执行完，只是先把日志写到 AOF 文件的内存缓冲区，由操作系统决定何时将缓冲区内容写回磁盘。<ul>
-<li>操作系统控制的写回在写完缓冲区后，就可以继续执行后续的命令，但是落盘的时机已经不在 Redis 手中了，只要 AOF 记录没有写回磁盘，一旦宕机对应的数据就丢失了。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="RDB快照"><a href="#RDB快照" class="headerlink" title="RDB快照"></a>RDB快照</h3><ul>
-<li>Redis 的数据都在内存中，为了提供所有数据的可靠性保证，它执行的是全量快照，也就是说，把内存中的所有数据都记录到磁盘中。全量数据越多，RDB 文件就越大，往磁盘上写数据的时间开销就越大。</li>
-<li>对于 Redis 而言，它的单线程模型就决定了，我们要尽量避免所有会阻塞主线程的操作，所以，针对任何操作，我们都会提一个灵魂之问：“它会阻塞主线程吗?”RDB 文件的生成是否会阻塞主线程，这就关系到是否会降低 Redis 的性能。</li>
-<li>Redis 提供了两个命令来生成 RDB 文件，分别是 save 和 bgsave。<ul>
-<li>save：在主线程中执行，会导致阻塞；</li>
-<li>bgsave：创建一个子进程，专门用于写入 RDB 文件，避免了主线程的阻塞，这也是 Redis RDB 文件生成的默认配置。</li>
-</ul>
-</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Redis/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
