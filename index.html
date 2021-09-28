@@ -239,6 +239,218 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Mybatis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Mybatis/" class="post-title-link" itemprop="url">查缺补漏-Mybatis</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-28 14:53:12" itemprop="dateModified" datetime="2021-09-28T14:53:12+08:00">2021-09-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>本章是整理知识内容，为强化知识长期更新。</p>
+</blockquote>
+<h2 id="Mybatis-执行流程"><a href="#Mybatis-执行流程" class="headerlink" title="Mybatis 执行流程"></a>Mybatis 执行流程</h2><ul>
+<li>1、获取sqlSessionFactory对象:解析文件的每一个信息保存在Configuration中，返回包含Configuration的DefaultSqlSession；注意：MappedStatement：代表一个增删改查的详细信息。</li>
+<li>2.获取sqlSession对象,返回一个DefaultSQlSession对象，包含Executor和Configuration;这一步会创建Executor对象；</li>
+<li>3.获取接口的代理对象（MapperProxy）,getMapper，使用MapperProxyFactory创建一个MapperProxy的代理对象。</li>
+</ul>
+<h2 id="Mybatis-拦截器"><a href="#Mybatis-拦截器" class="headerlink" title="Mybatis 拦截器"></a>Mybatis 拦截器</h2><blockquote>
+<p>代理对象里面包含了，DefaultSqlSession（Executor）</p>
+</blockquote>
+<ul>
+<li>执行增删改查方法。<ul>
+<li>调用DefaultSqlSession的增删改查（Executor）</li>
+<li>创建一个StatementHandler对象、且同时创建出ParameterHandler和ResultSetHandler。</li>
+<li>调用StatementHandler预编译参数以及设置参数值;使用ParameterHandler来给sql设置参数</li>
+<li>调用StatementHandler的增删改查方法；</li>
+<li>ResultSetHandler封装结果</li>
+</ul>
+</li>
+<li>MyBatis 拦截签名  拦截器签名是一个名为 @Intercepts 的注解，该注解中可以通过 @Signature 配置多个签名。@Signature 注解中则包含三个属性<ul>
+<li>type: 拦截器需要拦截的接口，有 4 个可选项，分别是：Executor、ParameterHandler、ResultSetHandler 以及 StatementHandler。</li>
+<li>method: 拦截器所拦截接口中的方法名，也就是前面四个接口中的方法名，接口和方法要对应上。</li>
+<li>args: 拦截器所拦截方法的参数类型，通过方法名和参数类型可以锁定唯一一个方法。</li>
+</ul>
+</li>
+<li>被拦截的对象<ul>
+<li>org.apache.ibatis.executor.Executor</li>
+<li>org.apache.ibatis.executor.statement.StatementHandler</li>
+<li>org.apache.ibatis.executor.statement.ParameterHandler</li>
+<li>org.apache.ibatis.executor.resultset.ResultSetHandler</li>
+</ul>
+</li>
+<li>Executor<ul>
+<li>update：该方法会在所有的 INSERT、 UPDATE、 DELETE 执行时被调用，如果想要拦截这些操作，可以通过该方法实现。</li>
+<li>query：该方法会在 SELECT 查询方法执行时被调用，方法参数携带了很多有用的信息，如果需要获取，可以通过该方法实现。</li>
+<li>queryCursor：当 SELECT 的返回类型是 Cursor 时，该方法会被调用。</li>
+<li>flushStatements：当 SqlSession 方法调用 flushStatements 方法或执行的接口方法中带有 @Flush 注解时该方法会被触发。</li>
+<li>commit：当 SqlSession 方法调用 commit 方法时该方法会被触发。</li>
+<li>rollback：当 SqlSession 方法调用 rollback 方法时该方法会被触发。</li>
+<li>getTransaction：当 SqlSession 方法获取数据库连接时该方法会被触发。</li>
+<li>close：该方法在懒加载获取新的 Executor 后会被触发。</li>
+<li>isClosed：该方法在懒加载执行查询前会被触发。</li>
+</ul>
+</li>
+<li>StatementHandler<ul>
+<li>prepare：该方法在数据库执行前被触发。</li>
+<li>parameterize：该方法在 prepare 方法之后执行，用来处理参数信息。</li>
+<li>batch：如果 MyBatis 的全剧配置中配置了 defaultExecutorType=”BATCH”，执行数据操作时该方法会被调用。</li>
+<li>update：更新操作时该方法会被触发。</li>
+<li>query：该方法在 SELECT 方法执行时会被触发。</li>
+<li>queryCursor：该方法在 SELECT 方法执行时，并且返回值为 Cursor 时会被触发。</li>
+</ul>
+</li>
+<li>ParameterHandler<ul>
+<li>getParameterObject：在执行存储过程处理出参的时候该方法会被触发。</li>
+<li>setParameters：设置 SQL 参数时该方法会被触发。</li>
+</ul>
+</li>
+<li>ResultSetHandler<ul>
+<li>handleResultSets：该方法会在所有的查询方法中被触发（除去返回值类型为 Cursor<E> 的查询方法），一般来说，如果我们想对查询结果进行二次处理，可以通过拦截该方法实现。</li>
+<li>handleCursorResultSets：当查询方法的返回值类型为 Cursor<E> 时，该方法会被触发。</li>
+<li>handleOutputParameters：使用存储过程处理出参的时候该方法会被调用。</li>
+</ul>
+</li>
+</ul>
+<h2 id="MyBatis插件"><a href="#MyBatis插件" class="headerlink" title="MyBatis插件"></a>MyBatis插件</h2><blockquote>
+<p>MyBatis 将插件单独分离出一个模块，位于 org.apache.ibatis.plugin 包中，在该模块中主要使用了两种设计模式：代理模式和责任链模式。</p>
+</blockquote>
+<ul>
+<li><p>插件接口</p>
+<ul>
+<li><p>org.apache.ibatis.plugin.Interceptor </p>
+</li>
+<li><p>intercept：它将直接覆盖你所拦截的对象，有个参数Invocation对象，通过该对象，可以反射调度原来对象的方法； </p>
+</li>
+<li><p>plugin：target是被拦截的对象，它的作用是给被拦截对象生成一个代理对象； </p>
+</li>
+<li><p>setProperties：允许在plugin元素中配置所需参数，该方法在插件初始化的时候会被调用一次； </p>
+</li>
+</ul>
+</li>
+<li><p>MyBatis允许我们自定义 Interceptor 拦截 SQL 语句执行过程中的某些关键逻辑，允许拦截的方法有：Executor 类中的 update()、query()、flushStatements()、commit()、rollback()、getTransaction()、close()、isClosed()方法，ParameterHandler 中的 setParameters()、getParameterObject() 方法，ResultSetHandler中的 handleOutputParameters()、handleResultSets()方法，以及StatementHandler 中的parameterize()、prepare()、batch()、update()、query()方法。</p>
+</li>
+</ul>
+<h3 id="MyBatis-中的设计模式"><a href="#MyBatis-中的设计模式" class="headerlink" title="MyBatis 中的设计模式"></a>MyBatis 中的设计模式</h3><ul>
+<li>工厂模式<ul>
+<li>工厂模式在 MyBatis 中的典型代表是 SqlSessionFactory。</li>
+<li>SqlSession 是 MyBatis 中的重要 Java 接口，可以通过该接口来执行 SQL 命令、获取映射器示例和管理事务，而 SqlSessionFactory 正是用来产生 SqlSession 对象的，所以它在 MyBatis 中是比较核心的接口之一。</li>
+<li>工厂模式应用解析：SqlSessionFactory 是一个接口类，它的子类 DefaultSqlSessionFactory 有一个 openSession(ExecutorType execType) 的方法，其中使用了工厂模式。</li>
+</ul>
+</li>
+<li>建造者模式<ul>
+<li>MyBatis 中的典型代表是 SqlSessionFactoryBuilder。</li>
+<li>普通的对象都是通过 new 关键字直接创建的，但是如果创建对象需要的构造参数很多，且不能保证每个参数都是正确的或者不能一次性得到构建所需的所有参数，那么就需要将构建逻辑从对象本身抽离出来，让对象只关注功能，把构建交给构建类，这样可以简化对象的构建，也可以达到分步构建对象的目的，而 SqlSessionFactoryBuilder 的构建过程正是如此。</li>
+<li>在 SqlSessionFactoryBuilder 中构建 SqlSessionFactory 对象的过程是这样的，首先需要通过 XMLConfigBuilder 对象读取并解析 XML 的配置文件，然后再将读取到的配置信息存入到 Configuration 类中，然后再通过 build 方法生成我们需要的 DefaultSqlSessionFactory 对象。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> SqlSessionFactory <span class="title">build</span><span class="params">(InputStream inputStream, String environment, Properties properties)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        XMLConfigBuilder parser = <span class="keyword">new</span> XMLConfigBuilder(inputStream, environment, properties);</span><br><span class="line">        <span class="keyword">return</span> build(parser.parse());</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        <span class="keyword">throw</span> ExceptionFactory.wrapException(<span class="string">"Error building SqlSession."</span>, e);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        ErrorContext.instance().reset();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">        inputStream.close();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">        <span class="comment">// Intentionally ignore. Prefer previous error.</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> SqlSessionFactory <span class="title">build</span><span class="params">(Configuration config)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> DefaultSqlSessionFactory(config);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>单例模式<ul>
+<li>单例模式在 MyBatis 中的典型代表是 ErrorContext。</li>
+<li>使用 private 修饰的 ThreadLocal 来保证每个线程拥有一个 ErrorContext 对象，在调用 instance() 方法时再从 ThreadLocal 中获取此单例对象。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ErrorContext</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String LINE_SEPARATOR = System.lineSeparator();</span><br><span class="line">  <span class="comment">// 每个线程存储的容器</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ThreadLocal&lt;ErrorContext&gt; LOCAL = ThreadLocal.withInitial(ErrorContext::<span class="keyword">new</span>);</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ErrorContext <span class="title">instance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> LOCAL.get();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>适配器模式</p>
+<ul>
+<li>MyBatis 中的典型代表是 Log。<ul>
+<li>SLF4J</li>
+<li>Apache Commons Logging</li>
+<li>Log4j 2</li>
+<li>Log4j</li>
+<li>JDK logging</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>代理模式</p>
+<ul>
+<li>代理模式在 MyBatis 中的典型代表是 MapperProxyFactory。</li>
+</ul>
+</li>
+<li><p>模版方法模式</p>
+<ul>
+<li>模板方法在 MyBatis 中的典型代表是 BaseExecutor。</li>
+</ul>
+</li>
+<li><p>装饰器模式</p>
+<ul>
+<li>装饰器模式在 MyBatis 中的典型代表是 Cache。</li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCore/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -620,300 +832,6 @@
             </div>
           <!--/noindex-->
         
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Mybatis/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Mybatis/" class="post-title-link" itemprop="url">查缺补漏-Mybatis</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-27 18:26:23" itemprop="dateModified" datetime="2021-09-27T18:26:23+08:00">2021-09-27</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-<h2 id="Mybatis-执行流程"><a href="#Mybatis-执行流程" class="headerlink" title="Mybatis 执行流程"></a>Mybatis 执行流程</h2><ul>
-<li>1、获取sqlSessionFactory对象:解析文件的每一个信息保存在Configuration中，返回包含Configuration的DefaultSqlSession；注意：MappedStatement：代表一个增删改查的详细信息。</li>
-<li>2.获取sqlSession对象,返回一个DefaultSQlSession对象，包含Executor和Configuration;这一步会创建Executor对象；</li>
-<li>3.获取接口的代理对象（MapperProxy）,getMapper，使用MapperProxyFactory创建一个MapperProxy的代理对象。</li>
-</ul>
-<h2 id="Mybatis-拦截器"><a href="#Mybatis-拦截器" class="headerlink" title="Mybatis 拦截器"></a>Mybatis 拦截器</h2><blockquote>
-<p>代理对象里面包含了，DefaultSqlSession（Executor）</p>
-</blockquote>
-<ul>
-<li>4.执行增删改查方法。</li>
-<li><ul>
-<li>调用DefaultSqlSession的增删改查（Executor）</li>
-</ul>
-</li>
-<li><ul>
-<li>创建一个StatementHandler对象、且同时创建出ParameterHandler和ResultSetHandler。</li>
-</ul>
-</li>
-<li><ul>
-<li>调用StatementHandler预编译参数以及设置参数值;使用ParameterHandler来给sql设置参数</li>
-</ul>
-</li>
-<li><ul>
-<li>调用StatementHandler的增删改查方法；</li>
-</ul>
-</li>
-<li><ul>
-<li>ResultSetHandler封装结果</li>
-</ul>
-</li>
-<li>MyBatis 拦截签名  拦截器签名是一个名为 @Intercepts 的注解，该注解中可以通过 @Signature 配置多个签名。@Signature 注解中则包含三个属性</li>
-<li><ul>
-<li>type: 拦截器需要拦截的接口，有 4 个可选项，分别是：Executor、ParameterHandler、ResultSetHandler 以及 StatementHandler。</li>
-</ul>
-</li>
-<li><ul>
-<li>method: 拦截器所拦截接口中的方法名，也就是前面四个接口中的方法名，接口和方法要对应上。</li>
-</ul>
-</li>
-<li><ul>
-<li>args: 拦截器所拦截方法的参数类型，通过方法名和参数类型可以锁定唯一一个方法。</li>
-</ul>
-</li>
-<li>被拦截的对象</li>
-<li><ul>
-<li>org.apache.ibatis.executor.Executor</li>
-</ul>
-</li>
-<li><ul>
-<li>org.apache.ibatis.executor.statement.StatementHandler</li>
-</ul>
-</li>
-<li><ul>
-<li>org.apache.ibatis.executor.statement.ParameterHandler</li>
-</ul>
-</li>
-<li><ul>
-<li>org.apache.ibatis.executor.resultset.ResultSetHandler</li>
-</ul>
-</li>
-<li>Executor</li>
-<li><ul>
-<li>update：该方法会在所有的 INSERT、 UPDATE、 DELETE 执行时被调用，如果想要拦截这些操作，可以通过该方法实现。</li>
-</ul>
-</li>
-<li><ul>
-<li>query：该方法会在 SELECT 查询方法执行时被调用，方法参数携带了很多有用的信息，如果需要获取，可以通过该方法实现。</li>
-</ul>
-</li>
-<li><ul>
-<li>queryCursor：当 SELECT 的返回类型是 Cursor 时，该方法会被调用。</li>
-</ul>
-</li>
-<li><ul>
-<li>flushStatements：当 SqlSession 方法调用 flushStatements 方法或执行的接口方法中带有 @Flush 注解时该方法会被触发。</li>
-</ul>
-</li>
-<li><ul>
-<li>commit：当 SqlSession 方法调用 commit 方法时该方法会被触发。</li>
-</ul>
-</li>
-<li><ul>
-<li>rollback：当 SqlSession 方法调用 rollback 方法时该方法会被触发。</li>
-</ul>
-</li>
-<li><ul>
-<li>getTransaction：当 SqlSession 方法获取数据库连接时该方法会被触发。</li>
-</ul>
-</li>
-<li><ul>
-<li>close：该方法在懒加载获取新的 Executor 后会被触发。</li>
-</ul>
-</li>
-<li><ul>
-<li>isClosed：该方法在懒加载执行查询前会被触发。</li>
-</ul>
-</li>
-<li>StatementHandler</li>
-<li><ul>
-<li>prepare：该方法在数据库执行前被触发。</li>
-</ul>
-</li>
-<li><ul>
-<li>parameterize：该方法在 prepare 方法之后执行，用来处理参数信息。</li>
-</ul>
-</li>
-<li><ul>
-<li>batch：如果 MyBatis 的全剧配置中配置了 defaultExecutorType=”BATCH”，执行数据操作时该方法会被调用。</li>
-</ul>
-</li>
-<li><ul>
-<li>update：更新操作时该方法会被触发。</li>
-</ul>
-</li>
-<li><ul>
-<li>query：该方法在 SELECT 方法执行时会被触发。</li>
-</ul>
-</li>
-<li><ul>
-<li>queryCursor：该方法在 SELECT 方法执行时，并且返回值为 Cursor 时会被触发。</li>
-</ul>
-</li>
-<li>ParameterHandler</li>
-<li><ul>
-<li>getParameterObject：在执行存储过程处理出参的时候该方法会被触发。</li>
-</ul>
-</li>
-<li><ul>
-<li>setParameters：设置 SQL 参数时该方法会被触发。</li>
-</ul>
-</li>
-<li>ResultSetHandler</li>
-<li><ul>
-<li>handleResultSets：该方法会在所有的查询方法中被触发（除去返回值类型为 Cursor<E> 的查询方法），一般来说，如果我们想对查询结果进行二次处理，可以通过拦截该方法实现。</li>
-</ul>
-</li>
-<li><ul>
-<li>handleCursorResultSets：当查询方法的返回值类型为 Cursor<E> 时，该方法会被触发。</li>
-</ul>
-</li>
-<li><ul>
-<li>handleOutputParameters：使用存储过程处理出参的时候该方法会被调用。</li>
-</ul>
-</li>
-</ul>
-<h2 id="MyBatis插件"><a href="#MyBatis插件" class="headerlink" title="MyBatis插件"></a>MyBatis插件</h2><blockquote>
-<p>MyBatis 将插件单独分离出一个模块，位于 org.apache.ibatis.plugin 包中，在该模块中主要使用了两种设计模式：代理模式和责任链模式。</p>
-</blockquote>
-<ul>
-<li><p>插件接口</p>
-<ul>
-<li><p>org.apache.ibatis.plugin.Interceptor </p>
-</li>
-<li><p>intercept：它将直接覆盖你所拦截的对象，有个参数Invocation对象，通过该对象，可以反射调度原来对象的方法； </p>
-</li>
-<li><p>plugin：target是被拦截的对象，它的作用是给被拦截对象生成一个代理对象； </p>
-</li>
-<li><p>setProperties：允许在plugin元素中配置所需参数，该方法在插件初始化的时候会被调用一次； </p>
-</li>
-</ul>
-</li>
-<li><p>MyBatis允许我们自定义 Interceptor 拦截 SQL 语句执行过程中的某些关键逻辑，允许拦截的方法有：Executor 类中的 update()、query()、flushStatements()、commit()、rollback()、getTransaction()、close()、isClosed()方法，ParameterHandler 中的 setParameters()、getParameterObject() 方法，ResultSetHandler中的 handleOutputParameters()、handleResultSets()方法，以及StatementHandler 中的parameterize()、prepare()、batch()、update()、query()方法。</p>
-</li>
-</ul>
-<h3 id="MyBatis-中的设计模式"><a href="#MyBatis-中的设计模式" class="headerlink" title="MyBatis 中的设计模式"></a>MyBatis 中的设计模式</h3><ul>
-<li>工厂模式<ul>
-<li>工厂模式在 MyBatis 中的典型代表是 SqlSessionFactory。</li>
-<li>SqlSession 是 MyBatis 中的重要 Java 接口，可以通过该接口来执行 SQL 命令、获取映射器示例和管理事务，而 SqlSessionFactory 正是用来产生 SqlSession 对象的，所以它在 MyBatis 中是比较核心的接口之一。</li>
-<li>工厂模式应用解析：SqlSessionFactory 是一个接口类，它的子类 DefaultSqlSessionFactory 有一个 openSession(ExecutorType execType) 的方法，其中使用了工厂模式。</li>
-</ul>
-</li>
-<li>建造者模式<ul>
-<li>MyBatis 中的典型代表是 SqlSessionFactoryBuilder。</li>
-<li>普通的对象都是通过 new 关键字直接创建的，但是如果创建对象需要的构造参数很多，且不能保证每个参数都是正确的或者不能一次性得到构建所需的所有参数，那么就需要将构建逻辑从对象本身抽离出来，让对象只关注功能，把构建交给构建类，这样可以简化对象的构建，也可以达到分步构建对象的目的，而 SqlSessionFactoryBuilder 的构建过程正是如此。</li>
-<li>在 SqlSessionFactoryBuilder 中构建 SqlSessionFactory 对象的过程是这样的，首先需要通过 XMLConfigBuilder 对象读取并解析 XML 的配置文件，然后再将读取到的配置信息存入到 Configuration 类中，然后再通过 build 方法生成我们需要的 DefaultSqlSessionFactory 对象。</li>
-</ul>
-</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> SqlSessionFactory <span class="title">build</span><span class="params">(InputStream inputStream, String environment, Properties properties)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        XMLConfigBuilder parser = <span class="keyword">new</span> XMLConfigBuilder(inputStream, environment, properties);</span><br><span class="line">        <span class="keyword">return</span> build(parser.parse());</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        <span class="keyword">throw</span> ExceptionFactory.wrapException(<span class="string">"Error building SqlSession."</span>, e);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        ErrorContext.instance().reset();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">        inputStream.close();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">        <span class="comment">// Intentionally ignore. Prefer previous error.</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> SqlSessionFactory <span class="title">build</span><span class="params">(Configuration config)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> DefaultSqlSessionFactory(config);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>单例模式<ul>
-<li>单例模式在 MyBatis 中的典型代表是 ErrorContext。</li>
-<li>使用 private 修饰的 ThreadLocal 来保证每个线程拥有一个 ErrorContext 对象，在调用 instance() 方法时再从 ThreadLocal 中获取此单例对象。</li>
-</ul>
-</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ErrorContext</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String LINE_SEPARATOR = System.lineSeparator();</span><br><span class="line">  <span class="comment">// 每个线程存储的容器</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ThreadLocal&lt;ErrorContext&gt; LOCAL = ThreadLocal.withInitial(ErrorContext::<span class="keyword">new</span>);</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ErrorContext <span class="title">instance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> LOCAL.get();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><p>适配器模式</p>
-<ul>
-<li>MyBatis 中的典型代表是 Log。<ul>
-<li>SLF4J</li>
-<li>Apache Commons Logging</li>
-<li>Log4j 2</li>
-<li>Log4j</li>
-<li>JDK logging</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>代理模式</p>
-<ul>
-<li>代理模式在 MyBatis 中的典型代表是 MapperProxyFactory。</li>
-</ul>
-</li>
-<li><p>模版方法模式</p>
-<ul>
-<li>模板方法在 MyBatis 中的典型代表是 BaseExecutor。</li>
-</ul>
-</li>
-<li><p>装饰器模式</p>
-<ul>
-<li>装饰器模式在 MyBatis 中的典型代表是 Cache。</li>
-</ul>
-</li>
-</ul>
-
       
     </div>
 
