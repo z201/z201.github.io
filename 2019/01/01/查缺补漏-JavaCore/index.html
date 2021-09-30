@@ -34,7 +34,7 @@
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%B8%BB%E8%A6%81%E6%B5%81%E7%A8%8B.png">
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/%E4%B8%80%E5%BC%A0%E5%9B%BE%E8%A7%A3%E9%87%8Alock.png">
 <meta property="article:published_time" content="2018-12-31T16:00:01.000Z">
-<meta property="article:modified_time" content="2021-09-29T07:06:30.077Z">
+<meta property="article:modified_time" content="2021-09-29T07:37:42.540Z">
 <meta property="article:author" content="胖枫叶">
 <meta property="article:tag" content="Java">
 <meta name="twitter:card" content="summary">
@@ -280,7 +280,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-29 15:06:30" itemprop="dateModified" datetime="2021-09-29T15:06:30+08:00">2021-09-29</time>
+                <time title="Modified: 2021-09-29 15:37:42" itemprop="dateModified" datetime="2021-09-29T15:37:42+08:00">2021-09-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1833,7 +1833,10 @@
 <ul>
 <li>当前的线程执行完成之后才能执行其他线程，但是其他线程执行的顺序是随机的。</li>
 </ul>
-<h5 id="3-ReentrantReadWriteLock"><a href="#3-ReentrantReadWriteLock" class="headerlink" title="3.ReentrantReadWriteLock"></a>3.ReentrantReadWriteLock</h5><h5 id="4-Semaphore"><a href="#4-Semaphore" class="headerlink" title="4.Semaphore"></a>4.Semaphore</h5><h5 id="5-CyclicBarrier"><a href="#5-CyclicBarrier" class="headerlink" title="5.CyclicBarrier"></a>5.CyclicBarrier</h5><blockquote>
+<h5 id="3-ReentrantReadWriteLock"><a href="#3-ReentrantReadWriteLock" class="headerlink" title="3.ReentrantReadWriteLock"></a>3.ReentrantReadWriteLock</h5><h5 id="4-Semaphore"><a href="#4-Semaphore" class="headerlink" title="4.Semaphore"></a>4.Semaphore</h5><blockquote>
+<p> java.util.concurrent(JUC) ,Semaphore翻译成字面意思为 信号量，Semaphore可以控同时访问的线程个数，通过 acquire() 获取一个许可，如果没有就等待，而 release() 释放一个许可。</p>
+</blockquote>
+<h5 id="5-CyclicBarrier"><a href="#5-CyclicBarrier" class="headerlink" title="5.CyclicBarrier"></a>5.CyclicBarrier</h5><blockquote>
 <p>CyclicBarrier 是 java.util.concurrent(JUC)中的锁，栅栏锁。它可以实现让一组线程等待至某个状态之后再全部同时执行。</p>
 </blockquote>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">oneTest</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       <span class="keyword">int</span> total = <span class="number">5</span>;</span><br><span class="line">       CyclicBarrier cyclicBarrier = <span class="keyword">new</span> CyclicBarrier(total);</span><br><span class="line">       ExecutorService executorService = Executors.newCachedThreadPool();</span><br><span class="line">       <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; total; i++) &#123;</span><br><span class="line">           executorService.execute(() -&gt; &#123;</span><br><span class="line">               log.info(<span class="string">"await"</span>);</span><br><span class="line">               <span class="keyword">try</span> &#123;</span><br><span class="line">                   cyclicBarrier.await();</span><br><span class="line">               &#125; <span class="keyword">catch</span> (InterruptedException</span><br><span class="line">                       | BrokenBarrierException e) &#123;</span><br><span class="line">                   e.printStackTrace();</span><br><span class="line">               &#125;</span><br><span class="line">               log.info(<span class="string">"running"</span>);</span><br><span class="line">           &#125;);</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
@@ -2145,6 +2148,9 @@
         </li>
         <li class="links-of-blogroll-item">
           <a href="http://www.sczyh30.com/" title="http:&#x2F;&#x2F;www.sczyh30.com&#x2F;" rel="noopener" target="_blank">浮生若梦</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://objcoding.com/" title="https:&#x2F;&#x2F;objcoding.com&#x2F;" rel="noopener" target="_blank">后端进阶</a>
         </li>
         <li class="links-of-blogroll-item">
           <a href="https://spring.hhui.top/spring-blog/" title="https:&#x2F;&#x2F;spring.hhui.top&#x2F;spring-blog&#x2F;" rel="noopener" target="_blank">一灰灰Blog</a>
