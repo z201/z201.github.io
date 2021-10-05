@@ -27,8 +27,9 @@
 <meta property="og:site_name" content="枫叶的小博客">
 <meta property="og:description" content="本章属于持续学习、长期更修。  HashMap 特征 HashMap 允许null键和null值 HashMao 并不是有序的存放。在使用iterate迭代的时候，并不能得到存放顺序。 HashMap使用它的内部类Node &lt;K，V&gt;来存储映射。 HashMap将entries存储到多个单链表中，称为存储桶或存储桶。默认的箱数为16，默认负载因子0.75，它的扩展系数为2，当键值对数">
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/HashMap/HashMap.png">
+<meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211005220907.png">
 <meta property="article:published_time" content="2018-08-23T03:08:00.000Z">
-<meta property="article:modified_time" content="2021-09-15T07:39:38.923Z">
+<meta property="article:modified_time" content="2021-10-05T14:11:00.119Z">
 <meta property="article:author" content="胖枫叶">
 <meta property="article:tag" content="Java">
 <meta property="article:tag" content="Java-Collecions-Framework">
@@ -276,7 +277,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-15 15:39:38" itemprop="dateModified" datetime="2021-09-15T15:39:38+08:00">2021-09-15</time>
+                <time title="Modified: 2021-10-05 22:11:00" itemprop="dateModified" datetime="2021-10-05T22:11:00+08:00">2021-10-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -311,7 +312,9 @@
 <li>HashMap不是线程安全的，对于多线程环境，您应该使用ConcurrentHashMap类或使用<code>Collections.synchronizedMap()</code>方法获取同步映射。</li>
 <li>底层实现是链表，但是jdk1.8后添加了红黑谁的转换。</li>
 <li>HashMap的Key用存放，所以key默认不允许重复的，如果想重复就重写key的hashcode和equals方法。</li>
+<li>查找方法，根据 hash 值我们能够快速定位到数组的具体下标，但是之后的话，需要顺着链表一个个比较下去才能找到我们需要的，时间复杂度取决于链表的长度，为 O(n)。为了降低这部分的开销，在 Java8 中，当链表中的元素超过了 8 个以后，会将链表转换为红黑树，在这些位置进行查找的时候可以降低时间复杂度为 O(logN)。</li>
 </ul>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211005220907.png"></p>
 <h2 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h2><blockquote>
 <p>HashMap中的常量以及变量</p>
 </blockquote>

@@ -806,7 +806,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-10-05 12:29:46" itemprop="dateModified" datetime="2021-10-05T12:29:46+08:00">2021-10-05</time>
+                <time title="Modified: 2021-10-05 22:05:27" itemprop="dateModified" datetime="2021-10-05T22:05:27+08:00">2021-10-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1338,7 +1338,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-15 09:19:58" itemprop="dateModified" datetime="2020-08-15T09:19:58+08:00">2020-08-15</time>
+                <time title="Modified: 2021-10-05 22:47:53" itemprop="dateModified" datetime="2021-10-05T22:47:53+08:00">2021-10-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1365,9 +1365,7 @@
 <p>本章是整理知识内容，为强化知识长期更新。</p>
 </blockquote>
 <h3 id="JVM的内存布局"><a href="#JVM的内存布局" class="headerlink" title="JVM的内存布局"></a>JVM的内存布局</h3><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/JVM%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80.png"></p>
-<ol>
-<li><p>堆</p>
-<ul>
+<h4 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h4><ul>
 <li><p>堆（Java Heap） 也叫 Java 堆或者是 GC 堆，它是一个线程共享的内存区域，也是 JVM 中占用内存最大的一块区域，Java 中所有的对象都存储在这里。</p>
 <ul>
 <li><strong>Java堆区具有下面几个特点：</strong><ul>
@@ -1383,18 +1381,12 @@
 <p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Java%E5%A0%86%E7%9A%84%E5%88%92%E5%88%86.png"></p>
 </li>
 </ul>
-</li>
-<li><p>方法区</p>
-<ul>
+<h4 id="方法区"><a href="#方法区" class="headerlink" title="方法区"></a>方法区</h4><ul>
 <li>方法区（Method Area） 也被称为非堆区，用于和“Java 堆”的概念进行区分，它也是线程共享的内存区域，用于存储已经被 JVM 加载的类型信息、常量、静态变量、代码缓存等数据。</li>
 </ul>
-</li>
-<li><p>程序计数器</p>
-<ul>
+<h4 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h4><ul>
 <li>程序计数器（Program Counter Register） 线程独有一块很小的内存区域，保存当前线程所执行字节码的位置，包括正在执行的指令、跳转、分支、循环、异常处理等。</li>
 </ul>
-</li>
-</ol>
 <blockquote>
 <ul>
 <li><p>Java栈具备的特点</p>
@@ -1412,21 +1404,75 @@
 </li>
 </ul>
 </blockquote>
-<ol start="4">
-<li><p>虚拟机栈</p>
-<ul>
+<h4 id="虚拟机栈"><a href="#虚拟机栈" class="headerlink" title="虚拟机栈"></a>虚拟机栈</h4><ul>
 <li>虚拟机栈也叫 Java 虚拟机栈（Java Virtual Machine Stack），和程序计数器相同它也是线程独享的，用来描述 Java 方法的执行，在每个方法被执行时就会同步创建一个栈帧，用来存储局部变量表、操作栈、动态链接、方法出口等信息。当调用方法时执行入栈，而方法返回时执行出栈。</li>
 </ul>
+<h4 id="本地方法栈"><a href="#本地方法栈" class="headerlink" title="本地方法栈"></a>本地方法栈</h4><ul>
+<li><p>本地方法栈（Native Method Stacks）与虚拟机栈类似，它是线程独享的，并且作用也和虚拟机栈类似。只不过虚拟机栈是为虚拟机中执行的 Java 方法服务的，而本地方法栈则是为虚拟机使用到的本地（Native）方法服务。</p>
 </li>
-<li><p>本地方法栈</p>
-<ul>
-<li>本地方法栈（Native Method Stacks）与虚拟机栈类似，它是线程独享的，并且作用也和虚拟机栈类似。只不过虚拟机栈是为虚拟机中执行的 Java 方法服务的，而本地方法栈则是为虚拟机使用到的本地（Native）方法服务。</li>
+<li><p>JVM 的执行流程是，首先先把 Java 代码（.java）转化成字节码（.class），然后通过类加载器将字节码加载到内存中，所谓的内存也就是我们上面介绍的运行时数据区，但字节码并不是可以直接交给操作系统执行的机器码，而是一套 JVM 的指令集。这个时候需要使用特定的命令解析器也就是我们俗称的<strong>执行引擎（Execution Engine）</strong>将字节码翻译成可以被底层操作系统执行的指令再去执行，这样就实现了整个 Java 程序的运行，这也是 JVM 的整体执行流程。</p>
+</li>
 </ul>
-</li>
+<h3 id="Java虚拟机是如何加载Java类的"><a href="#Java虚拟机是如何加载Java类的" class="headerlink" title="Java虚拟机是如何加载Java类的"></a>Java虚拟机是如何加载Java类的</h3><blockquote>
+<p>符号引用和直接引用有一个重要的区别：使用符号引用时被引用的目标不一定已经加载到内存中；而使用直接引用时，引用的目标必定已经存在虚拟机的内存中了。</p>
+</blockquote>
+<ul>
+<li>类的生命周期会经历以下 7 个阶段：</li>
+</ul>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/ClassLoading.png"></p>
+<ol>
+<li>加载阶段（Loading）</li>
+<li>验证阶段（Verification）</li>
+<li>准备阶段（Preparation）</li>
+<li>解析阶段（Resolution）</li>
+<li>初始化阶段（Initialization）</li>
+<li>使用阶段（Using）</li>
+<li>卸载阶段（Unloading）</li>
 </ol>
 <ul>
-<li>JVM 的执行流程是，首先先把 Java 代码（.java）转化成字节码（.class），然后通过类加载器将字节码加载到内存中，所谓的内存也就是我们上面介绍的运行时数据区，但字节码并不是可以直接交给操作系统执行的机器码，而是一套 JVM 的指令集。这个时候需要使用特定的命令解析器也就是我们俗称的<strong>执行引擎（Execution Engine）</strong>将字节码翻译成可以被底层操作系统执行的指令再去执行，这样就实现了整个 Java 程序的运行，这也是 JVM 的整体执行流程。</li>
+<li>具体含义</li>
 </ul>
+<h4 id="加载阶段"><a href="#加载阶段" class="headerlink" title="加载阶段"></a>加载阶段</h4><blockquote>
+<p>此阶段用于查到相应的类（通过类名进行查找）并将此类的字节流转换为方法区运行时的数据结构，然后再在内存中生成一个能代表此类的 java.lang.Class 对象，作为其他数据访问的入口。</p>
+</blockquote>
+<ul>
+<li>Java语言的类型可以分为两大类：<strong>基本类型、引用类型</strong>。基本类型是由虚拟机预先定义好的，所以不会经历单独的类加载过程。而引用类型又分为四种：<strong>类、接口、数组类、泛型参数</strong>。由于泛型参数会在编译的过程中被擦除（关于类型擦除的知识，大家可以查下资料），所以在Java中只有类、接口、数组类三种类型需要经历JVM对其进行连接和初始化的过程。</li>
+</ul>
+<h4 id="验证阶段"><a href="#验证阶段" class="headerlink" title="验证阶段"></a>验证阶段</h4><blockquote>
+<p>此步骤主要是为了验证字节码的安全性，如果不做安全校验的话可能会载入非安全或有错误的字节码，从而导致系统崩溃，它是 JVM 自我保护的一项重要举措。</p>
+</blockquote>
+<ul>
+<li>验证的主要动作大概有以下几个：<ul>
+<li>文件格式校验包括常量池中的常量类型、Class 文件的各个部分是否被删除或被追加了其他信息等；</li>
+<li>元数据校验包括父类正确性校验（检查父类是否有被 final 修饰）、抽象类校验等；</li>
+<li>字节码校验，此步骤最为关键和复杂，主要用于校验程序中的语义是否合法且符合逻辑；</li>
+<li>符号引用校验，对类自身以外比如常量池中的各种符号引用的信息进行匹配性校验。</li>
+</ul>
+</li>
+</ul>
+<h4 id="准备阶段"><a href="#准备阶段" class="headerlink" title="准备阶段"></a>准备阶段</h4><p>此阶段是用来初始化并为类中定义的静态变量分配内存的，这些静态变量会被分配到方法区上。这些变量所使用的内存都将在方法区（&lt;Jdk1.8）元数据区（&gt;=Jdk1.8）中进行分配。这时候进行内存分配的仅包括类变量，而不包括实例变量，实例变量将会在对象实例化的时候随对象一起分配在Java堆中。</p>
+<h4 id="解析阶段"><a href="#解析阶段" class="headerlink" title="解析阶段"></a>解析阶段</h4><blockquote>
+<p>此阶段主要是用来解析类、接口、字段及方法的，解析时会把符号引用替换成直接引用。</p>
+</blockquote>
+<ul>
+<li><p>所谓的符号引用是指以一组符号来描述所引用的目标，符号可以是任何形式的字面量，只要使用时能无歧义地定位到目标即可；而直接引用是可以直接指向目标的指针、相对偏移量或者是一个能间接定位到目标的句柄。</p>
+</li>
+<li><p>符号引用和直接引用有一个重要的区别：使用符号引用时被引用的目标不一定已经加载到内存中；而使用直接引用时，引用的目标必定已经存在虚拟机的内存中了。</p>
+</li>
+</ul>
+<h4 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h4><blockquote>
+<p>初始化阶段 JVM 就正式开始执行类中编写的 Java 业务代码了。到这一步骤之后，类的加载过程就算正式完成了。</p>
+</blockquote>
+<ol>
+<li>JVM 规范枚举了下述多种触发情况：<pre><code>1. 当虚拟机启动时，初始化用户指定的主类；
+2. 当遇到用以新建目标类实例的 new 指令时，初始化 new 指令的目标类;
+3. 当遇到调用静态方法的指令时，初始化该静态方法所在的类;
+4. 当遇到访问静态字段的指令时，初始化该静态字段所在的类；子类的初始化会触发父类的初始化;
+5. 如果一个接口定义了 default 方法，那么直接实现或者间接实现该接口的类的初始化，会触发该接口的初始化;
+6. 使用反射 API 对某个类进行反射调用时，初始化这个类；
+7. 当初次调用 MethodHandle 实例时，初始化该 MethodHandle 指向的方法所在的类。</code></pre>
+</li>
+</ol>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Jvm/#more" rel="contents">
