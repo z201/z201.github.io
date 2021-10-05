@@ -239,6 +239,315 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-HTTP/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-HTTP/" class="post-title-link" itemprop="url">查缺补漏-HTTP</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-27 17:33:54" itemprop="dateModified" datetime="2021-09-27T17:33:54+08:00">2021-09-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index"><span itemprop="name">知识点</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>本章是整理知识内容，为强化知识长期更新。</p>
+</blockquote>
+<h3 id="描述下GET与POST的区别。"><a href="#描述下GET与POST的区别。" class="headerlink" title="描述下GET与POST的区别。"></a>描述下GET与POST的区别。</h3><ul>
+<li>GET和POST是HTTP请求的两种基本方法。<ul>
+<li>GET：特定浏览器和服务器对URL长度有限制，例如 IE对URL长度的限制是2083字节(2K+35)。理论上没有长度限制，其限制取决于操作系 统的支持。所以GET提交时，传输数据就会受到URL长度的限制。</li>
+<li>POST：由于不是通过URL传值，理论上数据不受限。但实际各个WEB服务器会规定对post提交数据大小进行限制。</li>
+</ul>
+</li>
+<li>GET和POST本质上没有区别,只是在浏览器上直观体现方式不同。GET和POST本质上就是TCP链接，并无差别。但是由于HTTP的规定和浏览器/服务器的限制，导致他们在应用过程中体现出一些不同。</li>
+<li>GET产生一个TCP数据包;POST产生两个TCP数据包。<ul>
+<li>对于GET方式的请求，浏览器会把http header和data一并发送出去，服务器响应200(返回数据);</li>
+<li>而对于POST，浏览器先发送header，服务器响应100 continue，浏览器再发送data，服务器响应200 ok(返回数据)。</li>
+<li>在网络环境好的情况下，发一次包的时间和发两次包的时间差别基本可以无视。而在网络环境差的情况下，两次包的TCP在验证数据包完整性上，有非常大的优点，一般的浏览POST会发送两次，但是Firefox就发送一次。</li>
+</ul>
+</li>
+<li>安全性<ul>
+<li>在没有加密的情况安全性是一样的,在浏览器调试模式下可以看到所有数据的。</li>
+</ul>
+</li>
+</ul>
+<h3 id="描述下HTTP-Cookie。"><a href="#描述下HTTP-Cookie。" class="headerlink" title="描述下HTTP Cookie。"></a>描述下HTTP Cookie。</h3><ul>
+<li>一个cookie就是存储在用户主机浏览器中的一小段文本文件。Cookies是纯文本形式，它们不包含任何可执行代码。一个Web页面或服务器告之浏览器来将这些信息存储并且基于一系列规则在之后的每个请求中都将该信息返回至服务器。Web服务器之后可以利用这些信息来标识用户。多数需要登录的站点通常会在你的认证信息通过后来设置一个cookie，之后只要这个cookie存在并且合法，就可以自由的浏览这个站点的所有部分。再次，cookie只是包含了数据。在后续的http 请求中，浏览器会将cookie带回给Web Server。同时在浏览器允许脚本执行的情况下，Cookie是可以被JavaScript等脚本设置的。</li>
+<li>Cookie的类别。<ul>
+<li>Session Cookie这个类型的cookie只在会话期间内有效，即当关闭浏览器的时候，它会被浏览器删除。设置session cookie的办法是：在创建cookie不设置Expires即可。</li>
+<li>Persistent Cookie持久型cookie顾名思义就是会长期在用户会话中生效。当你设置cookie的属性Max-Age为1个月的话，那么在这个月里每个相关URL的http请求中都会带有这个cookie。所以它可以记录很多用户初始化或自定义化的信息，比如什么时候第一次登录及弱登录态等。</li>
+<li>Secure cookie安全cookie是在https访问下的cookie形态，以确保cookie在从客户端传递到Server的过程中始终加密的。但是必须是在HTTPS的情况才有效果。</li>
+<li>HttpOnly 属性，这个数据设置为true后，客户端通过JS是无法获取到cookie信息的（暂时的）。</li>
+</ul>
+</li>
+</ul>
+<h3 id="描述下Servlet-Cookie-与Session。"><a href="#描述下Servlet-Cookie-与Session。" class="headerlink" title="描述下Servlet Cookie 与Session。"></a>描述下Servlet Cookie 与Session。</h3><ul>
+<li><p>具体来说cookie机制采用的是在客户端保持状态的方案，而session机制采用的是在服务器端保持状态的方案。</p>
+<ul>
+<li>服务器端保持状态的方案在客户端也需要保存一个标识，所以session机制可能需要借助于cookie机制来达到保存标识的目的。</li>
+</ul>
+</li>
+<li><p>Session是以cookie为基础的。在一些web开发的书中，往往只是简单的把Session和cookie作为两种并列的http传送信息的方式，session cookies位于服务器端，persistent cookie位于客户端。</p>
+</li>
+</ul>
+<ul>
+<li>Cookie不是很安全，别人可以分析存放在本地的cookie并进行cookie欺骗考虑到安全应当使用session。</li>
+<li>Session会在一定时间内保存在服务器上。当访问增多，会比较占用你服务器的性能考虑到减轻服务器性能方面，应当使用cookie。</li>
+<li>单个Cookie保存的数据不能超过4K，很多浏览器都限制一个站点最多保存20个cookie。</li>
+<li>关闭浏览器不会导致服务端session被删除，服务器为session设置了一个失效时间，当距离客户上一次使用session的时间超过了这个失效时间时，服务器就可以认为客户端已经停止了活动，才会把session删除以节省存储空间。</li>
+<li>关闭浏览器，只会是浏览器端内存里的session cookie消失，但不会使保存在服务器端的session对象消失，同样也不会使已经保存到硬盘上的持久化cookie消失。</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-MySQL/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-MySQL/" class="post-title-link" itemprop="url">查缺补漏-MySQL</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-27 16:54:31" itemprop="dateModified" datetime="2021-09-27T16:54:31+08:00">2021-09-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>本章是整理知识内容，为强化知识长期更新。</p>
+</blockquote>
+<h3 id="Mysql基础架构图"><a href="#Mysql基础架构图" class="headerlink" title="Mysql基础架构图"></a>Mysql基础架构图</h3><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/mysql/mysql%E6%9E%B6%E6%9E%84.svg" alt="mysql基础架构图"></p>
+<h4 id="简单介绍上图相关模块功能"><a href="#简单介绍上图相关模块功能" class="headerlink" title="简单介绍上图相关模块功能"></a>简单介绍上图相关模块功能</h4><ul>
+<li><p>连接器：管理连接，权限验证</p>
+</li>
+<li><p>查询缓存：命中缓存则直接返回结果</p>
+</li>
+<li><p>语法解析：词法分析，语法分析</p>
+</li>
+<li><p>查询优化：执行计划生成，索引选择</p>
+</li>
+<li><p>执行器：操作引擎，返回结果</p>
+</li>
+<li><p>存储引擎：存储数据，提供读写结构。</p>
+</li>
+</ul>
+<h4 id="连接器"><a href="#连接器" class="headerlink" title="连接器"></a>连接器</h4><blockquote>
+<p>我们需要连接到mysql服务端才能进行各种操作。</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用密码登录到时候我们会使用这种格式。</span></span><br><span class="line">mysql -h<span class="variable">$ip</span> -P<span class="variable">$port</span> -u<span class="variable">$user</span> -p</span><br></pre></td></tr></table></figure>
+
+<p>执行上述命令会提示输入密码。输入完密码后就进入了mysql。</p>
+<ul>
+<li><p>如果用户名或者密码输入错误，会提示一个<code>Access denied for user</code>到错误，然后客户端程序结束执行。</p>
+</li>
+<li><p>如果用户名和密码认证通过，连接器会去权限表中查询该用户拥有的所有权限。此后该连接里面的权限逻辑判断都会依赖认证成功时候读取到的权限。</p>
+</li>
+</ul>
+<blockquote>
+<p>因此当修改用户的权限之后，如果被修改用户的在登录状态是不会修改已经连接的权限。需要让被修改权限用户从新登录。</p>
+</blockquote>
+<ul>
+<li>实际上连接的方式有多种，上面通过密码的方式只是其中的一种方式。当客户端与服务端mysql进程进程建立连接，服务器的进程就会创建一个单独的线程来专门处理与这个客户端的交互，当该客户断开与服务端连接时，服务端并不会马上销毁对应的交互线程，而是缓存起来。当另一个新的客户端连接进来的时候，在把这个缓存的线程分配给新的客户端。这样就避免的频繁创建和修改线程，节省系统的开销。但是连接线程多了也会影响服务端，所以也有默认的参数限制客户端的连接数量。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 这里是查询服务端存在的连接。</span><br><span class="line">SHOW PROCESSLIST;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>我使用的阿里云的数据库，这里展示下结果集。这里需要注意，登录的账号需要有PROCESS的权限否则只能看到自己的连接信息（线程），我这里采用的root所以看到全部到。</p>
+</blockquote>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/mysql/SHOW_PROCESSLIST.png"></p>
+<ul>
+<li><a href="https://dev.mysql.com/doc/refman/5.7/en/processlist-table.html" target="_blank" rel="noopener">MySQL PROCESSLIST 官方文档</a></li>
+</ul>
+<blockquote>
+<p>连接完成后如果没有执行后续操作则 Command会显示Sleep的状态，长时间Sleep会导致连接自动断开。默认的时间是8小时，也就是参数 <code>wait_timeout</code>。当客户端连接断开后，若客户端再次发出请求就会提示一个</p>
+<p><code>Lost connection to MySQL server during query</code>，此时就只能重新建立连接了。</p>
+</blockquote>
+<h5 id="半双工"><a href="#半双工" class="headerlink" title="半双工"></a>半双工</h5><ul>
+<li>MySQL客户端/服务端通信协议是<code>“半双工”</code>的：在任一时刻，要么是服务器向客户端发送数据，要么是客户端向服务器发送数据，这两个动作不能同时发生。一旦一端开始发送消息，另一端要接收完整个消息才能响应它，所以我们无法也无须将一个消息切成小块独立发送，也没有办法进行流量控制。</li>
+<li>服务器响应给用户的数据通常会很多，由多个数据包组成。但是当服务器响应客户端请求时，客户端必须完整的接收整个返回结果，而不能简单的只取前面几条结果，然后让服务器停止发送。因而在实际开发中，尽量保持查询简单且只返回必需的数据，减小通信间数据包的大小和数量是一个非常好的习惯，这也是查询中尽量避免使用<code>SELECT *</code>以及加上<code>LIMIT</code>限制的原因之一。</li>
+</ul>
+<h5 id="长连接与短连接"><a href="#长连接与短连接" class="headerlink" title="长连接与短连接"></a>长连接与短连接</h5><ul>
+<li><p>在数据库里面，长连接是指数据库建立连接，如果客户端有持续的请求则使用同一个连接，短连接是指每次执行几次短的查询就断开连接，下次查询再次创建连接。由于创建的过程复杂，一般来说尽量减少创建连接的动作，尽可能使用长连接。特别是在开发的时候出现大伙突然连接不上测试库，此时就检查下连接是不是太多了。因为连接多了会导致内存消耗特别快。</p>
+<ul>
+<li>mysql的执行过程中临时使用的内存管理是在连接线程对象里面，服务端断开的时候才会释放，为了避免内存消耗过大，每次执行较大的操作之后，可以通过<code>mysql_reset_connection</code>来重新初始化连接资源。这个操作是不需要重新做权限，只是恢复到创建的初始状态。</li>
+</ul>
+</li>
+<li><p><a href="https://dev.mysql.com/doc/refman/5.7/en/mysql-reset-connection.html" target="_blank" rel="noopener">MySQL mysql_reset_connection 官方文档</a></p>
+</li>
+</ul>
+<h4 id="查询缓存"><a href="#查询缓存" class="headerlink" title="查询缓存"></a>查询缓存</h4><blockquote>
+<p> 一个不被建议使用的功能，在新版的8.0中已经被删除了。总结就是弊大于利。</p>
+</blockquote>
+<ul>
+<li>建立完成后，假设执行一次<code>SELECT</code>语句，执行逻辑就会到第二部查询缓存。mysql拿到一个查询之后，会先到缓存中寻找释放有完全对应的，因为之前执行的查询语句和结果集会直接被缓存起来，以<code>Keys-value</code>的形式。keys是查询语句-value是查询结果集。如果能命中这个key则直接返回value。咋一看挺有用的，但实际上查询缓存的实效的太频繁。并且keys的命中条件太不聪明了，<code>如果两次查询语句在任何的字符上存在不通（空格、大小写）</code>都不会缓存命中。为什么会频繁失效，因为如果对查询语句中的表进行更新，就会导致缓存失效。比如<code>INSERT、UPDATE 、DELETE 、TRUNCATE TABLE 、ALTER TABLE </code>等等就会导致缓存失效。</li>
+</ul>
+<h4 id="语法解析"><a href="#语法解析" class="headerlink" title="语法解析"></a>语法解析</h4><blockquote>
+<p>如果没有命中查询缓存，就要开始执行sql语句了。mysql需要做什么，因此需要对sql进行解析。MySQL通过关键字将SQL语句进行解析，并生成一颗对应的解析树。这个过程解析器主要通过语法规则来验证和解析。比如SQL中是否使用了错误的关键字或者关键字的顺序是否正确等等。预处理则会根据MySQL规则进一步检查解析树是否合法。比如检查要查询的数据表和数据列是否存在等等。</p>
+</blockquote>
+<ul>
+<li>本质上发送过来的是一个文本信息，这里就需要对该文本信息进行编译，涉及到<code>词法解析</code>、<code>语法解析</code>、<code>语义解析</code>等阶段。需要注意的是，这里会对sql语句进行一些检查，比如设计的相关表、表字段。这里检查通过的才会进入查询优化模块。</li>
+<li>根据SQL语言的功能可以划分成4个部分<ul>
+<li>DDL，英文叫做 Data Definition Language，也就是数据定义语言，它用来定义我们的数据库对象，包括数据库、数据表和列。通过使用 DDL，我们可以创建，删除和修改数据库和表结构。</li>
+<li>DML，英文叫做 Data Manipulation Language，数据操作语言，我们用它操作和数据库相关的记录，比如增加、删除、修改数据表中的记录。</li>
+<li>DCL，英文叫做 Data Control Language，数据控制语言，我们用它来定义访问权限和安全级别。</li>
+<li>DQL，英文叫做 Data Query Language，数据查询语言，我们用它查询想要的记录，它是 SQL 语言的重中之重。在实际的业务中，我们绝大多数情况下都是在和查询打交道，因此学会编写正确且高效的查询语句，是学习的重点。</li>
+</ul>
+</li>
+</ul>
+<h4 id="查询优化"><a href="#查询优化" class="headerlink" title="查询优化"></a>查询优化</h4><blockquote>
+<p>通过之前的语法解析，基本可以判定语法树是合法的，此时mysql就知道文本内容要做什么。</p>
+</blockquote>
+<ul>
+<li>mysql会对查询语句进行优化，优化的结果就是生成一个执行计划，这个计划会表明使用了那些查询索引，表之间的连接是什么样子的。有时候出现多种执行方式，只是效率不通，优化器会决定使用哪一个执行方案，这个时候就涉及到<code>EXPLAIN</code>语句，该语句可以查看sql到执行计划，这将涉及到查询优化。</li>
+<li>MySQL的查询优化器是一个非常复杂的部件，它使用了非常多的优化策略来生成一个最优的执行计划：<ul>
+<li>重新定义表的关联顺序（多张表关联查询时，并不一定按照SQL中指定的顺序进行，但有一些技巧可以指定关联顺序）</li>
+<li>优化函数</li>
+<li>提前终止查询（比如：使用Limit时，查找到满足数量的结果集后会立即终止查询）</li>
+<li>优化排序（在老版本MySQL会使用两次传输排序，即先读取行指针和需要排序的字段在内存中对其排序，然后再根据排序结果去读取数据行，而新版本采用的是单次传输排序，也就是一次读取所有的数据行，然后根据给定的列排序。对于<code>I/O</code>密集型应用，效率会高很多。</li>
+</ul>
+</li>
+</ul>
+<h4 id="执行器"><a href="#执行器" class="headerlink" title="执行器"></a>执行器</h4><blockquote>
+<p>进入到执行sql到环节。</p>
+</blockquote>
+<ul>
+<li>通过之前到查询优化，进入执行阶段，此时会先判断该连接用户是否有相关表的权限，如果没有会返回权限错误。如果有权限就会打开表，执行器会根据表定义的引擎去使用这个引擎提供的接口完成流程。</li>
+</ul>
+<h4 id="存储引擎"><a href="#存储引擎" class="headerlink" title="存储引擎"></a>存储引擎</h4><blockquote>
+<p> 关于存储引擎，这里明确提醒。不是三种也不是四种。而是多种因为随时可能出现新的引擎。</p>
+</blockquote>
+<ul>
+<li>我们常用的就是<code>InnoDB</code>和<code>MyISAM</code>，其它的不常见就不做过多介绍。mysql现在默认的引擎是<code>InnoDB</code>所以主要也是了解<code>InnoDB</code></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看当前服务支持的存储引擎</span></span><br><span class="line">SHOW ENGINES;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/mysql/SHOW_ENGINES.png"></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-MySQL/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E5%AE%9E%E8%B7%B5-Maven/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -333,196 +642,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2019/01/01/%E5%AE%9E%E8%B7%B5-Maven/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCollecionsFramework/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCollecionsFramework/" class="post-title-link" itemprop="url">查缺补漏-JavaCollecionsFramework</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-27 15:55:30" itemprop="dateModified" datetime="2021-09-27T15:55:30+08:00">2021-09-27</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-<h3 id="Java集合"><a href="#Java集合" class="headerlink" title="Java集合"></a>Java集合</h3><p>​    集合是Java提供的工具包、包含常用的数据结构：集合、链表、队列、栈、数组、映射等。Collection的包是java.util.*。</p>
-<h4 id="Collection"><a href="#Collection" class="headerlink" title="Collection"></a>Collection</h4><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Collection/Java-Collection-Framework.svg"></p>
-<h4 id="Map"><a href="#Map" class="headerlink" title="Map"></a>Map</h4><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Collection/Java-Map-Framework.svg">  </p>
-<p><code>实际上还有Cloneable、Serializable接口是都集合类需要实现的，通用所以不不画上去了。 </code> </p>
-<h4 id="Java集合主要划分4个部分："><a href="#Java集合主要划分4个部分：" class="headerlink" title="Java集合主要划分4个部分："></a>Java集合主要划分4个部分：</h4><ul>
-<li>List(列队)</li>
-<li>Set(集合)</li>
-<li>Map(映射)</li>
-<li>工具类(Iterator迭代器、Enumeration枚举类、Arrays、Collections)</li>
-</ul>
-<h4 id="划重点"><a href="#划重点" class="headerlink" title="划重点"></a>划重点</h4><ul>
-<li>Conllection<ul>
-<li>List<ul>
-<li><code>ArrayList</code></li>
-<li><code>Vector</code><ul>
-<li>Stack</li>
-</ul>
-</li>
-<li><code>LinkedList</code></li>
-</ul>
-</li>
-<li>Set<ul>
-<li><code>HashSet</code></li>
-<li><code>TreeSet</code></li>
-<li><code>LinkedHashSet</code></li>
-</ul>
-</li>
-<li>Queue</li>
-</ul>
-</li>
-<li>Map<ul>
-<li><code>HashMap</code></li>
-<li><code>HashTable</code></li>
-<li><code>TreeMap</code></li>
-</ul>
-</li>
-<li>工具<ul>
-<li>Arrays</li>
-<li>Collections</li>
-<li>Enumeration</li>
-</ul>
-</li>
-</ul>
-<h3 id="Java类库中具体集合"><a href="#Java类库中具体集合" class="headerlink" title="Java类库中具体集合"></a>Java类库中具体集合</h3><table>
-<thead>
-<tr>
-<th>集合类型</th>
-<th>概括</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>ArrayList<E></td>
-<td>一种可以动态增长和缩减的索引序列，访问速度很快但是插入和删除比ArrayList慢。</td>
-</tr>
-<tr>
-<td>LinkedList<E></td>
-<td>一种可以在任何位置进行高效地插入和删除操作的有序序列，但是访问比较ArrayList慢。</td>
-</tr>
-<tr>
-<td>ArrayDeque<E></td>
-<td>一种循环数组实现的双端序列。</td>
-</tr>
-<tr>
-<td>HashSet<E></td>
-<td>一种没有重复元素的无序集合。</td>
-</tr>
-<tr>
-<td>TreeSet<E></td>
-<td>一种有序集合。</td>
-</tr>
-<tr>
-<td>EnumSet&lt;E extends Enum<E>&gt;</td>
-<td>一种包含枚举类型的集合。</td>
-</tr>
-<tr>
-<td>LinkedHashSet<E></td>
-<td>一种可以记住元素插入顺序的集合。</td>
-</tr>
-<tr>
-<td>PriorityQueue<E></td>
-<td>一种允许高效删除最小元素的集合。</td>
-</tr>
-<tr>
-<td>HashMap&lt;K , V&gt;</td>
-<td>一个存储 键 / 值 关联的数据结构。</td>
-</tr>
-<tr>
-<td>TreeMap&lt;K , V&gt;</td>
-<td>一种键值有序排列的映射表。</td>
-</tr>
-<tr>
-<td>EnumMap&lt;K extends Enum<K>, V&gt;</td>
-<td>一种键属于枚举类型的映射表。</td>
-</tr>
-<tr>
-<td>LinkedHashMap&lt;K ,V &gt;</td>
-<td>一种可以记住键 / 值 项添加顺序的映射表。</td>
-</tr>
-<tr>
-<td>WeakHashMap&lt;K , V &gt;</td>
-<td>一种其值无用武之地后可以被垃圾回收回收的映射表。</td>
-</tr>
-<tr>
-<td>IdentityHashMap&lt;K , V&gt;</td>
-<td>一种用 == 而不是用用 equals 比较的映射表。</td>
-</tr>
-</tbody></table>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCollecionsFramework/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -1313,91 +1432,6 @@
             </div>
           <!--/noindex-->
         
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/08/%E5%AE%9E%E8%B7%B5-annotation-aop/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/04/08/%E5%AE%9E%E8%B7%B5-annotation-aop/" class="post-title-link" itemprop="url">实践-annotation-aop</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-04-08 09:42:50" itemprop="dateCreated datePublished" datetime="2018-04-08T09:42:50+08:00">2018-04-08</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-21 13:46:37" itemprop="dateModified" datetime="2021-09-21T13:46:37+08:00">2021-09-21</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>整理一下以前的学习代码。</p>
-</blockquote>
-<h3 id="Spring-Aop"><a href="#Spring-Aop" class="headerlink" title="Spring Aop"></a>Spring Aop</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">junit.version</span>&gt;</span>4.12<span class="tag">&lt;/<span class="name">junit.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">lmbok.version</span>&gt;</span>1.18.4<span class="tag">&lt;/<span class="name">lmbok.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">logback.version</span>&gt;</span>1.2.3<span class="tag">&lt;/<span class="name">logback.version</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- pom文件需要指定打包编码集，[WARNING] File encoding has not been set, using platform encoding GBK, i.e. build is platform dependent!  --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">project.build.sourceEncoding</span>&gt;</span>UTF-8<span class="tag">&lt;/<span class="name">project.build.sourceEncoding</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-test<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-aop<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-devtools<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">scope</span>&gt;</span>runtime<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;lmbok.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="基于注解的aop实现"><a href="#基于注解的aop实现" class="headerlink" title="基于注解的aop实现"></a>基于注解的aop实现</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> cn.z201.io.annotation.aop;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.annotation.ElementType;</span><br><span class="line"><span class="keyword">import</span> java.lang.annotation.Retention;</span><br><span class="line"><span class="keyword">import</span> java.lang.annotation.RetentionPolicy;</span><br><span class="line"><span class="keyword">import</span> java.lang.annotation.Target;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> z201.coding@gmail.com</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="meta">@Target</span>(ElementType.METHOD)</span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> AnnotationAop &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function">String <span class="title">value</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> cn.z201.io.annotation.aop;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.aspectj.lang.JoinPoint;</span><br><span class="line"><span class="keyword">import</span> org.aspectj.lang.annotation.*;</span><br><span class="line"><span class="keyword">import</span> org.aspectj.lang.reflect.MethodSignature;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Component;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> z201.coding@gmail.com</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@Aspect</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LogsAspect</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Pointcut</span>(<span class="string">"@annotation(cn.z201.io.annotation.aop.AnnotationAop)"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">cutMethod</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 异常通知：目标方法抛出异常时执行</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@AfterThrowing</span>(<span class="string">"cutMethod()"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">afterThrowing</span><span class="params">(JoinPoint joinPoint)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"  after throwing"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 环绕通知：灵活自由的在目标方法中切入代码</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Before</span>(<span class="string">"cutMethod()"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">around</span><span class="params">(JoinPoint joinPoint)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        <span class="comment">// 获取目标方法的名称</span></span><br><span class="line">        String methodName = joinPoint.getSignature().getName();</span><br><span class="line">        <span class="comment">// 获取方法传入参数</span></span><br><span class="line">        Object[] params = joinPoint.getArgs();</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> != params &amp;&amp; params.length != <span class="number">0</span>) &#123;</span><br><span class="line">            System.out.println(<span class="string">" method name "</span> + methodName + <span class="string">" args "</span> + params[<span class="number">0</span>]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 执行源方法</span></span><br><span class="line">        AnnotationAop annotationAop = getDeclaredAnnotation(joinPoint);</span><br><span class="line">        System.out.println(<span class="string">"  annotationAop  value "</span> + annotationAop.value());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取方法中声明的注解</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> joinPoint</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> NoSuchMethodException</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> AnnotationAop <span class="title">getDeclaredAnnotation</span><span class="params">(JoinPoint joinPoint)</span> <span class="keyword">throws</span> NoSuchMethodException </span>&#123;</span><br><span class="line">        <span class="comment">// 获取方法名</span></span><br><span class="line">        String methodName = joinPoint.getSignature().getName();</span><br><span class="line">        <span class="comment">// 反射获取目标类</span></span><br><span class="line">        Class&lt;?&gt; targetClass = joinPoint.getTarget().getClass();</span><br><span class="line">        <span class="comment">// 拿到方法对应的参数类型</span></span><br><span class="line">        Class&lt;?&gt;[] parameterTypes = ((MethodSignature) joinPoint.getSignature()).getParameterTypes();</span><br><span class="line">        <span class="comment">// 根据类、方法、参数类型（重载）获取到方法的具体信息</span></span><br><span class="line">        Method objMethod = targetClass.getMethod(methodName, parameterTypes);</span><br><span class="line">        <span class="comment">// 拿到方法定义的注解信息</span></span><br><span class="line">        AnnotationAop annotation = objMethod.getDeclaredAnnotation(AnnotationAop<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">        <span class="comment">// 返回</span></span><br><span class="line">        <span class="keyword">return</span> annotation;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> cn.z201.io.annotation.aop;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.SpringApplication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.autoconfigure.SpringBootApplication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.EnableAspectJAutoProxy;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> z201.coding@gmail.com</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="meta">@EnableAspectJAutoProxy</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AnnotationApp</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        SpringApplication.run(AnnotationApp<span class="class">.<span class="keyword">class</span>, <span class="title">args</span>)</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> cn.z201.io.annotation.aop;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.*;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.servlet.ModelAndView;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> z201.coding@gmail.com</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping</span>(<span class="string">""</span>)</span><br><span class="line">    <span class="meta">@AnnotationAop</span>(<span class="string">"Aop"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">index</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        ModelAndView modelAndView = <span class="keyword">new</span> ModelAndView();</span><br><span class="line">        modelAndView.addObject(<span class="string">"value"</span>, <span class="string">"hello annotationApp  "</span>);</span><br><span class="line">        <span class="keyword">return</span> modelAndView.getModelMap();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>输出结果</p>
-<p>​    控制台 annotationAop  value Aop</p>
-<p>​        响应 <strong>{</strong>“value”: “hello annotationApp  “<strong>}</strong></p>
-</blockquote>
-<h3 id="END"><a href="#END" class="headerlink" title="END"></a>END</h3>
       
     </div>
 

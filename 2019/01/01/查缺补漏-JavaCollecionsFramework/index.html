@@ -36,7 +36,7 @@
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/JavaConcurrent/ArrayList.png">
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/JavaConcurrent/LinkedList.png">
 <meta property="article:published_time" content="2018-12-31T16:00:01.000Z">
-<meta property="article:modified_time" content="2021-09-27T07:55:30.133Z">
+<meta property="article:modified_time" content="2021-10-05T04:29:46.497Z">
 <meta property="article:author" content="胖枫叶">
 <meta property="article:tag" content="Java">
 <meta property="article:tag" content="Java-Collecions-Framework">
@@ -287,7 +287,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-27 15:55:30" itemprop="dateModified" datetime="2021-09-27T15:55:30+08:00">2021-09-27</time>
+                <time title="Modified: 2021-10-05 12:29:46" itemprop="dateModified" datetime="2021-10-05T12:29:46+08:00">2021-10-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -422,21 +422,21 @@
 </tbody></table>
 <a id="more"></a>
 
-<h3 id="介绍下Java-Collection-Interface"><a href="#介绍下Java-Collection-Interface" class="headerlink" title="介绍下Java Collection Interface"></a>介绍下Java Collection Interface</h3><h3 id="1-Set"><a href="#1-Set" class="headerlink" title="1. Set"></a>1. Set</h3><ul>
+<h3 id="Java-Collection-Interface"><a href="#Java-Collection-Interface" class="headerlink" title="Java Collection Interface"></a>Java Collection Interface</h3><h4 id="Set"><a href="#Set" class="headerlink" title="Set"></a>Set</h4><ul>
 <li>TreeSet：基于红黑树实现，支持有序性操作，例如根据一个范围查找元素的操作。但是查找效率不如 HashSet，HashSet 查找的时间复杂度为 O(1)，TreeSet 则为 O(logN)。</li>
 <li>HashSet：基于哈希表实现，支持快速查找，但不支持有序性操作。并且失去了元素的插入顺序信息，也就是说使用 Iterator 遍历 HashSet 得到的结果是不确定的。</li>
 <li>LinkedHashSet：具有 HashSet 的查找效率，并且内部使用双向链表维护元素的插入顺序。</li>
 </ul>
-<h3 id="2-List"><a href="#2-List" class="headerlink" title="2. List"></a>2. List</h3><ul>
+<h4 id="List"><a href="#List" class="headerlink" title="List"></a>List</h4><ul>
 <li>ArrayList：基于动态数组实现，支持随机访问。</li>
 <li>Vector：和 ArrayList 类似，但它是线程安全的。</li>
 <li>LinkedList：基于双向链表实现，只能顺序访问，但是可以快速地在链表中间插入和删除元素。不仅如此，LinkedList 还可以用作栈、队列和双向队列。</li>
 </ul>
-<h3 id="3-Queue"><a href="#3-Queue" class="headerlink" title="3. Queue"></a>3. Queue</h3><ul>
+<h4 id="Queue"><a href="#Queue" class="headerlink" title="Queue"></a>Queue</h4><ul>
 <li>LinkedList：可以用它来实现双向队列。</li>
 <li>PriorityQueue：基于堆结构实现，可以用它来实现优先队列。</li>
 </ul>
-<h3 id="4-Map"><a href="#4-Map" class="headerlink" title="4. Map"></a>4. Map</h3><ul>
+<h4 id="Map-1"><a href="#Map-1" class="headerlink" title="Map"></a>Map</h4><ul>
 <li>TreeMap：基于红黑树实现。</li>
 <li>HashMap：基于哈希表实现。</li>
 <li>HashTable：和 HashMap 类似，但它是线程安全的，这意味着同一时刻多个线程同时写入 HashTable 不会导致数据不一致。它是遗留类，不应该去使用它，而是使用 ConcurrentHashMap 来支持线程安全，ConcurrentHashMap 的效率会更高，因为 ConcurrentHashMap 引入了分段锁。</li>
@@ -482,7 +482,7 @@
 </li>
 </ul>
 <p><code>需要特别说明下Irertor&lt;E&gt; 和Iterable&lt;T&gt;这两个接口，Iterator模式是用于遍历集合类的标准方法。它主要用于将 访问逻辑从不同的类型集合类中抽象出来、所以在很多实现了Iterble集合类中实现这个多个Iterator接口。这样避免向客用户包撸集合内部的结构，这就是为什么我们用的这么爽的原因之一。</code></p>
-<h3 id="实现类一览表"><a href="#实现类一览表" class="headerlink" title="实现类一览表"></a>实现类一览表</h3><table>
+<h4 id="实现类一览表"><a href="#实现类一览表" class="headerlink" title="实现类一览表"></a>实现类一览表</h4><table>
 <thead>
 <tr>
 <th>Collction</th>
@@ -612,25 +612,25 @@
 <td>Y</td>
 </tr>
 </tbody></table>
-<h3 id="Iterator-接口"><a href="#Iterator-接口" class="headerlink" title="Iterator 接口"></a>Iterator 接口</h3><ul>
+<h4 id="Iterator-接口"><a href="#Iterator-接口" class="headerlink" title="Iterator 接口"></a>Iterator 接口</h4><ul>
 <li>迭代器必须从属容器、其作用就是迭代所属容器中的元素。源代码看出这是一个泛型接口。就是迭代泛型类元素。</li>
 </ul>
 <p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Collection/Interface-Iterator.jpg">         </p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Iterator</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果存在可以返回的元素就返回true</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">hasNext</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 返回将要访问的下一个元素、如果已经达到集合的尾部，则抛出一个NoSuchElementException异常。</span></span><br><span class="line">    <span class="function">E <span class="title">next</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"> 	<span class="comment">// 删除上次访问的对象。如果已经是尾部；则抛出一个IllegalStateException异常。</span></span><br><span class="line">    <span class="comment">// 如果没有重写这个方法就会排除这个异常UnsupportedOperationException  </span></span><br><span class="line">    <span class="comment">// 比如：Arrays$ArrayList中add 、 remove方法就没有重写，直接使用Arrays.toList的集合就会抛出这个异常</span></span><br><span class="line">    <span class="function"><span class="keyword">default</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException(<span class="string">"remove"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Itreator专门提供的一个方法，可以使用Lambda表达式遍历。</span></span><br><span class="line">    <span class="function"><span class="keyword">default</span> <span class="keyword">void</span> <span class="title">forEachRemaining</span><span class="params">(Consumer&lt;? <span class="keyword">super</span> E&gt; action)</span> </span>&#123;</span><br><span class="line">        Objects.requireNonNull(action);</span><br><span class="line">        <span class="keyword">while</span> (hasNext())</span><br><span class="line">            action.accept(next());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="Iterable-接口"><a href="#Iterable-接口" class="headerlink" title="Iterable 接口"></a>Iterable 接口</h3><ul>
+<h4 id="Iterable-接口"><a href="#Iterable-接口" class="headerlink" title="Iterable 接口"></a>Iterable 接口</h4><ul>
 <li>这个接口被Collection继承。</li>
 </ul>
 <p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Collection/Interface-Iterable.jpg">  </p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Iterable</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">   </span><br><span class="line">    <span class="comment">// 定义了Iterator，返回Iterator实例。</span></span><br><span class="line">    <span class="function">Iterator&lt;T&gt; <span class="title">iterator</span><span class="params">()</span></span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 增强for循环，专门给Lambda表达式遍历。</span></span><br><span class="line">    <span class="function"><span class="keyword">default</span> <span class="keyword">void</span> <span class="title">forEach</span><span class="params">(Consumer&lt;? <span class="keyword">super</span> T&gt; action)</span> </span>&#123;</span><br><span class="line">        Objects.requireNonNull(action);</span><br><span class="line">        <span class="keyword">for</span> (T t : <span class="keyword">this</span>) &#123;</span><br><span class="line">            action.accept(t);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">   </span><br><span class="line">    <span class="comment">// 根据此Iterable描述的元素创建Spliterator。</span></span><br><span class="line">    <span class="function"><span class="keyword">default</span> Spliterator&lt;T&gt; <span class="title">spliterator</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Spliterators.spliteratorUnknownSize(iterator(), <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="Collection-接口"><a href="#Collection-接口" class="headerlink" title="Collection 接口"></a>Collection 接口</h3><ul>
+<h4 id="Collection-接口"><a href="#Collection-接口" class="headerlink" title="Collection 接口"></a>Collection 接口</h4><ul>
 <li>这个接口集合接口。</li>
 </ul>
 <p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Collection/Interface-Collection.jpg">  </p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Collection</span>&lt;<span class="title">E</span>&gt; <span class="keyword">extends</span> <span class="title">Iterable</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line">    <span class="comment">// Query Operations</span></span><br><span class="line"></span><br><span class="line">   	<span class="comment">// 返回当前存储在集合中的元素个数。</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">size</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果集合中没有元素,则返回true。</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isEmpty</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果集合中包含一个元素与参数o相同,这返回true。</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">contains</span><span class="params">(Object o)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 返回当前用于访问集合的迭代器。</span></span><br><span class="line">    <span class="function">Iterator&lt;E&gt; <span class="title">iterator</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 返回这个集合的数组对象。</span></span><br><span class="line">    Object[] toArray();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 返回这个集合的数组对象，如果t这个数组足够大，就将集合中的元素填入这个数组中。剩余的空间填入Null；否则，分配一个新数组，其成员类型与t的成员类型相同，其长度等于集合的大小，并添加集合元素。</span></span><br><span class="line">    &lt;T&gt; T[] toArray(T[] a);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Modification Operations</span></span><br><span class="line"> 	<span class="comment">// 将一个元素添加到集合中，如果这个调用改变了集合，则返回true。</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">add</span><span class="params">(E e)</span></span>;</span><br><span class="line"></span><br><span class="line"> 	<span class="comment">// 从这个集合中删除等于o的对象，如果匹配对象被删除。就返回true。</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">remove</span><span class="params">(Object o)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Bulk Operations</span></span><br><span class="line">    <span class="comment">// 如果此集合包含指定集合c中的所有元素，则返回true。</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">containsAll</span><span class="params">(Collection&lt;?&gt; c)</span></span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 将c集合中所有元素添加到这个集合中，如果由于这个调用改变了集合，返回true。</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">addAll</span><span class="params">(Collection&lt;? extends E&gt; c)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//  从集合中删除集合c中的所有元素，如果由于这个元素改变了集合，返回true。</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">removeAll</span><span class="params">(Collection&lt;?&gt; c)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 删除此集合中满足给定谓词的所有元素。</span></span><br><span class="line">    <span class="function"><span class="keyword">default</span> <span class="keyword">boolean</span> <span class="title">removeIf</span><span class="params">(Predicate&lt;? <span class="keyword">super</span> E&gt; filter)</span> </span>&#123;</span><br><span class="line">        Objects.requireNonNull(filter);</span><br><span class="line">        <span class="keyword">boolean</span> removed = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">final</span> Iterator&lt;E&gt; each = iterator();</span><br><span class="line">        <span class="keyword">while</span> (each.hasNext()) &#123;</span><br><span class="line">            <span class="keyword">if</span> (filter.test(each.next())) &#123;</span><br><span class="line">                each.remove();</span><br><span class="line">                removed = <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> removed;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 仅保留包含在指定集合中的此c集合中的元素</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">retainAll</span><span class="params">(Collection&lt;?&gt; c)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 从这个集合中删除所有元素。</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">clear</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Comparison and hashing</span></span><br><span class="line">    <span class="comment">// 从这个集合中删除所有元素。</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object o)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 返回此集合的哈希码值</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"> 	<span class="comment">// 在此集合中的元素上创建Spliterator</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">default</span> Spliterator&lt;E&gt; <span class="title">spliterator</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Spliterators.spliterator(<span class="keyword">this</span>, <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">   	<span class="comment">// 以此集合作为源返回顺序流。</span></span><br><span class="line">    <span class="function"><span class="keyword">default</span> Stream&lt;E&gt; <span class="title">stream</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> StreamSupport.stream(spliterator(), <span class="keyword">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 以此集合作为源返回可能并行的Stream。</span></span><br><span class="line">    <span class="function"><span class="keyword">default</span> Stream&lt;E&gt; <span class="title">parallelStream</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> StreamSupport.stream(spliterator(), <span class="keyword">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="Map-接口"><a href="#Map-接口" class="headerlink" title="Map 接口"></a>Map 接口</h3><blockquote>
+<h4 id="Map-接口"><a href="#Map-接口" class="headerlink" title="Map 接口"></a>Map 接口</h4><blockquote>
 <p>翻译成中文就是地图，x y 坐标代表地图上的一个位置。Map就是一种 键\值的存在。键好比地图中的x y ，值好比地图中的位置。</p>
 </blockquote>
 <p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Collection/Interface-Map.jpg">  </p>
@@ -651,7 +651,7 @@
 <ul>
 <li>它是一个链表，对比ArrayList和Vector不需要扩容。但没有实现<code>RandomAccess </code>接口。RandomAccess的实现，则尽量用for(int i = 0; i &lt; size; i++) 来遍历而不要用Iterator迭代器来遍历。</li>
 </ul>
-<h3 id="ArrayList和linkedList的区别"><a href="#ArrayList和linkedList的区别" class="headerlink" title="ArrayList和linkedList的区别"></a>ArrayList和linkedList的区别</h3><ul>
+<h4 id="ArrayList-VS-linkedList"><a href="#ArrayList-VS-linkedList" class="headerlink" title="ArrayList VS linkedList"></a>ArrayList VS linkedList</h4><ul>
 <li><p><strong>Array</strong> （数组）是基于索引(index)的数据结构，它使用索引在数组中搜索和读取数据是很快的。</p>
 </li>
 <li><p>Array获取数据的时间复杂度是O(1),但是要删除数据却是开销很大，因为这需要重排数组中的所有数据, (因为删除数据以后, 需要把后面所有的数据前移)</p>
@@ -660,14 +660,31 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 数组初始化必须指定初始化的长度, 否则报错</span></span><br><span class="line"><span class="keyword">int</span>[] a = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">4</span>];<span class="comment">//推介使用int[] 这种方式初始化 </span></span><br><span class="line"><span class="keyword">int</span> c[] = &#123;<span class="number">23</span>,<span class="number">43</span>,<span class="number">56</span>,<span class="number">78</span>&#125;;<span class="comment">//长度：4，索引范围：[0,3]</span></span><br></pre></td></tr></table></figure>
 
 <ul>
-<li><p><strong>List—**</strong>是一个有序的集合，可以包含重复的元素，提供了按索引访问的方式，它继承Collection。List有两个重要的实现类：</p>
+<li><p><code>ArrayList</code> 是用一个可扩容的数组来实现的 (re-sizing array)；</p>
 </li>
-<li><p><strong>ArrayList:</strong> <strong>可以看作是能够自动增长容量的数组</strong>。</p>
+<li><p><code>LinkedList</code> 是用 <code>doubly-linked list</code> 来实现的。</p>
 </li>
-<li><p>ArrayList的toArray方法返回一个数组。</p>
+<li><p><strong>数组和链表之间最大的区别</strong>就是数组是可以随机访问的（random access）。</p>
+<ul>
+<li>这个特点造成了在数组里可以通过下标用 O(1) 的时间拿到任何位置的数，而链表则做不到，只能从头开始逐个遍历。</li>
+</ul>
 </li>
-<li><p><strong>ArrayList**</strong>的asList方法返回一个列表。</p>
+</ul>
+<h4 id="ArrayList-vs-Vector"><a href="#ArrayList-vs-Vector" class="headerlink" title="ArrayList vs Vector"></a>ArrayList vs Vector</h4><ul>
+<li><p><code>Vector</code> 是线程安全的，而 <code>ArrayList</code> 是线程不安全的；</p>
 </li>
+<li><p>扩容时扩多少的区别，文邹邹的说法就是 <code>data growth methods</code>不同，</p>
+</li>
+</ul>
+<ol>
+<li><ul>
+<li><code>Vector</code> 默认是扩大至 2 倍；</li>
+<li><code>ArrayList</code> 默认是扩大至 1.5 倍。</li>
+</ul>
+</li>
+</ol>
+<ul>
+<li>Vector 和 ArrayList 一样，也是继承自 java.util.AbstractList，底层也是用数组来实现的。</li>
 </ul>
 <h3 id="HashMap加载因子为什么是-0-75？"><a href="#HashMap加载因子为什么是-0-75？" class="headerlink" title="HashMap加载因子为什么是 0.75？"></a>HashMap加载因子为什么是 0.75？</h3><ul>
 <li><p>加载因子也叫扩容因子或负载因子，用来判断什么时候进行扩容的，假如加载因子是 0.5，HashMap 的初始化容量是 16，那么当 HashMap 中有 16*0.5=8 个元素时，HashMap 就会进行扩容。</p>
@@ -688,10 +705,15 @@
 <h3 id="当有哈希冲突时，HashMap-是如何查找并确认元素的？"><a href="#当有哈希冲突时，HashMap-是如何查找并确认元素的？" class="headerlink" title="当有哈希冲突时，HashMap 是如何查找并确认元素的？"></a>当有哈希冲突时，HashMap 是如何查找并确认元素的？</h3><ul>
 <li>当哈希冲突时我们需要通过判断 key 值是否相等，才确认此元素是不是我们想要的元素。</li>
 </ul>
-<h3 id="HashMap-源码中有哪些重要的方法？"><a href="#HashMap-源码中有哪些重要的方法？" class="headerlink" title="HashMap 源码中有哪些重要的方法？"></a>HashMap 源码中有哪些重要的方法？</h3><ul>
-<li>putVal()新增</li>
-<li>resize()扩容</li>
-<li>get()查询</li>
+<h4 id="为什么改-equals-一定要改-hashCode-？"><a href="#为什么改-equals-一定要改-hashCode-？" class="headerlink" title="为什么改 equals() 一定要改 hashCode()？"></a>为什么改 equals() 一定要改 hashCode()？</h4><blockquote>
+<p>首先基于一个假设：任何两个 <code>object</code> 的 <code>hashCode</code> 都是不同的。也就是 <code>hash function</code> 是有效的。</p>
+</blockquote>
+<ul>
+<li>那么在这个条件下，有两个 <code>object</code> 是相等的，那如果不重写 <code>hashCode()</code>，算出来的哈希值都不一样，就会去到不同的 <code>buckets</code> 了，就迷失在茫茫人海中了，再也无法相认，就和 <code>equals()</code> 条件矛盾了，证毕。<ul>
+<li><code>hashCode()</code> 决定了 <code>key</code> 放在这个桶里的编号，也就是在数组里的 <code>index</code>；</li>
+<li><code>equals()</code> 是用来比较两个 <code>object</code> 是否相同的。</li>
+</ul>
+</li>
 </ul>
 <h3 id="HashMap和HashTable的区别"><a href="#HashMap和HashTable的区别" class="headerlink" title="HashMap和HashTable的区别?"></a>HashMap和HashTable的区别?</h3><ul>
 <li><p>两者父类不同</p>
@@ -722,6 +744,30 @@
 </li>
 </ul>
 </li>
+</ul>
+<h3 id="如何解决哈希冲突？"><a href="#如何解决哈希冲突？" class="headerlink" title="如何解决哈希冲突？"></a>如何解决哈希冲突？</h3><blockquote>
+<p>一般来说哈希冲突有两大类解决方式：</p>
+</blockquote>
+<ul>
+<li><p>Separate chaining</p>
+</li>
+<li><p>Open addressing</p>
+</li>
+<li><p>Java 中采用的是第一种 <code>Separate chaining</code>，即在发生碰撞的那个桶后面再加一条“链”来存储。</p>
+<ul>
+<li>JDK1.6 和 1.7 是用链表存储的，这样如果碰撞很多的话，就变成了在<strong>链表</strong>上的查找，worst case 就是 O(n)；</li>
+<li>JDK 1.8 进行了优化，当链表长度较大时（超过 8），会采用<strong>红黑树</strong>来存储，这样大大提高了查找效率。</li>
+</ul>
+</li>
+<li><p>第二种方法 <code>open addressing</code> 也是非常重要的思想，因为在真实的分布式系统里，有很多地方会用到 <code>hash</code> 的思想但又不适合用 <code>seprate chaining</code>。</p>
+<ul>
+<li>这种方法是顺序查找，如果这个桶里已经被占了，那就按照“某种方式”继续找下一个没有被占的桶，直到找到第一个空的。</li>
+</ul>
+</li>
+</ul>
+<h3 id="Collection-vs-Collections"><a href="#Collection-vs-Collections" class="headerlink" title="Collection vs Collections"></a>Collection vs Collections</h3><ul>
+<li>Collection集合接口</li>
+<li>Collections是工具类,提供了一些静态方法。</li>
 </ul>
 
     </div>
@@ -828,7 +874,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Java集合"><span class="nav-number">1.</span> <span class="nav-text">Java集合</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Collection"><span class="nav-number">1.1.</span> <span class="nav-text">Collection</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Map"><span class="nav-number">1.2.</span> <span class="nav-text">Map</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Java集合主要划分4个部分："><span class="nav-number">1.3.</span> <span class="nav-text">Java集合主要划分4个部分：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#划重点"><span class="nav-number">1.4.</span> <span class="nav-text">划重点</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java类库中具体集合"><span class="nav-number">2.</span> <span class="nav-text">Java类库中具体集合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#介绍下Java-Collection-Interface"><span class="nav-number">3.</span> <span class="nav-text">介绍下Java Collection Interface</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Set"><span class="nav-number">4.</span> <span class="nav-text">1. Set</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-List"><span class="nav-number">5.</span> <span class="nav-text">2. List</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Queue"><span class="nav-number">6.</span> <span class="nav-text">3. Queue</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-Map"><span class="nav-number">7.</span> <span class="nav-text">4. Map</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#泛型E"><span class="nav-number">7.1.</span> <span class="nav-text">泛型E</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Interface"><span class="nav-number">8.</span> <span class="nav-text">Interface</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实现类一览表"><span class="nav-number">9.</span> <span class="nav-text">实现类一览表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Iterator-接口"><span class="nav-number">10.</span> <span class="nav-text">Iterator 接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Iterable-接口"><span class="nav-number">11.</span> <span class="nav-text">Iterable 接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Collection-接口"><span class="nav-number">12.</span> <span class="nav-text">Collection 接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Map-接口"><span class="nav-number">13.</span> <span class="nav-text">Map 接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对比下Vector、ArrayList、LinkedList之前有何区别。"><span class="nav-number">14.</span> <span class="nav-text">对比下Vector、ArrayList、LinkedList之前有何区别。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ArrayList和linkedList的区别"><span class="nav-number">15.</span> <span class="nav-text">ArrayList和linkedList的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HashMap加载因子为什么是-0-75？"><span class="nav-number">16.</span> <span class="nav-text">HashMap加载因子为什么是 0.75？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#当有哈希冲突时，HashMap-是如何查找并确认元素的？"><span class="nav-number">17.</span> <span class="nav-text">当有哈希冲突时，HashMap 是如何查找并确认元素的？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HashMap-源码中有哪些重要的方法？"><span class="nav-number">18.</span> <span class="nav-text">HashMap 源码中有哪些重要的方法？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HashMap和HashTable的区别"><span class="nav-number">19.</span> <span class="nav-text">HashMap和HashTable的区别?</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Java集合"><span class="nav-number">1.</span> <span class="nav-text">Java集合</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Collection"><span class="nav-number">1.1.</span> <span class="nav-text">Collection</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Map"><span class="nav-number">1.2.</span> <span class="nav-text">Map</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Java集合主要划分4个部分："><span class="nav-number">1.3.</span> <span class="nav-text">Java集合主要划分4个部分：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#划重点"><span class="nav-number">1.4.</span> <span class="nav-text">划重点</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java类库中具体集合"><span class="nav-number">2.</span> <span class="nav-text">Java类库中具体集合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java-Collection-Interface"><span class="nav-number">3.</span> <span class="nav-text">Java Collection Interface</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Set"><span class="nav-number">3.1.</span> <span class="nav-text">Set</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#List"><span class="nav-number">3.2.</span> <span class="nav-text">List</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Queue"><span class="nav-number">3.3.</span> <span class="nav-text">Queue</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Map-1"><span class="nav-number">3.4.</span> <span class="nav-text">Map</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#泛型E"><span class="nav-number">3.5.</span> <span class="nav-text">泛型E</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Interface"><span class="nav-number">4.</span> <span class="nav-text">Interface</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#实现类一览表"><span class="nav-number">4.1.</span> <span class="nav-text">实现类一览表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Iterator-接口"><span class="nav-number">4.2.</span> <span class="nav-text">Iterator 接口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Iterable-接口"><span class="nav-number">4.3.</span> <span class="nav-text">Iterable 接口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Collection-接口"><span class="nav-number">4.4.</span> <span class="nav-text">Collection 接口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Map-接口"><span class="nav-number">4.5.</span> <span class="nav-text">Map 接口</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对比下Vector、ArrayList、LinkedList之前有何区别。"><span class="nav-number">5.</span> <span class="nav-text">对比下Vector、ArrayList、LinkedList之前有何区别。</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ArrayList-VS-linkedList"><span class="nav-number">5.1.</span> <span class="nav-text">ArrayList VS linkedList</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ArrayList-vs-Vector"><span class="nav-number">5.2.</span> <span class="nav-text">ArrayList vs Vector</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HashMap加载因子为什么是-0-75？"><span class="nav-number">6.</span> <span class="nav-text">HashMap加载因子为什么是 0.75？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#当有哈希冲突时，HashMap-是如何查找并确认元素的？"><span class="nav-number">7.</span> <span class="nav-text">当有哈希冲突时，HashMap 是如何查找并确认元素的？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#为什么改-equals-一定要改-hashCode-？"><span class="nav-number">7.1.</span> <span class="nav-text">为什么改 equals() 一定要改 hashCode()？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HashMap和HashTable的区别"><span class="nav-number">8.</span> <span class="nav-text">HashMap和HashTable的区别?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何解决哈希冲突？"><span class="nav-number">9.</span> <span class="nav-text">如何解决哈希冲突？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Collection-vs-Collections"><span class="nav-number">10.</span> <span class="nav-text">Collection vs Collections</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
