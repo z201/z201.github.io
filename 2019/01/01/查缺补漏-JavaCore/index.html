@@ -35,7 +35,7 @@
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/%E4%B8%80%E5%BC%A0%E5%9B%BE%E8%A7%A3%E9%87%8Alock.png">
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211005223255.png">
 <meta property="article:published_time" content="2018-12-31T16:00:01.000Z">
-<meta property="article:modified_time" content="2021-10-05T14:47:42.753Z">
+<meta property="article:modified_time" content="2021-10-05T17:00:51.273Z">
 <meta property="article:author" content="胖枫叶">
 <meta property="article:tag" content="Java">
 <meta name="twitter:card" content="summary">
@@ -281,7 +281,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-10-05 22:47:42" itemprop="dateModified" datetime="2021-10-05T22:47:42+08:00">2021-10-05</time>
+                <time title="Modified: 2021-10-06 01:00:51" itemprop="dateModified" datetime="2021-10-06T01:00:51+08:00">2021-10-06</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -746,6 +746,15 @@
 <li>强引用是平常中使用最多的引用，强引用在程序内存不足（OOM）的时候也不会被回收，使用方式：</li>
 </ul>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">String str = <span class="keyword">new</span> String(<span class="string">"str"</span>);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>当<strong>内存空间不足</strong>时，<code>Java</code>虚拟机宁愿抛出<code>OutOfMemoryError</code>错误，使程序<strong>异常终止</strong>，也不会靠随意<strong>回收</strong>具有<strong>强引用</strong>的<strong>对象</strong>来解决内存不足的问题。 如果强引用对象<strong>不使用时</strong>，需要弱化从而使<code>GC</code>能够回收。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="keyword">null</span>;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>显示的将str对象设置成null，这样就脱离的对象的生命周期，具体什么时候取决当前的gc。</li>
+</ul>
 </li>
 <li><p>软引用</p>
 <ul>
@@ -762,9 +771,44 @@
 <li><p>虚引用</p>
 <p>虚引用的回收机制跟弱引用差不多，但是它被回收之前，会被放入 ReferenceQueue 中。其它引用是被JVM回收后才被传入 ReferenceQueue 中的。由于这个机制，所以虚引用大多被用于引用销毁前的处理工作。还有就是，虚引用创建的时候，必须带有 ReferenceQueue ，使用。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PhantomReference&lt;String&gt; prf = <span class="keyword">new</span> PhantomReference&lt;String&gt;(<span class="keyword">new</span> String(<span class="string">"str"</span>), <span class="keyword">new</span> ReferenceQueue&lt;&gt;());</span><br><span class="line"><span class="comment">// 对象销毁前的一些操作，比如说资源释放等。** Object.finalize() 虽然也可以做这类动作，但是这个方式即不安全又低效x</span></span><br></pre></td></tr></table></figure>
-
+</li>
+<li><p>Java中4种引用的级别和强度由高到低依次为：强引用 -&gt; 软引用 -&gt; 弱引用 -&gt; 虚引用</p>
 </li>
 </ul>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>回收时间</th>
+<th>用途</th>
+<th>生存时间</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>强引用</td>
+<td>从来不会</td>
+<td>对象的一般状态</td>
+<td>JVM停止运行时终止</td>
+</tr>
+<tr>
+<td>软饮用</td>
+<td>当内存不足时</td>
+<td>对象缓存</td>
+<td>内存不足时终止</td>
+</tr>
+<tr>
+<td>弱饮用</td>
+<td>正常垃圾回收时</td>
+<td>对象缓存</td>
+<td>垃圾回收后终止</td>
+</tr>
+<tr>
+<td>虚饮用</td>
+<td>正常垃圾回收时</td>
+<td>跟踪对象的垃圾回收</td>
+<td>垃圾回收后终止</td>
+</tr>
+</tbody></table>
 <h3 id="描述下final-与-finally、finalize的区别。"><a href="#描述下final-与-finally、finalize的区别。" class="headerlink" title="描述下final 与 finally、finalize的区别。"></a>描述下final 与 finally、finalize的区别。</h3><ul>
 <li><p><code>final</code> ，是修饰符关键字。</p>
 <ul>
@@ -2233,7 +2277,7 @@
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">

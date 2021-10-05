@@ -22,14 +22,14 @@
 
   <meta name="description" content="本章属于持续学习、长期更修。  HashMap 特征 HashMap 允许null键和null值 HashMao 并不是有序的存放。在使用iterate迭代的时候，并不能得到存放顺序。 HashMap使用它的内部类Node &lt;K，V&gt;来存储映射。 HashMap将entries存储到多个单链表中，称为存储桶或存储桶。默认的箱数为16，默认负载因子0.75，它的扩展系数为2，当键值对数">
 <meta property="og:type" content="article">
-<meta property="og:title" content="深入浅出HashMap">
-<meta property="og:url" content="https://z201.github.io/2018/08/23/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAHashMap/index.html">
+<meta property="og:title" content="源码阅读-HashMap">
+<meta property="og:url" content="https://z201.github.io/2018/08/23/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-HashMap/index.html">
 <meta property="og:site_name" content="枫叶的小博客">
 <meta property="og:description" content="本章属于持续学习、长期更修。  HashMap 特征 HashMap 允许null键和null值 HashMao 并不是有序的存放。在使用iterate迭代的时候，并不能得到存放顺序。 HashMap使用它的内部类Node &lt;K，V&gt;来存储映射。 HashMap将entries存储到多个单链表中，称为存储桶或存储桶。默认的箱数为16，默认负载因子0.75，它的扩展系数为2，当键值对数">
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/HashMap/HashMap.png">
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211005220907.png">
 <meta property="article:published_time" content="2018-08-23T03:08:00.000Z">
-<meta property="article:modified_time" content="2021-10-05T14:11:00.119Z">
+<meta property="article:modified_time" content="2021-10-05T17:15:33.717Z">
 <meta property="article:author" content="胖枫叶">
 <meta property="article:tag" content="Java">
 <meta property="article:tag" content="Java-Collecions-Framework">
@@ -37,7 +37,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/HashMap/HashMap.png">
 
-<link rel="canonical" href="https://z201.github.io/2018/08/23/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAHashMap/">
+<link rel="canonical" href="https://z201.github.io/2018/08/23/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-HashMap/">
 
 
 <script id="page-configurations">
@@ -50,7 +50,7 @@
   };
 </script>
 
-  <title>深入浅出HashMap | 枫叶的小博客</title>
+  <title>源码阅读-HashMap | 枫叶的小博客</title>
   
 
 
@@ -247,7 +247,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/08/23/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAHashMap/">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/08/23/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-HashMap/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -260,7 +260,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          深入浅出HashMap
+          源码阅读-HashMap
         </h1>
 
         <div class="post-meta">
@@ -277,7 +277,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-10-05 22:11:00" itemprop="dateModified" datetime="2021-10-05T22:11:00+08:00">2021-10-05</time>
+                <time title="Modified: 2021-10-06 01:15:33" itemprop="dateModified" datetime="2021-10-06T01:15:33+08:00">2021-10-06</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -285,7 +285,7 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">Java基础</span></a>
+                  <a href="/categories/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">源码分析</span></a>
                 </span>
             </span>
 
@@ -351,7 +351,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>Post link: </strong>
-    <a href="https://z201.github.io/2018/08/23/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAHashMap/" title="深入浅出HashMap">https://z201.github.io/2018/08/23/深入浅出HashMap/</a>
+    <a href="https://z201.github.io/2018/08/23/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-HashMap/" title="源码阅读-HashMap">https://z201.github.io/2018/08/23/源码阅读-HashMap/</a>
   </li>
   <li class="post-copyright-license">
     <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
@@ -373,8 +373,8 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2018/08/10/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAHashSet/" rel="prev" title="深入浅出HashSet">
-      <i class="fa fa-chevron-left"></i> 深入浅出HashSet
+    <a href="/2018/08/10/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-HashSet/" rel="prev" title="源码阅读-HashSet">
+      <i class="fa fa-chevron-left"></i> 源码阅读-HashSet
     </a></div>
       <div class="post-nav-item">
     <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-MySQL/" rel="next" title="查缺补漏-MySQL">
@@ -459,7 +459,7 @@
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">

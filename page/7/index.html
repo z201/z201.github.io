@@ -239,6 +239,307 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/06/04/%E5%AE%9E%E8%B7%B5-nginx%E6%97%A5%E5%BF%97%E7%AE%80%E5%8D%95%E7%9A%84%E7%BB%9F%E8%AE%A1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/06/04/%E5%AE%9E%E8%B7%B5-nginx%E6%97%A5%E5%BF%97%E7%AE%80%E5%8D%95%E7%9A%84%E7%BB%9F%E8%AE%A1/" class="post-title-link" itemprop="url">实践Nginx日志简单的统计</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-06-04 11:21:21" itemprop="dateCreated datePublished" datetime="2019-06-04T11:21:21+08:00">2019-06-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-07 05:52:32" itemprop="dateModified" datetime="2020-08-07T05:52:32+08:00">2020-08-07</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Nginx/" itemprop="url" rel="index"><span itemprop="name">Nginx</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>公司没有日志采集平台，又不太可能在业务系统里面搞事情。好在之前有玩过elk日志分析组合。直接从服务器上面撸出日志简单的用linux命令分析下吧。</p>
+</blockquote>
+<p>Nginx日志统计（简单的）</p>
+<p>（日志文件叫access.log 在当前目录下）</p>
+<p><strong>统计 PV，就是日志行数</strong></p>
+<p><code>cat access.log |wc -l</code></p>
+<p><strong>UV, 即是统计 IP 数</strong></p>
+<p><code>cat access.log |awk &#39;{print $1}&#39; |sort |uniq -c |wc -l</code></p>
+<p><strong>使用linux grep 进行统计</strong></p>
+<p><code>grep -E &quot;POST|GET&quot; access.log | awk -F &#39;&quot;&#39; &#39;{print $2,$3}&#39; | awk &#39;{print $2}&#39;| sort | uniq -c | sort -k1nr | head -100</code></p>
+<p><strong>耗时的请求发生时间、所请求的 URI 和耗时</strong></p>
+<p><code>cat access.log | awk &#39;{print $4,$7,$10,$NF}&#39; | sort -k3 -nr | head -100</code></p>
+<p><strong>统计</strong>nginx<strong>访问频次最高的</strong>100<strong>个</strong>Ip**</p>
+<p><code>grep -E &quot;POST|GET&quot; access.log | awk -F &#39;&quot;&#39; &#39;{print $(NF-1)}&#39; | sort | uniq -c | sort -k1nr | head -100</code></p>
+<p><strong>统计</strong>nginx<strong>访问不正常（状态码</strong>400+<strong>）的前</strong>100<strong>个</strong>url<strong>和频次</strong></p>
+<p><code>grep -E &quot;POST|GET&quot; access.log | awk -F &#39;&quot;&#39; &#39;{print $2,$3}&#39; | awk &#39;{if ($4&gt;=&quot;400&quot;) {print $4,$1,$2}}&#39; | sort | uniq -c | sort -k1nr | head -100</code></p>
+<p><strong>统计nginx访问状态码非200的前100个</strong>url<strong>和频次**</strong></p>
+<p><code>grep -E &quot;POST|GET&quot; access.log | awk -F &#39;&quot;&#39; &#39;{print $2,$3}&#39; | awk &#39;{if ($4!=200) {print $4,$1,$2}}&#39; | sort | uniq -c | sort -k1nr | head -100</code></p>
+<p><strong>不同 URI 的平均耗时</strong></p>
+<p><code>grep -E &quot;POST|GET&quot; access.log  | awk &#39;{s[$10] += $NF;c[$10]++}END{for(i in s){print i,s[i]/c[i]}}&#39; |sort -k2 -nr | head</code></p>
+<p><strong>每秒请求量统计</strong></p>
+<p>统计每秒的请求数,top100的时间点(精确到秒)</p>
+<p><code>grep -E &quot;POST|GET&quot; access.log |  awk &#39;{print $4}&#39; access.log |cut -c 14-21|sort|uniq -c|sort -nr|head -n 100</code></p>
+<p><strong>每分钟请求量统计</strong></p>
+<p>统计每分钟的请求数,top100的时间点(精确到分钟)</p>
+<p><code>grep -E &quot;POST|GET&quot; access.log |  awk &#39;{print $4}&#39; access.log |cut -c 14-18|sort|uniq -c|sort -nr|head -n 100</code></p>
+<p><strong>每小时请求量统计</strong></p>
+<p>统计每小时的请求数,top100的时间点(精确到小时)</p>
+<p><code>grep -E &quot;POST|GET&quot; access.log |  awk &#39;{print $4}&#39; access.log |cut -c 14-15|sort|uniq -c|sort -nr|head -n 100</code></p>
+<p><strong>统计蜘蛛抓取次数</strong></p>
+<p><code>grep &#39;Baiduspider&#39; access.log |wc -l</code></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/25/%E5%AE%9E%E8%B7%B5-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E5%87%BB%E7%A9%BF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/03/25/%E5%AE%9E%E8%B7%B5-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E5%87%BB%E7%A9%BF/" class="post-title-link" itemprop="url">实践-缓存穿透、击穿</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-03-25 20:56:41" itemprop="dateCreated datePublished" datetime="2019-03-25T20:56:41+08:00">2019-03-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-07 05:47:55" itemprop="dateModified" datetime="2020-08-07T05:47:55+08:00">2020-08-07</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>成长就是不断发现过去傻逼的过程，这里讲讲平时开发经常用到缓存。</p>
+</blockquote>
+<h2 id="缓存穿透和缓存击穿"><a href="#缓存穿透和缓存击穿" class="headerlink" title="缓存穿透和缓存击穿"></a>缓存穿透和缓存击穿</h2><ul>
+<li>本内容相关代码地址:<a href="https://github.com/z201/z201.github.io.code/tree/master/demonstration-project/cache-breakdown" target="_blank" rel="noopener">cache-breakdown</a></li>
+<li>代码运行需要mysql和redis环境</li>
+</ul>
+<h3 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a>缓存穿透</h3><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF/%E6%9F%A5%E8%AF%A2%E7%BC%93%E5%AD%98.svg"></p>
+<ul>
+<li>理想的情况下我们数据缓存到redis里面，客户访问数据的时候直接去缓存查询，如果没有缓存就去数据库查询。</li>
+<li>仔细想想这里其实有一个bug，必须是缓存有的数据才会去数据库查询，如果一直都是在查询一个没有得数据咋办呢，缓存会一直落空，而且每次都会去数据库查询。</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/03/25/%E5%AE%9E%E8%B7%B5-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E5%87%BB%E7%A9%BF/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/06/%E5%88%9D%E6%8E%A2FastDFS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/03/06/%E5%88%9D%E6%8E%A2FastDFS/" class="post-title-link" itemprop="url">初探FastDFS</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-03-06 10:45:11" itemprop="dateCreated datePublished" datetime="2019-03-06T10:45:11+08:00">2019-03-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-07 05:08:21" itemprop="dateModified" datetime="2020-08-07T05:08:21+08:00">2020-08-07</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA/" itemprop="url" rel="index"><span itemprop="name">基础理论</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="FastDfs介绍"><a href="#FastDfs介绍" class="headerlink" title="FastDfs介绍"></a>FastDfs介绍</h2><ul>
+<li><p>FastDFS是由国人余庆所开发，其项目地址：<a href="https://github.com/happyfish100" target="_blank" rel="noopener">FastDFS</a>。FastDfs是一个轻量级的开源分布式文件系统，主要解决了大容量的文件存储和高并发访问的问题，文件存取时实现了负载均衡。文件存取时实现了负载均衡FastDFS实现了软件方式的RAID，可以使用廉价的IDE硬盘进行存储支持存储服务器在线扩容支持相同内容的文件只保存一份，节约磁盘空间。</p>
+</li>
+<li><p>FastDFS只能通过Client API访问，不支持POSIX访问方式。</p>
+</li>
+<li><p>FastDFS特别适合大中型网站使用，用来存储资源文件（如：图片、文档、音频、视频等等）。</p>
+</li>
+<li><p>它用纯C语言实现，支持Linux、FreeBSD、AIX等UNIX系统。它只能通过专有API对文件进行存取访问，不支持POSIX接口方式，不能mount使用。准确地讲，Google FS、HDFS、TFS（这三个都是底层上的实现，在文件系统上处理的是数据块）以及FastDFS、mogileFS（这两个是文件级上的实现，处理的是文件）等类Google FS都不是系统级的分布式文件系统，而是应用级的分布式文件存储服务。</p>
+</li>
+<li><p>特性</p>
+<ul>
+<li><pre><code>1、分组存储，灵活简洁、对等结构，不存在单点。
+2、文件ID由FastDFS生成，作为文件访问凭证。FastDFS不需要传统的name server（去重机制在服务端，导致不能达到秒传。）。
+3、和流行的web server无缝衔接，FastDFS已提供apache和nginx扩展模块。
+4、大、中、小文件均可以很好支持，支持海量小文件存储（实际上不建议存储超大文件（大于500M））。
+5、支持多块磁盘，支持单盘数据恢复（理论上，实际出现Storage合并丢操作失数据）。
+6、支持相同文件内容只保存一份，节省存储空间。
+7、存储服务器上可以保存文件附加属性。
+8、下载文件支持多线程方式，支持断点续传。</code></pre>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="系统架构"><a href="#系统架构" class="headerlink" title="系统架构"></a>系统架构</h2>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/03/06/%E5%88%9D%E6%8E%A2FastDFS/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/14/%E5%AE%9E%E8%B7%B5-Junit%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -317,291 +618,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2019/03/14/%E5%AE%9E%E8%B7%B5-Junit%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/27/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAStack/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/04/27/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAStack/" class="post-title-link" itemprop="url">深入浅出Stack</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-04-27 05:15:30" itemprop="dateCreated datePublished" datetime="2018-04-27T05:15:30+08:00">2018-04-27</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-07-30 19:51:23" itemprop="dateModified" datetime="2020-07-30T19:51:23+08:00">2020-07-30</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">Java基础</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-<h3 id="Stack"><a href="#Stack" class="headerlink" title="Stack"></a>Stack</h3><ul>
-<li>栈是元素的集合，其包含了两个基本操作：push 操作可以用于将元素压入栈，pop 操作可以将栈顶元素移除。</li>
-<li>遵循后入先出（LIFO）原则。</li>
-<li>时间复杂度:</li>
-<li>索引: <code>O(n)</code></li>
-<li>搜索: <code>O(n)</code></li>
-<li>插入: <code>O(1)</code></li>
-<li>移除: <code>O(1)</code></li>
-</ul>
-</blockquote>
-<h2 id="Stack-1"><a href="#Stack-1" class="headerlink" title="Stack"></a>Stack</h2><blockquote>
-<p>Collection成员之一，继承了Vector，通过重写Vector来实现LIFO（Last-in-First-out 后进先出）特性。</p>
-</blockquote>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Stack/Stack.png"></p>
-<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><ul>
-<li>Java Stack是LIFO对象。它扩展了Vector类。</li>
-</ul>
-<h2 id="源码分析Stack"><a href="#源码分析Stack" class="headerlink" title="源码分析Stack"></a>源码分析Stack</h2>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/04/27/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAStack/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/26/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAVector/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/04/26/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAVector/" class="post-title-link" itemprop="url">深入浅出Vector</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-04-26 20:07:27" itemprop="dateCreated datePublished" datetime="2018-04-26T20:07:27+08:00">2018-04-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-07-30 02:26:04" itemprop="dateModified" datetime="2020-07-30T02:26:04+08:00">2020-07-30</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">Java基础</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-<h2 id="Vector"><a href="#Vector" class="headerlink" title="Vector"></a>Vector</h2><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Vector/Vector.png"></p>
-<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><ul>
-<li>Vector是Java Collection Franmework成员。</li>
-<li>列队允许添加重复元素</li>
-<li>列队允许null的存在</li>
-<li>列队从0开始，也就是列队头部的下标是0。</li>
-<li>列队支持泛型，这样可以避免<code>ClassCastException</code>异常。</li>
-</ul>
-<h2 id="与ArrayList的区别"><a href="#与ArrayList的区别" class="headerlink" title="与ArrayList的区别"></a>与ArrayList的区别</h2>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/04/26/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAVector/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/10/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAArrayList/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/04/10/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAArrayList/" class="post-title-link" itemprop="url">深入浅出ArrayList</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-04-10 01:09:11" itemprop="dateCreated datePublished" datetime="2018-04-10T01:09:11+08:00">2018-04-10</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-07-30 02:25:23" itemprop="dateModified" datetime="2020-07-30T02:25:23+08:00">2020-07-30</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">Java基础</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-<p>List 是是一个有序的集合，是Collection的实现类之一。</p>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Collection/Collection-ArrayList.JPG"></p>
-<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><ul>
-<li>list接口是Java Collection Framework的成员。</li>
-<li>列队允许添加重复的元素。</li>
-<li>列队允许null存在。</li>
-<li>列队是从0开始，也就是列队头元素的下标是0。</li>
-<li>列队支持泛型，这样可以避免<code>ClassCastException</code>异常。</li>
-</ul>
-<h3 id="数组与数组列表"><a href="#数组与数组列表" class="headerlink" title="数组与数组列表"></a>数组与数组列表</h3>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/04/10/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAArrayList/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -1265,7 +1281,7 @@
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
