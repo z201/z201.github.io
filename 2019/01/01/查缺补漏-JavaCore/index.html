@@ -34,8 +34,9 @@
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%B8%BB%E8%A6%81%E6%B5%81%E7%A8%8B.png">
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/%E4%B8%80%E5%BC%A0%E5%9B%BE%E8%A7%A3%E9%87%8Alock.png">
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211005223255.png">
+<meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211007005739.png">
 <meta property="article:published_time" content="2018-12-31T16:00:01.000Z">
-<meta property="article:modified_time" content="2021-10-06T16:32:07.009Z">
+<meta property="article:modified_time" content="2021-10-06T17:04:34.561Z">
 <meta property="article:author" content="胖枫叶">
 <meta property="article:tag" content="Java">
 <meta name="twitter:card" content="summary">
@@ -281,7 +282,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-10-07 00:32:07" itemprop="dateModified" datetime="2021-10-07T00:32:07+08:00">2021-10-07</time>
+                <time title="Modified: 2021-10-07 01:04:34" itemprop="dateModified" datetime="2021-10-07T01:04:34+08:00">2021-10-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -2007,14 +2008,10 @@
 <p>输出</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">00:25:27.321 [main] INFO cn.z201.java.test.lock.ReentrantReadWriteLockTest - 写锁</span><br><span class="line">00:25:27.325 [main] INFO cn.z201.java.test.lock.ReentrantReadWriteLockTest - 读锁</span><br></pre></td></tr></table></figure>
 
-
-
 <h4 id="Condition"><a href="#Condition" class="headerlink" title="Condition"></a>Condition</h4><blockquote>
 <p>synchronized 关键字，它配合 Object 的 wait()、notify() 系列方法可以实现等待/通知模式。对于 Lock，通过 Condition 也可以实现等待/通知模式。Condition 是一个接口。Condition 接口的实现类是 Lock（AQS）中的 ConditionObject。Lock 接口中有个 newCondition() 方法，通过这个方法可以获得 Condition 对象（其实就是 ConditionObject ）。因此，通过 Lock 对象可以获得 Condition 对象。</p>
 </blockquote>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Lock lock  = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">Condition ondition1 = lock.newCondition();</span><br><span class="line">Condition condition2 = lock.newCondition();</span><br></pre></td></tr></table></figure>
-
-
 
 <h4 id="CAS-Compare-And-Swap"><a href="#CAS-Compare-And-Swap" class="headerlink" title="CAS Compare-And-Swap"></a>CAS Compare-And-Swap</h4><blockquote>
 <p>CAS的全称是Compare-And-Swap，它是CPU并发原语。它的功能是判断内存某个位置的值是否为预期值，如果是则更改为新的值，这个过程是原子的，可用于在多线程编程中实现不被打断的数据交换操作，从而避免多线程同时改写某一数据时由于执行顺序不确定性以及中断的不可预知性产生的数据不一致问题。该操作通过将内存中的值与指定数据进行比较，当数值一样时将内存中的数据替换为新的值。</p>
@@ -2022,6 +2019,7 @@
 <ul>
 <li>CAS具备原子性，它是cpu硬件指令实现保证原子性。通过JNI调用Native方法由c++编写的硬件级别指令。JDK中通过Unsafe类执行操作。</li>
 </ul>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211007005739.png"></p>
 <h5 id="ABA问题"><a href="#ABA问题" class="headerlink" title="ABA问题"></a>ABA问题</h5><blockquote>
 <p>CAS 算法实现一个重要前提需要取出内存中某时刻的数据，而在下时刻比较并替换，那么在这个时间差类会导致数据的变化。</p>
 </blockquote>
@@ -2039,6 +2037,8 @@
 <ul>
 <li>synchronized 是依赖于 JVM 实现的，前⾯我们也讲到了 虚拟机团队在 JDK1.6 为 synchronized 关键字进⾏了很多优化，但是这些优化都是在虚拟机层⾯实现的，并没有直接暴露给我们。ReentrantLock 是 JDK 层⾯实现的（也就是 API 层⾯，需要 lock() 和 unlock() ⽅法配合try/finally 语句块来完成），所以我们可以通过查看它的源代码，来看它是如何实现的。</li>
 </ul>
+</li>
+<li><p>synchronized的方式加锁，会让线程在 BLOCKED 状态和 RUNNABLE 状态之间切换，在操作系统上，就会造成用户态和内核态的频繁切换，效率就比较低。</p>
 </li>
 <li><p>相⽐synchronized，ReentrantLock增加了⼀些⾼级功能</p>
 <blockquote>

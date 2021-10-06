@@ -26,11 +26,14 @@
 <meta property="og:url" content="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Redis/index.html">
 <meta property="og:site_name" content="枫叶的小博客">
 <meta property="og:description" content="本章是整理知识内容，为强化知识长期更新。  Redis 简介 Redis 是完全开源免费的，遵守 BSD 协议，英文全称是Remote Dictionary Server（远程字典服务），是一个开源的使用ANSI C语言编写、支持网络、可基于内存亦可持久化的日志型、Key-Value数据库，并提供多种语言的API。   Redis 与 其他 key - value 缓存产品有以下三个特点： Re">
+<meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211007011326.png">
+<meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211007011355.png">
 <meta property="article:published_time" content="2018-12-31T16:00:01.000Z">
-<meta property="article:modified_time" content="2021-10-06T10:49:38.116Z">
+<meta property="article:modified_time" content="2021-10-06T18:15:32.518Z">
 <meta property="article:author" content="胖枫叶">
 <meta property="article:tag" content="Redis">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211007011326.png">
 
 <link rel="canonical" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Redis/">
 
@@ -272,7 +275,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-10-06 18:49:38" itemprop="dateModified" datetime="2021-10-06T18:49:38+08:00">2021-10-06</time>
+                <time title="Modified: 2021-10-07 02:15:32" itemprop="dateModified" datetime="2021-10-07T02:15:32+08:00">2021-10-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -416,7 +419,7 @@
 </ul>
 </li>
 </ul>
-<h3 id="缓存雪崩、缓存穿透、缓存预热、缓存更新、缓存降级等问题"><a href="#缓存雪崩、缓存穿透、缓存预热、缓存更新、缓存降级等问题" class="headerlink" title="缓存雪崩、缓存穿透、缓存预热、缓存更新、缓存降级等问题"></a>缓存雪崩、缓存穿透、缓存预热、缓存更新、缓存降级等问题</h3><h4 id="缓存雪崩"><a href="#缓存雪崩" class="headerlink" title="缓存雪崩"></a>缓存雪崩</h4><ul>
+<h3 id="缓存带来的问题"><a href="#缓存带来的问题" class="headerlink" title="缓存带来的问题"></a>缓存带来的问题</h3><h4 id="缓存雪崩"><a href="#缓存雪崩" class="headerlink" title="缓存雪崩"></a>缓存雪崩</h4><ul>
 <li>我们可以简单的理解为：由于原有缓存失效，新缓存未到期间(例如：我们设置缓存时采用了相同的过期时间，在同一时刻出现大面积的缓存过期)，所有原本应该访问缓存的请求都去查询数据库了，而对数据库CPU和内存造成巨大压力，严重的会造成数据库宕机。从而形成一系列连锁反应，造成整个系统崩溃。</li>
 <li><strong>解决办法：</strong><ul>
 <li>大多数系统设计者考虑用加锁（ 最多的解决方案）或者队列的方式保证来保证不会有大量的线程对数据库一次性进行读写，从而避免失效时大量的并发请求落到底层存储系统上。还有一个简单方案就时讲缓存失效时间分散开。</li>
@@ -441,7 +444,7 @@
 </ul>
 </li>
 </ul>
-<h4 id="布隆过滤器"><a href="#布隆过滤器" class="headerlink" title="布隆过滤器"></a>布隆过滤器</h4><blockquote>
+<h5 id="布隆过滤器"><a href="#布隆过滤器" class="headerlink" title="布隆过滤器"></a>布隆过滤器</h5><blockquote>
 <p>布隆过滤器是一种基于<strong>概率</strong>的<strong>数据结构</strong>，主要用来判断某个元素是否在集合内，它具有<strong>运行速度快</strong>（时间效率），<strong>占用内存小</strong>的优点（空间效率），但是有一定的<strong>误识别率</strong>和<strong>删除困难</strong>的问题。它只能告诉你某个元素一定不在集合内或可能在集合内。</p>
 </blockquote>
 <ol>
@@ -482,6 +485,28 @@
 </ul>
 </li>
 <li>服务降级的目的，是为了防止Redis服务故障，导致数据库跟着一起发生雪崩问题。因此，对于不重要的缓存数据，可以采取服务降级策略，例如一个比较常见的做法就是，Redis出现问题，不去数据库查询，而是直接返回默认值给用户。</li>
+</ul>
+<h4 id="数据一致性"><a href="#数据一致性" class="headerlink" title="数据一致性"></a>数据一致性</h4><blockquote>
+<p>缓存一致性问题作为日常开发长期存在的问题。</p>
+</blockquote>
+<h5 id="缓存常见的操作"><a href="#缓存常见的操作" class="headerlink" title="缓存常见的操作"></a>缓存常见的操作</h5><ul>
+<li><p>写入：缓存和数据库是两个不同的组件，只要涉及双写，就存在只有一个写成功的可能性，造成数据不一致。</p>
+</li>
+<li><p>更新：更新的情况类似，需要更新两个不同的组件。</p>
+</li>
+<li><p>读取：读取要保证从缓存中读到的信息是最新的，是和数据库中的是一致的。</p>
+</li>
+<li><p>删除：当删除数据库记录的时候，如何把缓存中的数据也删掉？</p>
+</li>
+</ul>
+<h5 id="触发式加载"><a href="#触发式加载" class="headerlink" title="触发式加载"></a>触发式加载</h5><blockquote>
+<p>使用懒加载的方式，可以让缓存的同步变得非常简单</p>
+</blockquote>
+<ul>
+<li><p>当读取缓存的时候，如果缓存里没有相关数据，则执行相关的业务逻辑，构造缓存数据存入到缓存系统；</p>
+</li>
+<li><p>当与缓存项相关的资源有变动，则先删除相应的缓存项，然后再对资源进行更新，这个时候，即使是资源更新失败，也是没有问题的。</p>
+</li>
 </ul>
 <h3 id="Redis-的线程模型"><a href="#Redis-的线程模型" class="headerlink" title="Redis 的线程模型"></a>Redis 的线程模型</h3><ul>
 <li>redis 内部使⽤⽂件事件处理器<code>file event handler</code>，这个⽂件事件处理器是单线程的，所以redis 才叫做单线程的模型。它采⽤ IO 多路复⽤机制同时监听多个 socket，根据 socket 上的事件来选择对应的事件处理器进⾏处理。</li>
@@ -561,6 +586,7 @@
 <h4 id="主从版本"><a href="#主从版本" class="headerlink" title="主从版本"></a>主从版本</h4><blockquote>
 <p>主从的原理还算是比较简单的，一主多从，<strong>主数据库（master）可以读也可以写（read/write），从数据库仅读（only read）</strong>。主从模式一般实现<strong>读写分离</strong>，<strong>主数据库仅写（only write）</strong>，减轻主数据库的压力。但是数据的一致性问题，假如主数据库写操作完成，那么他的数据会被复制到从数据库，若是还没有即使复制到从数据库，读请求又来了，此时读取的数据就不是最新的数据。从主同步的过程网络出故障了，导致主从同步失败，也会出现问题数据一致性的问题。主从模式不具备自动容错和恢复的功能，一旦主数据库，从节点晋升未主数据库的过程需要人为操作，维护的成本就会升高，并且主节点的写能力、存储能力都会受到限制。</p>
 </blockquote>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211007011326.png"></p>
 <h5 id="数据同步方式"><a href="#数据同步方式" class="headerlink" title="数据同步方式"></a>数据同步方式</h5><ol>
 <li>当slave启动后会向master发送<code>SYNC</code>命令，master节后到从数据库的命令后通过<code>bgsave</code>保存快照（<strong>RDB持久化</strong>），并且期间的执行的些命令会被缓存起来。</li>
 <li>然后master会将保存的快照发送给slave，并且继续缓存期间的写命令。</li>
@@ -568,8 +594,9 @@
 <li>最后master讲缓存的命令同步给slave，slave收到命令后执行一遍，这样master与slave数据就保持一致了。</li>
 </ol>
 <h4 id="哨兵"><a href="#哨兵" class="headerlink" title="哨兵"></a>哨兵</h4><blockquote>
-<p>哨兵模式是主从的升级版，因为主从的出现故障后，不会自动恢复，需要人为干预。在主从的基础上，实现哨兵模式就是为了监控主从的运行状况，对主从的健壮进行监控，就好像哨兵一样，只要有异常就发出警告，对异常状况进行处理。</p>
+<p>哨兵模式是 Redis 官方推荐的高可用模式。哨兵模式是主从的升级版，因为主从的出现故障后，不会自动恢复，需要人为干预。在主从的基础上，实现哨兵模式就是为了监控主从的运行状况，对主从的健壮进行监控，就好像哨兵一样，只要有异常就发出警告，对异常状况进行处理。</p>
 </blockquote>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211007011355.png"></p>
 <h5 id="监控"><a href="#监控" class="headerlink" title="监控"></a>监控</h5><blockquote>
 <p>监控master和slave是否正常运行，以及哨兵之间也会相互监控</p>
 </blockquote>
@@ -613,6 +640,7 @@
 <h4 id="集群Cluster模式"><a href="#集群Cluster模式" class="headerlink" title="集群Cluster模式"></a>集群Cluster模式</h4><blockquote>
 <p>集群模式实现了Redis数据的分布式存储，实现数据的分片，每个redis节点存储不同的内容，并且解决了在线的节点收缩（下线）和扩容（上线）问题。</p>
 </blockquote>
+<p>![image-20211007011524701](/Users/zengqingfeng/Library/Application Support/typora-user-images/image-20211007011524701.png)</p>
 <h5 id="虚拟槽分区算法"><a href="#虚拟槽分区算法" class="headerlink" title="虚拟槽分区算法"></a>虚拟槽分区算法</h5><blockquote>
 <p>在Redis集群中采用的使虚拟槽分区算法，会把redis集群分成16384 个槽（0 -16383）。</p>
 </blockquote>
@@ -636,6 +664,30 @@
 <li>节点的收缩和扩容时，会重新计算每一个节点负责的槽范围，并发根据虚拟槽算法，将对应的数据更新到对应的节点。</li>
 <li>发生故障后，哨兵老大节点的选举，master节点的重新选举，slave怎样晋升为master节点，可以查看前面哨兵模式选举过程。</li>
 </ul>
+<h5 id="虚拟哈希槽分区"><a href="#虚拟哈希槽分区" class="headerlink" title="虚拟哈希槽分区"></a>虚拟哈希槽分区</h5><blockquote>
+<p>Redis Cluster 采用虚拟哈希槽分区，所有的键根据哈希函数映射到 0~16383 整数槽内，每个 key 通过 CRC16 校验后对 16384 取模来决定放置哪个槽（slot），每一个节点负责维护一部分槽以及槽所映射的键值数据。</p>
+</blockquote>
+<h5 id="一致性哈希算法原理"><a href="#一致性哈希算法原理" class="headerlink" title="一致性哈希算法原理"></a>一致性哈希算法原理</h5><blockquote>
+<p>一致性 Hash 算法使用取模的方法，对 2 的 32 方取模。即，一致性 Hash 算法将整个 Hash 空间组织成一个虚拟的圆环，Hash 函数的值空间为 0~2^32-1（一个 32 位无符号整型）</p>
+</blockquote>
+<h5 id="slot-原理"><a href="#slot-原理" class="headerlink" title="slot 原理"></a>slot 原理</h5><blockquote>
+<p>Redis Cluster 中有一个 16384 长度的槽的概念，它们的编号为 0~16383。这个槽是一个虚拟的槽，并不是真正存在的。正常工作的时候，Redis Cluster 中的每个 master 节点都会负责一部分的槽，当有某个 key 被映射到某个 master 负责的槽，那么这个 master 负责为这个 key 提供服务，至于哪个 master 节点负责哪个槽，这是可以由用户指定的，也可以在初始化的时候自动生成。每个槽映射一个数据子集，一般比节点数大。</p>
+</blockquote>
+<ul>
+<li>Redis Cluster 是服务端管理节点、槽、数据，值得一提的是只有 master 节点才能分配槽。通过哈希算法再加上取模运算可以将一个值固定地映射到某个区间，在这里，这个区间叫做 slots，区间由连续的 slot 组成。在 Redis Cluster 中，我们拥有 16384 个 slot，这个数是固定的，我们存储在 Redis Cluster 中的所有的键都会被映射到这些 slot 中。</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HASH_SLOT = CRC16(key) mod <span class="number">16384</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="为何是-16384"><a href="#为何是-16384" class="headerlink" title="为何是 16384"></a>为何是 16384</h5><blockquote>
+<p>Redis Cluster 为什么是 16384 个槽，16384 是 2^14 的结果</p>
+</blockquote>
+<ul>
+<li>作者怎么说</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">The reason is:</span><br><span class="line"></span><br><span class="line">		Normal heartbeat packets carry the full configuration of a node, that can be replaced in an idempotent way with the old in order to update an old config. This means they contain the slots configuration for a node, in raw form, that uses 2k of space with16k slots, but would use a prohibitive 8k of space using 65k slots.</span><br><span class="line">		At the same time it is unlikely that Redis Cluster would scale to more than 1000 mater nodes because of other design tradeoffs.</span><br><span class="line">So 16k was in the right range to ensure enough slots per master with a max of 1000 maters, but a small enough number to propagate the slot configuration as a raw bitmap easily. Note that in small clusters the bitmap would be hard to compress because when N is small the bitmap would have slots&#x2F;N bits set that is a large percentage of bits set.</span><br></pre></td></tr></table></figure>
+
+
+
 <h3 id="大量key短时间内同时过期"><a href="#大量key短时间内同时过期" class="headerlink" title="大量key短时间内同时过期"></a>大量key短时间内同时过期</h3><ul>
 <li>如果大量的key集中在某一个时间过期，会导致redis卡顿现象，所以在设置过期时间的时候最好加上一个随机数，让的key过期时间分散一点。</li>
 </ul>
@@ -742,7 +794,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis-简介"><span class="nav-number">1.</span> <span class="nav-text">Redis 简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis单线程"><span class="nav-number">1.0.1.</span> <span class="nav-text">Redis单线程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis单线程处理IO请求性能瓶颈"><span class="nav-number">1.0.2.</span> <span class="nav-text">Redis单线程处理IO请求性能瓶颈</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis持久化机制"><span class="nav-number">1.0.3.</span> <span class="nav-text">Redis持久化机制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#AOF日志"><span class="nav-number">1.0.3.1.</span> <span class="nav-text">AOF日志</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#AOF更好保证数据不会被丢失，最多只丢失一秒内的数据，通过foek一个子进程处理持久化操作，保证了主进程不会进程io操作，能高效的处理客户端的请求。"><span class="nav-number">1.0.3.1.1.</span> <span class="nav-text">AOF更好保证数据不会被丢失，最多只丢失一秒内的数据，通过foek一个子进程处理持久化操作，保证了主进程不会进程io操作，能高效的处理客户端的请求。</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#AOF重写机制"><span class="nav-number">1.0.3.1.2.</span> <span class="nav-text">AOF重写机制</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#RDB快照"><span class="nav-number">1.0.3.2.</span> <span class="nav-text">RDB快照</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#RDB原理"><span class="nav-number">1.0.3.2.1.</span> <span class="nav-text">RDB原理</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存雪崩、缓存穿透、缓存预热、缓存更新、缓存降级等问题"><span class="nav-number">1.0.4.</span> <span class="nav-text">缓存雪崩、缓存穿透、缓存预热、缓存更新、缓存降级等问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#缓存雪崩"><span class="nav-number">1.0.4.1.</span> <span class="nav-text">缓存雪崩</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#缓存穿透"><span class="nav-number">1.0.4.2.</span> <span class="nav-text">缓存穿透</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#布隆过滤器"><span class="nav-number">1.0.4.3.</span> <span class="nav-text">布隆过滤器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#缓存击穿"><span class="nav-number">1.0.4.4.</span> <span class="nav-text">缓存击穿</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#缓存预热"><span class="nav-number">1.0.4.5.</span> <span class="nav-text">缓存预热</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#缓存更新"><span class="nav-number">1.0.4.6.</span> <span class="nav-text">缓存更新</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#缓存降级"><span class="nav-number">1.0.4.7.</span> <span class="nav-text">缓存降级</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis-的线程模型"><span class="nav-number">1.0.5.</span> <span class="nav-text">Redis 的线程模型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#单线程的Redis为什么这么快"><span class="nav-number">1.0.5.1.</span> <span class="nav-text">单线程的Redis为什么这么快</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis的过期策略以及内存淘汰机制"><span class="nav-number">1.0.6.</span> <span class="nav-text">Redis的过期策略以及内存淘汰机制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Redis-的过期策略和内存淘汰机制有什么区别？"><span class="nav-number">1.0.6.1.</span> <span class="nav-text">Redis 的过期策略和内存淘汰机制有什么区别？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis事务"><span class="nav-number">1.0.7.</span> <span class="nav-text">Redis事务</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#为什么Redis的操作是原子性的，怎么保证原子性的？"><span class="nav-number">1.0.7.1.</span> <span class="nav-text">为什么Redis的操作是原子性的，怎么保证原子性的？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis-是如何实现高可用的？"><span class="nav-number">1.0.8.</span> <span class="nav-text">Redis 是如何实现高可用的？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#单机版"><span class="nav-number">1.0.8.1.</span> <span class="nav-text">单机版</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#主从版本"><span class="nav-number">1.0.8.2.</span> <span class="nav-text">主从版本</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#数据同步方式"><span class="nav-number">1.0.8.2.1.</span> <span class="nav-text">数据同步方式</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#哨兵"><span class="nav-number">1.0.8.3.</span> <span class="nav-text">哨兵</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#监控"><span class="nav-number">1.0.8.3.1.</span> <span class="nav-text">监控</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#自动故障恢复"><span class="nav-number">1.0.8.3.2.</span> <span class="nav-text">自动故障恢复</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#节点通信"><span class="nav-number">1.0.8.3.3.</span> <span class="nav-text">节点通信</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#上线和下线"><span class="nav-number">1.0.8.3.4.</span> <span class="nav-text">上线和下线</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#选举算法"><span class="nav-number">1.0.8.3.5.</span> <span class="nav-text">选举算法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#选举master哨兵的算法叫做Raft算法"><span class="nav-number">1.0.8.3.6.</span> <span class="nav-text">选举master哨兵的算法叫做Raft算法</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#集群Cluster模式"><span class="nav-number">1.0.8.4.</span> <span class="nav-text">集群Cluster模式</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#虚拟槽分区算法"><span class="nav-number">1.0.8.4.1.</span> <span class="nav-text">虚拟槽分区算法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#节点通信-1"><span class="nav-number">1.0.8.4.2.</span> <span class="nav-text">节点通信</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#数据请求"><span class="nav-number">1.0.8.4.3.</span> <span class="nav-text">数据请求</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#扩容和收缩"><span class="nav-number">1.0.8.4.4.</span> <span class="nav-text">扩容和收缩</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#大量key短时间内同时过期"><span class="nav-number">1.0.9.</span> <span class="nav-text">大量key短时间内同时过期</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Keys命令"><span class="nav-number">1.0.10.</span> <span class="nav-text">Keys命令</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis-简介"><span class="nav-number">1.</span> <span class="nav-text">Redis 简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis单线程"><span class="nav-number">1.0.1.</span> <span class="nav-text">Redis单线程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis单线程处理IO请求性能瓶颈"><span class="nav-number">1.0.2.</span> <span class="nav-text">Redis单线程处理IO请求性能瓶颈</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis持久化机制"><span class="nav-number">1.0.3.</span> <span class="nav-text">Redis持久化机制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#AOF日志"><span class="nav-number">1.0.3.1.</span> <span class="nav-text">AOF日志</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#AOF更好保证数据不会被丢失，最多只丢失一秒内的数据，通过foek一个子进程处理持久化操作，保证了主进程不会进程io操作，能高效的处理客户端的请求。"><span class="nav-number">1.0.3.1.1.</span> <span class="nav-text">AOF更好保证数据不会被丢失，最多只丢失一秒内的数据，通过foek一个子进程处理持久化操作，保证了主进程不会进程io操作，能高效的处理客户端的请求。</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#AOF重写机制"><span class="nav-number">1.0.3.1.2.</span> <span class="nav-text">AOF重写机制</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#RDB快照"><span class="nav-number">1.0.3.2.</span> <span class="nav-text">RDB快照</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#RDB原理"><span class="nav-number">1.0.3.2.1.</span> <span class="nav-text">RDB原理</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存带来的问题"><span class="nav-number">1.0.4.</span> <span class="nav-text">缓存带来的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#缓存雪崩"><span class="nav-number">1.0.4.1.</span> <span class="nav-text">缓存雪崩</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#缓存穿透"><span class="nav-number">1.0.4.2.</span> <span class="nav-text">缓存穿透</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#布隆过滤器"><span class="nav-number">1.0.4.2.1.</span> <span class="nav-text">布隆过滤器</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#缓存击穿"><span class="nav-number">1.0.4.3.</span> <span class="nav-text">缓存击穿</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#缓存预热"><span class="nav-number">1.0.4.4.</span> <span class="nav-text">缓存预热</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#缓存更新"><span class="nav-number">1.0.4.5.</span> <span class="nav-text">缓存更新</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#缓存降级"><span class="nav-number">1.0.4.6.</span> <span class="nav-text">缓存降级</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据一致性"><span class="nav-number">1.0.4.7.</span> <span class="nav-text">数据一致性</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#缓存常见的操作"><span class="nav-number">1.0.4.7.1.</span> <span class="nav-text">缓存常见的操作</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#触发式加载"><span class="nav-number">1.0.4.7.2.</span> <span class="nav-text">触发式加载</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis-的线程模型"><span class="nav-number">1.0.5.</span> <span class="nav-text">Redis 的线程模型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#单线程的Redis为什么这么快"><span class="nav-number">1.0.5.1.</span> <span class="nav-text">单线程的Redis为什么这么快</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis的过期策略以及内存淘汰机制"><span class="nav-number">1.0.6.</span> <span class="nav-text">Redis的过期策略以及内存淘汰机制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Redis-的过期策略和内存淘汰机制有什么区别？"><span class="nav-number">1.0.6.1.</span> <span class="nav-text">Redis 的过期策略和内存淘汰机制有什么区别？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis事务"><span class="nav-number">1.0.7.</span> <span class="nav-text">Redis事务</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#为什么Redis的操作是原子性的，怎么保证原子性的？"><span class="nav-number">1.0.7.1.</span> <span class="nav-text">为什么Redis的操作是原子性的，怎么保证原子性的？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis-是如何实现高可用的？"><span class="nav-number">1.0.8.</span> <span class="nav-text">Redis 是如何实现高可用的？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#单机版"><span class="nav-number">1.0.8.1.</span> <span class="nav-text">单机版</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#主从版本"><span class="nav-number">1.0.8.2.</span> <span class="nav-text">主从版本</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#数据同步方式"><span class="nav-number">1.0.8.2.1.</span> <span class="nav-text">数据同步方式</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#哨兵"><span class="nav-number">1.0.8.3.</span> <span class="nav-text">哨兵</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#监控"><span class="nav-number">1.0.8.3.1.</span> <span class="nav-text">监控</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#自动故障恢复"><span class="nav-number">1.0.8.3.2.</span> <span class="nav-text">自动故障恢复</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#节点通信"><span class="nav-number">1.0.8.3.3.</span> <span class="nav-text">节点通信</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#上线和下线"><span class="nav-number">1.0.8.3.4.</span> <span class="nav-text">上线和下线</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#选举算法"><span class="nav-number">1.0.8.3.5.</span> <span class="nav-text">选举算法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#选举master哨兵的算法叫做Raft算法"><span class="nav-number">1.0.8.3.6.</span> <span class="nav-text">选举master哨兵的算法叫做Raft算法</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#集群Cluster模式"><span class="nav-number">1.0.8.4.</span> <span class="nav-text">集群Cluster模式</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#虚拟槽分区算法"><span class="nav-number">1.0.8.4.1.</span> <span class="nav-text">虚拟槽分区算法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#节点通信-1"><span class="nav-number">1.0.8.4.2.</span> <span class="nav-text">节点通信</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#数据请求"><span class="nav-number">1.0.8.4.3.</span> <span class="nav-text">数据请求</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#扩容和收缩"><span class="nav-number">1.0.8.4.4.</span> <span class="nav-text">扩容和收缩</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#虚拟哈希槽分区"><span class="nav-number">1.0.8.4.5.</span> <span class="nav-text">虚拟哈希槽分区</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#一致性哈希算法原理"><span class="nav-number">1.0.8.4.6.</span> <span class="nav-text">一致性哈希算法原理</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#slot-原理"><span class="nav-number">1.0.8.4.7.</span> <span class="nav-text">slot 原理</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#为何是-16384"><span class="nav-number">1.0.8.4.8.</span> <span class="nav-text">为何是 16384</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#大量key短时间内同时过期"><span class="nav-number">1.0.9.</span> <span class="nav-text">大量key短时间内同时过期</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Keys命令"><span class="nav-number">1.0.10.</span> <span class="nav-text">Keys命令</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
