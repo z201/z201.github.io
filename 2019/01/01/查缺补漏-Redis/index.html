@@ -27,7 +27,7 @@
 <meta property="og:site_name" content="枫叶的小博客">
 <meta property="og:description" content="本章是整理知识内容，为强化知识长期更新。  Redis 简介 Redis 是完全开源免费的，遵守 BSD 协议，英文全称是Remote Dictionary Server（远程字典服务），是一个开源的使用ANSI C语言编写、支持网络、可基于内存亦可持久化的日志型、Key-Value数据库，并提供多种语言的API。   Redis 与 其他 key - value 缓存产品有以下三个特点： Re">
 <meta property="article:published_time" content="2018-12-31T16:00:01.000Z">
-<meta property="article:modified_time" content="2021-10-06T10:43:07.525Z">
+<meta property="article:modified_time" content="2021-10-06T10:47:32.218Z">
 <meta property="article:author" content="胖枫叶">
 <meta property="article:tag" content="Redis">
 <meta name="twitter:card" content="summary">
@@ -272,7 +272,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-10-06 18:43:07" itemprop="dateModified" datetime="2021-10-06T18:43:07+08:00">2021-10-06</time>
+                <time title="Modified: 2021-10-06 18:47:32" itemprop="dateModified" datetime="2021-10-06T18:47:32+08:00">2021-10-06</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -332,22 +332,53 @@
 <li>Redis在4.0推出了lazy-free机制，把bigkey释放内存的耗时操作放在了异步线程中执行，降低对主线程的影响。</li>
 <li>Redis在6.0推出了多线程，可以在高并发场景下利用CPU多核多线程读写客户端数据，进一步提升server性能，当然，只是针对客户端的读写是并行的，每个命令的真正操作依旧是单线程的。</li>
 </ul>
-<h3 id="Redis持久化机制"><a href="#Redis持久化机制" class="headerlink" title="Redis持久化机制"></a>Redis持久化机制</h3><ul>
-<li>Redis是一个支持持久化的内存数据库，通过持久化机制把内存中的数据同步到硬盘文件来保证数据持久化。当Redis重启后通过把硬盘文件重新加载到内存，就能达到恢复数据的目的。<ul>
-<li>实现：单独创建fork()一个子进程，将当前父进程的数据库数据复制到子进程的内存中，然后由子进程内存释放。</li>
+<h3 id="Redis持久化机制"><a href="#Redis持久化机制" class="headerlink" title="Redis持久化机制"></a>Redis持久化机制</h3><blockquote>
+<p>Redis是一个支持持久化的内存数据库，通过持久化机制把内存中的数据同步到硬盘文件来保证数据持久化。当Redis重启后通过把硬盘文件重新加载到内存，就能达到恢复数据的目的。</p>
+</blockquote>
+<ul>
+<li><p>Redis 4.0 之前数据持久化方式有两种：AOF 方式和 RDB 方式。</p>
+<ul>
+<li>RDB（Redis DataBase，快照方式）是将某一个时刻的内存数据，以二进制的方式写入磁盘。</li>
+<li>AOF（Append Only File，文件追加方式）是指将所有的操作命令，以文本的形式追加到文件中。</li>
+<li>RDB 默认的保存文件为 dump.rdb，优点是以二进制存储的，因此占用的空间更小、数据存储更紧凑，并且与 AOF 相比，RDB 具备更快的重启恢复能力。</li>
+<li>AOF 默认的保存文件为 appendonly.aof，它的优点是存储频率更高，因此丢失数据的风险就越低，并且 AOF 并不是以二进制存储的，所以它的存储信息更易懂。缺点是占用空间大，重启之后的数据恢复速度比较慢。</li>
 </ul>
 </li>
+<li><p>将RDB做镜像全量持久化，AOF做增量持久化。RDB会耗费较长时间，不够实时，在停机的时候会导致大量丢失数据，所以需要AOF来配合使用。在redis实例重启时，会使用RDB持久化文件重新构建内存，再使用AOF重放近期的操作指令来实现完整恢复重启之前的状态。</p>
+<ul>
+<li>实现：单独创建fork()一个子进程，将当前父进程的数据库数据复制到子进程的内存中，然后由子进程内存释放。</li>
 <li>RDB是Redis默认的持久化方式。按照一定的时间周期策略把内存的数据以快照的形式保存到硬盘的二进制文件。即Snapshot快照存储，对应产生的数据文件为dump.rdb，通过配置文件中的save参数来定义快照的周期。（ 快照可以是其所表示的数据的一个副本，也可以是数据的一个复制品。）</li>
-<li>AOF：Redis会将每一个收到的写命令都通过Write函数追加到文件最后，类似于MySQL的binlog。当Redis重启是会通过重新执行文件中保存的写命令来在内存中重建整个数据库的内容。当两种方式同时开启时，数据恢复Redis会优先选择AOF恢复。</li>
 </ul>
-<h3 id="AOF日志"><a href="#AOF日志" class="headerlink" title="AOF日志"></a>AOF日志</h3><ul>
-<li>写后日志，“写后”的意思是 Redis 是先执行命令，把数据写入内存，然后才记录日志。</li>
-<li>AOF 也有两个潜在的风险<ul>
+</li>
+<li><p>AOF：Redis会将每一个收到的写命令都通过Write函数追加到文件最后，类似于MySQL的binlog。当Redis重启是会通过重新执行文件中保存的写命令来在内存中重建整个数据库的内容。当两种方式同时开启时，数据恢复Redis会优先选择AOF恢复。</p>
+</li>
+</ul>
+<h4 id="AOF日志"><a href="#AOF日志" class="headerlink" title="AOF日志"></a>AOF日志</h4><blockquote>
+<p>AOF持久化机制是以日志的形式记录Redis中的每一次的增删改操作，不会记录查询操作，以文本的形式记录，打开记录的日志文件就可以查看操作记录。</p>
+</blockquote>
+<ul>
+<li><h5 id="AOF更好保证数据不会被丢失，最多只丢失一秒内的数据，通过foek一个子进程处理持久化操作，保证了主进程不会进程io操作，能高效的处理客户端的请求。"><a href="#AOF更好保证数据不会被丢失，最多只丢失一秒内的数据，通过foek一个子进程处理持久化操作，保证了主进程不会进程io操作，能高效的处理客户端的请求。" class="headerlink" title="AOF更好保证数据不会被丢失，最多只丢失一秒内的数据，通过foek一个子进程处理持久化操作，保证了主进程不会进程io操作，能高效的处理客户端的请求。"></a>AOF更好保证数据不会被丢失，最多只丢失一秒内的数据，通过foek一个子进程处理持久化操作，保证了主进程不会进程io操作，能高效的处理客户端的请求。</h5></li>
+<li><p>AOF的日志文件的记录可读性非常的高，即使某一时刻有人执行<code>flushall</code>清空了所有数据，只需要拿到aof的日志文件，然后把最后一条的flushall给删除掉，就可以恢复数据。</p>
+</li>
+</ul>
+<h5 id="AOF重写机制"><a href="#AOF重写机制" class="headerlink" title="AOF重写机制"></a>AOF重写机制</h5><blockquote>
+<p>在写入所有的操作到日志文件中时，就会出现日志文件很多重复的操作，甚至是无效的操作，导致日志文件越来越大。就浪费了资源空间，所以在Redis中出现了<code>rewrite</code>机制。redis提供了bgrewriteaof命令。将内存中的数据以命令的方式保存到临时文件中，同时会fork出一条新进程来将文件重写。</p>
+</blockquote>
+<ul>
+<li><p>重写AOF的日志文件不是读取旧的日志文件瘦身，而是将内存中的数据用命令的方式重写一个AOF文件，重新保存替换原来旧的日志文件，因此内存中的数据才是最新的。</p>
+</li>
+<li><p>重写操作也会<code>fork</code>一个子进程来处理重写操作，重写以内存中的数据作为重写的源，避免了操作的冗余性，保证了数据的最新。</p>
+</li>
+<li><p>写后日志，“写后”的意思是 Redis 是先执行命令，把数据写入内存，然后才记录日志。</p>
+</li>
+<li><p>AOF 也有两个潜在的风险</p>
+<ul>
 <li>如果刚执行完一个命令，还没有来得及记日志就宕机了，那么这个命令和相应的数据就有丢失的风险。如果此时 Redis 是用作缓存，还可以从后端数据库重新读入数据进行恢复，但是，如果 Redis 是直接用作数据库的话，此时，因为命令没有记入日志，所以就无法用日志进行恢复了。</li>
 <li>AOF 虽然避免了对当前命令的阻塞，但可能会给下一个操作带来阻塞风险。这是因为，AOF 日志也是在主线程中执行的，如果在把日志文件写入磁盘时，磁盘写压力大，就会导致写盘很慢，进而导致后续的操作也无法执行了。</li>
 </ul>
 </li>
-<li>AOF三种写回策略<ul>
+<li><p>AOF三种写回策略</p>
+<ul>
 <li>Always，同步写回：每个写命令执行完，立马同步地将日志写回磁盘；<ul>
 <li>同步写回可以做到基本不丢数据，但是它在每一个写命令后都有一个慢速的落盘操作，不可避免地会影响主线程性能。</li>
 </ul>
@@ -363,10 +394,23 @@
 </ul>
 </li>
 </ul>
-<h3 id="RDB快照"><a href="#RDB快照" class="headerlink" title="RDB快照"></a>RDB快照</h3><ul>
-<li>Redis 的数据都在内存中，为了提供所有数据的可靠性保证，它执行的是全量快照，也就是说，把内存中的所有数据都记录到磁盘中。全量数据越多，RDB 文件就越大，往磁盘上写数据的时间开销就越大。</li>
-<li>对于 Redis 而言，它的单线程模型就决定了，我们要尽量避免所有会阻塞主线程的操作，所以，针对任何操作，我们都会提一个灵魂之问：“它会阻塞主线程吗?”RDB 文件的生成是否会阻塞主线程，这就关系到是否会降低 Redis 的性能。</li>
-<li>Redis 提供了两个命令来生成 RDB 文件，分别是 save 和 bgsave。<ul>
+<h4 id="RDB快照"><a href="#RDB快照" class="headerlink" title="RDB快照"></a>RDB快照</h4><blockquote>
+<p>RDB持久化就是将当前进程的数据以生成快照的形式持久化到磁盘中。对于快照的理解，我们可以理解为将当前线程的数据以拍照的形式保存下来。</p>
+</blockquote>
+<ul>
+<li>恢复数据速度快</li>
+<li>写入持久化文件快</li>
+<li>RDB持久化后的文件是紧凑的二进制文件，适合于备份、全量复制、大规模数据恢复的场景，对数据完整性和一致性要求不高，RDB会丢失最后一次快照的数据。</li>
+</ul>
+<h5 id="RDB原理"><a href="#RDB原理" class="headerlink" title="RDB原理"></a>RDB原理</h5><ul>
+<li><p>fork和cow。fork是指redis通过创建子进程来进行RDB操作，cow指的是<strong>copy on write</strong>，子进程创建后，父子进程共享数据段，父进程继续提供读写服务，写脏的页面数据会逐渐和子进程分离开来。</p>
+</li>
+<li><p>Redis 的数据都在内存中，为了提供所有数据的可靠性保证，它执行的是全量快照，也就是说，把内存中的所有数据都记录到磁盘中。全量数据越多，RDB 文件就越大，往磁盘上写数据的时间开销就越大。</p>
+</li>
+<li><p>对于 Redis 而言，它的单线程模型就决定了，我们要尽量避免所有会阻塞主线程的操作，所以，针对任何操作，我们都会提一个灵魂之问：“它会阻塞主线程吗?”RDB 文件的生成是否会阻塞主线程，这就关系到是否会降低 Redis 的性能。</p>
+</li>
+<li><p>Redis 提供了两个命令来生成 RDB 文件，分别是 save 和 bgsave。</p>
+<ul>
 <li>save：在主线程中执行，会导致阻塞；</li>
 <li>bgsave：创建一个子进程，专门用于写入 RDB 文件，避免了主线程的阻塞，这也是 Redis RDB 文件生成的默认配置。</li>
 </ul>
@@ -511,45 +555,7 @@
 <li>Redis 哨兵模式（Sentinel），用于发生故障之后自动切换服务器</li>
 <li>Redis 集群（Cluster），多主多从的 Redis 分布式集群环境，用于提供性能更好的 Redis 服务，并且它自身拥有故障自动切换的能力。</li>
 </ul>
-<h3 id="数据持久化方式"><a href="#数据持久化方式" class="headerlink" title="数据持久化方式"></a>数据持久化方式</h3><ul>
-<li><p>Redis 4.0 之前数据持久化方式有两种：AOF 方式和 RDB 方式。</p>
-<ul>
-<li>RDB（Redis DataBase，快照方式）是将某一个时刻的内存数据，以二进制的方式写入磁盘。</li>
-<li>AOF（Append Only File，文件追加方式）是指将所有的操作命令，以文本的形式追加到文件中。</li>
-<li>RDB 默认的保存文件为 dump.rdb，优点是以二进制存储的，因此占用的空间更小、数据存储更紧凑，并且与 AOF 相比，RDB 具备更快的重启恢复能力。</li>
-<li>AOF 默认的保存文件为 appendonly.aof，它的优点是存储频率更高，因此丢失数据的风险就越低，并且 AOF 并不是以二进制存储的，所以它的存储信息更易懂。缺点是占用空间大，重启之后的数据恢复速度比较慢。</li>
-</ul>
-</li>
-<li><p>将RDB做镜像全量持久化，AOF做增量持久化。RDB会耗费较长时间，不够实时，在停机的时候会导致大量丢失数据，所以需要AOF来配合使用。在redis实例重启时，会使用RDB持久化文件重新构建内存，再使用AOF重放近期的操作指令来实现完整恢复重启之前的状态。</p>
-</li>
-</ul>
-<h4 id="RDB"><a href="#RDB" class="headerlink" title="RDB"></a>RDB</h4><blockquote>
-<p>RDB持久化就是将当前进程的数据以生成快照的形式持久化到磁盘中。对于快照的理解，我们可以理解为将当前线程的数据以拍照的形式保存下来。</p>
-</blockquote>
-<ul>
-<li>恢复数据速度快</li>
-<li>写入持久化文件快</li>
-<li>RDB持久化后的文件是紧凑的二进制文件，适合于备份、全量复制、大规模数据恢复的场景，对数据完整性和一致性要求不高，RDB会丢失最后一次快照的数据。</li>
-</ul>
-<h5 id="RDB原理"><a href="#RDB原理" class="headerlink" title="RDB原理"></a>RDB原理</h5><ul>
-<li>fork和cow。fork是指redis通过创建子进程来进行RDB操作，cow指的是<strong>copy on write</strong>，子进程创建后，父子进程共享数据段，父进程继续提供读写服务，写脏的页面数据会逐渐和子进程分离开来。</li>
-</ul>
-<h4 id="AOF"><a href="#AOF" class="headerlink" title="AOF"></a>AOF</h4><blockquote>
-<p>AOF持久化机制是以日志的形式记录Redis中的每一次的增删改操作，不会记录查询操作，以文本的形式记录，打开记录的日志文件就可以查看操作记录。</p>
-</blockquote>
-<ul>
-<li><h5 id="AOF更好保证数据不会被丢失，最多只丢失一秒内的数据，通过foek一个子进程处理持久化操作，保证了主进程不会进程io操作，能高效的处理客户端的请求。"><a href="#AOF更好保证数据不会被丢失，最多只丢失一秒内的数据，通过foek一个子进程处理持久化操作，保证了主进程不会进程io操作，能高效的处理客户端的请求。" class="headerlink" title="AOF更好保证数据不会被丢失，最多只丢失一秒内的数据，通过foek一个子进程处理持久化操作，保证了主进程不会进程io操作，能高效的处理客户端的请求。"></a>AOF更好保证数据不会被丢失，最多只丢失一秒内的数据，通过foek一个子进程处理持久化操作，保证了主进程不会进程io操作，能高效的处理客户端的请求。</h5></li>
-<li><p>AOF的日志文件的记录可读性非常的高，即使某一时刻有人执行<code>flushall</code>清空了所有数据，只需要拿到aof的日志文件，然后把最后一条的flushall给删除掉，就可以恢复数据。</p>
-</li>
-</ul>
-<h5 id="AOF重写机制"><a href="#AOF重写机制" class="headerlink" title="AOF重写机制"></a>AOF重写机制</h5><blockquote>
-<p>在写入所有的操作到日志文件中时，就会出现日志文件很多重复的操作，甚至是无效的操作，导致日志文件越来越大。就浪费了资源空间，所以在Redis中出现了<code>rewrite</code>机制。redis提供了bgrewriteaof命令。将内存中的数据以命令的方式保存到临时文件中，同时会fork出一条新进程来将文件重写。</p>
-</blockquote>
-<ul>
-<li>重写AOF的日志文件不是读取旧的日志文件瘦身，而是将内存中的数据用命令的方式重写一个AOF文件，重新保存替换原来旧的日志文件，因此内存中的数据才是最新的。</li>
-<li>重写操作也会<code>fork</code>一个子进程来处理重写操作，重写以内存中的数据作为重写的源，避免了操作的冗余性，保证了数据的最新。</li>
-</ul>
-<h3 id="集群"><a href="#集群" class="headerlink" title="集群"></a>集群</h3><h4 id="单机版"><a href="#单机版" class="headerlink" title="单机版"></a>单机版</h4><blockquote>
+<h4 id="单机版"><a href="#单机版" class="headerlink" title="单机版"></a>单机版</h4><blockquote>
 <p>单机版的Redis也有很多优点，比如实现实现简单、维护简单、部署简单、维护成本非常低，不需要其它额外的开支。但是，因为是单机版的Redis所以也存在很多的问题，比如最明显的单点故障问题，一个Redis挂了，所有的请求就会直接打在了DB上。并且一个Redis抗并发数量也是有限的，同时要兼顾读写两种请求，只要访问量一上来，Redis就受不了了，另一方面单机版的Redis数据量存储也是有限的，数据量一大，再重启Redis的时候，就会非常的慢，所以局限性也是比较大的。</p>
 </blockquote>
 <h4 id="主从版本"><a href="#主从版本" class="headerlink" title="主从版本"></a>主从版本</h4><blockquote>
@@ -736,7 +742,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis-简介"><span class="nav-number">1.</span> <span class="nav-text">Redis 简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis单线程"><span class="nav-number">1.0.1.</span> <span class="nav-text">Redis单线程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis单线程处理IO请求性能瓶颈"><span class="nav-number">1.0.2.</span> <span class="nav-text">Redis单线程处理IO请求性能瓶颈</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis持久化机制"><span class="nav-number">1.0.3.</span> <span class="nav-text">Redis持久化机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AOF日志"><span class="nav-number">1.0.4.</span> <span class="nav-text">AOF日志</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDB快照"><span class="nav-number">1.0.5.</span> <span class="nav-text">RDB快照</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存雪崩、缓存穿透、缓存预热、缓存更新、缓存降级等问题"><span class="nav-number">1.0.6.</span> <span class="nav-text">缓存雪崩、缓存穿透、缓存预热、缓存更新、缓存降级等问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#缓存雪崩"><span class="nav-number">1.0.6.1.</span> <span class="nav-text">缓存雪崩</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#缓存穿透"><span class="nav-number">1.0.6.2.</span> <span class="nav-text">缓存穿透</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#布隆过滤器"><span class="nav-number">1.0.6.3.</span> <span class="nav-text">布隆过滤器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#缓存击穿"><span class="nav-number">1.0.6.4.</span> <span class="nav-text">缓存击穿</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#缓存预热"><span class="nav-number">1.0.6.5.</span> <span class="nav-text">缓存预热</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#缓存更新"><span class="nav-number">1.0.6.6.</span> <span class="nav-text">缓存更新</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#缓存降级"><span class="nav-number">1.0.6.7.</span> <span class="nav-text">缓存降级</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis-的线程模型"><span class="nav-number">1.0.7.</span> <span class="nav-text">Redis 的线程模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#单线程的Redis为什么这么快"><span class="nav-number">1.0.8.</span> <span class="nav-text">单线程的Redis为什么这么快</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis的过期策略以及内存淘汰机制"><span class="nav-number">1.0.9.</span> <span class="nav-text">Redis的过期策略以及内存淘汰机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis-的过期策略和内存淘汰机制有什么区别？"><span class="nav-number">1.0.10.</span> <span class="nav-text">Redis 的过期策略和内存淘汰机制有什么区别？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么Redis的操作是原子性的，怎么保证原子性的？"><span class="nav-number">1.0.11.</span> <span class="nav-text">为什么Redis的操作是原子性的，怎么保证原子性的？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis事务"><span class="nav-number">1.0.12.</span> <span class="nav-text">Redis事务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis-是如何实现高可用的？"><span class="nav-number">1.0.13.</span> <span class="nav-text">Redis 是如何实现高可用的？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据持久化方式"><span class="nav-number">1.0.14.</span> <span class="nav-text">数据持久化方式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#RDB"><span class="nav-number">1.0.14.1.</span> <span class="nav-text">RDB</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#RDB原理"><span class="nav-number">1.0.14.1.1.</span> <span class="nav-text">RDB原理</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#AOF"><span class="nav-number">1.0.14.2.</span> <span class="nav-text">AOF</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#AOF更好保证数据不会被丢失，最多只丢失一秒内的数据，通过foek一个子进程处理持久化操作，保证了主进程不会进程io操作，能高效的处理客户端的请求。"><span class="nav-number">1.0.14.2.1.</span> <span class="nav-text">AOF更好保证数据不会被丢失，最多只丢失一秒内的数据，通过foek一个子进程处理持久化操作，保证了主进程不会进程io操作，能高效的处理客户端的请求。</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#AOF重写机制"><span class="nav-number">1.0.14.2.2.</span> <span class="nav-text">AOF重写机制</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#集群"><span class="nav-number">1.0.15.</span> <span class="nav-text">集群</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#单机版"><span class="nav-number">1.0.15.1.</span> <span class="nav-text">单机版</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#主从版本"><span class="nav-number">1.0.15.2.</span> <span class="nav-text">主从版本</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#数据同步方式"><span class="nav-number">1.0.15.2.1.</span> <span class="nav-text">数据同步方式</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#哨兵"><span class="nav-number">1.0.15.3.</span> <span class="nav-text">哨兵</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#监控"><span class="nav-number">1.0.15.3.1.</span> <span class="nav-text">监控</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#自动故障恢复"><span class="nav-number">1.0.15.3.2.</span> <span class="nav-text">自动故障恢复</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#节点通信"><span class="nav-number">1.0.15.3.3.</span> <span class="nav-text">节点通信</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#上线和下线"><span class="nav-number">1.0.15.3.4.</span> <span class="nav-text">上线和下线</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#选举算法"><span class="nav-number">1.0.15.3.5.</span> <span class="nav-text">选举算法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#选举master哨兵的算法叫做Raft算法"><span class="nav-number">1.0.15.3.6.</span> <span class="nav-text">选举master哨兵的算法叫做Raft算法</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#集群Cluster模式"><span class="nav-number">1.0.15.4.</span> <span class="nav-text">集群Cluster模式</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#虚拟槽分区算法"><span class="nav-number">1.0.15.4.1.</span> <span class="nav-text">虚拟槽分区算法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#节点通信-1"><span class="nav-number">1.0.15.4.2.</span> <span class="nav-text">节点通信</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#数据请求"><span class="nav-number">1.0.15.4.3.</span> <span class="nav-text">数据请求</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#扩容和收缩"><span class="nav-number">1.0.15.4.4.</span> <span class="nav-text">扩容和收缩</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#大量key短时间内同时过期"><span class="nav-number">1.0.16.</span> <span class="nav-text">大量key短时间内同时过期</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Keys命令"><span class="nav-number">1.0.17.</span> <span class="nav-text">Keys命令</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis-简介"><span class="nav-number">1.</span> <span class="nav-text">Redis 简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis单线程"><span class="nav-number">1.0.1.</span> <span class="nav-text">Redis单线程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis单线程处理IO请求性能瓶颈"><span class="nav-number">1.0.2.</span> <span class="nav-text">Redis单线程处理IO请求性能瓶颈</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis持久化机制"><span class="nav-number">1.0.3.</span> <span class="nav-text">Redis持久化机制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#AOF日志"><span class="nav-number">1.0.3.1.</span> <span class="nav-text">AOF日志</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#AOF更好保证数据不会被丢失，最多只丢失一秒内的数据，通过foek一个子进程处理持久化操作，保证了主进程不会进程io操作，能高效的处理客户端的请求。"><span class="nav-number">1.0.3.1.1.</span> <span class="nav-text">AOF更好保证数据不会被丢失，最多只丢失一秒内的数据，通过foek一个子进程处理持久化操作，保证了主进程不会进程io操作，能高效的处理客户端的请求。</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#AOF重写机制"><span class="nav-number">1.0.3.1.2.</span> <span class="nav-text">AOF重写机制</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#RDB快照"><span class="nav-number">1.0.3.2.</span> <span class="nav-text">RDB快照</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#RDB原理"><span class="nav-number">1.0.3.2.1.</span> <span class="nav-text">RDB原理</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存雪崩、缓存穿透、缓存预热、缓存更新、缓存降级等问题"><span class="nav-number">1.0.4.</span> <span class="nav-text">缓存雪崩、缓存穿透、缓存预热、缓存更新、缓存降级等问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#缓存雪崩"><span class="nav-number">1.0.4.1.</span> <span class="nav-text">缓存雪崩</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#缓存穿透"><span class="nav-number">1.0.4.2.</span> <span class="nav-text">缓存穿透</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#布隆过滤器"><span class="nav-number">1.0.4.3.</span> <span class="nav-text">布隆过滤器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#缓存击穿"><span class="nav-number">1.0.4.4.</span> <span class="nav-text">缓存击穿</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#缓存预热"><span class="nav-number">1.0.4.5.</span> <span class="nav-text">缓存预热</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#缓存更新"><span class="nav-number">1.0.4.6.</span> <span class="nav-text">缓存更新</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#缓存降级"><span class="nav-number">1.0.4.7.</span> <span class="nav-text">缓存降级</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis-的线程模型"><span class="nav-number">1.0.5.</span> <span class="nav-text">Redis 的线程模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#单线程的Redis为什么这么快"><span class="nav-number">1.0.6.</span> <span class="nav-text">单线程的Redis为什么这么快</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis的过期策略以及内存淘汰机制"><span class="nav-number">1.0.7.</span> <span class="nav-text">Redis的过期策略以及内存淘汰机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis-的过期策略和内存淘汰机制有什么区别？"><span class="nav-number">1.0.8.</span> <span class="nav-text">Redis 的过期策略和内存淘汰机制有什么区别？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么Redis的操作是原子性的，怎么保证原子性的？"><span class="nav-number">1.0.9.</span> <span class="nav-text">为什么Redis的操作是原子性的，怎么保证原子性的？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis事务"><span class="nav-number">1.0.10.</span> <span class="nav-text">Redis事务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis-是如何实现高可用的？"><span class="nav-number">1.0.11.</span> <span class="nav-text">Redis 是如何实现高可用的？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#单机版"><span class="nav-number">1.0.11.1.</span> <span class="nav-text">单机版</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#主从版本"><span class="nav-number">1.0.11.2.</span> <span class="nav-text">主从版本</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#数据同步方式"><span class="nav-number">1.0.11.2.1.</span> <span class="nav-text">数据同步方式</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#哨兵"><span class="nav-number">1.0.11.3.</span> <span class="nav-text">哨兵</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#监控"><span class="nav-number">1.0.11.3.1.</span> <span class="nav-text">监控</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#自动故障恢复"><span class="nav-number">1.0.11.3.2.</span> <span class="nav-text">自动故障恢复</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#节点通信"><span class="nav-number">1.0.11.3.3.</span> <span class="nav-text">节点通信</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#上线和下线"><span class="nav-number">1.0.11.3.4.</span> <span class="nav-text">上线和下线</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#选举算法"><span class="nav-number">1.0.11.3.5.</span> <span class="nav-text">选举算法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#选举master哨兵的算法叫做Raft算法"><span class="nav-number">1.0.11.3.6.</span> <span class="nav-text">选举master哨兵的算法叫做Raft算法</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#集群Cluster模式"><span class="nav-number">1.0.11.4.</span> <span class="nav-text">集群Cluster模式</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#虚拟槽分区算法"><span class="nav-number">1.0.11.4.1.</span> <span class="nav-text">虚拟槽分区算法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#节点通信-1"><span class="nav-number">1.0.11.4.2.</span> <span class="nav-text">节点通信</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#数据请求"><span class="nav-number">1.0.11.4.3.</span> <span class="nav-text">数据请求</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#扩容和收缩"><span class="nav-number">1.0.11.4.4.</span> <span class="nav-text">扩容和收缩</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#大量key短时间内同时过期"><span class="nav-number">1.0.12.</span> <span class="nav-text">大量key短时间内同时过期</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Keys命令"><span class="nav-number">1.0.13.</span> <span class="nav-text">Keys命令</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
