@@ -29,7 +29,7 @@
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211007011326.png">
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211007011355.png">
 <meta property="article:published_time" content="2018-12-31T16:00:01.000Z">
-<meta property="article:modified_time" content="2021-10-06T18:15:32.518Z">
+<meta property="article:modified_time" content="2021-10-08T05:51:09.077Z">
 <meta property="article:author" content="胖枫叶">
 <meta property="article:tag" content="Redis">
 <meta name="twitter:card" content="summary">
@@ -275,7 +275,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-10-07 02:15:32" itemprop="dateModified" datetime="2021-10-07T02:15:32+08:00">2021-10-07</time>
+                <time title="Modified: 2021-10-08 13:51:09" itemprop="dateModified" datetime="2021-10-08T13:51:09+08:00">2021-10-08</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -422,7 +422,7 @@
 <h3 id="缓存带来的问题"><a href="#缓存带来的问题" class="headerlink" title="缓存带来的问题"></a>缓存带来的问题</h3><h4 id="缓存雪崩"><a href="#缓存雪崩" class="headerlink" title="缓存雪崩"></a>缓存雪崩</h4><ul>
 <li>我们可以简单的理解为：由于原有缓存失效，新缓存未到期间(例如：我们设置缓存时采用了相同的过期时间，在同一时刻出现大面积的缓存过期)，所有原本应该访问缓存的请求都去查询数据库了，而对数据库CPU和内存造成巨大压力，严重的会造成数据库宕机。从而形成一系列连锁反应，造成整个系统崩溃。</li>
 <li><strong>解决办法：</strong><ul>
-<li>大多数系统设计者考虑用加锁（ 最多的解决方案）或者队列的方式保证来保证不会有大量的线程对数据库一次性进行读写，从而避免失效时大量的并发请求落到底层存储系统上。还有一个简单方案就时讲缓存失效时间分散开。</li>
+<li>大多数系统设计者考虑用加锁（ 最多的解决方案）或者队列的方式保证来保证不会有大量的线程对数据库一次性进行读写，从而避免失效时大量的并发请求落到底层存储系统上。还有一个简单方案就是将缓存失效时间分散开。</li>
 </ul>
 </li>
 </ul>
@@ -685,8 +685,6 @@
 <li>作者怎么说</li>
 </ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">The reason is:</span><br><span class="line"></span><br><span class="line">		Normal heartbeat packets carry the full configuration of a node, that can be replaced in an idempotent way with the old in order to update an old config. This means they contain the slots configuration for a node, in raw form, that uses 2k of space with16k slots, but would use a prohibitive 8k of space using 65k slots.</span><br><span class="line">		At the same time it is unlikely that Redis Cluster would scale to more than 1000 mater nodes because of other design tradeoffs.</span><br><span class="line">So 16k was in the right range to ensure enough slots per master with a max of 1000 maters, but a small enough number to propagate the slot configuration as a raw bitmap easily. Note that in small clusters the bitmap would be hard to compress because when N is small the bitmap would have slots&#x2F;N bits set that is a large percentage of bits set.</span><br></pre></td></tr></table></figure>
-
-
 
 <h3 id="大量key短时间内同时过期"><a href="#大量key短时间内同时过期" class="headerlink" title="大量key短时间内同时过期"></a>大量key短时间内同时过期</h3><ul>
 <li>如果大量的key集中在某一个时间过期，会导致redis卡顿现象，所以在设置过期时间的时候最好加上一个随机数，让的key过期时间分散一点。</li>
