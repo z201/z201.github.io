@@ -1294,7 +1294,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-10-08 14:08:40" itemprop="dateModified" datetime="2021-10-08T14:08:40+08:00">2021-10-08</time>
+                <time title="Modified: 2021-10-09 01:05:07" itemprop="dateModified" datetime="2021-10-09T01:05:07+08:00">2021-10-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1320,7 +1320,7 @@
           <blockquote>
 <p>本章是整理知识内容，为强化知识长期更新。</p>
 </blockquote>
-<h1 id="Redis-简介"><a href="#Redis-简介" class="headerlink" title="Redis 简介"></a>Redis 简介</h1><blockquote>
+<h2 id="Redis-简介"><a href="#Redis-简介" class="headerlink" title="Redis 简介"></a>Redis 简介</h2><blockquote>
 <p>Redis 是完全开源免费的，遵守 BSD 协议，英文全称是<strong>Remote Dictionary Server</strong>（远程字典服务），是一个开源的使用ANSI C语言编写、支持网络、可基于内存亦可持久化的日志型、Key-Value数据库，并提供多种语言的API。</p>
 </blockquote>
 <ul>
@@ -1340,7 +1340,7 @@
 </ul>
 </li>
 </ul>
-<h3 id="Redis单线程处理IO请求性能瓶颈"><a href="#Redis单线程处理IO请求性能瓶颈" class="headerlink" title="Redis单线程处理IO请求性能瓶颈"></a>Redis单线程处理IO请求性能瓶颈</h3><ul>
+<h4 id="Redis单线程处理IO请求性能瓶颈"><a href="#Redis单线程处理IO请求性能瓶颈" class="headerlink" title="Redis单线程处理IO请求性能瓶颈"></a>Redis单线程处理IO请求性能瓶颈</h4><ul>
 <li>任意一个请求在server中一旦发生耗时，都会影响整个server的性能，也就是说后面的请求都要等前面这个耗时请求处理完成，自己才能被处理到。耗时的操作包括以下几种：<ul>
 <li>操作bigkey：写入一个bigkey在分配内存时需要消耗更多的时间，同样，删除bigkey释放内存同样会产生耗时；</li>
 <li>使用复杂度过高的命令：例如SORT/SUNION/ZUNIONSTORE，或者O(N)命令，但是N很大，例如lrange key 0 -1一次查询全量数据；</li>
@@ -1393,14 +1393,12 @@
 </li>
 <li><p>写后日志，“写后”的意思是 Redis 是先执行命令，把数据写入内存，然后才记录日志。</p>
 </li>
-<li><p>AOF 也有两个潜在的风险</p>
-<ul>
+</ul>
+<h5 id="AOF-潜在的风险"><a href="#AOF-潜在的风险" class="headerlink" title="AOF 潜在的风险"></a>AOF 潜在的风险</h5><ul>
 <li>如果刚执行完一个命令，还没有来得及记日志就宕机了，那么这个命令和相应的数据就有丢失的风险。如果此时 Redis 是用作缓存，还可以从后端数据库重新读入数据进行恢复，但是，如果 Redis 是直接用作数据库的话，此时，因为命令没有记入日志，所以就无法用日志进行恢复了。</li>
 <li>AOF 虽然避免了对当前命令的阻塞，但可能会给下一个操作带来阻塞风险。这是因为，AOF 日志也是在主线程中执行的，如果在把日志文件写入磁盘时，磁盘写压力大，就会导致写盘很慢，进而导致后续的操作也无法执行了。</li>
 </ul>
-</li>
-<li><p>AOF三种写回策略</p>
-<ul>
+<h5 id="AOF三种写回策略"><a href="#AOF三种写回策略" class="headerlink" title="AOF三种写回策略"></a>AOF三种写回策略</h5><ul>
 <li>Always，同步写回：每个写命令执行完，立马同步地将日志写回磁盘；<ul>
 <li>同步写回可以做到基本不丢数据，但是它在每一个写命令后都有一个慢速的落盘操作，不可避免地会影响主线程性能。</li>
 </ul>
@@ -1411,8 +1409,6 @@
 </li>
 <li>No，操作系统控制的写回：每个写命令执行完，只是先把日志写到 AOF 文件的内存缓冲区，由操作系统决定何时将缓冲区内容写回磁盘。<ul>
 <li>操作系统控制的写回在写完缓冲区后，就可以继续执行后续的命令，但是落盘的时机已经不在 Redis 手中了，只要 AOF 记录没有写回磁盘，一旦宕机对应的数据就丢失了。</li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>

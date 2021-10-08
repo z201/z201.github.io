@@ -20,18 +20,18 @@
     var CONFIG = {"hostname":"z201.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="本章是整理知识内容，为强化知识长期更新。   Spring Ioc1.描述下依赖注入。 平常的Java开发中，程序员在某个类中需要依赖其它类的方法。通常是new一个依赖类再调用类实例的方法，这种开发存在的问题是new的类实例不好统一管理。 Spring提出了依赖注入的思想，即依赖类不由程序员实例化，而是通过Spring容器帮我们new指定实例并且将实例注入到需要该对象的类中。依赖注入的另一种说法">
+  <meta name="description" content="本章是整理知识内容，为强化知识长期更新。   Spring Spring是一个轻量级的IoC和AOP容器框架。是为Java应用程序提供基础性服务的一套框架，目的是用于简化企业应用程序的开发，它使得开发者只需要关心业务需求。  主要由以下几个模块组成：  Spring Core：核心类库，提供IOC服务 Spring Context：提供框架式的Bean访问方式，以及企业级功能（JNDI、定时任务">
 <meta property="og:type" content="article">
 <meta property="og:title" content="查缺补漏-Spring">
 <meta property="og:url" content="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Spring/index.html">
 <meta property="og:site_name" content="枫叶的小博客">
-<meta property="og:description" content="本章是整理知识内容，为强化知识长期更新。   Spring Ioc1.描述下依赖注入。 平常的Java开发中，程序员在某个类中需要依赖其它类的方法。通常是new一个依赖类再调用类实例的方法，这种开发存在的问题是new的类实例不好统一管理。 Spring提出了依赖注入的思想，即依赖类不由程序员实例化，而是通过Spring容器帮我们new指定实例并且将实例注入到需要该对象的类中。依赖注入的另一种说法">
+<meta property="og:description" content="本章是整理知识内容，为强化知识长期更新。   Spring Spring是一个轻量级的IoC和AOP容器框架。是为Java应用程序提供基础性服务的一套框架，目的是用于简化企业应用程序的开发，它使得开发者只需要关心业务需求。  主要由以下几个模块组成：  Spring Core：核心类库，提供IOC服务 Spring Context：提供框架式的Bean访问方式，以及企业级功能（JNDI、定时任务">
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/SpringFrameworkRutime.png">
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/SpringIoc%E5%88%9D%E5%A7%8B%E5%8C%96%E8%BF%87%E7%A8%8B.png">
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/SpringAopProcess.png">
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/springBean%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.png">
 <meta property="article:published_time" content="2018-12-31T16:00:01.000Z">
-<meta property="article:modified_time" content="2021-10-06T18:08:29.312Z">
+<meta property="article:modified_time" content="2021-10-08T17:10:04.804Z">
 <meta property="article:author" content="胖枫叶">
 <meta property="article:tag" content="Java">
 <meta property="article:tag" content="Spring">
@@ -278,7 +278,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-10-07 02:08:29" itemprop="dateModified" datetime="2021-10-07T02:08:29+08:00">2021-10-07</time>
+                <time title="Modified: 2021-10-09 01:10:04" itemprop="dateModified" datetime="2021-10-09T01:10:04+08:00">2021-10-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -305,13 +305,36 @@
 <p>本章是整理知识内容，为强化知识长期更新。</p>
 </blockquote>
 <p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/SpringFrameworkRutime.png"></p>
-<h3 id="Spring-Ioc"><a href="#Spring-Ioc" class="headerlink" title="Spring Ioc"></a>Spring Ioc</h3><h4 id="1-描述下依赖注入。"><a href="#1-描述下依赖注入。" class="headerlink" title="1.描述下依赖注入。"></a>1.描述下依赖注入。</h4><ul>
+<h3 id="Spring"><a href="#Spring" class="headerlink" title="Spring"></a>Spring</h3><ul>
+<li><p>Spring是一个轻量级的IoC和AOP容器框架。是为Java应用程序提供基础性服务的一套框架，目的是用于简化企业应用程序的开发，它使得开发者只需要关心业务需求。</p>
+</li>
+<li><p>主要由以下几个模块组成：</p>
+<ul>
+<li>Spring Core：核心类库，提供IOC服务</li>
+<li>Spring Context：提供框架式的Bean访问方式，以及企业级功能（JNDI、定时任务等）</li>
+<li>Spring AOP：AOP服务切面编程</li>
+<li>Spring DAO：对JDBC的抽象，简化了数据访问异常的处理</li>
+<li>Spring ORM：对现有的ORM框架的支持</li>
+<li>Spring Web：提供了基本的面向Web的综合特性，例如多方文件上传</li>
+<li>Spring MVC：提供面向Web应用的Model-View-Controller实现</li>
+</ul>
+</li>
+<li><p>IoC（Inversion of Control，翻译为“控制反转”）不是一个具体的技术，而是一种设计思想。与传统控制流相比，IoC 会颠倒控制流，在传统的编程中需要开发者自行创建并销毁对象，而在 IoC 中会把这些操作交给框架来处理，这样开发者就不用关注具体的实现细节了，拿来直接用就可以了，这就是控制反转。</p>
+</li>
+<li><p>IoC 很好的体现出了面向对象的设计法则之一——好莱坞法则：“别找我们，我们找你”。即由 IoC 容器帮对象找到相应的依赖对象并注入，而不是由对象主动去找。</p>
+</li>
+<li><p>DI（Dependency Injection，翻译为“依赖注入”）表示组件间的依赖关系交由容器在运行期自动生成，也就是说，由容器动态的将某个依赖关系注入到组件之中，这样就能提升组件的重用频率。通过依赖注入机制，我们只需要通过简单的配置，就可指定目标需要的资源，完成自身的业务逻辑，而不需要关心资源来自哪里、由谁实现等问题。</p>
+</li>
+<li><p>IoC 和 DI 其实是同一个概念从不同角度的描述的，由于控制反转这个概念比较含糊（可能只理解成了容器控制对象这一个层面，很难让人想到谁来维护对象关系），所以 2004 年被开发者尊称为“教父”的 Martin Fowler（世界顶级专家，敏捷开发方法的创始人之一）又给出了一个新的名字“依赖注入”，相对 IoC 而言，“依赖注入”明确描述了“被注入对象依赖 IoC 容器配置依赖对象”。</p>
+</li>
+</ul>
+<h4 id="依赖注入"><a href="#依赖注入" class="headerlink" title="依赖注入"></a>依赖注入</h4><ul>
 <li>平常的Java开发中，程序员在某个类中需要依赖其它类的方法。通常是new一个依赖类再调用类实例的方法，这种开发存在的问题是new的类实例不好统一管理。 Spring提出了依赖注入的思想，即依赖类不由程序员实例化，而是通过Spring容器帮我们new指定实例并且将实例注入到需要该对象的类中。依赖注入的另一种说法是”控制反转”。通俗的理解是：平常我们new一个实例，这个实例的控制权是我们程序员。而控制反转是指new实例工作不由我们程序员来做而是交给Spring容器来做。</li>
 <li>IOC对于Spring框架来说，就是由Spring来负责控制对象的生命周期和对象间的关系。</li>
 <li>所谓依赖注入，就是由IOC容器在运行期间，动态地将某种依赖关系注入到对象之中，所以，以来注入DI 和控制反转IOC 是从不同的角度描述的同一间事情，就是值通过引用IOC容器，利用以来关系注入的方式，实现对象之间的解耦。</li>
 </ul>
 <p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/SpringIoc%E5%88%9D%E5%A7%8B%E5%8C%96%E8%BF%87%E7%A8%8B.png"></p>
-<h4 id="2-注入的几种方式？"><a href="#2-注入的几种方式？" class="headerlink" title="2. 注入的几种方式？"></a>2. 注入的几种方式？</h4><ul>
+<h4 id="注入方式"><a href="#注入方式" class="headerlink" title="注入方式"></a>注入方式</h4><ul>
 <li>Set注入。</li>
 <li>构造方法注入。</li>
 <li>工厂的方法注入。</li>
@@ -344,29 +367,7 @@
 </ul>
 </li>
 </ul>
-<h3 id="谈谈对Spring理解"><a href="#谈谈对Spring理解" class="headerlink" title="谈谈对Spring理解"></a>谈谈对Spring理解</h3><ul>
-<li>Spring是一个轻量级的IoC和AOP容器框架。是为Java应用程序提供基础性服务的一套框架，目的是用于简化企业应用程序的开发，它使得开发者只需要关心业务需求。</li>
-<li>主要由以下几个模块组成：<ul>
-<li>Spring Core：核心类库，提供IOC服务</li>
-<li>Spring Context：提供框架式的Bean访问方式，以及企业级功能（JNDI、定时任务等）</li>
-<li>Spring AOP：AOP服务切面编程</li>
-<li>Spring DAO：对JDBC的抽象，简化了数据访问异常的处理</li>
-<li>Spring ORM：对现有的ORM框架的支持</li>
-<li>Spring Web：提供了基本的面向Web的综合特性，例如多方文件上传</li>
-<li>Spring MVC：提供面向Web应用的Model-View-Controller实现</li>
-</ul>
-</li>
-</ul>
-<h3 id="谈谈对-IoC-和-DI-的理解"><a href="#谈谈对-IoC-和-DI-的理解" class="headerlink" title="谈谈对 IoC 和 DI 的理解"></a>谈谈对 IoC 和 DI 的理解</h3><ul>
-<li>IoC（Inversion of Control，翻译为“控制反转”）不是一个具体的技术，而是一种设计思想。与传统控制流相比，IoC 会颠倒控制流，在传统的编程中需要开发者自行创建并销毁对象，而在 IoC 中会把这些操作交给框架来处理，这样开发者就不用关注具体的实现细节了，拿来直接用就可以了，这就是控制反转。</li>
-<li>IoC 很好的体现出了面向对象的设计法则之一——好莱坞法则：“别找我们，我们找你”。即由 IoC 容器帮对象找到相应的依赖对象并注入，而不是由对象主动去找。</li>
-<li>DI（Dependency Injection，翻译为“依赖注入”）表示组件间的依赖关系交由容器在运行期自动生成，也就是说，由容器动态的将某个依赖关系注入到组件之中，这样就能提升组件的重用频率。通过依赖注入机制，我们只需要通过简单的配置，就可指定目标需要的资源，完成自身的业务逻辑，而不需要关心资源来自哪里、由谁实现等问题。</li>
-<li>IoC 和 DI 其实是同一个概念从不同角度的描述的，由于控制反转这个概念比较含糊（可能只理解成了容器控制对象这一个层面，很难让人想到谁来维护对象关系），所以 2004 年被开发者尊称为“教父”的 Martin Fowler（世界顶级专家，敏捷开发方法的创始人之一）又给出了一个新的名字“依赖注入”，相对 IoC 而言，“依赖注入”明确描述了“被注入对象依赖 IoC 容器配置依赖对象”。</li>
-</ul>
-<h3 id="Spring-中的单例-bean-的线程安全问题了解吗？"><a href="#Spring-中的单例-bean-的线程安全问题了解吗？" class="headerlink" title="Spring 中的单例 bean 的线程安全问题了解吗？"></a>Spring 中的单例 bean 的线程安全问题了解吗？</h3><ul>
-<li>单例 bean 存在线程问题，主要是因为当多个线程操作同⼀个对象的时候，对这个对象的⾮静态成员变量的写操作会存在线程安全问题。在类中定义⼀个ThreadLocal成员变量，将需要的可变成员变量保存在 ThreadLocal 中（推荐的⼀种⽅式）。</li>
-</ul>
-<h3 id="Spring框架中都用到了哪些设计模式"><a href="#Spring框架中都用到了哪些设计模式" class="headerlink" title="Spring框架中都用到了哪些设计模式"></a>Spring框架中都用到了哪些设计模式</h3><ul>
+<h3 id="Spring框架中的设计模式"><a href="#Spring框架中的设计模式" class="headerlink" title="Spring框架中的设计模式"></a>Spring框架中的设计模式</h3><ul>
 <li>工厂模式：BeanFactory就是简单工厂模式的体现，用来创建对象的实例</li>
 <li>单例模式：Bean默认为单例模式</li>
 <li>代理模式：Spring的AOP功能用到了JDK的动态代理和CGLIB字节码生成技术</li>
@@ -376,7 +377,7 @@
 <li>策略模式： Bean的实例化的时候决定采用何种方式初始化bean实例（反射或者CGLIB动态字节码生成），Resource 接口是具体资源访问策略的抽象。</li>
 <li>装饰器模式：Spring中用到的包装器模式在类名上有两种表现：一种是类名中含有Wrapper，另一种是类名中含有Decorator。</li>
 </ul>
-<h3 id="Spring中Autowired和Resource关键字的区别？"><a href="#Spring中Autowired和Resource关键字的区别？" class="headerlink" title="Spring中Autowired和Resource关键字的区别？"></a>Spring中Autowired和Resource关键字的区别？</h3><ul>
+<h3 id="Spring中Autowired和Resource关键字"><a href="#Spring中Autowired和Resource关键字" class="headerlink" title="Spring中Autowired和Resource关键字"></a>Spring中Autowired和Resource关键字</h3><ul>
 <li>@Resource和@Autowired都是做bean的注入时使用，其实@Resource并不是Spring的注解，它的包是javax.annotation.Resource，需要导入，但是Spring支持该注解的注入。</li>
 <li>Autowired注解是按照类型（byType）装配依赖对象，默认情况下它要求依赖对象必须存在，如果允许null值，可以设置它的required属性为false。如果我们想使用按照名称（byName）来装配，可以结合@Qualififier注解一起使用：</li>
 </ul>
@@ -387,7 +388,7 @@
 </ul>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestServiceImpl</span> </span>&#123; </span><br><span class="line">  <span class="comment">// 下面两种@Resource只要使用一种即可 </span></span><br><span class="line">  </span><br><span class="line">  <span class="comment">// 用于字段上 </span></span><br><span class="line">  <span class="meta">@Resource</span>(name=<span class="string">"userDao"</span>) </span><br><span class="line">  <span class="keyword">private</span> UserDao userDao; </span><br><span class="line">  </span><br><span class="line">  <span class="comment">// 用于属性的setter方法上 </span></span><br><span class="line">  <span class="meta">@Resource</span>(name=<span class="string">"userDao"</span>) </span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUserDao</span><span class="params">(UserDao userDao)</span> </span>&#123; </span><br><span class="line">    <span class="keyword">this</span>.userDao = userDao;</span><br><span class="line">  &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="Bean注册方式有几种？"><a href="#Bean注册方式有几种？" class="headerlink" title="Bean注册方式有几种？"></a>Bean注册方式有几种？</h3><ul>
+<h3 id="Bean注册方式"><a href="#Bean注册方式" class="headerlink" title="Bean注册方式"></a>Bean注册方式</h3><ul>
 <li>XML 配置文件的注册方式</li>
 </ul>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"person"</span> <span class="attr">class</span>=<span class="string">"org.springframework.beans.Person"</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"id"</span> <span class="attr">value</span>=<span class="string">"1"</span>/&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"name"</span> <span class="attr">value</span>=<span class="string">"Java"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
@@ -404,7 +405,7 @@
 
 <a id="more"></a>
 
-<h3 id="Spring-Bean-的作用域有哪些？"><a href="#Spring-Bean-的作用域有哪些？" class="headerlink" title="Spring Bean 的作用域有哪些？"></a>Spring Bean 的作用域有哪些？</h3><ul>
+<h3 id="Spring-Bean-的作用域"><a href="#Spring-Bean-的作用域" class="headerlink" title="Spring Bean 的作用域"></a>Spring Bean 的作用域</h3><ul>
 <li>singleton <ul>
 <li>表示在 Spring 容器中只有一个 Bean 实例，以单例的形式存在，是默认的 Bean 作用域。</li>
 </ul>
@@ -429,6 +430,9 @@
 <li>全局的 Web 作用域，类似于 Servlet 中的 Application。</li>
 </ul>
 </li>
+</ul>
+<h4 id="Spring-中的单例-bean-的线程安全问题"><a href="#Spring-中的单例-bean-的线程安全问题" class="headerlink" title="Spring 中的单例 bean 的线程安全问题"></a>Spring 中的单例 bean 的线程安全问题</h4><ul>
+<li>单例 bean 存在线程问题，主要是因为当多个线程操作同⼀个对象的时候，对这个对象的⾮静态成员变量的写操作会存在线程安全问题。在类中定义⼀个ThreadLocal成员变量，将需要的可变成员变量保存在 ThreadLocal 中（推荐的⼀种⽅式）。</li>
 </ul>
 <h3 id="Bean-生命周期"><a href="#Bean-生命周期" class="headerlink" title="Bean 生命周期"></a>Bean 生命周期</h3><ul>
 <li>对于 Spring Bean 来说，并不是启动阶段就会触发 Bean 的实例化，只有当客户端通过显式或者隐式的方式调用 BeanFactory 的 getBean() 方法时，它才会触发该类的实例化方法。当然对于 BeanFactory 来说，也不是所有的 getBean() 方法都会实例化 Bean 对象，例如作用域为 singleton 时，只会在第一次，实例化该 Bean 对象，之后会直接返回该对象。但如果使用的是ApplicationContext 容器，则会在该容器启动的时候，立即调用注册到该容器所有 Bean 的实例化方法。getBean() 方法是属于 BeanFactory 接口的，它的真正实现是AbstractAutowireCapableBeanFactory 的 createBean() 方法，而 createBean() 是通过 doCreateBean() 来实现的，具体源码实现。</li>
@@ -601,7 +605,7 @@
 </ul>
 </li>
 </ul>
-<h3 id="Spring-事务中的隔离级别有哪⼏种"><a href="#Spring-事务中的隔离级别有哪⼏种" class="headerlink" title="Spring 事务中的隔离级别有哪⼏种?"></a>Spring 事务中的隔离级别有哪⼏种?</h3><blockquote>
+<h4 id="Spring-事务中的隔离级别"><a href="#Spring-事务中的隔离级别" class="headerlink" title="Spring 事务中的隔离级别"></a>Spring 事务中的隔离级别</h4><blockquote>
 <p><strong>TransactionDefinition</strong> 接⼝中定义了五个表示隔离级别的常量：</p>
 </blockquote>
 <ul>
@@ -616,7 +620,7 @@
 <li><p><strong>TransactionDefinition.ISOLATION_SERIALIZABLE:</strong> 最⾼的隔离级别，完全服从ACID的隔离级别。所有的事务依次逐个执⾏，这样事务之间就完全不可能产⽣⼲扰，也就是说，该级别可以防⽌脏读、不可重复读以及幻读。但是这将严重影响程序的性能。通常情况下也不会⽤到该级别。</p>
 </li>
 </ul>
-<h3 id="Spring-事务中哪⼏种事务传播⾏为"><a href="#Spring-事务中哪⼏种事务传播⾏为" class="headerlink" title="Spring 事务中哪⼏种事务传播⾏为?"></a>Spring 事务中哪⼏种事务传播⾏为?</h3><ul>
+<h4 id="Spring-事务中事务传播⾏为"><a href="#Spring-事务中事务传播⾏为" class="headerlink" title="Spring 事务中事务传播⾏为"></a>Spring 事务中事务传播⾏为</h4><ul>
 <li>⽀持当前事务的情况：<ul>
 <li><strong>TransactionDefinition.PROPAGATION_REQUIRED</strong>： 如果当前存在事务，则加⼊该事务；如果当前没有事务，则创建⼀个新的事务。</li>
 <li><strong>TransactionDefinition.PROPAGATION_SUPPORTS</strong>： 如果当前存在事务，则加⼊该事务；如果当前没有事务，则以⾮事务的⽅式继续运⾏。</li>
@@ -634,7 +638,7 @@
 </ul>
 </li>
 </ul>
-<h3 id="TransactionStatus接口介绍"><a href="#TransactionStatus接口介绍" class="headerlink" title="TransactionStatus接口介绍"></a>TransactionStatus接口介绍</h3><ul>
+<h4 id="TransactionStatus接口介绍"><a href="#TransactionStatus接口介绍" class="headerlink" title="TransactionStatus接口介绍"></a>TransactionStatus接口介绍</h4><ul>
 <li>TransactionStatus接口用来记录事务的状态 该接口定义了一组方法,用来获取或判断事务的相应状态信息.</li>
 </ul>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">TransactionStatus</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isNewTransaction</span><span class="params">()</span></span>; <span class="comment">// 是否是新的事物</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">hasSavepoint</span><span class="params">()</span></span>; <span class="comment">// 是否有恢复点</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">setRollbackOnly</span><span class="params">()</span></span>;  <span class="comment">// 设置为只回滚</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isRollbackOnly</span><span class="params">()</span></span>; <span class="comment">// 是否为只回滚</span></span><br><span class="line">    <span class="keyword">boolean</span> isCompleted; <span class="comment">// 是否已完成</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -875,7 +879,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring-Ioc"><span class="nav-number">1.</span> <span class="nav-text">Spring Ioc</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-描述下依赖注入。"><span class="nav-number">1.1.</span> <span class="nav-text">1.描述下依赖注入。</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-注入的几种方式？"><span class="nav-number">1.2.</span> <span class="nav-text">2. 注入的几种方式？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring-AOP"><span class="nav-number">2.</span> <span class="nav-text">Spring AOP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#谈谈对Spring理解"><span class="nav-number">3.</span> <span class="nav-text">谈谈对Spring理解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#谈谈对-IoC-和-DI-的理解"><span class="nav-number">4.</span> <span class="nav-text">谈谈对 IoC 和 DI 的理解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring-中的单例-bean-的线程安全问题了解吗？"><span class="nav-number">5.</span> <span class="nav-text">Spring 中的单例 bean 的线程安全问题了解吗？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring框架中都用到了哪些设计模式"><span class="nav-number">6.</span> <span class="nav-text">Spring框架中都用到了哪些设计模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring中Autowired和Resource关键字的区别？"><span class="nav-number">7.</span> <span class="nav-text">Spring中Autowired和Resource关键字的区别？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Bean注册方式有几种？"><span class="nav-number">8.</span> <span class="nav-text">Bean注册方式有几种？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring-Bean-的作用域有哪些？"><span class="nav-number">9.</span> <span class="nav-text">Spring Bean 的作用域有哪些？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Bean-生命周期"><span class="nav-number">10.</span> <span class="nav-text">Bean 生命周期</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring自动装配"><span class="nav-number">11.</span> <span class="nav-text">Spring自动装配</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#SpringBootApplication"><span class="nav-number">11.1.</span> <span class="nav-text">SpringBootApplication</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SpringBootConfiguration"><span class="nav-number">11.2.</span> <span class="nav-text">SpringBootConfiguration</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring循环依赖"><span class="nav-number">12.</span> <span class="nav-text">Spring循环依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring中Filter和Interceptor的区别"><span class="nav-number">13.</span> <span class="nav-text">Spring中Filter和Interceptor的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring-事务"><span class="nav-number">14.</span> <span class="nav-text">Spring 事务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring-事务中的隔离级别有哪⼏种"><span class="nav-number">15.</span> <span class="nav-text">Spring 事务中的隔离级别有哪⼏种?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring-事务中哪⼏种事务传播⾏为"><span class="nav-number">16.</span> <span class="nav-text">Spring 事务中哪⼏种事务传播⾏为?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TransactionStatus接口介绍"><span class="nav-number">17.</span> <span class="nav-text">TransactionStatus接口介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring-Boot-启动流程"><span class="nav-number">18.</span> <span class="nav-text">Spring Boot 启动流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring代理"><span class="nav-number">19.</span> <span class="nav-text">Spring代理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#JDK-Proxy-和-CGLib-有什么区别"><span class="nav-number">19.1.</span> <span class="nav-text">JDK Proxy 和 CGLib 有什么区别</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring中获取代理对象"><span class="nav-number">20.</span> <span class="nav-text">Spring中获取代理对象</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring"><span class="nav-number">1.</span> <span class="nav-text">Spring</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#依赖注入"><span class="nav-number">1.1.</span> <span class="nav-text">依赖注入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#注入方式"><span class="nav-number">1.2.</span> <span class="nav-text">注入方式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring-AOP"><span class="nav-number">2.</span> <span class="nav-text">Spring AOP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring框架中的设计模式"><span class="nav-number">3.</span> <span class="nav-text">Spring框架中的设计模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring中Autowired和Resource关键字"><span class="nav-number">4.</span> <span class="nav-text">Spring中Autowired和Resource关键字</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Bean注册方式"><span class="nav-number">5.</span> <span class="nav-text">Bean注册方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring-Bean-的作用域"><span class="nav-number">6.</span> <span class="nav-text">Spring Bean 的作用域</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Spring-中的单例-bean-的线程安全问题"><span class="nav-number">6.1.</span> <span class="nav-text">Spring 中的单例 bean 的线程安全问题</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Bean-生命周期"><span class="nav-number">7.</span> <span class="nav-text">Bean 生命周期</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring自动装配"><span class="nav-number">8.</span> <span class="nav-text">Spring自动装配</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#SpringBootApplication"><span class="nav-number">8.1.</span> <span class="nav-text">SpringBootApplication</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SpringBootConfiguration"><span class="nav-number">8.2.</span> <span class="nav-text">SpringBootConfiguration</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring循环依赖"><span class="nav-number">9.</span> <span class="nav-text">Spring循环依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring中Filter和Interceptor的区别"><span class="nav-number">10.</span> <span class="nav-text">Spring中Filter和Interceptor的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring-事务"><span class="nav-number">11.</span> <span class="nav-text">Spring 事务</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Spring-事务中的隔离级别"><span class="nav-number">11.1.</span> <span class="nav-text">Spring 事务中的隔离级别</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Spring-事务中事务传播⾏为"><span class="nav-number">11.2.</span> <span class="nav-text">Spring 事务中事务传播⾏为</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TransactionStatus接口介绍"><span class="nav-number">11.3.</span> <span class="nav-text">TransactionStatus接口介绍</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring-Boot-启动流程"><span class="nav-number">12.</span> <span class="nav-text">Spring Boot 启动流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring代理"><span class="nav-number">13.</span> <span class="nav-text">Spring代理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#JDK-Proxy-和-CGLib-有什么区别"><span class="nav-number">13.1.</span> <span class="nav-text">JDK Proxy 和 CGLib 有什么区别</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring中获取代理对象"><span class="nav-number">14.</span> <span class="nav-text">Spring中获取代理对象</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
