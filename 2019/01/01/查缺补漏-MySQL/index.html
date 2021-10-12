@@ -33,7 +33,7 @@
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/mysql/innodb-architecture.png">
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/SQL%E8%AF%AD%E5%8F%A5%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F.png">
 <meta property="article:published_time" content="2018-12-31T16:00:01.000Z">
-<meta property="article:modified_time" content="2021-10-12T06:28:21.864Z">
+<meta property="article:modified_time" content="2021-10-12T07:06:54.407Z">
 <meta property="article:author" content="胖枫叶">
 <meta property="article:tag" content="Mysql">
 <meta name="twitter:card" content="summary">
@@ -279,7 +279,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-10-12 14:28:21" itemprop="dateModified" datetime="2021-10-12T14:28:21+08:00">2021-10-12</time>
+                <time title="Modified: 2021-10-12 15:06:54" itemprop="dateModified" datetime="2021-10-12T15:06:54+08:00">2021-10-12</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -445,7 +445,10 @@
 <h4 id="外键"><a href="#外键" class="headerlink" title="外键"></a>外键</h4><ul>
 <li>在一个表中存在的另一个表的主键称此表的外键。</li>
 </ul>
-<h4 id="为什么要使用自增列作为主键？"><a href="#为什么要使用自增列作为主键？" class="headerlink" title="为什么要使用自增列作为主键？"></a>为什么要使用自增列作为主键？</h4><ol>
+<h4 id="为什么要使用自增列作为主键？"><a href="#为什么要使用自增列作为主键？" class="headerlink" title="为什么要使用自增列作为主键？"></a>为什么要使用自增列作为主键？</h4><blockquote>
+<p>自增ID有序，会按顺序往最后插入，而UUID无序，随机生成，随机插入，会造成频繁页分裂，内存碎片化，大量随机IO</p>
+</blockquote>
+<ol>
 <li>如果没有显示的指定主键，则InnoDB会选择一个不包含NULL值的唯一索引作为主键索引。如果满足条件，InnoDB会选择内置6字节长度的ROWID作为隐含的聚集索引。</li>
 <li>InnoDB数据记录本身存放主索引（B+Tree）的叶子结点上面，同一个叶子结点内的各条数据是按照主键顺序存放。因此每次插入数据的时候，mysql会根据其主键插入适当的位置，如果页达到装载因子条件，则开辟一个新的页。</li>
 <li>使用非自增，每次插入的值都是几乎无序的，导致叶节点不够紧凑，频繁移动分叶造成大量碎片。增加维护工作。</li>
@@ -532,14 +535,19 @@
 </ul>
 <h4 id="索引失效"><a href="#索引失效" class="headerlink" title="索引失效"></a>索引失效</h4><ul>
 <li>两张表联合查询的时候表的编码集不一样会导致索引失效。</li>
-<li>如果字段A做了索引 WHERE A = 1 OR B = 2 这时候也不回走索引。</li>
+<li>列类型是字符串，一定要在条件中将数据用<code>引号引用</code>，否则失效（隐式转换）</li>
+<li>or语句前后未使用索引字段 ，字段A做了索引 WHERE A = 1 OR B = 2 这时候也不回走索引。</li>
 <li>like未使用最左前缀，where A like “%China”。</li>
 <li>在索引上使用函数 、!= 、&lt;&gt; 、not in 。</li>
 <li>where a = b + 1 查询条件做运算</li>
+<li>is null 、is not null</li>
 </ul>
 <h4 id="覆盖索引和回表"><a href="#覆盖索引和回表" class="headerlink" title="覆盖索引和回表"></a>覆盖索引和回表</h4><ul>
 <li>覆盖索引指的是在一次查询中，如果一个索引包含或者说覆盖所有需要查询的字段的值，我们就称之为覆盖索引，而不再需要回表查询。而要确定一个查询是否是覆盖索引，我们只需要explain sql语句看Extra的结果是否是“Using index”即可。</li>
 </ul>
+<h4 id="索引下推"><a href="#索引下推" class="headerlink" title="索引下推"></a>索引下推</h4><blockquote>
+<p>在根据索引查询过程中就根据查询条件过滤掉一些记录，减少最后的回表操作</p>
+</blockquote>
 <h4 id="使用索引查询一定能提高查询的性能吗？"><a href="#使用索引查询一定能提高查询的性能吗？" class="headerlink" title="使用索引查询一定能提高查询的性能吗？"></a>使用索引查询一定能提高查询的性能吗？</h4><blockquote>
 <p>通常,通过索引查询数据比全表扫描要快.但是我们也必须注意到它的代价.</p>
 </blockquote>
@@ -551,45 +559,40 @@
 <h3 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h3><blockquote>
 <p>事务（Transaction）是并发控制的基本单位。所谓的事务，它是一个操作序列，这些操作要么都执行，要么都不执行，它是一个不可分割的工作单位。事务是数据库维护数据一致性的单位，在每个事务结束时，都能保持数据一致性。</p>
 </blockquote>
-<h4 id="MySQL-事务四大特性"><a href="#MySQL-事务四大特性" class="headerlink" title="MySQL 事务四大特性"></a>MySQL 事务四大特性</h4><blockquote>
-<p>一说到 MySQL 事务，你肯定能想起来四大特性：<code>原子性</code>、<code>一致性</code>、<code>隔离性</code>、<code>持久性</code>。什么是 MySQL 中的事务？</p>
-<p>事务是一组操作，组成这组操作的各个单元，要不全都成功要不全都失败，这个特性就是事务。</p>
-<p>在 MySQL 中，事务是在引擎层实现的，只有使用 <code>innodb</code> 引擎的数据库或表才支持事务。</p>
-</blockquote>
-<ul>
-<li><code>原子性(Atomicity)</code>: 原子性指的就是 MySQL 中的包含事务的操作要么<code>全部成功</code>、要么全部<code>失败回滚</code>，因此事务的操作如果成功就必须要全部应用到数据库，如果操作失败则不能对数据库有任何影响。</li>
-<li><code>一致性(Consistency)</code>：一致性指的是一个事务在执行前后其状态一致。比如 A 和 B 加起来的钱一共是 1000 元，那么不管 A 和 B 之间如何转账，转多少次，事务结束后两个用户的钱加起来还得是 1000，这就是事务的一致性。</li>
-<li><code>持久性(Durability)</code>: 持久性指的是一旦事务提交，那么发生的改变就是永久性的，即使数据库遇到特殊情况比如故障的时候也不会产生干扰。</li>
-<li><code>隔离性(Isolation)</code>：当多个事务同时进行时，就有可能出现<code>脏读(dirty read)</code>、<code>不可重复读(non-repeatable read)</code>、<code>幻读(phantom read)</code> 的情况，为了解决这些并发问题，提出了隔离性的概念。<ul>
-<li>重点说下隔离性它们分别是<code>读未提交(read uncommitted)</code>、<code>读已提交(read committed)</code>、<code>可重复读(repetable read)</code> 和 <code>串行化(serializable)</code>。下面分别来解释一下。</li>
-<li><code>读未提交</code>：读未提交指的是一个事务在提交之前，它所做的修改就能够被其他事务所看到。</li>
-<li><code>读已提交</code>：读已提交指的是一个事务在提交之后，它所做的变更才能够让其他事务看到。</li>
-<li><code>可重复读</code>：可重复读指的是一个事务在执行的过程中，看到的数据是和启动时看到的数据是一致的。未提交的变更对其他事务不可见。</li>
-<li><code>串行化</code>：顾名思义是对于同一行记录，<code>写</code>会加<code>写锁</code>，<code>读</code>会加<code>读锁</code>。当出现读写锁冲突的时候，后访问的事务必须等前一个事务执行完成，才能继续执行。</li>
-</ul>
-</li>
-</ul>
-<h4 id="事物隔离"><a href="#事物隔离" class="headerlink" title="事物隔离"></a>事物隔离</h4><blockquote>
+<h4 id="ACID"><a href="#ACID" class="headerlink" title="ACID"></a>ACID</h4><blockquote>
+<p>一说到 MySQL 事务，你肯定能想起来四大特性：<code>原子性</code>、<code>一致性</code>、<code>隔离性</code>、<code>持久性</code>。</p>
 <p>ACID模式是一组数据库设计原则强调的是，对于业务数据和关键任务应用重要的可靠性方面。MySQL包含诸如的组件<code>InnoDB</code>存储引擎与ACID模型紧密结合，因此数据不会损坏，并且不会因软件崩溃和硬件故障等特殊情况而导致结果失真。当您依赖符合ACID的功能时，您无需重新发明一致性检查和崩溃恢复机制。如果您有其他软件安全措施，超可靠硬件或可以容忍少量数据丢失或不一致的应用程序，您可以调整MySQL设置以交换一些ACID可靠性以获得更高的性能或吞吐量。</p>
 </blockquote>
-<ul>
-<li><p>Mysql默认的InnoDB事物隔离级别是<code>repeatable-read</code>可重复读</p>
+<h5 id="原子性-Atomicity"><a href="#原子性-Atomicity" class="headerlink" title="原子性(Atomicity)"></a>原子性(Atomicity)</h5><ul>
+<li>原子性指的就是 MySQL 中的包含事务的操作要么<code>全部成功</code>、要么全部<code>失败回滚</code>，因此事务的操作如果成功就必须要全部应用到数据库，如果操作失败则不能对数据库有任何影响。</li>
+</ul>
+<h5 id="一致性-Consistency"><a href="#一致性-Consistency" class="headerlink" title="一致性(Consistency)"></a>一致性(Consistency)</h5><ul>
+<li>一致性指的是一个事务在执行前后其状态一致。比如 A 和 B 加起来的钱一共是 1000 元，那么不管 A 和 B 之间如何转账，转多少次，事务结束后两个用户的钱加起来还得是 1000，这就是事务的一致性。</li>
+</ul>
+<h5 id="持久性-Durability"><a href="#持久性-Durability" class="headerlink" title="持久性(Durability)"></a>持久性(Durability)</h5><ul>
+<li>持久性指的是一旦事务提交，那么发生的改变就是永久性的，即使数据库遇到特殊情况比如故障的时候也不会产生干扰。</li>
+</ul>
+<h5 id="隔离性-Isolation"><a href="#隔离性-Isolation" class="headerlink" title="隔离性(Isolation)"></a>隔离性(Isolation)</h5><ul>
+<li><p>当多个事务同时进行时，就有可能出现<code>脏读(dirty read)</code>、<code>不可重复读(non-repeatable read)</code>、<code>幻读(phantom read)</code> 的情况，为了解决这些并发问题，提出了隔离性的概念。</p>
 </li>
-<li><p>原子性 Atomicity ：一个事务（transaction）中的所有操作，或者全部完成，或者全部不完成，不会结束在中间某个环节。事务在执行过程中发生错误，会被恢复（Rollback）到事务开始前的状态，就像这个事务从来没有执行过一样。即，事务不可分割、不可约简。</p>
+<li><p>重点说下隔离性它们分别是<code>读未提交(read uncommitted)</code>、<code>读已提交(read committed)</code>、<code>可重复读(repetable read)</code> 和 <code>串行化(serializable)</code>。下面分别来解释一下。</p>
 </li>
-<li><p>一致性 Consistency ：在事务开始之前和事务结束以后，数据库的完整性没有被破坏。这表示写入的资料必须完全符合所有的预设约束、触发器、级联回滚等。</p>
+<li><p><code>读未提交</code>：读未提交指的是一个事务在提交之前，它所做的修改就能够被其他事务所看到。</p>
 </li>
-<li><p>隔离性 Isolation ：数据库允许多个并发事务同时对其数据进行读写和修改的能力，隔离性可以防止多个事务并发执行时由于交叉执行而导致数据的不一致。事务隔离分为不同级别，包括读未提交（Read uncommitted）、读提交（read committed）、可重复读（repeatable read）和串行化（Serializable）。</p>
+<li><p><code>读已提交</code>：读已提交指的是一个事务在提交之后，它所做的变更才能够让其他事务看到。</p>
 </li>
-<li><p>持久性 Durability ：事务处理结束后，对数据的修改就是永久的，即便系统故障也不会丢失。</p>
+<li><p><code>可重复读</code>：可重复读指的是一个事务在执行的过程中，看到的数据是和启动时看到的数据是一致的。未提交的变更对其他事务不可见。</p>
 </li>
-<li><p>四个特性，最重要的就是一致性。而<strong>一致性</strong>由原子性，隔离性，持久性来保证。</p>
+<li><p><code>串行化</code>：顾名思义是对于同一行记录，<code>写</code>会加<code>写锁</code>，<code>读</code>会加<code>读锁</code>。当出现读写锁冲突的时候，后访问的事务必须等前一个事务执行完成，才能继续执行。</p>
+</li>
+</ul>
+<h4 id="隔离性四个特性"><a href="#隔离性四个特性" class="headerlink" title="隔离性四个特性"></a>隔离性四个特性</h4><blockquote>
+<p>最重要的就是一致性。而<strong>一致性</strong>由原子性，隔离性，持久性来保证。</p>
+</blockquote>
 <ul>
 <li>原子性由 Undo log 保证。Undo Log 会保存每次变更之前的记录，从而在发生错误时进行回滚。</li>
-<li>隔离性由 MVCC 和 Lock 保证。这个后面说。</li>
+<li>隔离性由 MVCC 和 Lock 保证。</li>
 <li>持久性由 Redo Log 保证。每次真正修改数据之前，都会将记录写到 Redo Log 中，只有 Redo Log 写入成功，才会真正的写入到 B+ 树中，如果提交之前断电，就可以通过 Redo Log 恢复记录。</li>
-</ul>
-</li>
 </ul>
 <table>
 <thead>
@@ -630,13 +633,34 @@
 <td>否</td>
 </tr>
 </tbody></table>
+<blockquote>
+<p>读已提交和可重复读实现原理就是MVCC Read View不同的生成时机。可重复读只在事务开始时生成一个Read View；读已提交每次执行前都会生成Read View。</p>
+</blockquote>
+<h5 id="读未提交"><a href="#读未提交" class="headerlink" title="读未提交"></a>读未提交</h5><blockquote>
+<p>一个事物未提交的时候，它做的数据变更就能被其它事物看到。</p>
+</blockquote>
 <ul>
-<li>读未提交，一个事物未提交的时候，它做的数据变更就能被其它食物看到。</li>
-<li>读提交，一个事物提交后，它做的数据变更才能被其它事物看到。</li>
-<li>可重复读，一个事物执行的过程中看到的数据，总是跟这个事物在启动时候看的数据一致。</li>
-<li>串行化，对同一行数据 <code>写</code>会加<code>写锁</code>,<code>读</code>会加<code>读锁</code>。当出现读写冲突的时候，必须按数据执行事务。</li>
+<li>原理：直接读取数据，不能解决任何并发问题</li>
 </ul>
-<h4 id="并发事务的问题"><a href="#并发事务的问题" class="headerlink" title="并发事务的问题"></a>并发事务的问题</h4><h4 id="脏读"><a href="#脏读" class="headerlink" title="脏读"></a>脏读</h4><blockquote>
+<h5 id="读提交"><a href="#读提交" class="headerlink" title="读提交"></a>读提交</h5><blockquote>
+<p>一个事物提交后，它做的数据变更才能被其它事物看到。</p>
+</blockquote>
+<ul>
+<li>原理：利用MVCC实现，每一句语句执行前都会生成Read View（一致性视图）</li>
+</ul>
+<h5 id="可重复读-（默认隔离级别）"><a href="#可重复读-（默认隔离级别）" class="headerlink" title="可重复读 （默认隔离级别）"></a>可重复读 （<strong>默认隔离级别</strong>）</h5><blockquote>
+<p>一个事物执行的过程中看到的数据，总是跟这个事物在启动时候看的数据一致。只有事务开始时会创建Read View，之后事务里的其他查询都用这个Read View。解决了脏读、不可重复读，快照读（普通查询，读取历史数据）</p>
+</blockquote>
+<ul>
+<li>原理：使用MVCC解决了幻读，当前读（读取最新提交数据）通过间隙锁解决幻读（lock in share mode、for update、update、detete、insert），间隙锁在可重复读下才生效。</li>
+</ul>
+<h5 id="串行化"><a href="#串行化" class="headerlink" title="串行化"></a>串行化</h5><blockquote>
+<p>对同一行数据 <code>写</code>会加<code>写锁</code>,<code>读</code>会加<code>读锁</code>。当出现读写冲突的时候，必须按数据执行事务。</p>
+</blockquote>
+<ul>
+<li>原理：使用锁，读加共享锁，写加排他锁，串行执行</li>
+</ul>
+<h5 id="并发事务的问题"><a href="#并发事务的问题" class="headerlink" title="并发事务的问题"></a>并发事务的问题</h5><h6 id="脏读"><a href="#脏读" class="headerlink" title="脏读"></a>脏读</h6><blockquote>
 <p>一个事务正在对一条记录进行修改，在这个事务完成并提交前，这条记录的数据就处于不一致状态。这时，另一个事务也来读取同一条记录，如果不加控制，第二个事务读取了这些“脏”数据，并据此做进一步的处理，就会产生未提交的数据依赖关系。</p>
 </blockquote>
 <table>
@@ -683,7 +707,7 @@
 <td align="left">提交事务</td>
 </tr>
 </tbody></table>
-<h4 id="不可重复读"><a href="#不可重复读" class="headerlink" title="不可重复读"></a>不可重复读</h4><blockquote>
+<h6 id="不可重复读"><a href="#不可重复读" class="headerlink" title="不可重复读"></a>不可重复读</h6><blockquote>
 <p>一个事务在读取某些数据后的某个时间，再次读取以前读过的数据，却发现其读出的数据已经发生了变更、或者某些记录已经被删除了。</p>
 </blockquote>
 <table>
@@ -730,7 +754,7 @@
 <td></td>
 </tr>
 </tbody></table>
-<h4 id="幻读"><a href="#幻读" class="headerlink" title="幻读"></a>幻读</h4><blockquote>
+<h6 id="幻读"><a href="#幻读" class="headerlink" title="幻读"></a>幻读</h6><blockquote>
 <p>一个事务按相同的查询条件重新读取以前检索过的数据，却发现其它事务插入了满足其查询条件的新数据。</p>
 </blockquote>
 <table>
@@ -777,7 +801,7 @@
 <td></td>
 </tr>
 </tbody></table>
-<h4 id="幻读和不可重复读的区别"><a href="#幻读和不可重复读的区别" class="headerlink" title="幻读和不可重复读的区别"></a>幻读和不可重复读的区别</h4><ul>
+<h6 id="幻读和不可重复读的区别s"><a href="#幻读和不可重复读的区别s" class="headerlink" title="幻读和不可重复读的区别s"></a>幻读和不可重复读的区别s</h6><ul>
 <li>不可重复读的重点是修改：在同一事务中，相同的条件，第一次和第二次读到的数据不一致（中间有其它事务提交了修改）。</li>
 <li>幻读的重点是新增或者删除：在同一事务中，相同的条件，第一次和第二次读到的记录数不一样（中间有其它事务提交了新增或者删除）。</li>
 </ul>
@@ -867,14 +891,15 @@
 <li>主从复制：Master端开启<code>binlog</code>，然后将<code>binlog</code>发送到<code>Slave</code>端，<code>Slave</code>端通过重放<code>binlog</code>达到数据一致。</li>
 <li>数据恢复：通过<code>mysqlbinlog</code>工具来恢复数据库。</li>
 </ul>
+<h6 id="刷盘机制"><a href="#刷盘机制" class="headerlink" title="刷盘机制"></a>刷盘机制</h6><blockquote>
 <p><code>Innodb下只有在事物提交的情况下才会记录binlog</code>，此时记录还在内存中。mysql通过<code>sync_binlog</code>参数控制<code>binlog</code>刷盘时机。取值范围0-n</p>
+</blockquote>
 <ul>
 <li>0：不去强制要求，由系统自行判断何时写入磁盘；</li>
 <li>1：每次 <code>commit</code> 的时候都要将 <code>binlog</code> 写入磁盘；</li>
 <li>N：每N个事务，才会将 <code>binlog</code> 写入磁盘。</li>
 </ul>
-<p><code>binlog日志格式</code></p>
-<blockquote>
+<h6 id="binlog日志格式"><a href="#binlog日志格式" class="headerlink" title="binlog日志格式"></a><code>binlog日志格式</code></h6><blockquote>
 <p>在 <code>MySQL 5.7.7</code> 之前，默认的格式是 <code>STATEMENT</code> ， <code>MySQL 5.7.7</code> 之后，默认值是 <code>ROW</code>。日志格式通过 <code>binlog-format</code> 指定。</p>
 </blockquote>
 <ul>
@@ -892,22 +917,32 @@
 </li>
 <li><code>MIXED</code>：基于<code>STATMENT</code> 和 <code>ROW</code> 两种模式的混合复制(<code>mixed-based replication, MBR</code> )，一般的复制使用<code>STATEMENT</code> 模式保存 <code>binlog</code> ，对于 <code>STATEMENT</code> 模式无法复制的操作使用 <code>ROW</code> 模式保存 <code>binlog</code></li>
 </ul>
+<h6 id="2PC两阶段提交"><a href="#2PC两阶段提交" class="headerlink" title="2PC两阶段提交"></a>2PC两阶段提交</h6><blockquote>
+<p>mysql中在server层级别有个binlog日志，归档日志，用于备份，主从同步复制，如果采用一主多从架构，主备切换，那就必须用到binlog进行主从同步。</p>
+</blockquote>
+<ul>
+<li><p>事务提交就必须保证redolog与binlog的一致性，一般情况没有开启binlog日志，事务提交不会两阶段提交，若需要主从同步就必须开启binlog使用两阶段提交保证数据一致性。</p>
+</li>
+<li><p><strong>Prepare 阶段</strong>：InnoDB 将回滚段undolog设置为 prepare 状态；将 redolog 写文件并刷盘；先写redolog，事务进入prepare状态）</p>
+</li>
+<li><p><strong>Commit 阶段</strong>：Binlog 写入文件；binlog 刷盘；InnoDB commit；</p>
+</li>
+</ul>
 <h5 id="redo-Log"><a href="#redo-Log" class="headerlink" title="redo Log"></a>redo Log</h5><blockquote>
 <p>事务的四大特性里面有一个是 <strong>持久性</strong> ，具体来说就是<strong>只要事务提交成功，那么对数据库做的修改就被永久保存下来了，不可能因为任何原因再回到原来的状态</strong> 。</p>
 </blockquote>
-<ul>
-<li>保持一致性</li>
-</ul>
-<blockquote>
+<h6 id="保持一致性"><a href="#保持一致性" class="headerlink" title="保持一致性"></a>保持一致性</h6><blockquote>
 <p>最简单的做法是在每次事务提交的时候，将该事务涉及修改的数据页全部刷新到磁盘中。但是这么做会有严重的性能问题，主要体现在两个方面：</p>
 </blockquote>
 <ol>
 <li>因为 <code>Innodb</code> 是以 <code>页</code> 为单位进行磁盘交互的，而一个事务很可能只修改一个数据页里面的几个字节，这个时候将完整的数据页刷到磁盘的话，太浪费资源了！</li>
 <li>一个事务可能涉及修改多个数据页，并且这些数据页在物理上并不连续，使用随机IO写入性能太差！</li>
 </ol>
-<p>因此 <code>mysql</code> 设计了 <code>redo log</code> ， <strong>具体来说就是只记录事务对数据页做了哪些修改</strong>，这样就能完美地解决性能问题了(相对而言文件更小并且是顺序IO)。</p>
 <ul>
-<li>redo log</li>
+<li><p>因此 <code>mysql</code> 设计了 <code>redo log</code> ， <strong>具体来说就是只记录事务对数据页做了哪些修改</strong>，这样就能完美地解决性能问题了(相对而言文件更小并且是顺序IO)。</p>
+</li>
+<li><p>redo log</p>
+</li>
 </ul>
 <blockquote>
 <p><code>redo log</code> 包含两个部分，一个是内存中的日志缓冲 <code>redo log buffer</code> , 另一个是磁盘上的日志文件<code>redo logfile</code> </p>
@@ -976,6 +1011,33 @@
 <p>MySQL InnoDB存储引擎，实现的是基于多版本的并发控制协议——MVCC (Multi-Version Concurrency Control) </p>
 <p>与MVCC相对的，是基于锁的并发控制，Lock-Based Concurrency Control </p>
 </blockquote>
+<h4 id="隐藏字段"><a href="#隐藏字段" class="headerlink" title="隐藏字段"></a>隐藏字段</h4><blockquote>
+<p>InnoDB存储引擎，每一行记录都有两个隐藏列<strong>trx_id</strong>、<strong>roll_pointer</strong>，如果表中没有主键和非NULL唯一键时，则还会有第三个隐藏的主键列<strong>row_id</strong>。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th align="left">列名</th>
+<th align="left">是否必须</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">row_id</td>
+<td align="left">否</td>
+<td align="left">单调递增的行ID，不是必需的，占用6个字节。</td>
+</tr>
+<tr>
+<td align="left">trx_id</td>
+<td align="left">是</td>
+<td align="left">记录操作该数据事务的事务ID</td>
+</tr>
+<tr>
+<td align="left">roll_pointer</td>
+<td align="left">是</td>
+<td align="left">这个隐藏列就相当于一个指针，指向回滚段的undo日志</td>
+</tr>
+</tbody></table>
 <ul>
 <li>MVCC最⼤的好处：读不加锁，读写不冲突。在读多写少的OLTP应⽤中，读写不冲突是⾮常重要的，极⼤的增加了系统的并发性 </li>
 </ul>
@@ -1001,12 +1063,14 @@
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> player_users <span class="keyword">WHERE</span> ...</span><br></pre></td></tr></table></figure>
 
 <p>当前读就是读取最新数据，而不是历史版本的数据。加锁的 SELECT，或者对数据进行增删改都会进行当前读，比如：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 这里加的是读锁。</span></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> player_users <span class="keyword">LOCK</span> <span class="keyword">IN</span> <span class="keyword">SHARE</span> <span class="keyword">MODE</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 这里加的是读锁。 update/insert/delete语句</span></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> player_users <span class="keyword">LOCK</span> <span class="keyword">IN</span> <span class="keyword">SHARE</span> <span class="keyword">MODE</span>;</span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> player_users <span class="keyword">FOR</span> <span class="keyword">UPDATE</span></span><br></pre></td></tr></table></figure>
 
 </li>
 </ul>
 <h4 id="InnoDB的MVCC的机制"><a href="#InnoDB的MVCC的机制" class="headerlink" title="InnoDB的MVCC的机制"></a>InnoDB的MVCC的机制</h4><blockquote>
-<p>MVCC 的英文全称是 Multiversion Concurrency Control，中文翻译过来就是多版本并发控制技术。从名字中也能看出来，MVCC 是通过数据行的多个版本管理来实现数据库的并发控制，简单来说它的思想就是保存数据的历史版本。这样我们就可以通过比较版本号决定数据是否显示出来（具体的规则后面会介绍到），读取数据的时候不需要加锁也可以保证事务的隔离效果。</p>
+<p>​        MVCC 的英文全称是 Multiversion Concurrency Control，中文翻译过来就是多版本并发控制技术。从名字中也能看出来，MVCC 是通过数据行的多个版本管理来实现数据库的并发控制，简单来说它的思想就是保存数据的历史版本。这样我们就可以通过比较版本号决定数据是否显示出来（具体的规则后面会介绍到），读取数据的时候不需要加锁也可以保证事务的隔离效果。</p>
+<p>​        事务版本号每开启一个事务，我们都会从数据库中获得一个事务 ID（也就是事务版本号），这个事务 ID 是自增长的，通过 ID 大小，我们就可以判断事务的时间顺序。</p>
+<p>​        行记录的隐藏列InnoDB 的叶子段存储了数据页，数据页中保存了行记录，而在行记录中有一些重要的隐藏字段。</p>
 </blockquote>
 <ul>
 <li>通过 MVCC 我们可以解决以下几个问题：</li>
@@ -1016,16 +1080,16 @@
 <li>降低了死锁的概率。这是因为 MVCC 采用了乐观锁的方式，读取数据时并不需要加锁，对于写操作，也只锁定必要的行。</li>
 <li>解决一致性读的问题。一致性读也被称为快照读，当我们查询数据库在某个时间点的快照时，只能看到这个时间点之前事务提交更新的结果，而不能看到这个时间点之后事务提交的更新结果。</li>
 </ol>
-<blockquote>
-<p>在了解 InnoDB 中 MVCC 的实现方式之前，我们需要了解 InnoDB 是如何存储记录的多个版本的。这里的多版本对应的就是 MVCC 前两个字母的释义：Multi Version，我们需要了解和它相关的数据都有哪些，存储在哪里。这些数据包括事务版本号、行记录中的隐藏列和 Undo Log。</p>
-</blockquote>
-<ol>
-<li>事务版本号每开启一个事务，我们都会从数据库中获得一个事务 ID（也就是事务版本号），这个事务 ID 是自增长的，通过 ID 大小，我们就可以判断事务的时间顺序。</li>
-<li>行记录的隐藏列InnoDB 的叶子段存储了数据页，数据页中保存了行记录，而在行记录中有一些重要的隐藏字段。</li>
-</ol>
-<blockquote>
+<h4 id="MVVC如何查询记录"><a href="#MVVC如何查询记录" class="headerlink" title="MVVC如何查询记录"></a>MVVC如何查询记录</h4><blockquote>
 <p>MVCC 的核心就是 Undo Log+ Read View，“MV”就是通过 Undo Log 来保存数据的历史版本，实现多版本的管理，“CC”是通过 Read View 来实现管理，通过 Read View 原则来决定数据是否显示。同时针对不同的隔离级别，Read View 的生成策略不同，也就实现了不同的隔离级别。</p>
 </blockquote>
+<ol>
+<li>获取事务自己的版本号，即事务ID</li>
+<li>获取Read View</li>
+<li>查询得到的数据，然后Read View中的事务版本号进行比较。</li>
+<li>如果不符合Read View的可见性规则， 即就需要Undo log中历史快照;</li>
+<li>最后返回符合规则的数据</li>
+</ol>
 <h3 id="SQL语句的执行顺序"><a href="#SQL语句的执行顺序" class="headerlink" title="SQL语句的执行顺序"></a>SQL语句的执行顺序</h3><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/SQL%E8%AF%AD%E5%8F%A5%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F.png"></p>
 <blockquote>
 <p>我们在编写一个查询语句的时候</p>
@@ -1114,7 +1178,7 @@
 <h4 id="SQL优化explain"><a href="#SQL优化explain" class="headerlink" title="SQL优化explain"></a>SQL优化explain</h4><ul>
 <li>explain出来的各种item的意义；</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select_type</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select_type</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>表示查询中每个select子句的类型，有几种值：simple（表示简单的select，没有union和子查询），primary（有子查询，最外面的select查询就是primary），union（union中的第二个或随后的select查询，不依赖外部查询结果），dependent union（union中的第二个或随后的select查询，依赖外部查询结果）</li>
@@ -1170,17 +1234,6 @@
 </ul>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">innodb_write_io_threads = 8</span><br><span class="line"></span><br><span class="line">innodb_read_io_threads = 8</span><br><span class="line"></span><br><span class="line">innodb_thread_concurrency = 0</span><br></pre></td></tr></table></figure>
 
-<ul>
-<li>缓存参数以及缓存的适用场景。</li>
-</ul>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">query <span class="keyword">cache</span>/query_cache_type</span><br></pre></td></tr></table></figure>
-
-<p>并不是所有表都适合使用query cache。造成query cache失效的原因主要是相应的table发生了变更</p>
-<ul>
-<li><strong>第一个</strong>：读操作多的话看看比例，简单来说，如果是用户清单表，或者说是数据比例比较固定，比如说商品列表，是可以打开的，前提是这些库比较集中，数据库中的实务比较小。</li>
-<li><strong>第二个</strong>：我们“行骗”的时候，比如说我们竞标的时候压测，把query cache打开，还是能收到qps激增的效果，当然前提示前端的连接池什么的都配置一样。大部分情况下如果写入的居多，访问量并不多，那么就不要打开，例如社交网站的，10%的人产生内容，其余的90%都在消费，打开还是效果很好的，但是你如果是qq消息，或者聊天，那就很要命。</li>
-<li><strong>第三个</strong>：小网站或者没有高并发的无所谓，高并发下，会看到 很多 qcache 锁 等待，所以一般高并发下，不建议打开query cache。</li>
-</ul>
 <h4 id="SQL-优化的经验"><a href="#SQL-优化的经验" class="headerlink" title="SQL 优化的经验"></a>SQL 优化的经验</h4><ul>
 <li>查询语句无论是使用哪种判断条件 <strong>等于、小于、大于</strong>， <code>WHERE</code> 左侧的条件查询字段不要使用函数或者表达式</li>
 <li>使用 <code>EXPLAIN</code> 命令优化你的 SELECT 查询，对于复杂、效率低的 sql 语句，我们通常是使用 explain sql 来分析这条 sql 语句，这样方便我们分析，进行优化。</li>
@@ -1200,9 +1253,9 @@
 <li>进行水平切割或者垂直分割</li>
 </ul>
 <h3 id="视图"><a href="#视图" class="headerlink" title="视图"></a>视图</h3><ul>
-<li>1、视图是一种虚拟的表，具有和物理表相同的功能。可以对视图进行增，改，查，操作，试图通常是有一个表或者多个表的行或列的子集。对视图的修改不影响基本表。它使得我们获取数据更容易，相比多表查询。</li>
-<li>2、只暴露部分字段给访问者，所以就建一个虚表，就是视图。</li>
-<li>3、查询的数据来源于不同的表，而查询者希望以统一的方式查询，这样也可以建立一个视图，把多个表查询结果联合起来，查询者只需要直接从视图中获取数据，不必考虑数据来源于不同表所带来的差异。</li>
+<li>视图是一种虚拟的表，具有和物理表相同的功能。可以对视图进行增，改，查，操作，试图通常是有一个表或者多个表的行或列的子集。对视图的修改不影响基本表。它使得我们获取数据更容易，相比多表查询。</li>
+<li>只暴露部分字段给访问者，所以就建一个虚表，就是视图。</li>
+<li>查询的数据来源于不同的表，而查询者希望以统一的方式查询，这样也可以建立一个视图，把多个表查询结果联合起来，查询者只需要直接从视图中获取数据，不必考虑数据来源于不同表所带来的差异。</li>
 </ul>
 <h3 id="存储过程"><a href="#存储过程" class="headerlink" title="存储过程"></a>存储过程</h3><p>存储过程是一些预编译的SQL语句。</p>
 <ul>
@@ -1480,7 +1533,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Mysql基础架构图"><span class="nav-number">1.</span> <span class="nav-text">Mysql基础架构图</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#简单介绍上图相关模块功能"><span class="nav-number">1.1.</span> <span class="nav-text">简单介绍上图相关模块功能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#连接器"><span class="nav-number">1.2.</span> <span class="nav-text">连接器</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#半双工"><span class="nav-number">1.2.1.</span> <span class="nav-text">半双工</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#长连接与短连接"><span class="nav-number">1.2.2.</span> <span class="nav-text">长连接与短连接</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查询缓存"><span class="nav-number">1.3.</span> <span class="nav-text">查询缓存</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#语法解析"><span class="nav-number">1.4.</span> <span class="nav-text">语法解析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查询优化"><span class="nav-number">1.5.</span> <span class="nav-text">查询优化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#执行器"><span class="nav-number">1.6.</span> <span class="nav-text">执行器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#存储引擎"><span class="nav-number">1.7.</span> <span class="nav-text">存储引擎</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#innodb特性"><span class="nav-number">2.</span> <span class="nav-text">innodb特性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#myisam与innodb"><span class="nav-number">3.</span> <span class="nav-text">myisam与innodb</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#索引"><span class="nav-number">4.</span> <span class="nav-text">索引</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#主键"><span class="nav-number">4.1.</span> <span class="nav-text">主键</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#超键"><span class="nav-number">4.2.</span> <span class="nav-text">超键</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#候选键"><span class="nav-number">4.3.</span> <span class="nav-text">候选键</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#外键"><span class="nav-number">4.4.</span> <span class="nav-text">外键</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#为什么要使用自增列作为主键？"><span class="nav-number">4.5.</span> <span class="nav-text">为什么要使用自增列作为主键？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#索引是什么"><span class="nav-number">4.6.</span> <span class="nav-text">索引是什么</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#表空间、段、区、数据页"><span class="nav-number">4.6.1.</span> <span class="nav-text">表空间、段、区、数据页</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#索引的优点"><span class="nav-number">4.6.2.</span> <span class="nav-text">索引的优点</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#索引的缺点"><span class="nav-number">4.6.3.</span> <span class="nav-text">索引的缺点</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#注意点"><span class="nav-number">4.6.4.</span> <span class="nav-text">注意点</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#常见索引类型"><span class="nav-number">4.7.</span> <span class="nav-text">常见索引类型</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#全局索引-FULLTEXT"><span class="nav-number">4.7.1.</span> <span class="nav-text">全局索引(FULLTEXT)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#哈希索引-HASH"><span class="nav-number">4.7.2.</span> <span class="nav-text">哈希索引(HASH)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#B-Tree索引"><span class="nav-number">4.7.3.</span> <span class="nav-text">B-Tree索引</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#R-Tree索引"><span class="nav-number">4.7.4.</span> <span class="nav-text">R-Tree索引</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B-Tree与Hash索引的区别"><span class="nav-number">4.8.</span> <span class="nav-text">B+Tree与Hash索引的区别</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#InnoDB存储引擎的B-树索引"><span class="nav-number">4.9.</span> <span class="nav-text">InnoDB存储引擎的B+树索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#索引失效"><span class="nav-number">4.10.</span> <span class="nav-text">索引失效</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#覆盖索引和回表"><span class="nav-number">4.11.</span> <span class="nav-text">覆盖索引和回表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用索引查询一定能提高查询的性能吗？"><span class="nav-number">4.12.</span> <span class="nav-text">使用索引查询一定能提高查询的性能吗？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事务"><span class="nav-number">5.</span> <span class="nav-text">事务</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#MySQL-事务四大特性"><span class="nav-number">5.1.</span> <span class="nav-text">MySQL 事务四大特性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#事物隔离"><span class="nav-number">5.2.</span> <span class="nav-text">事物隔离</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#并发事务的问题"><span class="nav-number">5.3.</span> <span class="nav-text">并发事务的问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#脏读"><span class="nav-number">5.4.</span> <span class="nav-text">脏读</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#不可重复读"><span class="nav-number">5.5.</span> <span class="nav-text">不可重复读</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#幻读"><span class="nav-number">5.6.</span> <span class="nav-text">幻读</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#幻读和不可重复读的区别"><span class="nav-number">5.7.</span> <span class="nav-text">幻读和不可重复读的区别</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#锁"><span class="nav-number">6.</span> <span class="nav-text">锁</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#理解下锁几种维度"><span class="nav-number">6.1.</span> <span class="nav-text">理解下锁几种维度</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#类型维度"><span class="nav-number">6.1.1.</span> <span class="nav-text">类型维度</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#锁的粒度（粒度维度）"><span class="nav-number">6.1.2.</span> <span class="nav-text">锁的粒度（粒度维度）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#锁的算法（算法维度）"><span class="nav-number">6.1.3.</span> <span class="nav-text">锁的算法（算法维度）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#乐观锁与悲观锁"><span class="nav-number">6.1.4.</span> <span class="nav-text">乐观锁与悲观锁</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#InnoDB引擎的行锁是通过加在什么上完成-或称实现-的？"><span class="nav-number">6.2.</span> <span class="nav-text">InnoDB引擎的行锁是通过加在什么上完成(或称实现)的？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#InnDb架构"><span class="nav-number">7.</span> <span class="nav-text">InnDb架构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Buffer-Pool"><span class="nav-number">7.1.</span> <span class="nav-text">Buffer Pool</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Mysql-log"><span class="nav-number">7.2.</span> <span class="nav-text">Mysql log</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#binlog"><span class="nav-number">7.2.1.</span> <span class="nav-text">binlog</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#redo-Log"><span class="nav-number">7.2.2.</span> <span class="nav-text">redo Log</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#undo-Log"><span class="nav-number">7.2.3.</span> <span class="nav-text">undo Log</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#binlog的几种日志录入格式以及区别"><span class="nav-number">7.3.</span> <span class="nav-text">binlog的几种日志录入格式以及区别</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Statement"><span class="nav-number">7.3.1.</span> <span class="nav-text">Statement</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Row"><span class="nav-number">7.3.2.</span> <span class="nav-text">Row</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MVCC"><span class="nav-number">8.</span> <span class="nav-text">MVCC</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#快照读与当前读区别"><span class="nav-number">8.1.</span> <span class="nav-text">快照读与当前读区别</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#InnoDB的MVCC的机制"><span class="nav-number">8.2.</span> <span class="nav-text">InnoDB的MVCC的机制</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SQL语句的执行顺序"><span class="nav-number">9.</span> <span class="nav-text">SQL语句的执行顺序</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#FROM"><span class="nav-number">9.1.</span> <span class="nav-text">FROM</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ON"><span class="nav-number">9.2.</span> <span class="nav-text">ON</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#JOIN"><span class="nav-number">9.3.</span> <span class="nav-text">JOIN</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#WHERE"><span class="nav-number">9.4.</span> <span class="nav-text">WHERE</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#GROUP-BY"><span class="nav-number">9.5.</span> <span class="nav-text">GROUP BY</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HAVING"><span class="nav-number">9.6.</span> <span class="nav-text">HAVING</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SELECT"><span class="nav-number">9.7.</span> <span class="nav-text">SELECT</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DISTINCT"><span class="nav-number">9.8.</span> <span class="nav-text">DISTINCT</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ORDER-BY"><span class="nav-number">9.9.</span> <span class="nav-text">ORDER BY</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#ORDER-BY注意事项"><span class="nav-number">9.9.1.</span> <span class="nav-text">ORDER BY注意事项</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查询优化-1"><span class="nav-number">10.</span> <span class="nav-text">查询优化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#SQL优化explain"><span class="nav-number">10.1.</span> <span class="nav-text">SQL优化explain</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#innodb的读写参数优化"><span class="nav-number">10.2.</span> <span class="nav-text">innodb的读写参数优化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SQL-优化的经验"><span class="nav-number">10.3.</span> <span class="nav-text">SQL 优化的经验</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#视图"><span class="nav-number">11.</span> <span class="nav-text">视图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#存储过程"><span class="nav-number">12.</span> <span class="nav-text">存储过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Mysql-Master-slave-的原理"><span class="nav-number">13.</span> <span class="nav-text">Mysql Master slave 的原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#备份"><span class="nav-number">14.</span> <span class="nav-text">备份</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#备份计划，mysqldump以及xtranbackup的实现原理"><span class="nav-number">14.1.</span> <span class="nav-text">备份计划，mysqldump以及xtranbackup的实现原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#mysqldump中备份出来的sql，如果我想sql文件中，一行只有一个insert…-value-的话，怎么办？如果备份需要带上master的复制点信息怎么办？"><span class="nav-number">14.2.</span> <span class="nav-text">mysqldump中备份出来的sql，如果我想sql文件中，一行只有一个insert….value()的话，怎么办？如果备份需要带上master的复制点信息怎么办？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开放性问题"><span class="nav-number">15.</span> <span class="nav-text">开放性问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#大表连表查询"><span class="nav-number">15.1.</span> <span class="nav-text">大表连表查询</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据库的三范式是什么"><span class="nav-number">15.2.</span> <span class="nav-text">数据库的三范式是什么</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Mysql-大小写问题"><span class="nav-number">15.3.</span> <span class="nav-text">Mysql 大小写问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DDL设计数据表的原则"><span class="nav-number">15.4.</span> <span class="nav-text">DDL设计数据表的原则</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#varchar与char的区别以及varchar-50-中的50代表的涵义"><span class="nav-number">15.5.</span> <span class="nav-text">varchar与char的区别以及varchar(50)中的50代表的涵义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#表中有大字段X-例如：text类型-，且字段X不会经常更新，以读为为主。如何拆分"><span class="nav-number">15.6.</span> <span class="nav-text">表中有大字段X(例如：text类型)，且字段X不会经常更新，以读为为主。如何拆分</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#什么是临时表，何时删除临时表"><span class="nav-number">15.7.</span> <span class="nav-text">什么是临时表，何时删除临时表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Exists与in"><span class="nav-number">15.8.</span> <span class="nav-text">Exists与in</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#测试环境打开profiling"><span class="nav-number">15.9.</span> <span class="nav-text">测试环境打开profiling</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#去除重复行"><span class="nav-number">15.10.</span> <span class="nav-text">去除重复行</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#drop、delete与truncate"><span class="nav-number">15.11.</span> <span class="nav-text">drop、delete与truncate</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#in-not-in-exists-not-exists-它们有什么区别，效率如何？"><span class="nav-number">15.12.</span> <span class="nav-text">in, not in , exists , not exists 它们有什么区别，效率如何？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#你是否做过主从一致性校验，如果有，怎么做的，如果没有，你打算怎么做？"><span class="nav-number">15.13.</span> <span class="nav-text">你是否做过主从一致性校验，如果有，怎么做的，如果没有，你打算怎么做？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#你们数据库是否支持emoji表情，如果不支持，如何操作？"><span class="nav-number">15.14.</span> <span class="nav-text">你们数据库是否支持emoji表情，如果不支持，如何操作？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Too-many-connections"><span class="nav-number">15.15.</span> <span class="nav-text">Too many connections</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MySQL数据库cpu飙升到100-的话怎么处理？"><span class="nav-number">15.16.</span> <span class="nav-text">MySQL数据库cpu飙升到100%的话怎么处理？</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文献"><span class="nav-number"></span> <span class="nav-text">参考文献</span></a></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Mysql基础架构图"><span class="nav-number">1.</span> <span class="nav-text">Mysql基础架构图</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#简单介绍上图相关模块功能"><span class="nav-number">1.1.</span> <span class="nav-text">简单介绍上图相关模块功能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#连接器"><span class="nav-number">1.2.</span> <span class="nav-text">连接器</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#半双工"><span class="nav-number">1.2.1.</span> <span class="nav-text">半双工</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#长连接与短连接"><span class="nav-number">1.2.2.</span> <span class="nav-text">长连接与短连接</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查询缓存"><span class="nav-number">1.3.</span> <span class="nav-text">查询缓存</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#语法解析"><span class="nav-number">1.4.</span> <span class="nav-text">语法解析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查询优化"><span class="nav-number">1.5.</span> <span class="nav-text">查询优化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#执行器"><span class="nav-number">1.6.</span> <span class="nav-text">执行器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#存储引擎"><span class="nav-number">1.7.</span> <span class="nav-text">存储引擎</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#innodb特性"><span class="nav-number">2.</span> <span class="nav-text">innodb特性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#myisam与innodb"><span class="nav-number">3.</span> <span class="nav-text">myisam与innodb</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#索引"><span class="nav-number">4.</span> <span class="nav-text">索引</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#主键"><span class="nav-number">4.1.</span> <span class="nav-text">主键</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#超键"><span class="nav-number">4.2.</span> <span class="nav-text">超键</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#候选键"><span class="nav-number">4.3.</span> <span class="nav-text">候选键</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#外键"><span class="nav-number">4.4.</span> <span class="nav-text">外键</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#为什么要使用自增列作为主键？"><span class="nav-number">4.5.</span> <span class="nav-text">为什么要使用自增列作为主键？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#索引是什么"><span class="nav-number">4.6.</span> <span class="nav-text">索引是什么</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#表空间、段、区、数据页"><span class="nav-number">4.6.1.</span> <span class="nav-text">表空间、段、区、数据页</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#索引的优点"><span class="nav-number">4.6.2.</span> <span class="nav-text">索引的优点</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#索引的缺点"><span class="nav-number">4.6.3.</span> <span class="nav-text">索引的缺点</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#注意点"><span class="nav-number">4.6.4.</span> <span class="nav-text">注意点</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#常见索引类型"><span class="nav-number">4.7.</span> <span class="nav-text">常见索引类型</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#全局索引-FULLTEXT"><span class="nav-number">4.7.1.</span> <span class="nav-text">全局索引(FULLTEXT)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#哈希索引-HASH"><span class="nav-number">4.7.2.</span> <span class="nav-text">哈希索引(HASH)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#B-Tree索引"><span class="nav-number">4.7.3.</span> <span class="nav-text">B-Tree索引</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#R-Tree索引"><span class="nav-number">4.7.4.</span> <span class="nav-text">R-Tree索引</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B-Tree与Hash索引的区别"><span class="nav-number">4.8.</span> <span class="nav-text">B+Tree与Hash索引的区别</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#InnoDB存储引擎的B-树索引"><span class="nav-number">4.9.</span> <span class="nav-text">InnoDB存储引擎的B+树索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#索引失效"><span class="nav-number">4.10.</span> <span class="nav-text">索引失效</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#覆盖索引和回表"><span class="nav-number">4.11.</span> <span class="nav-text">覆盖索引和回表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#索引下推"><span class="nav-number">4.12.</span> <span class="nav-text">索引下推</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用索引查询一定能提高查询的性能吗？"><span class="nav-number">4.13.</span> <span class="nav-text">使用索引查询一定能提高查询的性能吗？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事务"><span class="nav-number">5.</span> <span class="nav-text">事务</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ACID"><span class="nav-number">5.1.</span> <span class="nav-text">ACID</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#原子性-Atomicity"><span class="nav-number">5.1.1.</span> <span class="nav-text">原子性(Atomicity)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#一致性-Consistency"><span class="nav-number">5.1.2.</span> <span class="nav-text">一致性(Consistency)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#持久性-Durability"><span class="nav-number">5.1.3.</span> <span class="nav-text">持久性(Durability)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#隔离性-Isolation"><span class="nav-number">5.1.4.</span> <span class="nav-text">隔离性(Isolation)</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#隔离性四个特性"><span class="nav-number">5.2.</span> <span class="nav-text">隔离性四个特性</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#读未提交"><span class="nav-number">5.2.1.</span> <span class="nav-text">读未提交</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#读提交"><span class="nav-number">5.2.2.</span> <span class="nav-text">读提交</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#可重复读-（默认隔离级别）"><span class="nav-number">5.2.3.</span> <span class="nav-text">可重复读 （默认隔离级别）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#串行化"><span class="nav-number">5.2.4.</span> <span class="nav-text">串行化</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#并发事务的问题"><span class="nav-number">5.2.5.</span> <span class="nav-text">并发事务的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#脏读"><span class="nav-number">5.2.5.1.</span> <span class="nav-text">脏读</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#不可重复读"><span class="nav-number">5.2.5.2.</span> <span class="nav-text">不可重复读</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#幻读"><span class="nav-number">5.2.5.3.</span> <span class="nav-text">幻读</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#幻读和不可重复读的区别s"><span class="nav-number">5.2.5.4.</span> <span class="nav-text">幻读和不可重复读的区别s</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#锁"><span class="nav-number">6.</span> <span class="nav-text">锁</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#理解下锁几种维度"><span class="nav-number">6.1.</span> <span class="nav-text">理解下锁几种维度</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#类型维度"><span class="nav-number">6.1.1.</span> <span class="nav-text">类型维度</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#锁的粒度（粒度维度）"><span class="nav-number">6.1.2.</span> <span class="nav-text">锁的粒度（粒度维度）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#锁的算法（算法维度）"><span class="nav-number">6.1.3.</span> <span class="nav-text">锁的算法（算法维度）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#乐观锁与悲观锁"><span class="nav-number">6.1.4.</span> <span class="nav-text">乐观锁与悲观锁</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#InnoDB引擎的行锁是通过加在什么上完成-或称实现-的？"><span class="nav-number">6.2.</span> <span class="nav-text">InnoDB引擎的行锁是通过加在什么上完成(或称实现)的？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#InnDb架构"><span class="nav-number">7.</span> <span class="nav-text">InnDb架构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Buffer-Pool"><span class="nav-number">7.1.</span> <span class="nav-text">Buffer Pool</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Mysql-log"><span class="nav-number">7.2.</span> <span class="nav-text">Mysql log</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#binlog"><span class="nav-number">7.2.1.</span> <span class="nav-text">binlog</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#刷盘机制"><span class="nav-number">7.2.1.1.</span> <span class="nav-text">刷盘机制</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#binlog日志格式"><span class="nav-number">7.2.1.2.</span> <span class="nav-text">binlog日志格式</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2PC两阶段提交"><span class="nav-number">7.2.1.3.</span> <span class="nav-text">2PC两阶段提交</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#redo-Log"><span class="nav-number">7.2.2.</span> <span class="nav-text">redo Log</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#保持一致性"><span class="nav-number">7.2.2.1.</span> <span class="nav-text">保持一致性</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#undo-Log"><span class="nav-number">7.2.3.</span> <span class="nav-text">undo Log</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#binlog的几种日志录入格式以及区别"><span class="nav-number">7.3.</span> <span class="nav-text">binlog的几种日志录入格式以及区别</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Statement"><span class="nav-number">7.3.1.</span> <span class="nav-text">Statement</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Row"><span class="nav-number">7.3.2.</span> <span class="nav-text">Row</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MVCC"><span class="nav-number">8.</span> <span class="nav-text">MVCC</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#隐藏字段"><span class="nav-number">8.1.</span> <span class="nav-text">隐藏字段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#快照读与当前读区别"><span class="nav-number">8.2.</span> <span class="nav-text">快照读与当前读区别</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#InnoDB的MVCC的机制"><span class="nav-number">8.3.</span> <span class="nav-text">InnoDB的MVCC的机制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MVVC如何查询记录"><span class="nav-number">8.4.</span> <span class="nav-text">MVVC如何查询记录</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SQL语句的执行顺序"><span class="nav-number">9.</span> <span class="nav-text">SQL语句的执行顺序</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#FROM"><span class="nav-number">9.1.</span> <span class="nav-text">FROM</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ON"><span class="nav-number">9.2.</span> <span class="nav-text">ON</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#JOIN"><span class="nav-number">9.3.</span> <span class="nav-text">JOIN</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#WHERE"><span class="nav-number">9.4.</span> <span class="nav-text">WHERE</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#GROUP-BY"><span class="nav-number">9.5.</span> <span class="nav-text">GROUP BY</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HAVING"><span class="nav-number">9.6.</span> <span class="nav-text">HAVING</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SELECT"><span class="nav-number">9.7.</span> <span class="nav-text">SELECT</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DISTINCT"><span class="nav-number">9.8.</span> <span class="nav-text">DISTINCT</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ORDER-BY"><span class="nav-number">9.9.</span> <span class="nav-text">ORDER BY</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#ORDER-BY注意事项"><span class="nav-number">9.9.1.</span> <span class="nav-text">ORDER BY注意事项</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查询优化-1"><span class="nav-number">10.</span> <span class="nav-text">查询优化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#SQL优化explain"><span class="nav-number">10.1.</span> <span class="nav-text">SQL优化explain</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#innodb的读写参数优化"><span class="nav-number">10.2.</span> <span class="nav-text">innodb的读写参数优化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SQL-优化的经验"><span class="nav-number">10.3.</span> <span class="nav-text">SQL 优化的经验</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#视图"><span class="nav-number">11.</span> <span class="nav-text">视图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#存储过程"><span class="nav-number">12.</span> <span class="nav-text">存储过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Mysql-Master-slave-的原理"><span class="nav-number">13.</span> <span class="nav-text">Mysql Master slave 的原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#备份"><span class="nav-number">14.</span> <span class="nav-text">备份</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#备份计划，mysqldump以及xtranbackup的实现原理"><span class="nav-number">14.1.</span> <span class="nav-text">备份计划，mysqldump以及xtranbackup的实现原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#mysqldump中备份出来的sql，如果我想sql文件中，一行只有一个insert…-value-的话，怎么办？如果备份需要带上master的复制点信息怎么办？"><span class="nav-number">14.2.</span> <span class="nav-text">mysqldump中备份出来的sql，如果我想sql文件中，一行只有一个insert….value()的话，怎么办？如果备份需要带上master的复制点信息怎么办？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开放性问题"><span class="nav-number">15.</span> <span class="nav-text">开放性问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#大表连表查询"><span class="nav-number">15.1.</span> <span class="nav-text">大表连表查询</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据库的三范式是什么"><span class="nav-number">15.2.</span> <span class="nav-text">数据库的三范式是什么</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Mysql-大小写问题"><span class="nav-number">15.3.</span> <span class="nav-text">Mysql 大小写问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DDL设计数据表的原则"><span class="nav-number">15.4.</span> <span class="nav-text">DDL设计数据表的原则</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#varchar与char的区别以及varchar-50-中的50代表的涵义"><span class="nav-number">15.5.</span> <span class="nav-text">varchar与char的区别以及varchar(50)中的50代表的涵义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#表中有大字段X-例如：text类型-，且字段X不会经常更新，以读为为主。如何拆分"><span class="nav-number">15.6.</span> <span class="nav-text">表中有大字段X(例如：text类型)，且字段X不会经常更新，以读为为主。如何拆分</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#什么是临时表，何时删除临时表"><span class="nav-number">15.7.</span> <span class="nav-text">什么是临时表，何时删除临时表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Exists与in"><span class="nav-number">15.8.</span> <span class="nav-text">Exists与in</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#测试环境打开profiling"><span class="nav-number">15.9.</span> <span class="nav-text">测试环境打开profiling</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#去除重复行"><span class="nav-number">15.10.</span> <span class="nav-text">去除重复行</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#drop、delete与truncate"><span class="nav-number">15.11.</span> <span class="nav-text">drop、delete与truncate</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#in-not-in-exists-not-exists-它们有什么区别，效率如何？"><span class="nav-number">15.12.</span> <span class="nav-text">in, not in , exists , not exists 它们有什么区别，效率如何？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#你是否做过主从一致性校验，如果有，怎么做的，如果没有，你打算怎么做？"><span class="nav-number">15.13.</span> <span class="nav-text">你是否做过主从一致性校验，如果有，怎么做的，如果没有，你打算怎么做？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#你们数据库是否支持emoji表情，如果不支持，如何操作？"><span class="nav-number">15.14.</span> <span class="nav-text">你们数据库是否支持emoji表情，如果不支持，如何操作？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Too-many-connections"><span class="nav-number">15.15.</span> <span class="nav-text">Too many connections</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MySQL数据库cpu飙升到100-的话怎么处理？"><span class="nav-number">15.16.</span> <span class="nav-text">MySQL数据库cpu飙升到100%的话怎么处理？</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文献"><span class="nav-number"></span> <span class="nav-text">参考文献</span></a></div>
       </div>
       <!--/noindex-->
 
