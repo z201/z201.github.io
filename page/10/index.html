@@ -1307,7 +1307,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-10-18 12:07:37" itemprop="dateModified" datetime="2021-10-18T12:07:37+08:00">2021-10-18</time>
+                <time title="Modified: 2021-10-18 12:35:48" itemprop="dateModified" datetime="2021-10-18T12:35:48+08:00">2021-10-18</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1474,6 +1474,10 @@
 </ul>
 </li>
 </ul>
+<h4 id="Redis启动持久化文件加载机制"><a href="#Redis启动持久化文件加载机制" class="headerlink" title="Redis启动持久化文件加载机制"></a>Redis启动持久化文件加载机制</h4><blockquote>
+<p>Redis是基于内存的非关系型K-V数据库，它是基于内存的，如果Redis服务器挂了，数据就会丢失。为了避免数据丢失了，Redis提供了<strong>持久化</strong>，即把数据保存到磁盘。</p>
+</blockquote>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211018123529.png"></p>
 <h3 id="缓存带来的问题"><a href="#缓存带来的问题" class="headerlink" title="缓存带来的问题"></a>缓存带来的问题</h3><h4 id="缓存雪崩"><a href="#缓存雪崩" class="headerlink" title="缓存雪崩"></a>缓存雪崩</h4><ul>
 <li>我们可以简单的理解为：由于原有缓存失效，新缓存未到期间(例如：我们设置缓存时采用了相同的过期时间，在同一时刻出现大面积的缓存过期)，所有原本应该访问缓存的请求都去查询数据库了，而对数据库CPU和内存造成巨大压力，严重的会造成数据库宕机。从而形成一系列连锁反应，造成整个系统崩溃。</li>
 <li><strong>解决办法：</strong><ul>
@@ -1633,29 +1637,23 @@
 <p>当Redis内存快耗尽时，Redis会启动内存淘汰机制，将部分key清掉以腾出内存。</p>
 </blockquote>
 <ul>
-<li><p>主要有5种处理机制</p>
-<ul>
+<li>主要有5种处理机制<ul>
 <li>LRU 最近最少使用</li>
 <li>LFU 最近使用频率低</li>
-<li>RanDom 随机淘宝</li>
+<li>Random 随机淘汰</li>
 <li>TTL 过期时间</li>
 <li>No-Enviction 驱逐（什么都不做直接返回错误）</li>
 </ul>
 </li>
-<li><p><strong>volatile-lru</strong>：从已设置过期时间的数据集（server.db[i].expires）中挑选最近最少使用的数据淘汰</p>
-</li>
-<li><p><strong>volatile-ttl</strong>：从已设置过期时间的数据集（server.db[i].expires）中挑选将要过期的数据淘汰</p>
-</li>
-<li><p><strong>volatile-random</strong>：从已设置过期时间的数据集（server.db[i].expires）中任意选择数据淘汰</p>
-</li>
-<li><p><strong>allkeys-lru</strong>：从数据集（server.db[i].dict）中挑选最近最少使用的数据淘汰</p>
-</li>
-<li><p><strong>allkeys-random</strong>：从数据集（server.db[i].dict）中任意选择数据淘汰</p>
-</li>
-<li><p><strong>no-enviction</strong>（驱逐）：禁止驱逐数据，新写入操作会报错</p>
-</li>
-<li><p>如果没有设置 expire 的key, 不满足先决条件(prerequisites); 那么 volatile-lru, volatile-random 和volatile-ttl 策略的行为, 和 noeviction(不删除) 基本上一致。</p>
-</li>
+<li><strong>volatile-lru</strong>：从已设置过期时间的数据集（server.db[i].expires）中挑选最近最少使用的数据淘汰。</li>
+<li><strong>volatile-ttl</strong>：从已设置过期时间的数据集（server.db[i].expires）中挑选将要过期的数据淘汰。</li>
+<li><strong>volatile-random</strong>：从已设置过期时间的数据集（server.db[i].expires）中任意选择数据淘汰。</li>
+<li><strong>volatile-lfu</strong>：4.0版本新增，当内存不足以容纳新写入数据时，在过期的key中，使用LFU算法进行删除key。</li>
+<li><strong>allkeys-lru</strong>：从数据集（server.db[i].dict）中挑选最近最少使用的数据淘汰。</li>
+<li><strong>allkeys-lfu</strong>：4.0版本新增，当内存不足以容纳新写入数据时，从所有key中使用LFU算法进行淘汰。</li>
+<li><strong>allkeys-random</strong>：从数据集（server.db[i].dict）中任意选择数据淘汰。</li>
+<li><strong>no-enviction</strong>（驱逐）：禁止驱逐数据，新写入操作会报错。</li>
+<li>如果没有设置 expire 的key, 不满足先决条件(prerequisites); 那么 volatile-lru, volatile-random 和volatile-ttl 策略的行为, 和 noeviction(不删除) 基本上一致。</li>
 </ul>
 <h4 id="Redis-的过期策略和内存淘汰机制有什么区别？"><a href="#Redis-的过期策略和内存淘汰机制有什么区别？" class="headerlink" title="Redis 的过期策略和内存淘汰机制有什么区别？"></a>Redis 的过期策略和内存淘汰机制有什么区别？</h4><ul>
 <li><p>新增 Redis 缓存时可以设置缓存的过期时间，该时间保证了数据在规定的时间内失效。通过这种方式可以完成某些场景的业务开发。对对于已经过期的数据，Redis 将使用两种策略来删除这些过期键，它们分别是惰性删除和定期删除。</p>
