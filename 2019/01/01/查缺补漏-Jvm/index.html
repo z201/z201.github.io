@@ -30,7 +30,7 @@
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Java%E5%A0%86%E7%9A%84%E5%88%92%E5%88%86.png">
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/ClassLoading.png">
 <meta property="article:published_time" content="2018-12-31T16:00:01.000Z">
-<meta property="article:modified_time" content="2021-10-14T05:37:47.636Z">
+<meta property="article:modified_time" content="2021-10-15T06:12:48.768Z">
 <meta property="article:author" content="胖枫叶">
 <meta property="article:tag" content="Jvm">
 <meta property="article:tag" content="Java">
@@ -277,7 +277,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-10-14 13:37:47" itemprop="dateModified" datetime="2021-10-14T13:37:47+08:00">2021-10-14</time>
+                <time title="Modified: 2021-10-15 14:12:48" itemprop="dateModified" datetime="2021-10-15T14:12:48+08:00">2021-10-15</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -324,9 +324,14 @@
 </li>
 </ul>
 <h4 id="方法区"><a href="#方法区" class="headerlink" title="方法区"></a>方法区</h4><ul>
-<li>方法区（Method Area） 也被称为非堆区，用于和“Java 堆”的概念进行区分，它也是线程共享的内存区域，用于存储已经被 JVM 加载的类型信息、常量、静态变量、代码缓存等数据。</li>
+<li>方法区（Method Area） 也被称为非堆区，用于和“Java 堆”的概念进行区分，它也是线程共享的内存区域，用于存储已经被 JVM 加载的类型信息、常量、静态变量、代码缓存等数据。    </li>
 </ul>
-<h4 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h4><ul>
+<h5 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h5><ul>
+<li>程序计数器（Program Counter Register） 线程独有一块很小的内存区域，保存当前线程所执行字节码的位置，包括正在执行的指令、跳转、分支、循环、异常处理等。</li>
+</ul>
+<h5 id="虚拟机栈"><a href="#虚拟机栈" class="headerlink" title="虚拟机栈"></a>虚拟机栈</h5><ul>
+<li><p>虚拟机栈也叫 Java 虚拟机栈（Java Virtual Machine Stack），和程序计数器相同它也是线程独享的，用来描述 Java 方法的执行，在每个方法被执行时就会同步创建一个栈帧，用来存储局部变量表、操作栈、动态链接、方法出口等信息。当调用方法时执行入栈，而方法返回时执行出栈。</p>
+<ul>
 <li><p><strong>线程私有区域，每一个线程都有独享一个虚拟机栈，因此这是线程安全的区域。</strong></p>
 </li>
 <li><p>存放基本数据类型以及对象的引用。</p>
@@ -335,15 +340,11 @@
 </li>
 <li><p>每一个栈帧又可以划分为<strong>局部变量表、操作数栈、动态链接、方法出口</strong>以及额外的附加信息。</p>
 <ul>
-<li>这个区域可能有两种异常：如果线程请求的栈深度大于虚拟机所允许的深度，将抛出StackOverflowError异常（通常是递归导致的）；JVM动态扩展时无法申请到足够内存则抛出OutOfMemoryError异常。    </li>
+<li>这个区域可能有两种异常：如果线程请求的栈深度大于虚拟机所允许的深度，将抛出StackOverflowError异常（通常是递归导致的）；JVM动态扩展时无法申请到足够内存则抛出OutOfMemoryError异常。</li>
 </ul>
 </li>
 </ul>
-<h5 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h5><ul>
-<li>程序计数器（Program Counter Register） 线程独有一块很小的内存区域，保存当前线程所执行字节码的位置，包括正在执行的指令、跳转、分支、循环、异常处理等。</li>
-</ul>
-<h5 id="虚拟机栈"><a href="#虚拟机栈" class="headerlink" title="虚拟机栈"></a>虚拟机栈</h5><ul>
-<li>虚拟机栈也叫 Java 虚拟机栈（Java Virtual Machine Stack），和程序计数器相同它也是线程独享的，用来描述 Java 方法的执行，在每个方法被执行时就会同步创建一个栈帧，用来存储局部变量表、操作栈、动态链接、方法出口等信息。当调用方法时执行入栈，而方法返回时执行出栈。</li>
+</li>
 </ul>
 <h5 id="本地方法栈"><a href="#本地方法栈" class="headerlink" title="本地方法栈"></a>本地方法栈</h5><ul>
 <li><p>本地方法栈（Native Method Stacks）与虚拟机栈类似，它是线程独享的，并且作用也和虚拟机栈类似。只不过虚拟机栈是为虚拟机中执行的 Java 方法服务的，而本地方法栈则是为虚拟机使用到的本地（Native）方法服务。</p>
@@ -414,7 +415,7 @@
 <p>虚拟机设计团队把加载动作放到 JVM 外部实现，以便让应用程序决定如何获取所需的类，JVM 提供了 3 种类加载器：</p>
 </blockquote>
 <ul>
-<li>BootstrapClassloader</li>
+<li>BootstrapClassloader &lt;- ExtClassLoader &lt;- AppClassLoader</li>
 </ul>
 <h3 id="小问题"><a href="#小问题" class="headerlink" title="小问题"></a>小问题</h3><h4 id="你将如何使用thread-dump？你将如何分析Thread-dump？"><a href="#你将如何使用thread-dump？你将如何分析Thread-dump？" class="headerlink" title="你将如何使用thread dump？你将如何分析Thread dump？"></a>你将如何使用thread dump？你将如何分析Thread dump？</h4><ul>
 <li>线程转储是一个JVM活动线程的列表，它对于分析系统瓶颈和死锁非常有用。有很多方法可以获取线程转储——使用Profiler，Kill -3命令，jstack工具等等。我更喜欢jstack工具，因为它容易使用并且是JDK自带的。由于它是一个基于终端的工具，所以我们可以编写一些脚本去定时的产生线程转储以待分析。</li>
@@ -424,7 +425,7 @@
 <li>堆是所有线程共享的⼀⽚公⽤内存区域,对象都在堆⾥创建，为了提升效率线程会从堆中弄⼀个缓存到⾃⼰的栈，如果多个线程使⽤该变量就可能引发问题，这时volatile 变量就可以发挥作⽤了，它要求线程从主存中读取变量的值。</li>
 </ul>
 <h4 id="内存泄漏和内存溢出"><a href="#内存泄漏和内存溢出" class="headerlink" title="内存泄漏和内存溢出"></a>内存泄漏和内存溢出</h4><ul>
-<li>溢出是指创建太多对象导致内存空间不足，泄漏是无用对象没有回收</li>
+<li>溢出是指创建太多对象导致内存空间不足，泄漏是无用对象没有回收。</li>
 </ul>
 
     </div>
@@ -527,7 +528,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#JVM的内存布局"><span class="nav-number">1.</span> <span class="nav-text">JVM的内存布局</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#堆"><span class="nav-number">1.1.</span> <span class="nav-text">堆</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#方法区"><span class="nav-number">1.2.</span> <span class="nav-text">方法区</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#栈"><span class="nav-number">1.3.</span> <span class="nav-text">栈</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#程序计数器"><span class="nav-number">1.3.1.</span> <span class="nav-text">程序计数器</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#虚拟机栈"><span class="nav-number">1.3.2.</span> <span class="nav-text">虚拟机栈</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#本地方法栈"><span class="nav-number">1.3.3.</span> <span class="nav-text">本地方法栈</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类的加载机制"><span class="nav-number">2.</span> <span class="nav-text">类的加载机制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#加载阶段"><span class="nav-number">2.1.</span> <span class="nav-text">加载阶段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#验证阶段"><span class="nav-number">2.2.</span> <span class="nav-text">验证阶段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#准备阶段"><span class="nav-number">2.3.</span> <span class="nav-text">准备阶段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#解析阶段"><span class="nav-number">2.4.</span> <span class="nav-text">解析阶段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#初始化"><span class="nav-number">2.5.</span> <span class="nav-text">初始化</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类加载器"><span class="nav-number">3.</span> <span class="nav-text">类加载器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#小问题"><span class="nav-number">4.</span> <span class="nav-text">小问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#你将如何使用thread-dump？你将如何分析Thread-dump？"><span class="nav-number">4.1.</span> <span class="nav-text">你将如何使用thread dump？你将如何分析Thread dump？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Java中堆和栈有什么不同"><span class="nav-number">4.2.</span> <span class="nav-text">Java中堆和栈有什么不同?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#内存泄漏和内存溢出"><span class="nav-number">4.3.</span> <span class="nav-text">内存泄漏和内存溢出</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#JVM的内存布局"><span class="nav-number">1.</span> <span class="nav-text">JVM的内存布局</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#堆"><span class="nav-number">1.1.</span> <span class="nav-text">堆</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#方法区"><span class="nav-number">1.2.</span> <span class="nav-text">方法区</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#程序计数器"><span class="nav-number">1.2.1.</span> <span class="nav-text">程序计数器</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#虚拟机栈"><span class="nav-number">1.2.2.</span> <span class="nav-text">虚拟机栈</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#本地方法栈"><span class="nav-number">1.2.3.</span> <span class="nav-text">本地方法栈</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类的加载机制"><span class="nav-number">2.</span> <span class="nav-text">类的加载机制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#加载阶段"><span class="nav-number">2.1.</span> <span class="nav-text">加载阶段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#验证阶段"><span class="nav-number">2.2.</span> <span class="nav-text">验证阶段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#准备阶段"><span class="nav-number">2.3.</span> <span class="nav-text">准备阶段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#解析阶段"><span class="nav-number">2.4.</span> <span class="nav-text">解析阶段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#初始化"><span class="nav-number">2.5.</span> <span class="nav-text">初始化</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类加载器"><span class="nav-number">3.</span> <span class="nav-text">类加载器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#小问题"><span class="nav-number">4.</span> <span class="nav-text">小问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#你将如何使用thread-dump？你将如何分析Thread-dump？"><span class="nav-number">4.1.</span> <span class="nav-text">你将如何使用thread dump？你将如何分析Thread dump？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Java中堆和栈有什么不同"><span class="nav-number">4.2.</span> <span class="nav-text">Java中堆和栈有什么不同?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#内存泄漏和内存溢出"><span class="nav-number">4.3.</span> <span class="nav-text">内存泄漏和内存溢出</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
