@@ -239,376 +239,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/07/16/%E5%AE%9E%E8%B7%B5-eureka%E9%92%89%E9%92%89%E5%91%8A%E8%AD%A6%E9%80%9A%E7%9F%A5/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/16/%E5%AE%9E%E8%B7%B5-eureka%E9%92%89%E9%92%89%E5%91%8A%E8%AD%A6%E9%80%9A%E7%9F%A5/" class="post-title-link" itemprop="url">实践-eureka钉钉告警通知</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-07-16 17:04:36" itemprop="dateCreated datePublished" datetime="2020-07-16T17:04:36+08:00">2020-07-16</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-26 22:24:02" itemprop="dateModified" datetime="2020-08-26T22:24:02+08:00">2020-08-26</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本篇幅只是回顾使用eureka的时候如何钉钉告警。</p>
-</blockquote>
-<h3 id="eureka如何快速实现钉钉告警"><a href="#eureka如何快速实现钉钉告警" class="headerlink" title="eureka如何快速实现钉钉告警"></a>eureka如何快速实现钉钉告警</h3><p><a href="https://z201.cn/2020/07/15/%E5%AE%9E%E8%B7%B5-spring-boot%E5%BC%82%E5%B8%B8%E9%92%89%E9%92%89%E9%80%9A%E7%9F%A5/" target="_blank" rel="noopener">实践-spring-boot异常钉钉通知</a></p>
-<p>​        上面实践了springboot全局异常钉钉告警机制。这篇主要回顾eureka监听机制钉钉告警。在日常维护工作中，如果出现网络抖动或者其它问题导致应用不可用，需要第一件发出告警提醒相关人员尽快处理。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">eureka -&gt;&gt; eventListener : event</span><br><span class="line">eventListener -&gt;&gt;  钉钉 : alarmNoticeSend</span><br><span class="line">钉钉 -&gt;&gt; 开发人员  : eurekaInstanceInfo</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>实例图</li>
-</ul>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/eureka%E5%AE%9E%E4%BE%8B%E9%92%89%E9%92%89%E5%91%8A%E8%AD%A6.png"></p>
-<p>​        关键代码</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@EventListener</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">listen</span><span class="params">(EurekaInstanceCanceledEvent event)</span> </span>&#123;</span><br><span class="line">        log.error(<span class="string">"告警通知 [&#123;&#125;] 服务注销 timestamp [&#123;&#125;] serverId [&#123;&#125;]"</span>,</span><br><span class="line">                event.getAppName(),</span><br><span class="line">                event.getTimestamp(),</span><br><span class="line">                event.getServerId());</span><br><span class="line">        <span class="keyword">if</span> (!event.isReplication()) &#123;</span><br><span class="line">            ServiceNotice serviceNotice = <span class="keyword">new</span> ServiceNotice();</span><br><span class="line">            serviceNotice.setTitle(<span class="string">"告警通知 服务下线"</span>);</span><br><span class="line">            serviceNotice.setAppName(event.getAppName());</span><br><span class="line">            serviceNotice.setTimestamp(event.getTimestamp());</span><br><span class="line">            serviceNotice.setServerId(event.getServerId());</span><br><span class="line">            serviceNotice.setProfiles(active);</span><br><span class="line">            alarmNoticeManage.createNotice(serviceNotice, <span class="string">""</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@EventListener</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">listen</span><span class="params">(EurekaInstanceRegisteredEvent event)</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">"告警通知 [&#123;&#125;] 服务注册 timestamp [&#123;&#125;] id [&#123;&#125;] ipAddr [&#123;&#125;] "</span>,</span><br><span class="line">                event.getInstanceInfo().getAppName(),</span><br><span class="line">                event.getTimestamp(),</span><br><span class="line">                event.getInstanceInfo().getId(),</span><br><span class="line">                event.getInstanceInfo().getIPAddr()</span><br><span class="line">        );</span><br><span class="line">        <span class="keyword">if</span> (!event.isReplication()) &#123;</span><br><span class="line">            ServiceNotice serviceNotice = <span class="keyword">new</span> ServiceNotice();</span><br><span class="line">            serviceNotice.setTitle(<span class="string">"告警通知 服务上线"</span>);</span><br><span class="line">            serviceNotice.setAppName(event.getInstanceInfo().getAppName());</span><br><span class="line">            serviceNotice.setTimestamp(event.getTimestamp());</span><br><span class="line">            serviceNotice.setServerId(event.getInstanceInfo().getId());</span><br><span class="line">            serviceNotice.setProfiles(active);</span><br><span class="line">            alarmNoticeManage.createNotice(serviceNotice, <span class="string">""</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>效果如下</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">告警通知 服务下线</span><br><span class="line">2020-07-16 16:03:20 Z-GATEWAY 192.168.31.7:z-gateway:9000 profiles dev1</span><br><span class="line">@xxx</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>eureka查看源码得知有五个事件。</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">EurekaServerStartedEvent - Eureka服务端启动事件</span><br><span class="line">EurekaRegistryAvailableEvent - Eureka服务端可用事件</span><br><span class="line">EurekaInstanceRegisteredEvent - Eureka客户端服务注册事件</span><br><span class="line">EurekaInstanceRenewedEvent - Eureka客户端续约事件</span><br><span class="line">EurekaInstanceCanceledEvent - Eureka客户端下线事件</span><br></pre></td></tr></table></figure>
-
-<p>这里就比较简单了。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/21/%E5%88%9D%E6%8E%A2Eureka%E4%B8%8EZookeeper/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/04/21/%E5%88%9D%E6%8E%A2Eureka%E4%B8%8EZookeeper/" class="post-title-link" itemprop="url">初探Eureka与Zookeeper</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-04-21 06:14:16" itemprop="dateCreated datePublished" datetime="2018-04-21T06:14:16+08:00">2018-04-21</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-17 10:23:45" itemprop="dateModified" datetime="2020-08-17T10:23:45+08:00">2020-08-17</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA/" itemprop="url" rel="index"><span itemprop="name">基础理论</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>服务注册中心，给客户端提供可供调用的服务列表，客户端在进行远程服务调用时，根据服务列表然后选择服务提供方的服务地址进行服务调用。服务注册中心在分布式系统中大量应用，是分布式系统中不可或缺的组件，例如rocketmq的name server，hdfs中的namenode，dubbo中的zk注册中心，spring cloud中的服务注册中心eureka。  在spring cloud中，除了可以使用eureka作为注册中心外，还可以通过配置的方式使用zookeeper作为注册中心。既然这样，我们该如何选择注册中心的实现呢？</p>
-</blockquote>
-<h3 id="CAP定理"><a href="#CAP定理" class="headerlink" title="CAP定理"></a>CAP定理</h3><blockquote>
-<p>又被称作布鲁尔定理（Eric Brewer）它指出对于一个分布式计算系统来说，不可能同时满足以下三点：</p>
-</blockquote>
-<ol>
-<li>强一致性（Consistency）：系统在执行某项操作后数据状态仍然处于一致，例如在分布式系统中，更新操作执行成功后所有的用户都应该读取到最新的值，这样的系统被认为具有强一致性。</li>
-<li>可用性（Availability）：每一个操作总是能够在一定的时间内返回结果</li>
-<li>分区容错性（Partition tolerance）：单个节点故障不应导致整个系统崩溃，也就是说尽管网络在节点之间丢弃（或延迟）任意数量的消息，但是系统继续操作。</li>
-</ol>
-<blockquote>
-<p>根据CAP原理将数据库分成了满足CA原则、满足CP原则和满足AP原则三大类</p>
-</blockquote>
-<ol>
-<li>CA：单点集群，满足一致性，可用性，通常在可扩展性上不太强大，比如RDB。</li>
-<li>CP：满足一致性和分区容错性，通常性能不是特别高，如分布式数据库。</li>
-<li>AP：满足可用性和分区容错性，通常可能对一致性要求低一些，如大多数的NoSQL。</li>
-</ol>
-<h3 id="BASE（Basically-Available，Soft-state，Eventual-consistency）"><a href="#BASE（Basically-Available，Soft-state，Eventual-consistency）" class="headerlink" title="BASE（Basically Available，Soft-state，Eventual consistency）"></a>BASE（Basically Available，Soft-state，Eventual consistency）</h3><blockquote>
-<p>eBay的架构师Dan Pritchett源于对大规模分布式系统的实践总结，在ACM上发表文章提出BASE理论，BASE理论是对CAP理论的延伸，核心思想是即使无法做到强一致性（Strong Consistency，CAP的一致性就是强一致性），但应用可以采用适合的方式达到最终一致性（Eventual Consitency）。</p>
-</blockquote>
-<ol>
-<li>基本可用（Basically Available）：系统能够基本运行并一直提供服务。</li>
-<li>软状态（Soft-state）：系统不要求一直保持强一致状态。</li>
-<li>最终一致性（Eventual consistency）：系统需要在某一时刻后达到一致性要求。</li>
-</ol>
-<h3 id="Zookeeper保证CP"><a href="#Zookeeper保证CP" class="headerlink" title="Zookeeper保证CP"></a><strong>Zookeeper保证CP</strong></h3><ul>
-<li>当向注册中心查询服务列表时，我们可以容忍注册中心返回的是几分钟以前的注册信息，但不能接受服务直接down掉不可用。也就是说，服务注册功能对可用性的要求要高于一致性。但是zk会出现这样一种情况，当master节点因为网络故障与其他节点失去联系时，剩余节点会重新进行leader选举。问题在于，选举leader的时间太长，30 ~ 120s, 且选举期间整个zk集群都是不可用的，这就导致在选举期间注册服务瘫痪。在云部署的环境下，因网络问题使得zk集群失去master节点是较大概率会发生的事，虽然服务能够最终恢复，但是漫长的选举时间导致的注册长期不可用是不能容忍的。</li>
-</ul>
-<h3 id="Eureka保证AP"><a href="#Eureka保证AP" class="headerlink" title="Eureka保证AP"></a>Eureka保证AP</h3><ul>
-<li><p>Eureka各个节点都是平等的，几个节点挂掉不会影响正常节点的工作，剩余的节点依然可以提供注册和查询服务。而Eureka的客户端在向某个Eureka注册或如果发现连接失败，则会自动切换至其它节点，只要有一台Eureka还在，就能保证注册服务可用(保证可用性)，只不过查到的信息可能不是最新的(不保证强一致性)。除此之外，Eureka还有一种自我保护机制，如果在15分钟内超过85%的节点都没有正常的心跳，那么Eureka就认为客户端与注册中心出现了网络故障，此时会出现以下几种情况： </p>
-<ol>
-<li>Eureka不再从注册列表中移除因为长时间没收到心跳而应该过期的服务 </li>
-<li>Eureka仍然能够接受新服务的注册和查询请求，但是不会被同步到其它节点上(即保证当前节点依然可用) </li>
-<li>当网络稳定时，当前实例新的注册信息会被同步到其它节点中</li>
-</ol>
-</li>
-<li><p>因此， Eureka可以很好的应对因网络故障导致部分节点失去联系的情况，而不会像zookeeper那样使整个注册服务瘫痪。</p>
-</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/04/21/%E5%88%9D%E6%8E%A2Eureka%E4%B8%8EZookeeper/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/05/07/%E5%88%9D%E6%8E%A2Modbus/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/05/07/%E5%88%9D%E6%8E%A2Modbus/" class="post-title-link" itemprop="url">初探Modbus</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-05-07 00:00:00" itemprop="dateCreated datePublished" datetime="2018-05-07T00:00:00+08:00">2018-05-07</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-15 09:21:16" itemprop="dateModified" datetime="2020-08-15T09:21:16+08:00">2020-08-15</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA/" itemprop="url" rel="index"><span itemprop="name">基础理论</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-<p>以下部分超链接需要科学上网。</p>
-</blockquote>
-<h2 id="ModBus"><a href="#ModBus" class="headerlink" title="ModBus"></a>ModBus</h2><p>modbus是一种通讯协议，是Modicon公司1979年为使用可编程逻辑控制器（PLC）通讯而发表。Modbus是工业领域通讯协议的业界标准之一，目前也我国国家标准工业通讯协议中的重要成员之一。</p>
-<h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><ul>
-<li><p>Modbus采用主从（Master-Salve）通信模式，仅有主设备（Master）能对传输进行初始化，从设备（Slave）根据主设备的请求进行应答。 __在主从关系中，通信总是成对发生。一个设备必须发起请求，然后等待响应 - 并且发起设备（主设备）负责发起每次交互。 通常，主设备是人机界面（HMI）或监控和数据采集（SCADA）系统，从设备是传感器、可编程逻辑控制器（PLC）或可编程自动化控制器（PAC）。 这些请求和响应的内容以及发送这些消息的网络层由协议的不同层来定义__。 </p>
-<ul>
-<li>在串行链路的主从通信中，Modbus主设备可以连接一个或N（最大为247）个从设备，主从设备之间的通信包括单播模式和广播模式。 </li>
-<li>在广播模式中，Modbus主设备可同时向多个从设备发送请求（设备地址0用于广播模式），从设备对广播请求不进行响应。 </li>
-<li>在单播模式中，主设备发送请求至某个特定的从设备（每个Modbus从设备具有唯一地址），请求的消息帧中会包含功能代码和数据，比如功能代码“01”用来读取离散量线圈的状态。从设备接到请求后，进行应答并把消息反馈主设备。 </li>
-<li>__主设备不发送数据，从数据是不会自己发出数据的；即必须是主设备发出查询请求才能建立通讯。 __</li>
-</ul>
-</li>
-<li><p>消息帧校验方式</p>
-<ul>
-<li>ASCII消息帧：<code>LRC（纵向冗长检测）</code></li>
-<li>CRCi消息帧：<code>CRC(循环冗长检测)</code></li>
-</ul>
-</li>
-<li><p>ModBus是OSI模型第七层上即__应用层__报文传输协议。</p>
-</li>
-<li><p>ModBus支持多工业设备、包括<code>PLC</code>、<code>DSC</code>、<code>变频器</code>、智能仪表等都在应用。</p>
-</li>
-<li><p>ModBus支持多种电气接口，如<code>RS-232</code>、<code>RS-485</code>等，还可以在各种介质上传送，如双绞线、光纤、无线。</p>
-</li>
-<li><p>ModBus协议完全免费；<code>帧格式</code>简单，紧凑。</p>
-</li>
-<li><p>ModBus对线缆的要求、长度、波特率，终端电阻，接地，连接器，通信状态的LED指示，都有电气标准。</p>
-</li>
-<li><p>ModBus数据可以分为两大类，分别为Coil和Register，每一种数据，根据读写方式的不同，又可细分为两种（只读，读写）。 </p>
-<ul>
-<li>Coli是位（bit）变量。</li>
-<li>Register是整型（word ,即 16 - bit ）。</li>
-</ul>
-</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>Primary tabels</th>
-<th>Object Type</th>
-<th>Type Of</th>
-<th>comments</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Discretes Input 离线输入量</td>
-<td>Single bit</td>
-<td>只读</td>
-<td>IO系统提供这种类型的数据</td>
-</tr>
-<tr>
-<td>Coils 线圈</td>
-<td>Single bit</td>
-<td>只写</td>
-<td>通用应用程序改变这种类型的数据</td>
-</tr>
-<tr>
-<td>Input Registers  输入寄存器</td>
-<td>16-bit word</td>
-<td>只读</td>
-<td>IO系统提供这种类型的数据</td>
-</tr>
-<tr>
-<td>Holding Registers 保持寄存器</td>
-<td>16-bit word</td>
-<td>只写</td>
-<td>通用应用程序改变这种类型的数据</td>
-</tr>
-</tbody></table>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/05/07/%E5%88%9D%E6%8E%A2Modbus/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/23/%E5%AE%9E%E8%B7%B5-spring-redis/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -723,7 +353,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/07/15/%E5%AE%9E%E8%B7%B5-spring-boot%E5%BC%82%E5%B8%B8%E9%92%89%E9%92%89%E9%80%9A%E7%9F%A5/">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/22/Docker-Zookeeper/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -737,7 +367,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2020/07/15/%E5%AE%9E%E8%B7%B5-spring-boot%E5%BC%82%E5%B8%B8%E9%92%89%E9%92%89%E9%80%9A%E7%9F%A5/" class="post-title-link" itemprop="url">实践-SpringBoot异常钉钉通知</a>
+            <a href="/2019/03/22/Docker-Zookeeper/" class="post-title-link" itemprop="url">Docker-Zookeeper</a>
         </h2>
 
         <div class="post-meta">
@@ -747,14 +377,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2020-07-15 15:23:20" itemprop="dateCreated datePublished" datetime="2020-07-15T15:23:20+08:00">2020-07-15</time>
+              <time title="Created: 2019-03-22 13:40:10" itemprop="dateCreated datePublished" datetime="2019-03-22T13:40:10+08:00">2019-03-22</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-15 09:20:15" itemprop="dateModified" datetime="2020-08-15T09:20:15+08:00">2020-08-15</time>
+                <time title="Modified: 2019-03-26 20:17:25" itemprop="dateModified" datetime="2019-03-26T20:17:25+08:00">2019-03-26</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -762,7 +392,7 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
+                  <a href="/categories/Docker/" itemprop="url" rel="index"><span itemprop="name">Docker</span></a>
                 </span>
             </span>
 
@@ -778,34 +408,26 @@
 
       
           <blockquote>
-<p>本篇幅只是回顾使用钉钉做异常告警需要那些关键业务信息。</p>
+<p>本章是整理知识内容，为强化知识长期更新。</p>
 </blockquote>
-<h3 id="为什么要做钉钉通知？"><a href="#为什么要做钉钉通知？" class="headerlink" title="为什么要做钉钉通知？"></a>为什么要做钉钉通知？</h3><p>​        事情要从我入职上家公司说起，进入公司后把线上项目clone下来大致看了下。代码风格过于滞后、编码风格混乱。进入公司第一周就出现了线上故障，嗯。我去线上检查日志，emmmm竟然没有日志输出。这次故障是由客户反馈来的。当时我非常吃惊，大伙好像很淡定的样子，习以为常了？</p>
-<p>​        想到当初面试的时候和总监的谈话，主要是带领团队落地微服务架构，看来必须大刀阔斧了。</p>
-<p>​        首先想到的时候改进日志输出、定义全局异常级别，根据异常级别输出日志。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">Java应用 -&gt;&gt; SpringAop全局异常拦截 : runtimeException</span><br><span class="line">SpringAop全局异常拦截 -&gt;&gt;  钉钉 : alarmNoticeSend</span><br><span class="line">钉钉 -&gt;&gt; 开发人员  : exceptionInfo</span><br></pre></td></tr></table></figure>
+<h3 id="docker查找镜像"><a href="#docker查找镜像" class="headerlink" title="docker查找镜像"></a>docker查找镜像</h3><p><code>docker search zookeeper</code></p>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Docker/docker-search-zookeeper.png"></p>
+<h3 id="docker-拉去镜像"><a href="#docker-拉去镜像" class="headerlink" title="docker 拉去镜像"></a>docker 拉去镜像</h3><p><code>docker pull zookeeper</code>  直接拉去官方的镜像，一般第一个就是。</p>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Docker/docker-pull-zookeeper.png"></p>
+<h3 id="docker启动zookeeper"><a href="#docker启动zookeeper" class="headerlink" title="docker启动zookeeper"></a>docker启动zookeeper</h3><p><code>docker run -p 2181:2181 -v $PWD/zookeeper/data:/data  -d zookeeper:latest </code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-p 2181:2181：将容器的2181端口映射成主机的2181端口</span><br><span class="line">-v <span class="variable">$PWD</span>/zookeeper/data:/data :将主机中当前目录下的data挂载到容器的/data</span><br></pre></td></tr></table></figure>
 
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Docker/docker-zookeeper-ps.png"></p>
 <ul>
-<li>效果图</li>
+<li>这里需要注意的是，本机有多zookeeper的时候，不要都挂载到一起了。</li>
 </ul>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/springboot%E9%92%89%E9%92%89%E5%85%A8%E5%B1%80%E5%BC%82%E5%B8%B8%E6%8B%A6%E6%88%AA.png"></p>
-<p>​        我们需要从钉钉里面看到那些异常信息呢？这是当时输出到钉钉的信息。通过编写全局拦截器，在公共基础项目里面添加了aop全局拦截。刚开始上线的时候钉钉一天动不动就几千个异常告警。刚开始大伙都很紧张，过了个把月大伙已经又麻木了。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">告警信息</span><br><span class="line">工程名：z201-gateway</span><br><span class="line">类路径：cn.z201.cloud.gateway.VlinkFrameworkGatewayApplicationTest</span><br><span class="line">方法名：alarm</span><br><span class="line">异常信息：java.lang.IllegalAccessException</span><br><span class="line">异常追踪：</span><br><span class="line">cn.z201.cloud.gateway.VlinkFrameworkGatewayApplicationTest.alarm(VlinkFrameworkGatewayApplicationTest.java:<span class="number">64</span>)</span><br><span class="line">sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)</span><br><span class="line">sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:<span class="number">62</span>)</span><br><span class="line">sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:<span class="number">43</span>)</span><br><span class="line">java.lang.reflect.Method.invoke(Method.java:<span class="number">498</span>)</span><br><span class="line">org.junit.runners.model.FrameworkMethod$<span class="number">1</span>.runReflectiveCall(FrameworkMethod.java:<span class="number">50</span>)</span><br><span class="line">org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:<span class="number">12</span>)</span><br><span class="line">org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:<span class="number">47</span>)</span><br><span class="line">org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:<span class="number">17</span>)</span><br><span class="line">org.springframework.test.context.junit4.statements.RunBeforeTestExecutionCallbacks.evaluate(RunBeforeTestExecutionCallbacks.java:<span class="number">74</span>)</span><br></pre></td></tr></table></figure>
-
-<h3 id="这样的告警信息就够了吗？"><a href="#这样的告警信息就够了吗？" class="headerlink" title="这样的告警信息就够了吗？"></a>这样的告警信息就够了吗？</h3><p>​        明显这样是不够够的，前端有安卓、ios、微信小程序、web、快应用。太多前端项目了，后端需要识别出是哪里的项目出的问题。于是又改进了一次。邀请前端开发人员在HttpHeader里面增加额外参数。为了做流量区分也增加了一些参数。</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"> &#123;</span><br><span class="line">  <span class="string">"Content-Type"</span>:<span class="string">"application/json"</span> </span><br><span class="line">  "Authorization":"Bearer xxxxxxxxxx"  ## jwt</span><br><span class="line">  "Client-Business-Group-Source": "1", ##  业务组来源唯一标号</span><br><span class="line">  "Client-Business-Source": "1000", ## 业务来源唯一标号</span><br><span class="line">  "Client-Business-Activity-Source": "1", ## 查看介绍、更多 针对特殊业务流量识别</span><br><span class="line">  "Client-Env-Source": "1",				 ##客户端环境来源  1 ios  2 android  3 windows</span><br><span class="line">  "Client-Platform-Source": "xxx", ##客户端平台 xxx手机型号、浏览器</span><br><span class="line">  "Client-Start-Time": "1",        ##请求时间戳</span><br><span class="line">  "Client-Version-Source": "1.0.0" ##客户端版本号</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>​        通过上面的改进告警信息完善很多。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">告警信息</span><br><span class="line">工程名：z201-gateway</span><br><span class="line">类路径：cn.z201.cloud.gateway.VlinkFrameworkGatewayApplicationTest</span><br><span class="line">方法名：alarm</span><br><span class="line">异常信息：java.lang.IllegalAccessException</span><br><span class="line">异常扩展信息： &#123;</span><br><span class="line">  &quot;Client-Business-Source&quot;: &quot;1000&quot;, </span><br><span class="line">  &quot;Client-Business-Activity-Source&quot;: &quot;1&quot;, </span><br><span class="line">  &quot;Client-Env-Source&quot;: &quot;1&quot;,				 </span><br><span class="line">  &quot;Client-Platform-Source&quot;: &quot;xxx&quot;,   </span><br><span class="line">  &quot;Client-Version-Source&quot;: &quot;1.0.0&quot; </span><br><span class="line">&#125; </span><br><span class="line">异常追踪：</span><br><span class="line">cn.z201.cloud.gateway.VlinkFrameworkGatewayApplicationTest.alarm(VlinkFrameworkGatewayApplicationTest.java:64)</span><br><span class="line">sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)</span><br><span class="line">sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)</span><br><span class="line">sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)</span><br><span class="line">java.lang.reflect.Method.invoke(Method.java:498)</span><br><span class="line">org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)</span><br><span class="line">org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)</span><br><span class="line">org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)</span><br><span class="line">org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)</span><br><span class="line">org.springframework.test.context.junit4.statements.RunBeforeTestExecutionCallbacks.evaluate(RunBeforeTestExecutionCallbacks.java:74)</span><br></pre></td></tr></table></figure>
-
-<h3 id="分布式下面临的问题！"><a href="#分布式下面临的问题！" class="headerlink" title="分布式下面临的问题！"></a>分布式下面临的问题！</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">gateway -&gt;&gt; 应用A : httpRequest</span><br><span class="line">应用A -&gt;&gt;  应用B : httpRequest</span><br><span class="line">应用B --&gt;&gt; 应用A : httpResponse</span><br><span class="line">应用A --&gt;&gt; gateway : httpResponse</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/%E5%A4%9A%E5%BA%94%E7%94%A8%E9%93%BE%E8%B7%AF%E8%AF%B7%E6%B1%82.png"></p>
-<p>​        当调用链多的时候定位问题就有点麻烦，比如应用a调用应用b。应用b执行了异常信息直接抛出了告警信息。但是spring cloud http rpc默认是不会吧请求参数传递到后面的服务中，需要我们做下简单的扩展。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> z201.coding@gmail.com</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">HttpApiConstant</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    String X_REAL_IP = <span class="string">"x-real-ip"</span>;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 请求头跟踪id名。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    String HTTP_HEADER_TRACE_ID = <span class="string">"AppTraceId"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 请求头</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    String HTTP_TOKEN_HEADER = <span class="string">"Authorization"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * app租户</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    String APP_TENANT = <span class="string">"Tenant"</span>;</span><br><span class="line"></span><br><span class="line">    String CLIENT_BUSINESS_GROUP_SOURCE = <span class="string">"Client-Business-Group-Source"</span>;</span><br><span class="line"></span><br><span class="line">    String CLIENT_BUSINESS_SOURCE = <span class="string">"Client-Business-Source"</span>;</span><br><span class="line"></span><br><span class="line">    String CLIENT_BUSINESS_ACTIVITY_SOURCE = <span class="string">"Client-Business-Activity-Source"</span>;</span><br><span class="line"></span><br><span class="line">    String CLIENT_EVN_SOURCE = <span class="string">"Client-Env-Source"</span>;</span><br><span class="line"></span><br><span class="line">    String CLIENT_PLATFORM_SOURCE = <span class="string">"Client-Platform-Source"</span>;</span><br><span class="line"></span><br><span class="line">    String CLIENT_START_TIME = <span class="string">"Client-Start-Time"</span>;</span><br><span class="line"></span><br><span class="line">    String CLIENT_VERSION_SOURCE = <span class="string">"Client-Version-Source"</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> z201.coding@gmail.com</span></span><br><span class="line"><span class="comment"> * 自定义restTemplate拦截器</span></span><br><span class="line"><span class="comment"> * 这里可以把一些参数从应用层传到内部服务</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="meta">@ConditionalOnClass</span>(WebMvcConfigurer<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">class</span> <span class="title">MdcFeignInterceptorConfig</span> <span class="keyword">implements</span> <span class="title">RequestInterceptor</span>, <span class="title">HttpApiConstant</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MdcFeignInterceptorConfig</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">"Loaded Z-REST-INTERCEPTOR [V1.0.0]"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">apply</span><span class="params">(RequestTemplate template)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())</span><br><span class="line">                    .getRequest();</span><br><span class="line">            String xRealIp = request.getHeader(X_REAL_IP);</span><br><span class="line">            String authentication = request.getHeader(HTTP_TOKEN_HEADER);</span><br><span class="line">            String appTraceId = request.getHeader(HTTP_HEADER_TRACE_ID);</span><br><span class="line">            String businessGroupSource = request.getHeader(CLIENT_BUSINESS_GROUP_SOURCE);</span><br><span class="line">            String clientBusinessSource = request.getHeader(CLIENT_BUSINESS_SOURCE);</span><br><span class="line">            String clientBusinessActivitySource = request.getHeader(CLIENT_BUSINESS_ACTIVITY_SOURCE);</span><br><span class="line">            String clientEnvSource = request.getHeader(CLIENT_EVN_SOURCE);</span><br><span class="line">            String clientPlatformSource = request.getHeader(CLIENT_PLATFORM_SOURCE);</span><br><span class="line">            String clientStartTime = request.getHeader(CLIENT_START_TIME);</span><br><span class="line">            String clientVersionSource = request.getHeader(CLIENT_VERSION_SOURCE);</span><br><span class="line">            template.header(HttpHeaders.ACCEPT_ENCODING, <span class="string">"gzip"</span>);</span><br><span class="line">            template.header(X_REAL_IP, xRealIp);</span><br><span class="line">            template.header(HTTP_TOKEN_HEADER, authentication);</span><br><span class="line">            template.header(CLIENT_BUSINESS_GROUP_SOURCE, businessGroupSource);</span><br><span class="line">            template.header(CLIENT_BUSINESS_SOURCE, clientBusinessSource);</span><br><span class="line">            template.header(CLIENT_BUSINESS_ACTIVITY_SOURCE, clientBusinessActivitySource);</span><br><span class="line">            template.header(CLIENT_EVN_SOURCE, clientEnvSource);</span><br><span class="line">            template.header(CLIENT_PLATFORM_SOURCE, clientPlatformSource);</span><br><span class="line">            template.header(CLIENT_START_TIME, clientStartTime);</span><br><span class="line">            template.header(CLIENT_VERSION_SOURCE, clientVersionSource);</span><br><span class="line">            <span class="keyword">if</span> (log.isDebugEnabled()) &#123;</span><br><span class="line">                Enumeration&lt;String&gt; headerNames = request.getHeaderNames();</span><br><span class="line">                <span class="keyword">while</span> (headerNames.hasMoreElements()) &#123;</span><br><span class="line">                    String name = headerNames.nextElement();</span><br><span class="line">                    String value = request.getHeader(name);</span><br><span class="line">                    log.debug(<span class="string">"header &#123;&#125; - &#123;&#125;"</span>, name, value);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            log.error(<span class="string">"template exception &#123;&#125;"</span>,e.getMessage());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>简单的异常钉钉告警就到这里结束了。</p>
-
+<h3 id="进入运行容器中"><a href="#进入运行容器中" class="headerlink" title="进入运行容器中"></a>进入运行容器中</h3><p><code>docker exec -it 3f6a8c213504 /bin/bash</code></p>
+<ul>
+<li><p>3f6a8c213504 是zookeeper运行容器的ID</p>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Docker/docker-exec-zookeeper.png"></p>
+</li>
+</ul>
+<h2 id="END"><a href="#END" class="headerlink" title="END"></a>END</h2>
       
     </div>
 
@@ -824,7 +446,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/02/27/%E5%AE%9E%E8%B7%B5-mybatis+h2+logback%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/22/Docker-Redis/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -838,7 +460,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2019/02/27/%E5%AE%9E%E8%B7%B5-mybatis+h2+logback%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/" class="post-title-link" itemprop="url">实践-mybatis+h2+logback单元测试</a>
+            <a href="/2019/03/22/Docker-Redis/" class="post-title-link" itemprop="url">Docker-Redis</a>
         </h2>
 
         <div class="post-meta">
@@ -848,14 +470,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2019-02-27 14:16:34" itemprop="dateCreated datePublished" datetime="2019-02-27T14:16:34+08:00">2019-02-27</time>
+              <time title="Created: 2019-03-22 13:00:51" itemprop="dateCreated datePublished" datetime="2019-03-22T13:00:51+08:00">2019-03-22</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-15 09:20:05" itemprop="dateModified" datetime="2020-08-15T09:20:05+08:00">2020-08-15</time>
+                <time title="Modified: 2019-03-26 23:19:16" itemprop="dateModified" datetime="2019-03-26T23:19:16+08:00">2019-03-26</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -863,7 +485,7 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
+                  <a href="/categories/Docker/" itemprop="url" rel="index"><span itemprop="name">Docker</span></a>
                 </span>
             </span>
 
@@ -879,156 +501,18 @@
 
       
           <blockquote>
-<p><a href="https://z201.cn/2019/02/26/mybatis%E5%B0%8F%E8%AF%95%E7%89%9B%E5%88%80/" target="_blank" rel="noopener">mybatis小试牛刀</a> 在此基础上添加log日志。</p>
+<p>本章是整理知识内容，为强化知识长期更新。</p>
 </blockquote>
-<ul>
-<li><p>官方文档 ： <a href="http://www.mybatis.org/mybatis-3/zh/logging.html" target="_blank" rel="noopener">http://www.mybatis.org/mybatis-3/zh/logging.html</a></p>
-</li>
-<li><p>项目地址 ： <a href="https://github.com/z201/z201.github.io.code/tree/master/mybatis-learning/mybatis-learning-02" target="_blank" rel="noopener">mybatis-learning-02</a></p>
-</li>
-</ul>
-<h3 id="0x01-测试控制台的显示内容"><a href="#0x01-测试控制台的显示内容" class="headerlink" title="0x01 测试控制台的显示内容"></a>0x01 测试控制台的显示内容</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">User(id=1, name=TOM, age=12, gender=0)</span><br><span class="line">User(id=2, name=JON, age=13, gender=1)</span><br><span class="line">User(id=3, name=King, age=11, gender=0)</span><br></pre></td></tr></table></figure>
-
-<h3 id="0x02-增加日志输出"><a href="#0x02-增加日志输出" class="headerlink" title="0x02 增加日志输出"></a>0x02 增加日志输出</h3><blockquote>
-<p>根据官方文档显示，支持的log有很多实现，这里使用Slf4j + Logback 多组合。</p>
+<h2 id="Docker环境下部署redis"><a href="#Docker环境下部署redis" class="headerlink" title="Docker环境下部署redis"></a>Docker环境下部署redis</h2><h3 id="确认已经安装好了Docker环境"><a href="#确认已经安装好了Docker环境" class="headerlink" title="确认已经安装好了Docker环境"></a>确认已经安装好了Docker环境</h3><blockquote>
+<p> windows 和  linux 可以用 docker info检查是否安装</p>
 </blockquote>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Docker/docker.png"></p>
 <ul>
-<li>根据之前的项目，这里偷懒重新创建一个项目并把之前的代码都复制过来。</li>
-<li>添加maven依赖。</li>
+<li>在mac下就是这么个情况。需要注意的是，请不用使用email登录，否则在查找官方镜像的时候会抛出认证失败的问题。比如我是登录用户<code>z201</code></li>
 </ul>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"> <span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">mybatis.version</span>&gt;</span>3.5.0<span class="tag">&lt;/<span class="name">mybatis.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">junit.version</span>&gt;</span>4.12<span class="tag">&lt;/<span class="name">junit.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">lmbok.version</span>&gt;</span>1.18.4<span class="tag">&lt;/<span class="name">lmbok.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">mysql.version</span>&gt;</span>5.1.47<span class="tag">&lt;/<span class="name">mysql.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">h2.version</span>&gt;</span>1.4.197<span class="tag">&lt;/<span class="name">h2.version</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 新增内容 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">slf4j.version</span>&gt;</span>1.7.25<span class="tag">&lt;/<span class="name">slf4j.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">logback.version</span>&gt;</span>1.2.3<span class="tag">&lt;/<span class="name">logback.version</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- pom文件需要指定打包编码集，[WARNING] File encoding has not been set, using platform encoding GBK, i.e. build is platform dependent!  --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">project.build.sourceEncoding</span>&gt;</span>UTF-8<span class="tag">&lt;/<span class="name">project.build.sourceEncoding</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.slf4j<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>slf4j-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;slf4j.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>ch.qos.logback<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>logback-classic<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;logback.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>添加logback配置文件</li>
-</ul>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">appender</span> <span class="attr">name</span>=<span class="string">"STDOUT"</span> <span class="attr">class</span>=<span class="string">"ch.qos.logback.core.ConsoleAppender"</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- encoders are assigned the type</span></span><br><span class="line"><span class="comment">             ch.qos.logback.classic.encoder.PatternLayoutEncoder by default --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">encoder</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">pattern</span>&gt;</span>z201.github.cn %d&#123;HH:mm:ss.SSS&#125; [%thread] %-5level %logger&#123;36&#125; - %msg%n<span class="tag">&lt;/<span class="name">pattern</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">encoder</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">appender</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">root</span> <span class="attr">level</span>=<span class="string">"debug"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">appender-ref</span> <span class="attr">ref</span>=<span class="string">"STDOUT"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">root</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>再次运行单元测试。</li>
-</ul>
-<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.046</span> [main] DEBUG org<span class="variable">.apache</span><span class="variable">.ibatis</span><span class="variable">.logging</span><span class="variable">.LogFactory</span> - Logging initialized using '<span class="keyword">class</span> org<span class="variable">.apache</span><span class="variable">.ibatis</span><span class="variable">.logging</span><span class="variable">.slf4j</span><span class="variable">.Slf4jImpl</span>' adapter.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.049</span> [main] DEBUG org<span class="variable">.apache</span><span class="variable">.ibatis</span><span class="variable">.logging</span><span class="variable">.LogFactory</span> - Logging initialized using '<span class="keyword">class</span> org<span class="variable">.apache</span><span class="variable">.ibatis</span><span class="variable">.logging</span><span class="variable">.slf4j</span><span class="variable">.Slf4jImpl</span>' adapter.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.076</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - PooledDataSource forcefully closed/removed all connections.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.076</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - PooledDataSource forcefully closed/removed all connections.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.076</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - PooledDataSource forcefully closed/removed all connections.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.076</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - PooledDataSource forcefully closed/removed all connections.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.155</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.t</span><span class="variable">.jdbc</span><span class="variable">.JdbcTransaction</span> - Opening JDBC Connection</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.356</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - Created connection <span class="number">1839168128</span>.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.356</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.t</span><span class="variable">.jdbc</span><span class="variable">.JdbcTransaction</span> - Setting autocommit to false on JDBC Connection [conn0: url=jdbc:h2:mem:mybatis_learning_01_db user=ROOT]</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.358</span> [main] DEBUG c<span class="variable">.z201</span><span class="variable">.mybatis</span><span class="variable">.learning</span><span class="variable">.UserDao</span><span class="variable">.list</span> - ==&gt;  Preparing: SELECT * FROM <span class="meta">`user` </span></span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.384</span> [main] DEBUG c<span class="variable">.z201</span><span class="variable">.mybatis</span><span class="variable">.learning</span><span class="variable">.UserDao</span><span class="variable">.list</span> - ==&gt; Parameters: </span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.411</span> [main] DEBUG c<span class="variable">.z201</span><span class="variable">.mybatis</span><span class="variable">.learning</span><span class="variable">.UserDao</span><span class="variable">.list</span> - &lt;==      Total: <span class="number">3</span></span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.414</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.t</span><span class="variable">.jdbc</span><span class="variable">.JdbcTransaction</span> - Resetting autocommit to true on JDBC Connection [conn0: url=jdbc:h2:mem:mybatis_learning_01_db user=ROOT]</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.415</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.t</span><span class="variable">.jdbc</span><span class="variable">.JdbcTransaction</span> - Closing JDBC Connection [conn0: url=jdbc:h2:mem:mybatis_learning_01_db user=ROOT]</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.415</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - Returned connection <span class="number">1839168128</span> to pool.</span><br><span class="line">User(id=<span class="number">1</span>, name=TOM, age=<span class="number">12</span>, gender=<span class="number">0</span>)</span><br><span class="line">User(id=<span class="number">2</span>, name=JON, age=<span class="number">13</span>, gender=<span class="number">1</span>)</span><br><span class="line">User(id=<span class="number">3</span>, name=King, age=<span class="number">11</span>, gender=<span class="number">0</span>)</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.416</span> [main] DEBUG cn<span class="variable">.z201</span><span class="variable">.mybatis</span><span class="variable">.test</span><span class="variable">.MybatisTest01</span> - <span class="keyword">end</span>...</span><br></pre></td></tr></table></figure>
-
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/23/Linux%E5%9F%BA%E7%A1%80%E5%91%BD%E4%BB%A4/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/04/23/Linux%E5%9F%BA%E7%A1%80%E5%91%BD%E4%BB%A4/" class="post-title-link" itemprop="url">Linux基础命令</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-04-23 08:58:34" itemprop="dateCreated datePublished" datetime="2018-04-23T08:58:34+08:00">2018-04-23</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-15 09:17:23" itemprop="dateModified" datetime="2020-08-15T09:17:23+08:00">2020-08-15</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>linux作为个人工作经常使用的系统、做下简单的记录方便以后工作参考。</p>
-</blockquote>
-<h2 id="ps"><a href="#ps" class="headerlink" title="ps"></a><a href="http://man.linuxde.net/ps" target="_blank" rel="noopener">ps</a></h2><blockquote>
-<p>ps命令用于报告系统某个时间内进程的情况</p>
-</blockquote>
-<ul>
-<li>参数</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">-A : 所有的进程均显示出来</span><br><span class="line">-a : 不与terminal有关的所有进程</span><br><span class="line">-u : 有效用户的相关进程</span><br><span class="line">-x : 一般与a参数一起使用，可以列出比较完整的信息。</span><br><span class="line">-l : 较详细地将PID的信息列出。</span><br></pre></td></tr></table></figure>
-
-<h3 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h3><p>查询某程序的情况</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> [root@VM_115_109_centos ~]<span class="comment"># ps -ef | grep mysqld</span></span></span><br><span class="line">root      8013 17307  0 05:34 pts/0    00:00:00 grep --color=auto mysqld</span><br><span class="line">mysql    28882     1  0 Apr02 ?        00:07:03 /usr/sbin/mysqld --daemonize --pid-file=/var/run/mysqld/mysqld.pid</span><br></pre></td></tr></table></figure>
-
-<p>UID      PID   PPID     C STIME   TTY    TIME     CMD (类目描述)</p>
-<ul>
-<li>UID 程序被该 UID 所拥有</li>
-<li>PID 就是这个程序的 ID </li>
-<li>PPID 则是其上级父程序的ID</li>
-<li>C CPU 使用的资源百分比</li>
-<li>STIME 系统启动时间</li>
-<li>TTY 登入者的终端机位置</li>
-<li>TIME 使用掉的 CPU 时间。</li>
-<li>CMD 所下达的指令</li>
-</ul>
-<p>查看内存占用前1的进程</p>
-<ul>
-<li>ps auxw | head -1;ps auxw|sort -rn -k4|head -1  </li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">  ps auxw | head -1;ps auxw|sort -rn -k4|head -1</span></span><br><span class="line">USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</span><br><span class="line">mysql    28882  0.0 10.9 1143416 205484 ?      Sl   Apr02   7:20 /usr/sbin/mysqld --daemonize --pid-file=/var/run/mysqld/mysqld.pid</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>内存的单位是kb，VSZ是虚拟内存的占用，RSS是真实的内存的占用。</li>
-</ul>
-<ul>
-<li>命令分解：</li>
-<li>ps auxw显示系统资源占用情况；</li>
-<li>head -1表示显示第一列，即标题列；</li>
-<li>sort -r 表示反向排序，-n表示按数字排序，-k4表示列的第4个字符。</li>
-</ul>
-<p>查看CPU占用前1的进程</p>
-<ul>
-<li>ps auxw|head -1;ps auxw|sort -rn -k3|head -1</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ps auxw|head -1;ps auxw|sort -rn -k3|head -5</span></span><br><span class="line">USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</span><br><span class="line">root      1690  0.1  0.6 536692 12436 ?        Sl   Apr10  29:58 barad_agent</span><br><span class="line">USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</span><br><span class="line">root         9  0.0  0.0      0     0 ?        R    Mar08   1:45 [rcu_sched]</span><br><span class="line">root       884  0.0  0.0 110044   808 ttyS0    Ss+  Mar08   0:00 /sbin/agetty --keep-baud 115200 38400 9600 ttyS0 vt220</span><br><span class="line">root       883  0.0  0.0 110044   788 tty1     Ss+  Mar08   0:00 /sbin/agetty --noclear tty1 linux</span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2018/04/23/Linux%E5%9F%BA%E7%A1%80%E5%91%BD%E4%BB%A4/#more" rel="contents">
+              <a class="btn" href="/2019/03/22/Docker-Redis/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -1052,7 +536,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/05/27/%E6%80%BB%E7%BB%93%E4%BB%A3%E7%A0%81%E9%A3%8E%E6%A0%BC/">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/21/%E5%AE%9E%E8%B7%B5-spring-boot-dubbo/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -1066,7 +550,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2019/05/27/%E6%80%BB%E7%BB%93%E4%BB%A3%E7%A0%81%E9%A3%8E%E6%A0%BC/" class="post-title-link" itemprop="url">总结代码风格</a>
+            <a href="/2019/03/21/%E5%AE%9E%E8%B7%B5-spring-boot-dubbo/" class="post-title-link" itemprop="url">实践-spring-boot-dubbo</a>
         </h2>
 
         <div class="post-meta">
@@ -1076,123 +560,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2019-05-27 20:49:08" itemprop="dateCreated datePublished" datetime="2019-05-27T20:49:08+08:00">2019-05-27</time>
+              <time title="Created: 2019-03-21 09:38:05" itemprop="dateCreated datePublished" datetime="2019-03-21T09:38:05+08:00">2019-03-21</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-15 09:10:22" itemprop="dateModified" datetime="2020-08-15T09:10:22+08:00">2020-08-15</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">软件工程</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>好久没更新博客，最近公司让我出一个代码规范，我吓了一跳。赶忙翻出阿里《 码出高效》，不敢造次，我就补充点个人的想法吧。代码是给人看的。代码风格应该遵循<code>极简主义</code>                                                                                                      </p>
-</blockquote>
-<h3 id="1、避免复杂、追求简单"><a href="#1、避免复杂、追求简单" class="headerlink" title="1、避免复杂、追求简单"></a>1、避免复杂、追求简单</h3><blockquote>
-<p>日常开发中，除了解决业务问题还需要解决许多的工程问题。如何选择当下合适的方法解决问题；需要不断尝试和摸索，没有最好的方法只有更好的方法。</p>
-</blockquote>
-<h3 id="2、合理平滑的处理技术债务"><a href="#2、合理平滑的处理技术债务" class="headerlink" title="2、合理平滑的处理技术债务"></a>2、合理平滑的处理技术债务</h3><blockquote>
-<p>技术的演变速度太快，如何避免长时间的技术债务是非常严重的问题，总之弊大于利。尽可能保持轻装上阵，避免拖油瓶项目。</p>
-<p>关键字：</p>
-<ul>
-<li>一方库: 本工程内部子项目模块依赖的库(jar 包)。 </li>
-<li>二方库: 公司内部发布到中央仓库，可供公司内部其它应用依赖的库(jar包)。 </li>
-<li>三方库: 公司之外的开源库(jar 包)。 </li>
-</ul>
-</blockquote>
-<h4 id="『避免过度封装』"><a href="#『避免过度封装』" class="headerlink" title="『避免过度封装』"></a>『避免过度封装』</h4><blockquote>
-<p>特别是没有完整的技术人员编制的情况下，怎么简单怎么处理（去除中间商赚差价一个道理。）避免过度开发<code>一方库</code>；建议使用原生方式(综合评估代码量)<code>避免框架过度封装</code>。（Java的方法调用链过长是出了名的恶心）</p>
-</blockquote>
-<h4 id="『避免代码过度重复』"><a href="#『避免代码过度重复』" class="headerlink" title="『避免代码过度重复』"></a>『避免代码过度重复』</h4><blockquote>
-<p>每次开发业务都会写很多的代码。定期对公司项目进行基础代码的重构。合理的拆分<code>业务无关的基础代码</code>。</p>
-</blockquote>
-<h4 id="『避免版本混乱』"><a href="#『避免版本混乱』" class="headerlink" title="『避免版本混乱』"></a>『避免版本混乱』</h4><p>使用统一的版本管理。约束所有的项目jar版本依赖。防止因为过度使用<code>三方库</code>出现奇怪的bug。公司<code>bom</code>需要单独处理。尽量保持与社区版本同步，比如springboot最新版是2.1.3 ，那么公司使用的版本最好是近半年的GA版本。</p>
-<h4 id="『物极必反』"><a href="#『物极必反』" class="headerlink" title="『物极必反』"></a>『物极必反』</h4><blockquote>
-<p>请勿过度依赖某框架栈或者解决方式，客观的对比相关解决方案优缺点。</p>
-</blockquote>
-<h4 id="『选择大于努力』"><a href="#『选择大于努力』" class="headerlink" title="『选择大于努力』"></a>『选择大于努力』</h4><blockquote>
-<p>集中精力掌握核心知识。按照目前技术演变的速度，更新最快的是应用技术，其次是行业规范相关技术。最后才是革命性的技术。</p>
-</blockquote>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/%E4%BB%A3%E7%A0%81%E6%80%BB%E7%BB%93/%E6%8A%80%E6%9C%AF%E8%B1%A1%E9%99%90%E5%9B%BE.png"></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/05/27/%E6%80%BB%E7%BB%93%E4%BB%A3%E7%A0%81%E9%A3%8E%E6%A0%BC/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/04/10/%E5%AE%9E%E8%B7%B5-spring-redis-timeout-0%E4%BE%9D%E7%84%B6%E8%B6%85%E6%97%B6%E7%9A%84%E9%97%AE%E9%A2%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/04/10/%E5%AE%9E%E8%B7%B5-spring-redis-timeout-0%E4%BE%9D%E7%84%B6%E8%B6%85%E6%97%B6%E7%9A%84%E9%97%AE%E9%A2%98/" class="post-title-link" itemprop="url">实践-spring.redis.timeout=0依然超时的问题</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-04-10 22:16:10" itemprop="dateCreated datePublished" datetime="2019-04-10T22:16:10+08:00">2019-04-10</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-15 06:06:07" itemprop="dateModified" datetime="2020-08-15T06:06:07+08:00">2020-08-15</time>
+                <time title="Modified: 2019-04-10 23:52:02" itemprop="dateModified" datetime="2019-04-10T23:52:02+08:00">2019-04-10</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1216,28 +591,32 @@
 
       
           <blockquote>
-<p>最近在看项目的时候发现一个临时问题，就是redis.timeout设置0依然超时的问题。</p>
+<p>离职两个月，太久没写项目了，重新温故下。</p>
 </blockquote>
 <ul>
-<li>代码适用版本 <code>jedis:2.9.0</code> , <code>org.springframework.data.redis:1.8.1</code></li>
+<li><p>这里的代码是最简单的演示效果。</p>
+</li>
+<li><p>项目下载地址 <code>git cloen -b v1.0.0 https://github.com/z201/learning-spring-dubbo-micro-service.git</code></p>
+</li>
+<li><p><code>v1.0.0</code>分支dubbo xml 配置演示基于zk做注册中心。</p>
+</li>
+<li><p><code>v2.0.0</code>分支dubbo annotation 配置演示基于zk做注册中心。</p>
+</li>
+<li><p><code>v3.0.0</code>分支dubbo xml 配置演示基于nacos做注册中心。</p>
+</li>
 </ul>
-<h3 id="timeout设置0的问题"><a href="#timeout设置0的问题" class="headerlink" title="timeout设置0的问题"></a>timeout设置0的问题</h3><blockquote>
-<p>spring.redis.timeout =0 如果设置成0 redis默认超时时间就是2秒. </p>
-</blockquote>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Jedis/jedis-timeout-1.jpg"></p>
-<blockquote>
-<p>根据debug发现设置0点时候依然是2000毫秒。</p>
-</blockquote>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Jedis/jedis-timeout-2.jpg"></p>
-<blockquote>
-<p>根据初始化方法找到的原因。</p>
-</blockquote>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Jedis/jedis-timeout-3.png"></p>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Jedis/jedis-timeout-4.png"></p>
-<blockquote>
-<p>这里可以看到，当timeout设置0点时候不会被赋值。</p>
-</blockquote>
-<h3 id="END"><a href="#END" class="headerlink" title="END"></a>END</h3>
+<h3 id="项目模块"><a href="#项目模块" class="headerlink" title="项目模块"></a>项目模块</h3><ul>
+<li>现在演示的<code>v1.0.0</code>的代码</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">modules</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">module</span>&gt;</span>dubbo-micro-service-consumer<span class="tag">&lt;/<span class="name">module</span>&gt;</span>  // 消费者</span><br><span class="line">    <span class="tag">&lt;<span class="name">module</span>&gt;</span>dubbo-micro-service-provider<span class="tag">&lt;/<span class="name">module</span>&gt;</span>  // 生产者</span><br><span class="line">    <span class="tag">&lt;<span class="name">module</span>&gt;</span>dubbo-micro-service-zookeeper<span class="tag">&lt;/<span class="name">module</span>&gt;</span> // 注册中心</span><br><span class="line">    <span class="tag">&lt;<span class="name">module</span>&gt;</span>dubbo-micro-service-api<span class="tag">&lt;/<span class="name">module</span>&gt;</span>       // 公用api</span><br><span class="line"><span class="tag">&lt;/<span class="name">modules</span>&gt;</span></span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/03/21/%E5%AE%9E%E8%B7%B5-spring-boot-dubbo/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1256,7 +635,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/07/12/%E9%9D%A2%E8%AF%95%E9%A2%98-%E4%BA%A4%E6%8D%A2%E4%B8%A4%E4%B8%AA%E5%8F%98%E9%87%8F%E7%9A%84%E5%80%BC/">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/20/Centos7-install-cmake/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -1270,7 +649,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2020/07/12/%E9%9D%A2%E8%AF%95%E9%A2%98-%E4%BA%A4%E6%8D%A2%E4%B8%A4%E4%B8%AA%E5%8F%98%E9%87%8F%E7%9A%84%E5%80%BC/" class="post-title-link" itemprop="url">面试题-交换两个变量的值</a>
+            <a href="/2019/03/20/Centos7-install-cmake/" class="post-title-link" itemprop="url">Centos7-install-cmake</a>
         </h2>
 
         <div class="post-meta">
@@ -1279,23 +658,17 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
+              
 
-              <time title="Created: 2020-07-12 08:02:14" itemprop="dateCreated datePublished" datetime="2020-07-12T08:02:14+08:00">2020-07-12</time>
+              <time title="Created: 2019-03-20 10:58:33 / Modified: 11:00:25" itemprop="dateCreated datePublished" datetime="2019-03-20T10:58:33+08:00">2019-03-20</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-12 08:10:29" itemprop="dateModified" datetime="2020-08-12T08:10:29+08:00">2020-08-12</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E9%9D%A2%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">面试</span></a>
+                  <a href="/categories/Linux%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index"><span itemprop="name">Linux运维</span></a>
                 </span>
             </span>
 
@@ -1311,14 +684,138 @@
 
       
           <blockquote>
-<p>刚去杭州面试的第二家公司，做笔试的时候的时候遇到的。最近几天在整理以前的笔记发现了。简单记录下。</p>
+<p>前年的笔记内容，被我翻出来了。</p>
 </blockquote>
-<h3 id="互换两个变量的值"><a href="#互换两个变量的值" class="headerlink" title="互换两个变量的值"></a>互换两个变量的值</h3><blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a=<span class="number">10</span>;</span><br><span class="line"><span class="keyword">int</span> b=<span class="number">12</span>;</span><br><span class="line"><span class="comment">// 通过两个变量之间的运算输出结果 a = 12 b = 10</span></span><br></pre></td></tr></table></figure>
+<h1 id="Centos7-install-cmake"><a href="#Centos7-install-cmake" class="headerlink" title="Centos7-install-cmake"></a>Centos7-install-cmake</h1><blockquote>
+<p>CMake是一个跨平台的安装（<a href="https://baike.baidu.com/item/%E7%BC%96%E8%AF%91" target="_blank" rel="noopener">编译</a>）工具，可以用简单的语句来描述所有平台的安装(编译过程)。他能够输出各种各样的makefile或者project文件，能测试<a href="https://baike.baidu.com/item/%E7%BC%96%E8%AF%91%E5%99%A8" target="_blank" rel="noopener">编译器</a>所支持的C++特性,类似UNIX下的automake。只是 CMake 的<a href="https://baike.baidu.com/item/%E7%BB%84%E6%80%81%E6%A1%A3" target="_blank" rel="noopener">组态档</a>取名为 CMakeLists.txt。Cmake 并不直接建构出最终的软件，而是产生标准的建构档（如 Unix 的 Makefile 或 Windows Visual C++ 的 projects/workspaces），然后再依一般的建构方式使用。这使得熟悉某个<a href="https://baike.baidu.com/item/%E9%9B%86%E6%88%90%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83" target="_blank" rel="noopener">集成开发环境</a>（IDE）的开发者可以用标准的方式建构他的软件，这种可以使用各平台的原生建构系统的能力是 CMake 和 SCons 等其他类似系统的区别之处。</p>
 </blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">swapTest1</span><span class="params">()</span></span>&#123;</span><br><span class="line">		<span class="keyword">int</span> a=<span class="number">10</span>;</span><br><span class="line">		<span class="keyword">int</span> b=<span class="number">12</span>;</span><br><span class="line">		a=a^b; <span class="comment">//a=1010^b=1100;</span></span><br><span class="line">		b=a^b; <span class="comment">//a=0110^b=1100;</span></span><br><span class="line">		a=a^b; <span class="comment">//a=0110^b=1010;</span></span><br><span class="line">		<span class="comment">//a=1100=12;b=1010;</span></span><br><span class="line">		System.out.println(a);</span><br><span class="line">		System.out.println(b);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">swapTest2</span><span class="params">()</span></span>&#123;</span><br><span class="line">		<span class="keyword">int</span> a = <span class="number">10</span>;</span><br><span class="line">		<span class="keyword">int</span> b = <span class="number">12</span>;</span><br><span class="line">		a = a + b; <span class="comment">// 22 = 10 + 12</span></span><br><span class="line">		b = a - b; <span class="comment">// 10 = 22 - 12</span></span><br><span class="line">		a = a - b; <span class="comment">// 12 = 22 - 10</span></span><br><span class="line">		System.out.println(a);</span><br><span class="line">		System.out.println(b);</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="部署过程"><a href="#部署过程" class="headerlink" title="部署过程"></a>部署过程</h2><h3 id="1-下载cmake-Source-Code"><a href="#1-下载cmake-Source-Code" class="headerlink" title="1.下载cmake Source Code"></a>1.下载cmake Source Code</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https:&#x2F;&#x2F;cmake.org&#x2F;files&#x2F;v3.3&#x2F;cmake-3.3.2.tar.gz</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-解压缩"><a href="#2-解压缩" class="headerlink" title="2.解压缩"></a>2.解压缩</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar xzvf cmake-3.3.2.tar.gz</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-执行引导命令"><a href="#3-执行引导命令" class="headerlink" title="3.执行引导命令"></a>3.执行引导命令</h3><ul>
+<li>注意：此时会检查gcc ,gcc-c++,是否安装和版本，如果没有请先安装。</li>
+<li>进入到cmake文件夹中执行</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum install gcc</span><br><span class="line">yum install gcc-c++</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd cmake-3.3.2  </span><br><span class="line">.&#x2F;bootstrap</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-执行make"><a href="#4-执行make" class="headerlink" title="4.执行make"></a>4.执行make</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gmake</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-执行安装（root权限）"><a href="#5-执行安装（root权限）" class="headerlink" title="5.执行安装（root权限）"></a>5.执行安装（root权限）</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make install</span><br></pre></td></tr></table></figure>
 
 
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/20/%E5%90%8E%E7%AB%AF%E5%BA%94%E7%94%A8%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/03/20/%E5%90%8E%E7%AB%AF%E5%BA%94%E7%94%A8%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87/" class="post-title-link" itemprop="url">后端应用性能指标</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-03-20 10:31:19" itemprop="dateCreated datePublished" datetime="2019-03-20T10:31:19+08:00">2019-03-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-22 23:56:00" itemprop="dateModified" datetime="2021-09-22T23:56:00+08:00">2021-09-22</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA/" itemprop="url" rel="index"><span itemprop="name">基础理论</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="后端应用性能指标"><a href="#后端应用性能指标" class="headerlink" title="后端应用性能指标"></a>后端应用性能指标</h2><blockquote>
+<p>很久以前的笔记，被翻出来了。</p>
+</blockquote>
+<h3 id="吞吐量、PV、QPS、TPS、RPS、I-O负载概念。"><a href="#吞吐量、PV、QPS、TPS、RPS、I-O负载概念。" class="headerlink" title="吞吐量、PV、QPS、TPS、RPS、I/O负载概念。"></a>吞吐量、PV、QPS、TPS、RPS、I/O负载概念。</h3><blockquote>
+<p><strong>吞吐量</strong>:指单位时间内系统处理用户的请求数,不同的角度评估方式也不同。</p>
+<p>**PV **  :  是Page View的缩写。来自浏览器的一次html内容请求会被看作一个PV。</p>
+<p><strong>QPS</strong>：Queries Per Second意思是“每秒查询率”，是一台服务器每秒能够相应的查询次数，是对一个特定的查询服务器在规定时间内所处理流量多少的衡量标准。</p>
+<p><strong>TPS：</strong>是Transactions Per Second的缩写，也就是事务数/秒。它是软件测试结果的测量单位。一个事务是指一个客户机向服务器发送请求然后服务器做出反应的过程。客户机在发送请求时开始计时，收到服务器响应后结束计时，以此来计算使用的时间和完成的事务个数，</p>
+<p><strong>RPS</strong> : 是Requests Per Second的缩写,指并发数/平均响应时间。</p>
+<p><strong>I/0</strong> 负载: I/O 是 input/output的缩写，即输入输出端口。每个设备都会有一个专用的I/O地址，用来处理自己的输入输出信息。一个系统要能正确工作，必须要有数据通道（data paths）的机制，软件和硬件系统都概莫能外。对于计算机系统而言，必须要有data paths的机制来确保CPU, RAM和I/O设备之间的信息数据能正确的流动。这些data paths,通常被称为总线(BUS)，是计算机内部主要的通信通道。若想深入可以参考  <a href="https://book.douban.com/subject/1776614/" target="_blank" rel="noopener">Understanding the Linux Kernel</a>。</p>
+</blockquote>
+<ul>
+<li>在技术人员的职业生涯中，总是不断开发新的系统。在设计系统的时候，因场景、时间而异。一个系统并不是开始就能设计的非常完美，绝对多数的情况是在有限的资源，优先解决核心问题。并预测可能发生的问题，通过反复迭代的逐步消除痛点。这本身是一个持久性的过程。但是早期优良的架构设计能为未来的工作带来非常大的帮助，如何去评判设计是否合理需要数据佐证。吞吐量、PV、QPS、TPS、RPS、I/O这些指标早设计初期能为开发人员提供非常大的帮助。</li>
+</ul>
+<h2 id="参考定律"><a href="#参考定律" class="headerlink" title="参考定律"></a>参考定律</h2><blockquote>
+<p>在设计系统时，应该多思考**<a href="http://wiki.mbalib.com/wiki/%E5%A2%A8%E8%8F%B2%E5%AE%9A%E5%BE%8B" target="_blank" rel="noopener">墨菲定律</a>**</p>
+<ul>
+<li>任何事情都没表面看起来那么简单。</li>
+<li>所以事情都会比你预期的时间长。</li>
+<li>可能出错的事情总会出错。</li>
+<li>如果你担心某一件发生，那么它就更有可能发生。</li>
+</ul>
+<p>在系统划分的时，也要思考**<a href="http://www.melconway.com/Home/Conways_Law.html?spm=5176.100239.blogcont8611.8.e7792abC1tP3C" target="_blank" rel="noopener">康威定律 </a>** </p>
+<ul>
+<li>系统架构是公司组织架构的反映。</li>
+<li>应该按照业务闭环进行系统拆分/组织架构拆分,实现闭环/高内聚/低耦合,减少沟通成本。</li>
+<li>在合适的时间进行系统拆分,不要一开始就吧系统/服务拆分非常细。虽然闭环，但是每个人维护的系统多,维护成本高。</li>
+</ul>
+<p>​                                                            —亿级流量网站架构核心技术 </p>
+</blockquote>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/03/20/%E5%90%8E%E7%AB%AF%E5%BA%94%E7%94%A8%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1336,7 +833,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/7/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/15/">15</a><a class="extend next" rel="next" href="/page/7/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
