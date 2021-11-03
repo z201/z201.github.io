@@ -34,7 +34,7 @@
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211023224706.png">
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211020020028.png">
 <meta property="article:published_time" content="2018-12-31T16:00:01.000Z">
-<meta property="article:modified_time" content="2021-10-23T14:47:29.013Z">
+<meta property="article:modified_time" content="2021-11-02T12:41:21.488Z">
 <meta property="article:author" content="胖枫叶">
 <meta property="article:tag" content="Jvm">
 <meta property="article:tag" content="Java">
@@ -281,7 +281,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-10-23 22:47:29" itemprop="dateModified" datetime="2021-10-23T22:47:29+08:00">2021-10-23</time>
+                <time title="Modified: 2021-11-02 20:41:21" itemprop="dateModified" datetime="2021-11-02T20:41:21+08:00">2021-11-02</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -331,7 +331,7 @@
 </li>
 </ul>
 <h4 id="新生代"><a href="#新生代" class="headerlink" title="新生代"></a>新生代</h4><ul>
-<li>新生代是类的诞生、成长、消亡的区域，一个类在这里产生、应用，最后被垃圾回收器收集，结束生命。新生区又分为两部分：伊甸区（Eden space）和幸存区（Survivor pace），绝大多数的类都是在伊甸区被 new 出来的。幸存区有两个：0区（Survivor 0 space）和 1区（Survivor 1 space）。两个Survivor 区空间一样大，当Eden 区满了，则会触发普通GC，若 Eden 区中的对象经过垃圾回收没有被回收掉，会将Eden 区中的幸存对象移动到幸存0区。若幸存0区也满了，再对该区域进行垃圾回收，然后移动到1区，然后之前的0区将置为空，没有任何数据。显然，Survivor 区只是增加了对象在年轻代中逗留的时间，增加了被垃圾回收的可能性。那如果1区也满了呢？再移动到养老区。若养老区也满了，那么这时候将产生Full GC，进行养老区的内存清理。若养老区执行Full GC 之后发现依然无法进行对象的保存，就会产生 OOM 异常“OutOfMemoryError”。</li>
+<li>新生代是类的诞生、成长、消亡的区域，一个类在这里产生、应用，最后被垃圾回收器收集，结束生命。新生区又分为两部分：伊甸区（Eden space）和幸存区（Survivor pace），绝大多数的类都是在伊甸区被 new 出来的。幸存区有两个：0区（from Survivor 0 space）和 1区（to Survivor 1 space）。两个Survivor 区空间一样大，当Eden 区满了，则会触发普通GC，若 Eden 区中的对象经过垃圾回收没有被回收掉，会将Eden 区中的幸存对象移动到幸存0区。若幸存0区也满了，再对该区域进行垃圾回收，然后移动到1区，然后之前的0区将置为空，没有任何数据。显然，Survivor 区只是增加了对象在年轻代中逗留的时间，增加了被垃圾回收的可能性。那如果1区也满了呢？再移动到养老区。若养老区也满了，那么这时候将产生Full GC，进行养老区的内存清理。若养老区执行Full GC 之后发现依然无法进行对象的保存，就会产生 OOM 异常“OutOfMemoryError”。</li>
 <li>每次垃圾回收时都有大量的对象需要被回收。垃圾回收器在新生代采用的收集算法是Copying(复制)方法：它将可用内存按容量划分为大小相等的两块，每次只使用其中的一块。当这一块面对内存用完了，就将还存活的对象复制到另外一块，然后再把已使用的内存空间一次清理掉。由于新生代有每次垃圾回收时都有大量的对象需要被回收的特点，所以采用Copying算法，复制的存活对象较少，性能比较好。但是Copying算法还是有缺陷的，那就是内存的使用率只有一半。</li>
 </ul>
 <h4 id="OutOfMemoryError"><a href="#OutOfMemoryError" class="headerlink" title="OutOfMemoryError"></a>OutOfMemoryError</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java.lang.OutOfMemoryError: Java heap space</span><br></pre></td></tr></table></figure>
