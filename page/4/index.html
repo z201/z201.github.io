@@ -239,6 +239,91 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/08/%E5%AE%9E%E8%B7%B5-annotation-aop/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/04/08/%E5%AE%9E%E8%B7%B5-annotation-aop/" class="post-title-link" itemprop="url">实践-annotation-aop</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-04-08 09:42:50" itemprop="dateCreated datePublished" datetime="2018-04-08T09:42:50+08:00">2018-04-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-21 13:46:37" itemprop="dateModified" datetime="2021-09-21T13:46:37+08:00">2021-09-21</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>整理一下以前的学习代码。</p>
+</blockquote>
+<h3 id="Spring-Aop"><a href="#Spring-Aop" class="headerlink" title="Spring Aop"></a>Spring Aop</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">junit.version</span>&gt;</span>4.12<span class="tag">&lt;/<span class="name">junit.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">lmbok.version</span>&gt;</span>1.18.4<span class="tag">&lt;/<span class="name">lmbok.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">logback.version</span>&gt;</span>1.2.3<span class="tag">&lt;/<span class="name">logback.version</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- pom文件需要指定打包编码集，[WARNING] File encoding has not been set, using platform encoding GBK, i.e. build is platform dependent!  --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">project.build.sourceEncoding</span>&gt;</span>UTF-8<span class="tag">&lt;/<span class="name">project.build.sourceEncoding</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-test<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-aop<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-devtools<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">scope</span>&gt;</span>runtime<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;lmbok.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="基于注解的aop实现"><a href="#基于注解的aop实现" class="headerlink" title="基于注解的aop实现"></a>基于注解的aop实现</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> cn.z201.io.annotation.aop;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.annotation.ElementType;</span><br><span class="line"><span class="keyword">import</span> java.lang.annotation.Retention;</span><br><span class="line"><span class="keyword">import</span> java.lang.annotation.RetentionPolicy;</span><br><span class="line"><span class="keyword">import</span> java.lang.annotation.Target;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> z201.coding@gmail.com</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="meta">@Target</span>(ElementType.METHOD)</span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> AnnotationAop &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function">String <span class="title">value</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> cn.z201.io.annotation.aop;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.aspectj.lang.JoinPoint;</span><br><span class="line"><span class="keyword">import</span> org.aspectj.lang.annotation.*;</span><br><span class="line"><span class="keyword">import</span> org.aspectj.lang.reflect.MethodSignature;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Component;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> z201.coding@gmail.com</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@Aspect</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LogsAspect</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Pointcut</span>(<span class="string">"@annotation(cn.z201.io.annotation.aop.AnnotationAop)"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">cutMethod</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 异常通知：目标方法抛出异常时执行</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@AfterThrowing</span>(<span class="string">"cutMethod()"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">afterThrowing</span><span class="params">(JoinPoint joinPoint)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"  after throwing"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 环绕通知：灵活自由的在目标方法中切入代码</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Before</span>(<span class="string">"cutMethod()"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">around</span><span class="params">(JoinPoint joinPoint)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        <span class="comment">// 获取目标方法的名称</span></span><br><span class="line">        String methodName = joinPoint.getSignature().getName();</span><br><span class="line">        <span class="comment">// 获取方法传入参数</span></span><br><span class="line">        Object[] params = joinPoint.getArgs();</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> != params &amp;&amp; params.length != <span class="number">0</span>) &#123;</span><br><span class="line">            System.out.println(<span class="string">" method name "</span> + methodName + <span class="string">" args "</span> + params[<span class="number">0</span>]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 执行源方法</span></span><br><span class="line">        AnnotationAop annotationAop = getDeclaredAnnotation(joinPoint);</span><br><span class="line">        System.out.println(<span class="string">"  annotationAop  value "</span> + annotationAop.value());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取方法中声明的注解</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> joinPoint</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> NoSuchMethodException</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> AnnotationAop <span class="title">getDeclaredAnnotation</span><span class="params">(JoinPoint joinPoint)</span> <span class="keyword">throws</span> NoSuchMethodException </span>&#123;</span><br><span class="line">        <span class="comment">// 获取方法名</span></span><br><span class="line">        String methodName = joinPoint.getSignature().getName();</span><br><span class="line">        <span class="comment">// 反射获取目标类</span></span><br><span class="line">        Class&lt;?&gt; targetClass = joinPoint.getTarget().getClass();</span><br><span class="line">        <span class="comment">// 拿到方法对应的参数类型</span></span><br><span class="line">        Class&lt;?&gt;[] parameterTypes = ((MethodSignature) joinPoint.getSignature()).getParameterTypes();</span><br><span class="line">        <span class="comment">// 根据类、方法、参数类型（重载）获取到方法的具体信息</span></span><br><span class="line">        Method objMethod = targetClass.getMethod(methodName, parameterTypes);</span><br><span class="line">        <span class="comment">// 拿到方法定义的注解信息</span></span><br><span class="line">        AnnotationAop annotation = objMethod.getDeclaredAnnotation(AnnotationAop<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">        <span class="comment">// 返回</span></span><br><span class="line">        <span class="keyword">return</span> annotation;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> cn.z201.io.annotation.aop;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.SpringApplication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.autoconfigure.SpringBootApplication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.EnableAspectJAutoProxy;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> z201.coding@gmail.com</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="meta">@EnableAspectJAutoProxy</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AnnotationApp</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        SpringApplication.run(AnnotationApp<span class="class">.<span class="keyword">class</span>, <span class="title">args</span>)</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> cn.z201.io.annotation.aop;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.*;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.servlet.ModelAndView;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> z201.coding@gmail.com</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping</span>(<span class="string">""</span>)</span><br><span class="line">    <span class="meta">@AnnotationAop</span>(<span class="string">"Aop"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">index</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        ModelAndView modelAndView = <span class="keyword">new</span> ModelAndView();</span><br><span class="line">        modelAndView.addObject(<span class="string">"value"</span>, <span class="string">"hello annotationApp  "</span>);</span><br><span class="line">        <span class="keyword">return</span> modelAndView.getModelMap();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>输出结果</p>
+<p>​    控制台 annotationAop  value Aop</p>
+<p>​        响应 <strong>{</strong>“value”: “hello annotationApp  “<strong>}</strong></p>
+</blockquote>
+<h3 id="END"><a href="#END" class="headerlink" title="END"></a>END</h3>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/09/20/Permission-design/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1124,129 +1209,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/11/20/Docker-Compose-Redis5-0-Mysql5-7/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/11/20/Docker-Compose-Redis5-0-Mysql5-7/" class="post-title-link" itemprop="url">Docker-Compose-Redis5.0+Mysql5.7</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-11-20 15:58:13" itemprop="dateCreated datePublished" datetime="2020-11-20T15:58:13+08:00">2020-11-20</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-01-13 14:46:29" itemprop="dateModified" datetime="2021-01-13T14:46:29+08:00">2021-01-13</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Docker/" itemprop="url" rel="index"><span itemprop="name">Docker</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>记录下使用docker-compose构建管理Redis、mysql。</p>
-</blockquote>
-<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><ol>
-<li>创建工作目录</li>
-</ol>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -p docker docker/mysql docker/mysql/data docker/redis docker/redis/data</span><br><span class="line"><span class="comment"># 使用 tree docker 查看目录结构 yum -y install tree 安装</span></span><br><span class="line">$ tree docker</span><br><span class="line">docker</span><br><span class="line">├── mysql</span><br><span class="line">│   └── data</span><br><span class="line">└── redis</span><br><span class="line">    └── data</span><br><span class="line">$ touch docker/mysql/my.cnf docker/redis/redis.conf </span><br><span class="line">$ tree docker</span><br><span class="line">docker</span><br><span class="line">├── mysql</span><br><span class="line">│   ├── data</span><br><span class="line">│   └── my.cnf</span><br><span class="line">└── redis</span><br><span class="line">    ├── data</span><br><span class="line">    └── redis.conf</span><br></pre></td></tr></table></figure>
-
-<ol start="2">
-<li>准备my.conf 、redis.conf<ol>
-<li>my.conf</li>
-</ol>
-</li>
-</ol>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">[client]</span><br><span class="line"> port = 3306</span><br><span class="line"> socket = /var/lib/mysql/data/mysql.sock</span><br><span class="line">[mysqld]</span><br><span class="line"> <span class="comment"># 针对5.7版本执行group by字句出错问题解决</span></span><br><span class="line">sql_mode=<span class="string">'STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'</span></span><br><span class="line"> <span class="comment"># 一般配置选项</span></span><br><span class="line"> basedir = /var/lib/mysql</span><br><span class="line"> datadir = /var/lib/mysql/data</span><br><span class="line"> port = 3306</span><br><span class="line"> socket = /var/lib/mysql/data/mysql.sock</span><br><span class="line"> lc-messages-dir = /usr/share/mysql <span class="comment"># 务必配置此项，否则执行sql出错时，只能显示错误代码而不显示具体错误消息</span></span><br><span class="line"> character-set-server=utf8</span><br><span class="line"> back_log = 300</span><br><span class="line"> max_connections = 3000</span><br><span class="line"> max_connect_errors = 50</span><br><span class="line"> table_open_cache = 4096</span><br><span class="line"> max_allowed_packet = 32M</span><br><span class="line"> <span class="comment">#binlog_cache_size = 4M</span></span><br><span class="line"> max_heap_table_size = 128M</span><br><span class="line"> read_rnd_buffer_size = 16M</span><br><span class="line"> sort_buffer_size = 16M</span><br><span class="line"> join_buffer_size = 16M</span><br><span class="line"> thread_cache_size = 16</span><br><span class="line"> query_cache_size = 64M</span><br><span class="line"> query_cache_limit = 4M</span><br><span class="line"> ft_min_word_len = 8</span><br><span class="line"> thread_stack = 512K</span><br><span class="line"> transaction_isolation = REPEATABLE-READ</span><br><span class="line"> tmp_table_size = 64M</span><br><span class="line"> <span class="comment">#log-bin=mysql-bin</span></span><br><span class="line"> long_query_time = 6</span><br><span class="line"> server_id=1</span><br><span class="line"> innodb_buffer_pool_size = 256M</span><br><span class="line"> innodb_thread_concurrency = 16</span><br><span class="line"> innodb_log_buffer_size = 16M</span><br></pre></td></tr></table></figure>
-
-<ol start="2">
-<li>redis.conf 可以去这里下载 <a href="https://redis.io/topics/config" target="_blank" rel="noopener">官网</a></li>
-</ol>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">wget https://raw.githubusercontent.com/redis/redis/5.0/redis.conf</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改内容</span></span><br><span class="line">daemonize no     <span class="comment">## 若使用开机启动，生成pid，该项必须设置为诶yes，否则redis将不能够正常执行开机启动(systemctl start redis,执行后一直卡着，直到超时)</span></span><br><span class="line"><span class="comment">#bind 127.0.0.1  ##注释掉，允许所有其他ip访问，真实使用最好坐下限制，只允许某些主机访问</span></span><br><span class="line">protected-mode no  <span class="comment">## 允许其他机器上的客户端连接当前redis，配置文件设置该项，则开机启动处就可以去掉--protected no </span></span><br><span class="line">requirepass root  <span class="comment">##设置密码</span></span><br><span class="line"><span class="comment"># daemonize yes，他的作用是开启守护进程模式，在该模式下，redis会在后台运行，并将进程pid号写入至redis.conf选项pidfile设置的文件中，此时redis将一直运行，除非手动kill该进程。但是在后面的命令中“-d”选项也是开启daemonize，这是docker自家的方式。</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="编写Docker-Compose文件"><a href="#编写Docker-Compose文件" class="headerlink" title="编写Docker-Compose文件"></a>编写Docker-Compose文件</h2><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">version : <span class="string">'3'</span></span><br><span class="line">services:</span><br><span class="line">  mysql:</span><br><span class="line">    image: mysql/mysql-server:<span class="number">5.7</span>.<span class="number">18</span></span><br><span class="line">    container_name: mysql5.<span class="number">7.18</span>-dev</span><br><span class="line">    networks:</span><br><span class="line">      - net-shop-db</span><br><span class="line">    ports:</span><br><span class="line">      - <span class="string">"3306:3306"</span></span><br><span class="line">    volumes:</span><br><span class="line">      - /opt/docker/mysql/my.cnf:/etc/my.cnf <span class="comment"># 映射数据库配置文件</span></span><br><span class="line">      - /opt/docker/mysql/data:/var/lib/mysql/data  <span class="comment"># 映射数据库保存目录到宿主机，防止数据丢失</span></span><br><span class="line">      - /opt/docker/mysql/log:/var/log/mysql <span class="comment"># 日志文件</span></span><br><span class="line">      - /etc/localtime:/etc/localtime:ro <span class="comment"># 设置容器时区与宿主机保持一致</span></span><br><span class="line">    restart: always <span class="comment"># 设置容器自启模式</span></span><br><span class="line">    command: [</span><br><span class="line">      <span class="string">'--character-set-server=utf8mb4'</span>,</span><br><span class="line">      <span class="string">'--collation-server=utf8mb4_unicode_ci'</span>,</span><br><span class="line">      <span class="string">'--lower_case_table_names=1'</span>,</span><br><span class="line">      <span class="string">'--default-time-zone=+8:00'</span>]</span><br><span class="line">    environment:</span><br><span class="line">      - TZ=Asia/Shanghai <span class="comment"># 设置容器时区与宿主机保持一致</span></span><br><span class="line">      - MYSQL_ROOT_PASSWORD=root <span class="comment"># 设置root密码</span></span><br><span class="line">  redis:</span><br><span class="line">    image: redis:<span class="number">5.0</span>.<span class="number">5</span></span><br><span class="line">    container_name: redis5.<span class="number">0.6</span>-dev</span><br><span class="line">    networks:</span><br><span class="line">      - net-shop-db</span><br><span class="line">    ports:</span><br><span class="line">      - <span class="string">"6379:6379"</span></span><br><span class="line">    volumes:</span><br><span class="line">      - /etc/localtime:/etc/localtime:ro <span class="comment"># 设置容器时区与宿主机保持一致</span></span><br><span class="line">      - /opt/docker/redis/data:/data</span><br><span class="line">      - /opt/docker/redis/redis.conf:/etc/redis.conf</span><br><span class="line">    command: redis-server /etc/redis.conf <span class="comment"># 启动redis命令</span></span><br><span class="line">    environment:</span><br><span class="line">      - TZ=Asia/Shanghai <span class="comment"># 设置容器时区与宿主机保持一致</span></span><br><span class="line">    restart: always <span class="comment"># 设置容器自启模式</span></span><br><span class="line"></span><br><span class="line">networks:</span><br><span class="line">  net-shop-db:</span><br><span class="line">    driver: bridge</span><br></pre></td></tr></table></figure>
-
-<h2 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h2><blockquote>
-<p>注意需要提前启动docker</p>
-</blockquote>
-<ol>
-<li>创建并启动容器 <code>docker-compose -f docker-compose.yml up -d</code></li>
-<li>批量停止容器并清除容器 <code>docker-compose -f docker-compose.yml down</code></li>
-<li>重新构建容器 <code>docker-compose -f docker-compose.yml up --build -d</code></li>
-<li>启动失败，可以查看容器日志信息获取帮助 <code>docker logs 容器名词或容器ID # 既docker-compose.yml文件参数container_name指定的值</code></li>
-</ol>
-<h2 id="备注"><a href="#备注" class="headerlink" title="备注"></a>备注</h2><ol>
-<li>docker-compose 命令不存在、未找到命令。直接从github上下载，国内下载巨慢。</li>
-</ol>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 注意查看docker 版本 和 docker-compose 的版本</span></span><br><span class="line"><span class="built_in">cd</span> /usr/<span class="built_in">local</span>/bin/</span><br><span class="line"></span><br><span class="line">curl -L https://github.com/docker/compose/releases/download/1.27.4/docker-compose-`uname -s`-`uname -m` -o /usr/<span class="built_in">local</span>/bin/docker-compose</span><br><span class="line"><span class="comment">#。直接用国内的镜像</span></span><br><span class="line">curl -L https://get.daocloud.io/docker/compose/releases/download/1.27.4/docker-compose-`uname -s`-`uname -m` &gt; /usr/<span class="built_in">local</span>/bin/docker-compose</span><br><span class="line"></span><br><span class="line">chmod +x /usr/<span class="built_in">local</span>/bin/docker-compose</span><br></pre></td></tr></table></figure>
-
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://yefeihonours.github.io/post/docker/docker_compose/" target="_blank" rel="noopener">docker-compose 命令不存在、未找到命令</a></p>
-<p><a href="https://zhuanlan.zhihu.com/p/43654441" target="_blank" rel="noopener">使用 docker-compose 在 Docker 中启动有密码的 Redis 容器</a></p>
-<p><a href="https://cloud.tencent.com/developer/article/1678769" target="_blank" rel="noopener">Docker-Compose搭建mysql、redis、zookeeper、rabbitmq、consul、elasticsearch环境</a></p>
-<p><a href="https://juejin.cn/post/6844903655389265927" target="_blank" rel="noopener">Docker Compose多容器部署</a></p>
-<p><a href="https://colobu.com/2018/05/15/Stop-and-remove-all-docker-containers-and-images/" target="_blank" rel="noopener">停止、删除所有的docker容器和镜像</a></p>
-<p><a href="https://my.oschina.net/u/4362704/blog/3308004" target="_blank" rel="noopener">宿主机连接docker中的mysql</a></p>
-<p><a href="https://developer.aliyun.com/article/618035" target="_blank" rel="noopener">Docker Compose 安装 on centos7</a></p>
-<p><a href="https://cloud.tencent.com/developer/article/1678769" target="_blank" rel="noopener">Docker-Compose搭建mysql、redis、zookeeper、rabbitmq、consul、elasticsearch环境</a></p>
-<p><a href="https://zhuanlan.zhihu.com/p/140732202" target="_blank" rel="noopener">docker-compose一键安装redis+mysql+rabbitmq</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1313,7 +1279,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">90</span>
+          <span class="site-state-item-count">91</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1324,7 +1290,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">92</span>
+        <span class="site-state-item-count">93</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

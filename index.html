@@ -239,6 +239,609 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-MySQL/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-MySQL/" class="post-title-link" itemprop="url">查缺补漏-MySQL</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-11-17 01:46:06" itemprop="dateModified" datetime="2021-11-17T01:46:06+08:00">2021-11-17</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>本章是整理知识内容，为强化知识长期更新。</p>
+</blockquote>
+<h3 id="Mysql基础架构图"><a href="#Mysql基础架构图" class="headerlink" title="Mysql基础架构图"></a>Mysql基础架构图</h3><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/mysql/mysql%E6%9E%B6%E6%9E%84.svg" alt="mysql基础架构图"></p>
+<h4 id="简单介绍上图相关模块功能"><a href="#简单介绍上图相关模块功能" class="headerlink" title="简单介绍上图相关模块功能"></a>简单介绍上图相关模块功能</h4><ul>
+<li><p>连接器：管理连接，权限验证</p>
+</li>
+<li><p>查询缓存：命中缓存则直接返回结果</p>
+</li>
+<li><p>语法解析：词法分析，语法分析</p>
+</li>
+<li><p>查询优化：执行计划生成，索引选择</p>
+</li>
+<li><p>执行器：操作引擎，返回结果</p>
+</li>
+<li><p>存储引擎：存储数据，提供读写结构。</p>
+</li>
+</ul>
+<h4 id="连接器"><a href="#连接器" class="headerlink" title="连接器"></a>连接器</h4><blockquote>
+<p>我们需要连接到mysql服务端才能进行各种操作。</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用密码登录到时候我们会使用这种格式。</span></span><br><span class="line">mysql -h<span class="variable">$ip</span> -P<span class="variable">$port</span> -u<span class="variable">$user</span> -p</span><br></pre></td></tr></table></figure>
+
+<p>执行上述命令会提示输入密码。输入完密码后就进入了mysql。</p>
+<ul>
+<li><p>如果用户名或者密码输入错误，会提示一个<code>Access denied for user</code>到错误，然后客户端程序结束执行。</p>
+</li>
+<li><p>如果用户名和密码认证通过，连接器会去权限表中查询该用户拥有的所有权限。此后该连接里面的权限逻辑判断都会依赖认证成功时候读取到的权限。</p>
+</li>
+</ul>
+<blockquote>
+<p>因此当修改用户的权限之后，如果被修改用户的在登录状态是不会修改已经连接的权限。需要让被修改权限用户从新登录。</p>
+</blockquote>
+<ul>
+<li>实际上连接的方式有多种，上面通过密码的方式只是其中的一种方式。当客户端与服务端mysql进程进程建立连接，服务器的进程就会创建一个单独的线程来专门处理与这个客户端的交互，当该客户断开与服务端连接时，服务端并不会马上销毁对应的交互线程，而是缓存起来。当另一个新的客户端连接进来的时候，在把这个缓存的线程分配给新的客户端。这样就避免的频繁创建和修改线程，节省系统的开销。但是连接线程多了也会影响服务端，所以也有默认的参数限制客户端的连接数量。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 这里是查询服务端存在的连接。</span><br><span class="line">SHOW PROCESSLIST;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>我使用的阿里云的数据库，这里展示下结果集。这里需要注意，登录的账号需要有PROCESS的权限否则只能看到自己的连接信息（线程），我这里采用的root所以看到全部到。</p>
+</blockquote>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/mysql/SHOW_PROCESSLIST.png"></p>
+<ul>
+<li><a href="https://dev.mysql.com/doc/refman/5.7/en/processlist-table.html" target="_blank" rel="noopener">MySQL PROCESSLIST 官方文档</a></li>
+</ul>
+<blockquote>
+<p>连接完成后如果没有执行后续操作则 Command会显示Sleep的状态，长时间Sleep会导致连接自动断开。默认的时间是8小时，也就是参数 <code>wait_timeout</code>。当客户端连接断开后，若客户端再次发出请求就会提示一个</p>
+<p><code>Lost connection to MySQL server during query</code>，此时就只能重新建立连接了。</p>
+</blockquote>
+<h5 id="半双工"><a href="#半双工" class="headerlink" title="半双工"></a>半双工</h5><ul>
+<li>MySQL客户端/服务端通信协议是<code>“半双工”</code>的：在任一时刻，要么是服务器向客户端发送数据，要么是客户端向服务器发送数据，这两个动作不能同时发生。一旦一端开始发送消息，另一端要接收完整个消息才能响应它，所以我们无法也无须将一个消息切成小块独立发送，也没有办法进行流量控制。</li>
+<li>服务器响应给用户的数据通常会很多，由多个数据包组成。但是当服务器响应客户端请求时，客户端必须完整的接收整个返回结果，而不能简单的只取前面几条结果，然后让服务器停止发送。因而在实际开发中，尽量保持查询简单且只返回必需的数据，减小通信间数据包的大小和数量是一个非常好的习惯，这也是查询中尽量避免使用<code>SELECT *</code>以及加上<code>LIMIT</code>限制的原因之一。</li>
+</ul>
+<h5 id="长连接与短连接"><a href="#长连接与短连接" class="headerlink" title="长连接与短连接"></a>长连接与短连接</h5><ul>
+<li><p>在数据库里面，长连接是指数据库建立连接，如果客户端有持续的请求则使用同一个连接，短连接是指每次执行几次短的查询就断开连接，下次查询再次创建连接。由于创建的过程复杂，一般来说尽量减少创建连接的动作，尽可能使用长连接。特别是在开发的时候出现大伙突然连接不上测试库，此时就检查下连接是不是太多了。因为连接多了会导致内存消耗特别快。</p>
+<ul>
+<li>mysql的执行过程中临时使用的内存管理是在连接线程对象里面，服务端断开的时候才会释放，为了避免内存消耗过大，每次执行较大的操作之后，可以通过<code>mysql_reset_connection</code>来重新初始化连接资源。这个操作是不需要重新做权限，只是恢复到创建的初始状态。</li>
+</ul>
+</li>
+<li><p><a href="https://dev.mysql.com/doc/refman/5.7/en/mysql-reset-connection.html" target="_blank" rel="noopener">MySQL mysql_reset_connection 官方文档</a></p>
+</li>
+</ul>
+<h4 id="查询缓存"><a href="#查询缓存" class="headerlink" title="查询缓存"></a>查询缓存</h4><blockquote>
+<p> 一个不被建议使用的功能，在新版的8.0中已经被删除了。总结就是弊大于利。</p>
+</blockquote>
+<ul>
+<li>建立完成后，假设执行一次<code>SELECT</code>语句，执行逻辑就会到第二部查询缓存。mysql拿到一个查询之后，会先到缓存中寻找释放有完全对应的，因为之前执行的查询语句和结果集会直接被缓存起来，以<code>Keys-value</code>的形式。keys是查询语句-value是查询结果集。如果能命中这个key则直接返回value。咋一看挺有用的，但实际上查询缓存的实效的太频繁。并且keys的命中条件太不聪明了，<code>如果两次查询语句在任何的字符上存在不通（空格、大小写）</code>都不会缓存命中。为什么会频繁失效，因为如果对查询语句中的表进行更新，就会导致缓存失效。比如<code>INSERT、UPDATE 、DELETE 、TRUNCATE TABLE 、ALTER TABLE </code>等等就会导致缓存失效。</li>
+</ul>
+<h4 id="语法解析"><a href="#语法解析" class="headerlink" title="语法解析"></a>语法解析</h4><blockquote>
+<p>如果没有命中查询缓存，就要开始执行sql语句了。mysql需要做什么，因此需要对sql进行解析。MySQL通过关键字将SQL语句进行解析，并生成一颗对应的解析树。这个过程解析器主要通过语法规则来验证和解析。比如SQL中是否使用了错误的关键字或者关键字的顺序是否正确等等。预处理则会根据MySQL规则进一步检查解析树是否合法。比如检查要查询的数据表和数据列是否存在等等。</p>
+</blockquote>
+<ul>
+<li>本质上发送过来的是一个文本信息，这里就需要对该文本信息进行编译，涉及到<code>词法解析</code>、<code>语法解析</code>、<code>语义解析</code>等阶段。需要注意的是，这里会对sql语句进行一些检查，比如设计的相关表、表字段。这里检查通过的才会进入查询优化模块。</li>
+<li>根据SQL语言的功能可以划分成4个部分<ul>
+<li>DDL，英文叫做 Data Definition Language，也就是数据定义语言，它用来定义我们的数据库对象，包括数据库、数据表和列。通过使用 DDL，我们可以创建，删除和修改数据库和表结构。</li>
+<li>DML，英文叫做 Data Manipulation Language，数据操作语言，我们用它操作和数据库相关的记录，比如增加、删除、修改数据表中的记录。</li>
+<li>DCL，英文叫做 Data Control Language，数据控制语言，我们用它来定义访问权限和安全级别。</li>
+<li>DQL，英文叫做 Data Query Language，数据查询语言，我们用它查询想要的记录，它是 SQL 语言的重中之重。在实际的业务中，我们绝大多数情况下都是在和查询打交道，因此学会编写正确且高效的查询语句，是学习的重点。</li>
+</ul>
+</li>
+</ul>
+<h4 id="查询优化"><a href="#查询优化" class="headerlink" title="查询优化"></a>查询优化</h4><blockquote>
+<p>通过之前的语法解析，基本可以判定语法树是合法的，此时mysql就知道文本内容要做什么。</p>
+</blockquote>
+<ul>
+<li>mysql会对查询语句进行优化，优化的结果就是生成一个执行计划，这个计划会表明使用了那些查询索引，表之间的连接是什么样子的。有时候出现多种执行方式，只是效率不通，优化器会决定使用哪一个执行方案，这个时候就涉及到<code>EXPLAIN</code>语句，该语句可以查看sql到执行计划，这将涉及到查询优化。</li>
+<li>MySQL的查询优化器是一个非常复杂的部件，它使用了非常多的优化策略来生成一个最优的执行计划。<ul>
+<li>重新定义表的关联顺序（多张表关联查询时，并不一定按照SQL中指定的顺序进行，但有一些技巧可以指定关联顺序）</li>
+<li>优化函数</li>
+<li>提前终止查询（比如：使用Limit时，查找到满足数量的结果集后会立即终止查询）</li>
+<li>优化排序（在老版本MySQL会使用两次传输排序，即先读取行指针和需要排序的字段在内存中对其排序，然后再根据排序结果去读取数据行，而新版本采用的是单次传输排序，也就是一次读取所有的数据行，然后根据给定的列排序。对于<code>I/O</code>密集型应用，效率会高很多。</li>
+</ul>
+</li>
+</ul>
+<h4 id="执行器"><a href="#执行器" class="headerlink" title="执行器"></a>执行器</h4><blockquote>
+<p>进入到执行sql到环节。</p>
+</blockquote>
+<ul>
+<li>通过之前到查询优化，进入执行阶段，此时会先判断该连接用户是否有相关表的权限，如果没有会返回权限错误。如果有权限就会打开表，执行器会根据表定义的引擎去使用这个引擎提供的接口完成流程。</li>
+</ul>
+<h4 id="存储引擎"><a href="#存储引擎" class="headerlink" title="存储引擎"></a>存储引擎</h4><blockquote>
+<p> 关于存储引擎，这里明确提醒。不是三种也不是四种。而是多种因为随时可能出现新的引擎。</p>
+</blockquote>
+<ul>
+<li>我们常用的就是<code>InnoDB</code>和<code>MyISAM</code>，其它的不常见就不做过多介绍。mysql现在默认的引擎是<code>InnoDB</code>所以主要也是了解<code>InnoDB</code></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看当前服务支持的存储引擎</span></span><br><span class="line">SHOW ENGINES;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/mysql/SHOW_ENGINES.png"></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-MySQL/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/10/17/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-netty%E6%BA%90%E7%A0%81%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/10/17/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-netty%E6%BA%90%E7%A0%81%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" class="post-title-link" itemprop="url">源码分析-netty源码环境搭建</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-10-17 01:28:40" itemprop="dateCreated datePublished" datetime="2020-10-17T01:28:40+08:00">2020-10-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-11-17 01:38:59" itemprop="dateModified" datetime="2021-11-17T01:38:59+08:00">2021-11-17</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">源码分析</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="0x00-阅读源代码"><a href="#0x00-阅读源代码" class="headerlink" title="0x00 阅读源代码"></a>0x00 阅读源代码</h2><h3 id="下载源代码"><a href="#下载源代码" class="headerlink" title="下载源代码"></a>下载源代码</h3><ul>
+<li>阅读版本号 <code>netty-4.1.33.Final</code><ul>
+<li>由于github下载速度是在太慢了，这里用gitee克隆一个镜像。</li>
+<li>下载版本<code>git clone -b netty-4.1.33.Final git@gitee.com:Z201/netty.git</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="查看源代码结构"><a href="#查看源代码结构" class="headerlink" title="查看源代码结构"></a>查看源代码结构</h3><ul>
+<li>查看项目主要文件夹</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">tree -d  -L 1    </span><br><span class="line">├── all</span><br><span class="line">├── bom</span><br><span class="line">├── buffer</span><br><span class="line">├── codec</span><br><span class="line">├── codec-dns</span><br><span class="line">├── codec-haproxy</span><br><span class="line">├── codec-http</span><br><span class="line">├── codec-http2</span><br><span class="line">├── codec-memcache</span><br><span class="line">├── codec-mqtt</span><br><span class="line">├── codec-redis</span><br><span class="line">├── codec-smtp</span><br><span class="line">├── codec-socks</span><br><span class="line">├── codec-stomp</span><br><span class="line">├── codec-xml</span><br><span class="line">├── common</span><br><span class="line">├── dev-tools</span><br><span class="line">├── docker</span><br><span class="line">├── example</span><br><span class="line">├── handler</span><br><span class="line">├── handler-proxy</span><br><span class="line">├── license</span><br><span class="line">├── microbench</span><br><span class="line">├── resolver</span><br><span class="line">├── resolver-dns</span><br><span class="line">├── tarball</span><br><span class="line">├── target</span><br><span class="line">├── testsuite</span><br><span class="line">├── testsuite-autobahn</span><br><span class="line">├── testsuite-http2</span><br><span class="line">├── testsuite-osgi</span><br><span class="line">├── testsuite-shading</span><br><span class="line">├── transport</span><br><span class="line">├── transport-native-epoll  (native omitted - reserved keyword <span class="keyword">in</span> Java)</span><br><span class="line">├── transport-native-kqueue (native omitted - reserved keyword <span class="keyword">in</span> Java)</span><br><span class="line">├── transport-native-unix-common (native omitted - reserved keyword <span class="keyword">in</span> Java)</span><br><span class="line">├── transport-native-unix-common-tests </span><br><span class="line">├── transport-rxtx</span><br><span class="line">├── transport-sctp</span><br><span class="line">└── transport-udt</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>将项目导入idea中，笔者采用mac系统。这里需要注意需要安装部分软件构件系统。</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">brew install autoconf automake libtool</span><br><span class="line"><span class="meta">#</span><span class="bash"> 如果安装了国内的镜像出现Error opening archive: Failed to open</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> <span class="built_in">export</span> HOMEBREW_BOTTLE_DOMAIN=<span class="string">''</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 参考文档 https://zhuanlan.zhihu.com/p/383707713</span></span><br><span class="line">mvn install -Dmaven.test.skip=true</span><br></pre></td></tr></table></figure>
+
+<h2 id="0x01-根据官方文档快速入门"><a href="#0x01-根据官方文档快速入门" class="headerlink" title="0x01 根据官方文档快速入门"></a>0x01 根据官方文档快速入门</h2><blockquote>
+<p>强烈推荐认真阅读netty的官方文档。</p>
+</blockquote>
+<ul>
+<li>官方文档地址 ：<a href="https://netty.io/wiki/index.html" target="_blank" rel="noopener">https://netty.io/wiki/index.html</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCore/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCore/" class="post-title-link" itemprop="url">查缺补漏-JavaCore</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-11-15 12:07:38" itemprop="dateModified" datetime="2021-11-15T12:07:38+08:00">2021-11-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>本章是整理知识内容，为强化知识长期更新。</p>
+</blockquote>
+<h3 id="面向对象思想"><a href="#面向对象思想" class="headerlink" title="面向对象思想"></a>面向对象思想</h3><ul>
+<li>面向对象是一个思想，时间万物皆可以被看做一个对象。</li>
+</ul>
+<h4 id="封装"><a href="#封装" class="headerlink" title="封装"></a>封装</h4><ul>
+<li>隐藏对象的属性和实现的具体细节，只对外暴露公共访问方式。</li>
+</ul>
+<h4 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h4><ul>
+<li>当多个类出现相同代码逻辑时，我们通常将相同的代码重构到一个类中，如果是绑定关系就可以使用继承。</li>
+<li>Java中类是单继承。</li>
+</ul>
+<h4 id="多态"><a href="#多态" class="headerlink" title="多态"></a>多态</h4><ul>
+<li>一个事物的的多种状态，比如女人、男人都是人的性别。人的性别就分为女人、男人。</li>
+</ul>
+<h4 id="抽象"><a href="#抽象" class="headerlink" title="抽象"></a>抽象</h4><ul>
+<li>在逻辑上看似相关的，想要把他们联系起来。这样可以提高效率。矩形、圆形，都可以具有周长和面积两个方法，但是计算的方式完全不同，矩形和圆形之间肯定不能构成子父类的关系，那么只能是同时去继承一个父类。这时，就引出了抽象的概念。</li>
+</ul>
+<h3 id="重写和重载"><a href="#重写和重载" class="headerlink" title="重写和重载"></a>重写和重载</h3><ul>
+<li>重载：同一个类中，方法名相同，参数个数或者类型不相同，返回类型可以不相同。</li>
+<li>重写：类的继承关系中体现，子类重写父类的方法。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>区别点</th>
+<th>重载方法</th>
+<th>重写方法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>发生范围</td>
+<td>同一个类</td>
+<td>子类</td>
+</tr>
+<tr>
+<td>参数列表</td>
+<td>必须修改</td>
+<td>一定不能修改</td>
+</tr>
+<tr>
+<td>返回类型</td>
+<td>可修改</td>
+<td>子类方法返回值类型应比父类方法返回值类型更小或相等</td>
+</tr>
+<tr>
+<td>异常</td>
+<td>可修改</td>
+<td>子类方法声明抛出的异常类应比父类方法声明抛出的异常类更小或相等；</td>
+</tr>
+<tr>
+<td>访问修饰符</td>
+<td>可修改</td>
+<td>一定不能做更严格的限制（可以降低限制）</td>
+</tr>
+<tr>
+<td>发生阶段</td>
+<td>编译期</td>
+<td>运行期</td>
+</tr>
+</tbody></table>
+<ul>
+<li><p>重写(override) </p>
+<ul>
+<li>存在父类和子类之间。</li>
+<li>方法名、参数、返回值相同。</li>
+<li>方法被<code>final</code>修饰不能被重写。</li>
+<li>子类重写父类方法后，不能抛出比父类方法的异常。子类不能缩写父类的方法<code>访问权限</code>。</li>
+</ul>
+</li>
+<li><p>重载(overload)</p>
+<ul>
+<li>参数类型、个数、顺序至少有一个不相同。</li>
+<li>不能重载只有返回值不同的方法名。</li>
+<li>存在于父类和子类、同类中。</li>
+</ul>
+</li>
+<li><p>Constructor 不能被 override（重写）,但是可以 overload（重载）,所以你可以看到⼀个类中有多个构造函数的情况。</p>
+</li>
+</ul>
+<h3 id="介绍下-Java-基本数据类型"><a href="#介绍下-Java-基本数据类型" class="headerlink" title="介绍下 Java 基本数据类型"></a>介绍下 Java 基本数据类型</h3><ul>
+<li>Java中存在8个原生数据类型，同时又分成四种：整形、浮点型、char、Boolean。它们之间存在自动类型转换，规则是从小到大。并且都存在自动装箱拆箱特性，但是这种操作是隐式操作而且在某些情况会导致CG压力增大。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">类型</th>
+<th align="center">存储需求</th>
+<th align="center">取值范围</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">int</td>
+<td align="center">4字节</td>
+<td align="center">-2 147 483 638 ～ 2 147 483 637</td>
+</tr>
+<tr>
+<td align="center">short</td>
+<td align="center">2字节</td>
+<td align="center">-32 768 ～ 32 767</td>
+</tr>
+<tr>
+<td align="center">long</td>
+<td align="center">8字节</td>
+<td align="center">-9 223 372 036 854 775 808 ～ 9 223 372 036 854 775 807</td>
+</tr>
+<tr>
+<td align="center">byte</td>
+<td align="center">1字节</td>
+<td align="center">- 128 ～ 127</td>
+</tr>
+</tbody></table>
+<ul>
+<li>整型的范围与运行Java运行的硬件没有关系，所有的数据类型所占的字节数量与平台无关。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">类型</th>
+<th align="center">存储需求</th>
+<th align="center">取值范围</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">float</td>
+<td align="center">4字节</td>
+<td align="center">大约 $\pm$ 3.402 823 37F + 38F (有效位数为7～8位)</td>
+</tr>
+<tr>
+<td align="center">double</td>
+<td align="center">8字节</td>
+<td align="center">大约 $\pm$ 1.797 693 134 862 315 70E + 308 （有效位数为15位）</td>
+</tr>
+</tbody></table>
+<ul>
+<li><p>double这种类型的精度是float的两倍。</p>
+</li>
+<li><p>所有浮点数值计算都遵循IEEE 754规范，下面是溢出和出错的情况的三种特殊的浮点数值。</p>
+<ul>
+<li>正无穷大</li>
+<li>负无穷大</li>
+<li>NaN ( 不是一个数字 )</li>
+<li>一个整整数除以0的结果为正无穷大，计算0/0或者负数的平方根结果为NaN。</li>
+</ul>
+</li>
+<li><p>char类型</p>
+<ul>
+<li>char类型表示单个字符，属于Unicode编码表。因为历史原因，不建议在程序中使用。除非确实要对UTF-16代码单元进行操作。</li>
+<li>char字节大小<ul>
+<li>Java中无论是汉字还是英文字母都是用Unicode编码来表示的，一个Unicode是16位，每字节是8位，所以一个Unicode码占两字节。但是英文字母比较特殊，源自于8位（1字节）的ASCII吗，于是在Unicode码仅使用了低8位（1字节）就可以表示。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>boolean类型</p>
+<ul>
+<li>布尔类型，只有两个值false、true。基本用于判定条件。</li>
+<li>boolean字节大小<ul>
+<li>Java规范中并未明确规定boolean类型的大小。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>自动类型转换</p>
+<ul>
+<li><p><strong>整型、实型（常量）、字符型数据可以混合运算。运算中，不同类型的数据先转化为同一类型，然后进行运算。</strong></p>
+<p>转换从低级到高级。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">byte</span>,<span class="keyword">short</span>,<span class="keyword">char</span>—&gt; <span class="keyword">int</span> —&gt; <span class="keyword">long</span>—&gt; <span class="keyword">float</span> —&gt; <span class="keyword">double</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>不能对boolean进行类型转换、不能把对象类型转换成不相关的对象、把大容量的对象转换成小容量对象时需要强制类型转换、转换过程中间可能出现精度损失。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="装箱和拆箱boxing-or-unboxing"><a href="#装箱和拆箱boxing-or-unboxing" class="headerlink" title="装箱和拆箱boxing or unboxing"></a>装箱和拆箱<strong>boxing or unboxing</strong></h4><blockquote>
+<p>装箱：将基础类型用它们对应类型包装起来</p>
+<p>拆箱：将包装类型转换成基本数据类型</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th align="center">原语</th>
+<th align="center">对应的JDK类</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">int</td>
+<td align="center">java.lang.Integer</td>
+</tr>
+<tr>
+<td align="center">short</td>
+<td align="center">java.lang.Short</td>
+</tr>
+<tr>
+<td align="center">long</td>
+<td align="center">java.lang.Long</td>
+</tr>
+<tr>
+<td align="center">byte</td>
+<td align="center">java.lang.Byte</td>
+</tr>
+<tr>
+<td align="center">char</td>
+<td align="center">java.lang.Character</td>
+</tr>
+<tr>
+<td align="center">double</td>
+<td align="center">java.lang.Double</td>
+</tr>
+<tr>
+<td align="center">float</td>
+<td align="center">java.lang.Float</td>
+</tr>
+<tr>
+<td align="center">boolean</td>
+<td align="center">java.lang.Boolean</td>
+</tr>
+</tbody></table>
+<ul>
+<li><p>Java中只有原生数据类型是特殊的，它们不是对象。其它的都是对象。那么就一个尴尬的问题，集合类都是存放的对象，JDK5之后考虑到这个问题就自动进行逆行拆箱装箱的操作。</p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//比如所在泛型中是不能存放原生数据类型的，如要要存放原生数据类型的数据，需要装箱。</span></span><br><span class="line">Collection&lt;<span class="keyword">int</span>&gt; c = <span class="keyword">new</span> ArrayList&lt;<span class="keyword">int</span>&gt;(); <span class="comment">//这是无法编译成功的。</span></span><br><span class="line">Collection&lt;Integer&gt; cc = <span class="keyword">new</span> ArrayList&lt;Integer&gt;(); <span class="comment">//这样才行。</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>每个 JDK 类都提供了相应方法来解析它的内部表示，并将其转换为相应的原语类型。</p>
+</li>
+<li><p>但是注意装箱拆箱操作其实是非常消耗内存的举动，在该过程中可能会生成生成无用对象增加GC压力。所以尽量避免这中操作。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Integer sum = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> index  = <span class="number">1000</span>; index &lt; <span class="number">5000</span>; index ++)&#123;</span><br><span class="line"> sum+=index;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  比如这种，每次sum都需要自动拆箱。</p>
+</li>
+</ul>
+<ul>
+<li><p>默认情况下整数的类型都是int、浮点型的数都是double。</p>
+   <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">float</span> d = <span class="number">1.1f</span>; <span class="comment">//在后面添加f,大小写不区分。隐式强制类型转换</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCore/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Spring/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -395,195 +998,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Spring/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-MySQL/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-MySQL/" class="post-title-link" itemprop="url">查缺补漏-MySQL</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-11-02 20:57:23" itemprop="dateModified" datetime="2021-11-02T20:57:23+08:00">2021-11-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-<h3 id="Mysql基础架构图"><a href="#Mysql基础架构图" class="headerlink" title="Mysql基础架构图"></a>Mysql基础架构图</h3><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/mysql/mysql%E6%9E%B6%E6%9E%84.svg" alt="mysql基础架构图"></p>
-<h4 id="简单介绍上图相关模块功能"><a href="#简单介绍上图相关模块功能" class="headerlink" title="简单介绍上图相关模块功能"></a>简单介绍上图相关模块功能</h4><ul>
-<li><p>连接器：管理连接，权限验证</p>
-</li>
-<li><p>查询缓存：命中缓存则直接返回结果</p>
-</li>
-<li><p>语法解析：词法分析，语法分析</p>
-</li>
-<li><p>查询优化：执行计划生成，索引选择</p>
-</li>
-<li><p>执行器：操作引擎，返回结果</p>
-</li>
-<li><p>存储引擎：存储数据，提供读写结构。</p>
-</li>
-</ul>
-<h4 id="连接器"><a href="#连接器" class="headerlink" title="连接器"></a>连接器</h4><blockquote>
-<p>我们需要连接到mysql服务端才能进行各种操作。</p>
-</blockquote>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用密码登录到时候我们会使用这种格式。</span></span><br><span class="line">mysql -h<span class="variable">$ip</span> -P<span class="variable">$port</span> -u<span class="variable">$user</span> -p</span><br></pre></td></tr></table></figure>
-
-<p>执行上述命令会提示输入密码。输入完密码后就进入了mysql。</p>
-<ul>
-<li><p>如果用户名或者密码输入错误，会提示一个<code>Access denied for user</code>到错误，然后客户端程序结束执行。</p>
-</li>
-<li><p>如果用户名和密码认证通过，连接器会去权限表中查询该用户拥有的所有权限。此后该连接里面的权限逻辑判断都会依赖认证成功时候读取到的权限。</p>
-</li>
-</ul>
-<blockquote>
-<p>因此当修改用户的权限之后，如果被修改用户的在登录状态是不会修改已经连接的权限。需要让被修改权限用户从新登录。</p>
-</blockquote>
-<ul>
-<li>实际上连接的方式有多种，上面通过密码的方式只是其中的一种方式。当客户端与服务端mysql进程进程建立连接，服务器的进程就会创建一个单独的线程来专门处理与这个客户端的交互，当该客户断开与服务端连接时，服务端并不会马上销毁对应的交互线程，而是缓存起来。当另一个新的客户端连接进来的时候，在把这个缓存的线程分配给新的客户端。这样就避免的频繁创建和修改线程，节省系统的开销。但是连接线程多了也会影响服务端，所以也有默认的参数限制客户端的连接数量。</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 这里是查询服务端存在的连接。</span><br><span class="line">SHOW PROCESSLIST;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>我使用的阿里云的数据库，这里展示下结果集。这里需要注意，登录的账号需要有PROCESS的权限否则只能看到自己的连接信息（线程），我这里采用的root所以看到全部到。</p>
-</blockquote>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/mysql/SHOW_PROCESSLIST.png"></p>
-<ul>
-<li><a href="https://dev.mysql.com/doc/refman/5.7/en/processlist-table.html" target="_blank" rel="noopener">MySQL PROCESSLIST 官方文档</a></li>
-</ul>
-<blockquote>
-<p>连接完成后如果没有执行后续操作则 Command会显示Sleep的状态，长时间Sleep会导致连接自动断开。默认的时间是8小时，也就是参数 <code>wait_timeout</code>。当客户端连接断开后，若客户端再次发出请求就会提示一个</p>
-<p><code>Lost connection to MySQL server during query</code>，此时就只能重新建立连接了。</p>
-</blockquote>
-<h5 id="半双工"><a href="#半双工" class="headerlink" title="半双工"></a>半双工</h5><ul>
-<li>MySQL客户端/服务端通信协议是<code>“半双工”</code>的：在任一时刻，要么是服务器向客户端发送数据，要么是客户端向服务器发送数据，这两个动作不能同时发生。一旦一端开始发送消息，另一端要接收完整个消息才能响应它，所以我们无法也无须将一个消息切成小块独立发送，也没有办法进行流量控制。</li>
-<li>服务器响应给用户的数据通常会很多，由多个数据包组成。但是当服务器响应客户端请求时，客户端必须完整的接收整个返回结果，而不能简单的只取前面几条结果，然后让服务器停止发送。因而在实际开发中，尽量保持查询简单且只返回必需的数据，减小通信间数据包的大小和数量是一个非常好的习惯，这也是查询中尽量避免使用<code>SELECT *</code>以及加上<code>LIMIT</code>限制的原因之一。</li>
-</ul>
-<h5 id="长连接与短连接"><a href="#长连接与短连接" class="headerlink" title="长连接与短连接"></a>长连接与短连接</h5><ul>
-<li><p>在数据库里面，长连接是指数据库建立连接，如果客户端有持续的请求则使用同一个连接，短连接是指每次执行几次短的查询就断开连接，下次查询再次创建连接。由于创建的过程复杂，一般来说尽量减少创建连接的动作，尽可能使用长连接。特别是在开发的时候出现大伙突然连接不上测试库，此时就检查下连接是不是太多了。因为连接多了会导致内存消耗特别快。</p>
-<ul>
-<li>mysql的执行过程中临时使用的内存管理是在连接线程对象里面，服务端断开的时候才会释放，为了避免内存消耗过大，每次执行较大的操作之后，可以通过<code>mysql_reset_connection</code>来重新初始化连接资源。这个操作是不需要重新做权限，只是恢复到创建的初始状态。</li>
-</ul>
-</li>
-<li><p><a href="https://dev.mysql.com/doc/refman/5.7/en/mysql-reset-connection.html" target="_blank" rel="noopener">MySQL mysql_reset_connection 官方文档</a></p>
-</li>
-</ul>
-<h4 id="查询缓存"><a href="#查询缓存" class="headerlink" title="查询缓存"></a>查询缓存</h4><blockquote>
-<p> 一个不被建议使用的功能，在新版的8.0中已经被删除了。总结就是弊大于利。</p>
-</blockquote>
-<ul>
-<li>建立完成后，假设执行一次<code>SELECT</code>语句，执行逻辑就会到第二部查询缓存。mysql拿到一个查询之后，会先到缓存中寻找释放有完全对应的，因为之前执行的查询语句和结果集会直接被缓存起来，以<code>Keys-value</code>的形式。keys是查询语句-value是查询结果集。如果能命中这个key则直接返回value。咋一看挺有用的，但实际上查询缓存的实效的太频繁。并且keys的命中条件太不聪明了，<code>如果两次查询语句在任何的字符上存在不通（空格、大小写）</code>都不会缓存命中。为什么会频繁失效，因为如果对查询语句中的表进行更新，就会导致缓存失效。比如<code>INSERT、UPDATE 、DELETE 、TRUNCATE TABLE 、ALTER TABLE </code>等等就会导致缓存失效。</li>
-</ul>
-<h4 id="语法解析"><a href="#语法解析" class="headerlink" title="语法解析"></a>语法解析</h4><blockquote>
-<p>如果没有命中查询缓存，就要开始执行sql语句了。mysql需要做什么，因此需要对sql进行解析。MySQL通过关键字将SQL语句进行解析，并生成一颗对应的解析树。这个过程解析器主要通过语法规则来验证和解析。比如SQL中是否使用了错误的关键字或者关键字的顺序是否正确等等。预处理则会根据MySQL规则进一步检查解析树是否合法。比如检查要查询的数据表和数据列是否存在等等。</p>
-</blockquote>
-<ul>
-<li>本质上发送过来的是一个文本信息，这里就需要对该文本信息进行编译，涉及到<code>词法解析</code>、<code>语法解析</code>、<code>语义解析</code>等阶段。需要注意的是，这里会对sql语句进行一些检查，比如设计的相关表、表字段。这里检查通过的才会进入查询优化模块。</li>
-<li>根据SQL语言的功能可以划分成4个部分<ul>
-<li>DDL，英文叫做 Data Definition Language，也就是数据定义语言，它用来定义我们的数据库对象，包括数据库、数据表和列。通过使用 DDL，我们可以创建，删除和修改数据库和表结构。</li>
-<li>DML，英文叫做 Data Manipulation Language，数据操作语言，我们用它操作和数据库相关的记录，比如增加、删除、修改数据表中的记录。</li>
-<li>DCL，英文叫做 Data Control Language，数据控制语言，我们用它来定义访问权限和安全级别。</li>
-<li>DQL，英文叫做 Data Query Language，数据查询语言，我们用它查询想要的记录，它是 SQL 语言的重中之重。在实际的业务中，我们绝大多数情况下都是在和查询打交道，因此学会编写正确且高效的查询语句，是学习的重点。</li>
-</ul>
-</li>
-</ul>
-<h4 id="查询优化"><a href="#查询优化" class="headerlink" title="查询优化"></a>查询优化</h4><blockquote>
-<p>通过之前的语法解析，基本可以判定语法树是合法的，此时mysql就知道文本内容要做什么。</p>
-</blockquote>
-<ul>
-<li>mysql会对查询语句进行优化，优化的结果就是生成一个执行计划，这个计划会表明使用了那些查询索引，表之间的连接是什么样子的。有时候出现多种执行方式，只是效率不通，优化器会决定使用哪一个执行方案，这个时候就涉及到<code>EXPLAIN</code>语句，该语句可以查看sql到执行计划，这将涉及到查询优化。</li>
-<li>MySQL的查询优化器是一个非常复杂的部件，它使用了非常多的优化策略来生成一个最优的执行计划。<ul>
-<li>重新定义表的关联顺序（多张表关联查询时，并不一定按照SQL中指定的顺序进行，但有一些技巧可以指定关联顺序）</li>
-<li>优化函数</li>
-<li>提前终止查询（比如：使用Limit时，查找到满足数量的结果集后会立即终止查询）</li>
-<li>优化排序（在老版本MySQL会使用两次传输排序，即先读取行指针和需要排序的字段在内存中对其排序，然后再根据排序结果去读取数据行，而新版本采用的是单次传输排序，也就是一次读取所有的数据行，然后根据给定的列排序。对于<code>I/O</code>密集型应用，效率会高很多。</li>
-</ul>
-</li>
-</ul>
-<h4 id="执行器"><a href="#执行器" class="headerlink" title="执行器"></a>执行器</h4><blockquote>
-<p>进入到执行sql到环节。</p>
-</blockquote>
-<ul>
-<li>通过之前到查询优化，进入执行阶段，此时会先判断该连接用户是否有相关表的权限，如果没有会返回权限错误。如果有权限就会打开表，执行器会根据表定义的引擎去使用这个引擎提供的接口完成流程。</li>
-</ul>
-<h4 id="存储引擎"><a href="#存储引擎" class="headerlink" title="存储引擎"></a>存储引擎</h4><blockquote>
-<p> 关于存储引擎，这里明确提醒。不是三种也不是四种。而是多种因为随时可能出现新的引擎。</p>
-</blockquote>
-<ul>
-<li>我们常用的就是<code>InnoDB</code>和<code>MyISAM</code>，其它的不常见就不做过多介绍。mysql现在默认的引擎是<code>InnoDB</code>所以主要也是了解<code>InnoDB</code></li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看当前服务支持的存储引擎</span></span><br><span class="line">SHOW ENGINES;</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/mysql/SHOW_ENGINES.png"></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-MySQL/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -907,324 +1321,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2018/08/23/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-HashMap/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCore/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCore/" class="post-title-link" itemprop="url">查缺补漏-JavaCore</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-10-18 14:42:49" itemprop="dateModified" datetime="2021-10-18T14:42:49+08:00">2021-10-18</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-<h3 id="面向对象思想"><a href="#面向对象思想" class="headerlink" title="面向对象思想"></a>面向对象思想</h3><ul>
-<li>面向对象是一个思想，时间万物皆可以被看做一个对象。</li>
-</ul>
-<h4 id="封装"><a href="#封装" class="headerlink" title="封装"></a>封装</h4><ul>
-<li>隐藏对象的属性和实现的具体细节，只对外暴露公共访问方式。</li>
-</ul>
-<h4 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h4><ul>
-<li>当多个类出现相同代码逻辑时，我们通常将相同的代码重构到一个类中，如果是绑定关系就可以使用继承。</li>
-<li>Java中类是单继承。</li>
-</ul>
-<h4 id="多态"><a href="#多态" class="headerlink" title="多态"></a>多态</h4><ul>
-<li>一个事物的的多种状态，比如女人、男人都是人的性别。人的性别就分为女人、男人。</li>
-</ul>
-<h4 id="抽象"><a href="#抽象" class="headerlink" title="抽象"></a>抽象</h4><ul>
-<li>在逻辑上看似相关的，想要把他们联系起来。这样可以提高效率。矩形、圆形，都可以具有周长和面积两个方法，但是计算的方式完全不同，矩形和圆形之间肯定不能构成子父类的关系，那么只能是同时去继承一个父类。这时，就引出了抽象的概念。</li>
-</ul>
-<h3 id="重写和重载"><a href="#重写和重载" class="headerlink" title="重写和重载"></a>重写和重载</h3><ul>
-<li>重载：同一个类中，方法名相同，参数个数或者类型不相同，返回类型可以不相同。</li>
-<li>重写：类的继承关系中体现，子类重写父类的方法。</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>区别点</th>
-<th>重载方法</th>
-<th>重写方法</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>发生范围</td>
-<td>同一个类</td>
-<td>子类</td>
-</tr>
-<tr>
-<td>参数列表</td>
-<td>必须修改</td>
-<td>一定不能修改</td>
-</tr>
-<tr>
-<td>返回类型</td>
-<td>可修改</td>
-<td>子类方法返回值类型应比父类方法返回值类型更小或相等</td>
-</tr>
-<tr>
-<td>异常</td>
-<td>可修改</td>
-<td>子类方法声明抛出的异常类应比父类方法声明抛出的异常类更小或相等；</td>
-</tr>
-<tr>
-<td>访问修饰符</td>
-<td>可修改</td>
-<td>一定不能做更严格的限制（可以降低限制）</td>
-</tr>
-<tr>
-<td>发生阶段</td>
-<td>编译期</td>
-<td>运行期</td>
-</tr>
-</tbody></table>
-<ul>
-<li><p>重写(override) </p>
-<ul>
-<li>存在父类和子类之间。</li>
-<li>方法名、参数、返回值相同。</li>
-<li>方法被<code>final</code>修饰不能被重写。</li>
-<li>子类重写父类方法后，不能抛出比父类方法的异常。子类不能缩写父类的方法<code>访问权限</code>。</li>
-</ul>
-</li>
-<li><p>重载(overload)</p>
-<ul>
-<li>参数类型、个数、顺序至少有一个不相同。</li>
-<li>不能重载只有返回值不同的方法名。</li>
-<li>存在于父类和子类、同类中。</li>
-</ul>
-</li>
-<li><p>Constructor 不能被 override（重写）,但是可以 overload（重载）,所以你可以看到⼀个类中有多个构造函数的情况。</p>
-</li>
-</ul>
-<h3 id="介绍下-Java-基本数据类型"><a href="#介绍下-Java-基本数据类型" class="headerlink" title="介绍下 Java 基本数据类型"></a>介绍下 Java 基本数据类型</h3><ul>
-<li>Java中存在8个原生数据类型，同时又分成四种：整形、浮点型、char、Boolean。它们之间存在自动类型转换，规则是从小到大。并且都存在自动装箱拆箱特性，但是这种操作是隐式操作而且在某些情况会导致CG压力增大。</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th align="center">类型</th>
-<th align="center">存储需求</th>
-<th align="center">取值范围</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">int</td>
-<td align="center">4字节</td>
-<td align="center">-2 147 483 638 ～ 2 147 483 637</td>
-</tr>
-<tr>
-<td align="center">short</td>
-<td align="center">2字节</td>
-<td align="center">-32 768 ～ 32 767</td>
-</tr>
-<tr>
-<td align="center">long</td>
-<td align="center">8字节</td>
-<td align="center">-9 223 372 036 854 775 808 ～ 9 223 372 036 854 775 807</td>
-</tr>
-<tr>
-<td align="center">byte</td>
-<td align="center">1字节</td>
-<td align="center">- 128 ～ 127</td>
-</tr>
-</tbody></table>
-<ul>
-<li>整型的范围与运行Java运行的硬件没有关系，所有的数据类型所占的字节数量与平台无关。</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th align="center">类型</th>
-<th align="center">存储需求</th>
-<th align="center">取值范围</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">float</td>
-<td align="center">4字节</td>
-<td align="center">大约 $\pm$ 3.402 823 37F + 38F (有效位数为7～8位)</td>
-</tr>
-<tr>
-<td align="center">double</td>
-<td align="center">8字节</td>
-<td align="center">大约 $\pm$ 1.797 693 134 862 315 70E + 308 （有效位数为15位）</td>
-</tr>
-</tbody></table>
-<ul>
-<li><p>double这种类型的精度是float的两倍。</p>
-</li>
-<li><p>所有浮点数值计算都遵循IEEE 754规范，下面是溢出和出错的情况的三种特殊的浮点数值。</p>
-<ul>
-<li>正无穷大</li>
-<li>负无穷大</li>
-<li>NaN ( 不是一个数字 )</li>
-<li>一个整整数除以0的结果为正无穷大，计算0/0或者负数的平方根结果为NaN。</li>
-</ul>
-</li>
-<li><p>char类型</p>
-<ul>
-<li>char类型表示单个字符，属于Unicode编码表。因为历史原因，不建议在程序中使用。除非确实要对UTF-16代码单元进行操作。</li>
-<li>char字节大小<ul>
-<li>Java中无论是汉字还是英文字母都是用Unicode编码来表示的，一个Unicode是16位，每字节是8位，所以一个Unicode码占两字节。但是英文字母比较特殊，源自于8位（1字节）的ASCII吗，于是在Unicode码仅使用了低8位（1字节）就可以表示。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>boolean类型</p>
-<ul>
-<li>布尔类型，只有两个值false、true。基本用于判定条件。</li>
-<li>boolean字节大小<ul>
-<li>Java规范中并未明确规定boolean类型的大小。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>自动类型转换</p>
-<ul>
-<li><p><strong>整型、实型（常量）、字符型数据可以混合运算。运算中，不同类型的数据先转化为同一类型，然后进行运算。</strong></p>
-<p>转换从低级到高级。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">byte</span>,<span class="keyword">short</span>,<span class="keyword">char</span>—&gt; <span class="keyword">int</span> —&gt; <span class="keyword">long</span>—&gt; <span class="keyword">float</span> —&gt; <span class="keyword">double</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>不能对boolean进行类型转换、不能把对象类型转换成不相关的对象、把大容量的对象转换成小容量对象时需要强制类型转换、转换过程中间可能出现精度损失。</p>
-</li>
-</ul>
-</li>
-</ul>
-<h4 id="装箱和拆箱boxing-or-unboxing"><a href="#装箱和拆箱boxing-or-unboxing" class="headerlink" title="装箱和拆箱boxing or unboxing"></a>装箱和拆箱<strong>boxing or unboxing</strong></h4><blockquote>
-<p>装箱：将基础类型用它们对应类型包装起来</p>
-<p>拆箱：将包装类型转换成基本数据类型</p>
-</blockquote>
-<table>
-<thead>
-<tr>
-<th align="center">原语</th>
-<th align="center">对应的JDK类</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">int</td>
-<td align="center">java.lang.Integer</td>
-</tr>
-<tr>
-<td align="center">short</td>
-<td align="center">java.lang.Short</td>
-</tr>
-<tr>
-<td align="center">long</td>
-<td align="center">java.lang.Long</td>
-</tr>
-<tr>
-<td align="center">byte</td>
-<td align="center">java.lang.Byte</td>
-</tr>
-<tr>
-<td align="center">char</td>
-<td align="center">java.lang.Character</td>
-</tr>
-<tr>
-<td align="center">double</td>
-<td align="center">java.lang.Double</td>
-</tr>
-<tr>
-<td align="center">float</td>
-<td align="center">java.lang.Float</td>
-</tr>
-<tr>
-<td align="center">boolean</td>
-<td align="center">java.lang.Boolean</td>
-</tr>
-</tbody></table>
-<ul>
-<li><p>Java中只有原生数据类型是特殊的，它们不是对象。其它的都是对象。那么就一个尴尬的问题，集合类都是存放的对象，JDK5之后考虑到这个问题就自动进行逆行拆箱装箱的操作。</p>
-  <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//比如所在泛型中是不能存放原生数据类型的，如要要存放原生数据类型的数据，需要装箱。</span></span><br><span class="line">Collection&lt;<span class="keyword">int</span>&gt; c = <span class="keyword">new</span> ArrayList&lt;<span class="keyword">int</span>&gt;(); <span class="comment">//这是无法编译成功的。</span></span><br><span class="line">Collection&lt;Integer&gt; cc = <span class="keyword">new</span> ArrayList&lt;Integer&gt;(); <span class="comment">//这样才行。</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>每个 JDK 类都提供了相应方法来解析它的内部表示，并将其转换为相应的原语类型。</p>
-</li>
-<li><p>但是注意装箱拆箱操作其实是非常消耗内存的举动，在该过程中可能会生成生成无用对象增加GC压力。所以尽量避免这中操作。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Integer sum = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> index  = <span class="number">1000</span>; index &lt; <span class="number">5000</span>; index ++)&#123;</span><br><span class="line"> sum+=index;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>  比如这种，每次sum都需要自动拆箱。</p>
-</li>
-</ul>
-<ul>
-<li><p>默认情况下整数的类型都是int、浮点型的数都是double。</p>
-   <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">float</span> d = <span class="number">1.1f</span>; <span class="comment">//在后面添加f,大小写不区分。隐式强制类型转换</span></span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCore/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -2221,102 +2317,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/26/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-Vector/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/04/26/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-Vector/" class="post-title-link" itemprop="url">深入浅出Vector</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-04-26 20:07:27" itemprop="dateCreated datePublished" datetime="2018-04-26T20:07:27+08:00">2018-04-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-10-06 01:15:46" itemprop="dateModified" datetime="2021-10-06T01:15:46+08:00">2021-10-06</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">源码分析</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-<h2 id="Vector"><a href="#Vector" class="headerlink" title="Vector"></a>Vector</h2><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Vector/Vector.png"></p>
-<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><ul>
-<li>Vector是Java Collection Franmework成员。</li>
-<li>列队允许添加重复元素</li>
-<li>列队允许null的存在</li>
-<li>列队从0开始，也就是列队头部的下标是0。</li>
-<li>列队支持泛型，这样可以避免<code>ClassCastException</code>异常。</li>
-</ul>
-<h2 id="与ArrayList的区别"><a href="#与ArrayList的区别" class="headerlink" title="与ArrayList的区别"></a>与ArrayList的区别</h2>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/04/26/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-Vector/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -2383,7 +2387,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">90</span>
+          <span class="site-state-item-count">91</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -2394,7 +2398,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">92</span>
+        <span class="site-state-item-count">93</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

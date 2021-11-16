@@ -36,7 +36,7 @@
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211005223255.png">
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211007005739.png">
 <meta property="article:published_time" content="2018-12-31T16:00:01.000Z">
-<meta property="article:modified_time" content="2021-10-18T06:42:49.416Z">
+<meta property="article:modified_time" content="2021-11-15T04:07:38.289Z">
 <meta property="article:author" content="胖枫叶">
 <meta property="article:tag" content="Java">
 <meta name="twitter:card" content="summary">
@@ -282,7 +282,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-10-18 14:42:49" itemprop="dateModified" datetime="2021-10-18T14:42:49+08:00">2021-10-18</time>
+                <time title="Modified: 2021-11-15 12:07:38" itemprop="dateModified" datetime="2021-11-15T12:07:38+08:00">2021-11-15</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -748,7 +748,7 @@
 <ul>
 <li>强引用是平常中使用最多的引用，强引用在程序内存不足（OOM）的时候也不会被回收，使用方式：</li>
 </ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">String str = <span class="keyword">new</span> String(<span class="string">"str"</span>);</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String str = <span class="keyword">new</span> String(<span class="string">"str"</span>);</span><br><span class="line"><span class="comment">// 强引用 str != null;</span></span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>当<strong>内存空间不足</strong>时，<code>Java</code>虚拟机宁愿抛出<code>OutOfMemoryError</code>错误，使程序<strong>异常终止</strong>，也不会靠随意<strong>回收</strong>具有<strong>强引用</strong>的<strong>对象</strong>来解决内存不足的问题。 如果强引用对象<strong>不使用时</strong>，需要弱化从而使<code>GC</code>能够回收。</li>
@@ -769,11 +769,11 @@
 <ul>
 <li>弱引用就是只要JVM垃圾回收器发现了它，就会将之回收，使用方式：</li>
 </ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">WeakReference&lt;String&gt; wrf = <span class="keyword">new</span> WeakReference&lt;String&gt;(str);</span><br><span class="line"><span class="comment">// Java源码中的 java.util.WeakHashMap 中的 key 就是使用弱引用</span></span><br><span class="line"><span class="comment">// 不需要某个引用，JVM会自动帮我处理它，这样我就不需要做其它操作</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">WeakReference&lt;String&gt; wrf = <span class="keyword">new</span> WeakReference&lt;String&gt;(str);</span><br><span class="line"><span class="comment">// Java源码中的 java.util.WeakHashMap 中的 key 就是使用弱引用</span></span><br><span class="line"><span class="comment">// 不需要某个引用，JVM会自动帮我处理它，这样我就不需要做其它操作</span></span><br><span class="line"><span class="comment">// 弱引用 wrf = null; 无法在获取对象</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p>虚引用</p>
 <p>虚引用的回收机制跟弱引用差不多，但是它被回收之前，会被放入 ReferenceQueue 中。其它引用是被JVM回收后才被传入 ReferenceQueue 中的。由于这个机制，所以虚引用大多被用于引用销毁前的处理工作。还有就是，虚引用创建的时候，必须带有 ReferenceQueue ，使用。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PhantomReference&lt;String&gt; prf = <span class="keyword">new</span> PhantomReference&lt;String&gt;(<span class="keyword">new</span> String(<span class="string">"str"</span>), <span class="keyword">new</span> ReferenceQueue&lt;&gt;());</span><br><span class="line"><span class="comment">// 对象销毁前的一些操作，比如说资源释放等。** Object.finalize() 虽然也可以做这类动作，但是这个方式即不安全又低效x</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">PhantomReference&lt;String&gt; prf = <span class="keyword">new</span> PhantomReference&lt;String&gt;(<span class="keyword">new</span> String(<span class="string">"str"</span>), <span class="keyword">new</span> ReferenceQueue&lt;&gt;());</span><br><span class="line"><span class="comment">// 对象销毁前的一些操作，比如说资源释放等。Object.finalize() 虽然也可以做这类动作，但是这个方式即不安全又低效</span></span><br><span class="line"><span class="comment">// prf = null ; 无法在获取对象</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p>Java中4种引用的级别和强度由高到低依次为：强引用 -&gt; 软引用 -&gt; 弱引用 -&gt; 虚引用</p>
 </li>
@@ -2324,7 +2324,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">90</span>
+          <span class="site-state-item-count">91</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -2335,7 +2335,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">92</span>
+        <span class="site-state-item-count">93</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
