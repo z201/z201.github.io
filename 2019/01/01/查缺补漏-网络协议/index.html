@@ -20,21 +20,29 @@
     var CONFIG = {"hostname":"z201.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="本章是整理知识内容，为强化知识长期更新。  描述下GET与POST的区别。 GET和POST是HTTP请求的两种基本方法。 GET：特定浏览器和服务器对URL长度有限制，例如 IE对URL长度的限制是2083字节(2K+35)。理论上没有长度限制，其限制取决于操作系 统的支持。所以GET提交时，传输数据就会受到URL长度的限制。 POST：由于不是通过URL传值，理论上数据不受限。但实际各个WE">
+  <meta name="description" content="本章是整理知识内容，为强化知识长期更新。  网络协议 网络协议是一组确定的规则，这些规则确定如何在同一网络中的不同设备之间传输数据。本质上，它允许连接的设备彼此通信，而不管其内部过程，结构或设计是否有差异。（两个端点都需要了解协议才能进行交流）。  OSI网络模型 OSI英文全称叫做(Open System Interconnection Model). 中文全称叫做开放式系统互联模型. 也叫做">
 <meta property="og:type" content="article">
-<meta property="og:title" content="查缺补漏-HTTP">
-<meta property="og:url" content="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-HTTP/index.html">
+<meta property="og:title" content="查缺补漏-网络协议">
+<meta property="og:url" content="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/index.html">
 <meta property="og:site_name" content="枫叶的小博客">
-<meta property="og:description" content="本章是整理知识内容，为强化知识长期更新。  描述下GET与POST的区别。 GET和POST是HTTP请求的两种基本方法。 GET：特定浏览器和服务器对URL长度有限制，例如 IE对URL长度的限制是2083字节(2K+35)。理论上没有长度限制，其限制取决于操作系 统的支持。所以GET提交时，传输数据就会受到URL长度的限制。 POST：由于不是通过URL传值，理论上数据不受限。但实际各个WE">
+<meta property="og:description" content="本章是整理知识内容，为强化知识长期更新。  网络协议 网络协议是一组确定的规则，这些规则确定如何在同一网络中的不同设备之间传输数据。本质上，它允许连接的设备彼此通信，而不管其内部过程，结构或设计是否有差异。（两个端点都需要了解协议才能进行交流）。  OSI网络模型 OSI英文全称叫做(Open System Interconnection Model). 中文全称叫做开放式系统互联模型. 也叫做">
+<meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211123214245.png">
+<meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211123214318.png">
+<meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211123215305.png">
+<meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211123220629.png">
+<meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211123230635.png">
+<meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211123232928.png">
+<meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211123132409.png">
 <meta property="article:published_time" content="2018-12-31T16:00:01.000Z">
-<meta property="article:modified_time" content="2021-09-27T09:33:54.920Z">
+<meta property="article:modified_time" content="2021-11-23T15:39:15.990Z">
 <meta property="article:author" content="胖枫叶">
 <meta property="article:tag" content="Http">
 <meta property="article:tag" content="Tcp">
 <meta property="article:tag" content="Udp">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211123214245.png">
 
-<link rel="canonical" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-HTTP/">
+<link rel="canonical" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/">
 
 
 <script id="page-configurations">
@@ -47,7 +55,7 @@
   };
 </script>
 
-  <title>查缺补漏-HTTP | 枫叶的小博客</title>
+  <title>查缺补漏-网络协议 | 枫叶的小博客</title>
   
 
 
@@ -244,7 +252,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-HTTP/">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -257,7 +265,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          查缺补漏-HTTP
+          查缺补漏-网络协议
         </h1>
 
         <div class="post-meta">
@@ -274,7 +282,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-27 17:33:54" itemprop="dateModified" datetime="2021-09-27T17:33:54+08:00">2021-09-27</time>
+                <time title="Modified: 2021-11-23 23:39:15" itemprop="dateModified" datetime="2021-11-23T23:39:15+08:00">2021-11-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -300,7 +308,148 @@
         <blockquote>
 <p>本章是整理知识内容，为强化知识长期更新。</p>
 </blockquote>
-<h3 id="描述下GET与POST的区别。"><a href="#描述下GET与POST的区别。" class="headerlink" title="描述下GET与POST的区别。"></a>描述下GET与POST的区别。</h3><ul>
+<h3 id="网络协议"><a href="#网络协议" class="headerlink" title="网络协议"></a>网络协议</h3><blockquote>
+<p>网络协议是一组确定的规则，这些规则确定如何在同一网络中的不同设备之间传输数据。本质上，它允许连接的设备彼此通信，而不管其内部过程，结构或设计是否有差异。（两个端点都需要了解协议才能进行交流）。</p>
+</blockquote>
+<h3 id="OSI网络模型"><a href="#OSI网络模型" class="headerlink" title="OSI网络模型"></a>OSI网络模型</h3><blockquote>
+<p>OSI英文全称叫做(Open System Interconnection Model). 中文全称叫做开放式系统互联模型. 也叫做网络7层模型，从下到上依次为，物理层，数据链路层，网络层，传输层，会话层，表示层，应用层。</p>
+</blockquote>
+<ul>
+<li>OIS概念模型<strong>实际上并没有真正实现过，但是我们需要参考这个分层来理解网络协议</strong>一般来说把5-7层叫做上层，1-4层叫做下层。</li>
+</ul>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211123214245.png"></p>
+<ul>
+<li>7-应用层 -&gt; 网络流程应用（表示的是用户界面，例如Telnet，HTTP、FTP、TFTP、SMTP、SNMP、DNS、TELNET、HTTPS、POP3、DHCP）</li>
+<li>6-表示层 -&gt; 数据表示 (数据如何呈现，特殊处理-&gt;例如加密，比如JPEG、ASCLL、EBCDIC、加密格式等）</li>
+<li>5-会话层 -&gt; 主机间的通信（将不同应用程序的数据分开。建立，管理和终止应用之间的会话）</li>
+<li>4-传输层 -&gt; 端到端连接（可靠或不可靠的传递，例如TCP，UDP)</li>
+<li>3-网络层 -&gt; 地址和最佳路径（提供路由器用于路径的逻辑寻址，比如ICMP IGMP IP(IPV4 IPV6)）</li>
+<li>2-数据链路层 -&gt; 媒体访问（将位组合成字节，将字节组合成帧，使用MAC地址访问，错误检测-比如HDLC）</li>
+<li>1-物理层 -&gt; 二进制传输（在设备之间移动bits。例如V.35）</li>
+</ul>
+<h3 id="TCP-IP网络模型"><a href="#TCP-IP网络模型" class="headerlink" title="TCP/IP网络模型"></a>TCP/IP网络模型</h3><blockquote>
+<p>TCP/IP 模型和OSI相比会简单一点，只有四层，分别为数据链路层，网络层，传输层和应用层。</p>
+</blockquote>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211123214318.png"></p>
+<h3 id="OSI模型与TCP-IP模型"><a href="#OSI模型与TCP-IP模型" class="headerlink" title="OSI模型与TCP/IP模型"></a>OSI模型与TCP/IP模型</h3><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211123215305.png"></p>
+<ul>
+<li>4-应用层 -&gt; 对应于OSI的5-7层</li>
+<li>3-传输层 -&gt; 这个是和OSI的第四层想同的</li>
+<li>2-网络层 -&gt; 这个是和OSI的第3网络层对应的</li>
+<li>1-网络访问层 -&gt; 这个是和OSI的第1-2层所对应的</li>
+</ul>
+<a id="more"></a>
+
+<h3 id="TCP-IP协议"><a href="#TCP-IP协议" class="headerlink" title="TCP/IP协议"></a>TCP/IP协议</h3><blockquote>
+<p>TCP/IP的前身APPA:NCP协议。</p>
+</blockquote>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211123220629.png"></p>
+<ul>
+<li>TCP：<strong>面向连接的、可靠的、拥塞控制、基于字节流的、有状态服务</strong>传输层通信协议。</li>
+<li>UDP：<strong>面向无连接、基于数据包、无状态服务</strong></li>
+<li>IP：根据IP地址穿透网络传输数据。</li>
+</ul>
+<h4 id="TCP"><a href="#TCP" class="headerlink" title="TCP"></a>TCP</h4><blockquote>
+<p>TCP的全称是Transmission Control Protocol，在IP协议之上，解决网络通信可依赖的问题。TCP基本上被以上大多数的协议所使用。</p>
+</blockquote>
+<ul>
+<li><strong>面向连接</strong>，也就是建立连接。为了客户端与服务端维护的连接，而建立一定的数据结构维护互相交互的状态。通过这种数据结构来保证所谓的面相连接的特性。</li>
+<li><strong>可靠性</strong>，通过TCP连接传输的数据，无差错、不丢失、不重复、按顺序到达。使用校验、确认和重传机制来保证可靠传输。</li>
+<li><strong>阻塞控制</strong>，TCP自己决定何时停止和发送数据。</li>
+<li><strong>基于字节流</strong>，发送的时候是一个流，没头没尾，消息是<strong>有序</strong>的，会对<strong>重复</strong>的消息丢弃。</li>
+<li><strong>状态服务</strong>，</li>
+</ul>
+<h5 id="端口号"><a href="#端口号" class="headerlink" title="端口号"></a>端口号</h5><blockquote>
+<p>TCP报文中有端口相关信息，穿插下。端口号的范围从0到65535，通过端口号被分为三个不同的类别。</p>
+</blockquote>
+<ul>
+<li>公认端口（Well-Known）0-1023 是经过实践检验的协议，所以称为公认端口。诸如Http使用端口80，https使用443<ul>
+<li>HTTP - 80</li>
+<li>HTTPS - 443</li>
+<li>FTP - 20,21</li>
+<li>SSH - 22</li>
+<li>Telnet - 23</li>
+</ul>
+</li>
+<li>注册端口（Registered）1024-49151</li>
+<li>临时端口（Ephemeral）49152-65535</li>
+</ul>
+<h5 id="TCP报文格式"><a href="#TCP报文格式" class="headerlink" title="TCP报文格式"></a>TCP报文格式</h5><blockquote>
+<p>TCP 报文是 TCP 层传输的数据单元，也称为报文段。TCP 报文中每个字段如图所示。</p>
+</blockquote>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211123230635.png"></p>
+<h5 id="报文字段含义"><a href="#报文字段含义" class="headerlink" title="报文字段含义"></a>报文字段含义</h5><blockquote>
+<p>固定首部长度为20字节,可变部分0~40字节</p>
+</blockquote>
+<ul>
+<li><p><em>Source Prot</em> 源端口 16bit 范围 0 ~ 56625</p>
+</li>
+<li><p><em>Destination Port</em> 目标端口 16bit 范围 0 ~ 56625</p>
+</li>
+<li><p><em>Sequence Number</em> 序列号字段 32bit </p>
+<ul>
+<li>它表示本报文段所发送数据的第一个字节的编号。在 TCP 连接中，所传送的字节流的每一个字节都会按顺序编号。当SYN标记不为1时，这是当前数据分段第一个字母的序列号；如果SYN的值是1时，这个字段的值就是初始序列值（ISN），用于对序列号进行同步。这时，第一个字节的序列号比这个字段的值大1，也就是ISN加1。</li>
+</ul>
+</li>
+<li><p><em>Acknowledgment Number，ACK Number</em>  确认号字段</p>
+<ul>
+<li>TCP 确认号（Acknowledgment Number，ACK Number）：占 32 位。它表示接收方期望收到发送方下一个报文段的第一个字节数据的编号。其值是接收计算机即将接收到的下一个序列号，也就是下一个接收到的字节的序列号加1。</li>
+</ul>
+</li>
+<li><p><em>Header Length</em> 数据偏移字段 </p>
+<ul>
+<li>TCP 首部长度（Header Length）：数据偏移是指数据段中的“数据”部分起始处距离 TCP 数据段起始处的字节偏移量，占 4 位。其实这里的“数据偏移”也是在确定 TCP 数据段头部分的长度，告诉接收端的应用程序，数据从何处开始。</li>
+</ul>
+</li>
+<li><p><em>Reserved</em> 保留字段 4bit 为 TCP 将来的发展预留空间，目前必须全部为 0。</p>
+</li>
+<li><p>标志位字段</p>
+<blockquote>
+<p>SYN 是发起一个连接，ACK 是回复，RST 是重新连接，FIN结束连接</p>
+</blockquote>
+<ul>
+<li>CWR（Congestion Window Reduce）：拥塞窗口减少标志，用来表明它接收到了设置 ECE 标志的 TCP 包。并且，发送方收到消息之后，通过减小发送窗口的大小来降低发送速率。</li>
+<li>ECE（ECN Echo）：用来在 TCP 三次握手时表明一个 TCP 端是具备 ECN 功能的。在数据传输过程中，它也用来表明接收到的 TCP 包的 IP 头部的 ECN 被设置为 11，即网络线路拥堵。</li>
+<li>URG（Urgent）：表示本报文段中发送的数据是否包含紧急数据。URG=1 时表示有紧急数据。当 URG=1 时，后面的紧急指针字段才有效。</li>
+<li>ACK：表示前面的确认号字段是否有效。ACK=1 时表示有效。只有当 ACK=1 时，前面的确认号字段才有效。TCP 规定，连接建立后，ACK 必须为 1。</li>
+<li>PSH（Push）：告诉对方收到该报文段后是否立即把数据推送给上层。如果值为 1，表示应当立即把数据提交给上层，而不是缓存起来。</li>
+<li>RST：表示是否重置连接。如果 RST=1，说明 TCP 连接出现了严重错误（如主机崩溃），必须释放连接，然后再重新建立连接。</li>
+<li>SYN：在建立连接时使用，用来同步序号。当 SYN=1，ACK=0 时，表示这是一个请求建立连接的报文段；当 SYN=1，ACK=1 时，表示对方同意建立连接。SYN=1 时，说明这是一个请求建立连接或同意建立连接的报文。只有在前两次握手中 SYN 才为 1。</li>
+<li>FIN：标记数据是否发送完毕。如果 FIN=1，表示数据已经发送完成，可以释放连接。</li>
+</ul>
+</li>
+<li><p><em>Window Size</em> 窗口大小字段 16bit </p>
+<ul>
+<li>它表示从 Ack Number 开始还可以接收多少字节的数据量，也表示当前接收端的接收窗口还有多少剩余空间。该字段可以用于 TCP 的流量控制。</li>
+</ul>
+</li>
+<li><p><em>TCP Checksum</em> TCP 校验字段 16bit</p>
+<ul>
+<li>它用于确认传输的数据是否有损坏。发送端基于数据内容校验生成一个数值，接收端根据接收的数据校验生成一个值。两个值必须相同，才能证明数据是有效的。如果两个值不同，则丢掉这个数据包。Checksum 是根据伪头 + TCP 头 + TCP 数据三部分进行计算的。</li>
+</ul>
+</li>
+<li><p><em>Urgent Pointer</em> 紧急指针字段 </p>
+<ul>
+<li>仅当前面的 URG 控制位为 1 时才有意义。它指出本数据段中为紧急数据的字节数，占 16 位。当所有紧急数据处理完后，TCP 就会告诉应用程序恢复到正常操作。即使当前窗口大小为 0，也是可以发送紧急数据的，因为紧急数据无须缓存。</li>
+</ul>
+</li>
+<li><p><em>Option</em> 可选项字段</p>
+<ul>
+<li>长度不定，但长度必须是 32bits 的整数倍。</li>
+</ul>
+</li>
+</ul>
+<h5 id="TCP状态"><a href="#TCP状态" class="headerlink" title="TCP状态"></a>TCP状态</h5><blockquote>
+<p>TCP的状态变迁图更细致的描述了TCP连接建立和连接终止中的各个状态</p>
+</blockquote>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211123232928.png"></p>
+<h4 id="UDP"><a href="#UDP" class="headerlink" title="UDP"></a>UDP</h4><blockquote>
+<p>DNS,SNMP和TFTP都是使用UDP，实际上DNS和SNMP既可以使用TCP也可以使用UDP。相比TCP，UDP提供了效率，TCP在使用过程中有太多的开销，实际上并不是所有的场景都需要TCP可靠的通信机制，比如DNS</p>
+</blockquote>
+<h4 id="DNS"><a href="#DNS" class="headerlink" title="DNS"></a>DNS</h4><blockquote>
+<p>DNS是Domain Name System域名系统。可以看做是IP地址和名字对应的数据库。DNS拥有一个主机名或具有映射到IP地址的域名的主机名的数据库。当你向获取<a href="http://www.baidu.com对应的ip时候dns会提供,蕾丝电话薄一样./" target="_blank" rel="noopener">www.baidu.com对应的ip时候DNS会提供，蕾丝电话薄一样。</a></p>
+</blockquote>
+<h4 id="IP"><a href="#IP" class="headerlink" title="IP"></a>IP</h4><h3 id="扩展"><a href="#扩展" class="headerlink" title="扩展"></a>扩展</h3><h4 id="描述下GET与POST的区别。"><a href="#描述下GET与POST的区别。" class="headerlink" title="描述下GET与POST的区别。"></a>描述下GET与POST的区别。</h4><ul>
 <li>GET和POST是HTTP请求的两种基本方法。<ul>
 <li>GET：特定浏览器和服务器对URL长度有限制，例如 IE对URL长度的限制是2083字节(2K+35)。理论上没有长度限制，其限制取决于操作系 统的支持。所以GET提交时，传输数据就会受到URL长度的限制。</li>
 <li>POST：由于不是通过URL传值，理论上数据不受限。但实际各个WEB服务器会规定对post提交数据大小进行限制。</li>
@@ -318,7 +467,7 @@
 </ul>
 </li>
 </ul>
-<h3 id="描述下HTTP-Cookie。"><a href="#描述下HTTP-Cookie。" class="headerlink" title="描述下HTTP Cookie。"></a>描述下HTTP Cookie。</h3><ul>
+<h4 id="描述下HTTP-Cookie。"><a href="#描述下HTTP-Cookie。" class="headerlink" title="描述下HTTP Cookie。"></a>描述下HTTP Cookie。</h4><ul>
 <li>一个cookie就是存储在用户主机浏览器中的一小段文本文件。Cookies是纯文本形式，它们不包含任何可执行代码。一个Web页面或服务器告之浏览器来将这些信息存储并且基于一系列规则在之后的每个请求中都将该信息返回至服务器。Web服务器之后可以利用这些信息来标识用户。多数需要登录的站点通常会在你的认证信息通过后来设置一个cookie，之后只要这个cookie存在并且合法，就可以自由的浏览这个站点的所有部分。再次，cookie只是包含了数据。在后续的http 请求中，浏览器会将cookie带回给Web Server。同时在浏览器允许脚本执行的情况下，Cookie是可以被JavaScript等脚本设置的。</li>
 <li>Cookie的类别。<ul>
 <li>Session Cookie这个类型的cookie只在会话期间内有效，即当关闭浏览器的时候，它会被浏览器删除。设置session cookie的办法是：在创建cookie不设置Expires即可。</li>
@@ -328,7 +477,7 @@
 </ul>
 </li>
 </ul>
-<h3 id="描述下Servlet-Cookie-与Session。"><a href="#描述下Servlet-Cookie-与Session。" class="headerlink" title="描述下Servlet Cookie 与Session。"></a>描述下Servlet Cookie 与Session。</h3><ul>
+<h4 id="描述下Servlet-Cookie-与Session。"><a href="#描述下Servlet-Cookie-与Session。" class="headerlink" title="描述下Servlet Cookie 与Session。"></a>描述下Servlet Cookie 与Session。</h4><ul>
 <li><p>具体来说cookie机制采用的是在客户端保持状态的方案，而session机制采用的是在服务器端保持状态的方案。</p>
 <ul>
 <li>服务器端保持状态的方案在客户端也需要保存一个标识，所以session机制可能需要借助于cookie机制来达到保存标识的目的。</li>
@@ -344,6 +493,22 @@
 <li>关闭浏览器不会导致服务端session被删除，服务器为session设置了一个失效时间，当距离客户上一次使用session的时间超过了这个失效时间时，服务器就可以认为客户端已经停止了活动，才会把session删除以节省存储空间。</li>
 <li>关闭浏览器，只会是浏览器端内存里的session cookie消失，但不会使保存在服务器端的session对象消失，同样也不会使已经保存到硬盘上的持久化cookie消失。</li>
 </ul>
+<h4 id="URI与URL的区别"><a href="#URI与URL的区别" class="headerlink" title="URI与URL的区别"></a>URI与URL的区别</h4><h5 id="URL"><a href="#URL" class="headerlink" title="URL"></a>URL</h5><ul>
+<li>RFC1738 (1994.12) Uniform Resource Locator 表示资源的位置，期望提提供查找资源的方法。</li>
+<li>它是可以对互联网上资源位置访问方式对一种简洁表达。通常的表现格式如下。</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">scheme://host[:port<span class="comment">#]/path/…/[;url-params][?query-string][#anchor]</span></span><br><span class="line"></span><br><span class="line">scheme //有我们很熟悉的http、https、ftp以及著名的ed2k，迅雷的thunder等。</span><br><span class="line">host   //HTTP服务器的IP地址或者域名</span><br><span class="line">port<span class="comment">#  //HTTP服务器的默认端口是80，这种情况下端口号可以省略。如果使用了别的端口，必须指明，</span></span><br><span class="line">例如tomcat的默认端口是8080  http://localhost:8080/</span><br><span class="line">path   //访问资源的路径</span><br><span class="line">url-params  //所带参数 </span><br><span class="line">query-string    //发送给http服务器的数据</span><br><span class="line">anchor //锚点定位</span><br></pre></td></tr></table></figure>
+
+<h5 id="URN"><a href="#URN" class="headerlink" title="URN"></a>URN</h5><ul>
+<li>RFC2141 (1997.5) Uniform Resource Name ，资源映射名称。比如</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mailto: xxxxx@qq.com</span><br></pre></td></tr></table></figure>
+
+<h5 id="URI"><a href="#URI" class="headerlink" title="URI"></a>URI</h5><ul>
+<li>RFC1630 (1994.6) Uniform Resource Identifier 用于区分资源 , 是 URL 和 URN 的超集，用于取代URL 和 URN概念。</li>
+<li>URI 属于父类，而 URL 属于 URI 的子类。URL 是 URI 的一个子集。<strong>URI：统一资源标识 URL：统一资源定位 URN：统一资源名称。</strong></li>
+</ul>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211123132409.png"></p>
 
     </div>
 
@@ -359,7 +524,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>Post link: </strong>
-    <a href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-HTTP/" title="查缺补漏-HTTP">https://z201.github.io/2019/01/01/查缺补漏-HTTP/</a>
+    <a href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/" title="查缺补漏-网络协议">https://z201.github.io/2019/01/01/查缺补漏-网络协议/</a>
   </li>
   <li class="post-copyright-license">
     <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
@@ -381,12 +546,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCollecionsFramework/" rel="prev" title="查缺补漏-JavaCollecionsFramework">
-      <i class="fa fa-chevron-left"></i> 查缺补漏-JavaCollecionsFramework
+    <a href="/2018/08/23/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-HashMap/" rel="prev" title="源码阅读-HashMap">
+      <i class="fa fa-chevron-left"></i> 源码阅读-HashMap
     </a></div>
       <div class="post-nav-item">
-    <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Dubbo/" rel="next" title="查缺补漏-Dubbo">
-      查缺补漏-Dubbo <i class="fa fa-chevron-right"></i>
+    <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-JavaCore/" rel="next" title="查缺补漏-JavaCore">
+      查缺补漏-JavaCore <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -446,7 +611,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#描述下GET与POST的区别。"><span class="nav-number">1.</span> <span class="nav-text">描述下GET与POST的区别。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#描述下HTTP-Cookie。"><span class="nav-number">2.</span> <span class="nav-text">描述下HTTP Cookie。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#描述下Servlet-Cookie-与Session。"><span class="nav-number">3.</span> <span class="nav-text">描述下Servlet Cookie 与Session。</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#网络协议"><span class="nav-number">1.</span> <span class="nav-text">网络协议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#OSI网络模型"><span class="nav-number">2.</span> <span class="nav-text">OSI网络模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP-IP网络模型"><span class="nav-number">3.</span> <span class="nav-text">TCP&#x2F;IP网络模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#OSI模型与TCP-IP模型"><span class="nav-number">4.</span> <span class="nav-text">OSI模型与TCP&#x2F;IP模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP-IP协议"><span class="nav-number">5.</span> <span class="nav-text">TCP&#x2F;IP协议</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP"><span class="nav-number">5.1.</span> <span class="nav-text">TCP</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#端口号"><span class="nav-number">5.1.1.</span> <span class="nav-text">端口号</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#TCP报文格式"><span class="nav-number">5.1.2.</span> <span class="nav-text">TCP报文格式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#报文字段含义"><span class="nav-number">5.1.3.</span> <span class="nav-text">报文字段含义</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#TCP状态"><span class="nav-number">5.1.4.</span> <span class="nav-text">TCP状态</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#UDP"><span class="nav-number">5.2.</span> <span class="nav-text">UDP</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DNS"><span class="nav-number">5.3.</span> <span class="nav-text">DNS</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#IP"><span class="nav-number">5.4.</span> <span class="nav-text">IP</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#扩展"><span class="nav-number">6.</span> <span class="nav-text">扩展</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#描述下GET与POST的区别。"><span class="nav-number">6.1.</span> <span class="nav-text">描述下GET与POST的区别。</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#描述下HTTP-Cookie。"><span class="nav-number">6.2.</span> <span class="nav-text">描述下HTTP Cookie。</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#描述下Servlet-Cookie-与Session。"><span class="nav-number">6.3.</span> <span class="nav-text">描述下Servlet Cookie 与Session。</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#URI与URL的区别"><span class="nav-number">6.4.</span> <span class="nav-text">URI与URL的区别</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#URL"><span class="nav-number">6.4.1.</span> <span class="nav-text">URL</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#URN"><span class="nav-number">6.4.2.</span> <span class="nav-text">URN</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#URI"><span class="nav-number">6.4.3.</span> <span class="nav-text">URI</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
