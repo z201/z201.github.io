@@ -239,6 +239,335 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/23/Linux%E5%9F%BA%E7%A1%80%E5%91%BD%E4%BB%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/04/23/Linux%E5%9F%BA%E7%A1%80%E5%91%BD%E4%BB%A4/" class="post-title-link" itemprop="url">Linux基础命令</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-04-23 08:58:34" itemprop="dateCreated datePublished" datetime="2018-04-23T08:58:34+08:00">2018-04-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-15 09:17:23" itemprop="dateModified" datetime="2020-08-15T09:17:23+08:00">2020-08-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>linux作为个人工作经常使用的系统、做下简单的记录方便以后工作参考。</p>
+</blockquote>
+<h2 id="ps"><a href="#ps" class="headerlink" title="ps"></a><a href="http://man.linuxde.net/ps" target="_blank" rel="noopener">ps</a></h2><blockquote>
+<p>ps命令用于报告系统某个时间内进程的情况</p>
+</blockquote>
+<ul>
+<li>参数</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">-A : 所有的进程均显示出来</span><br><span class="line">-a : 不与terminal有关的所有进程</span><br><span class="line">-u : 有效用户的相关进程</span><br><span class="line">-x : 一般与a参数一起使用，可以列出比较完整的信息。</span><br><span class="line">-l : 较详细地将PID的信息列出。</span><br></pre></td></tr></table></figure>
+
+<h3 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h3><p>查询某程序的情况</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> [root@VM_115_109_centos ~]<span class="comment"># ps -ef | grep mysqld</span></span></span><br><span class="line">root      8013 17307  0 05:34 pts/0    00:00:00 grep --color=auto mysqld</span><br><span class="line">mysql    28882     1  0 Apr02 ?        00:07:03 /usr/sbin/mysqld --daemonize --pid-file=/var/run/mysqld/mysqld.pid</span><br></pre></td></tr></table></figure>
+
+<p>UID      PID   PPID     C STIME   TTY    TIME     CMD (类目描述)</p>
+<ul>
+<li>UID 程序被该 UID 所拥有</li>
+<li>PID 就是这个程序的 ID </li>
+<li>PPID 则是其上级父程序的ID</li>
+<li>C CPU 使用的资源百分比</li>
+<li>STIME 系统启动时间</li>
+<li>TTY 登入者的终端机位置</li>
+<li>TIME 使用掉的 CPU 时间。</li>
+<li>CMD 所下达的指令</li>
+</ul>
+<p>查看内存占用前1的进程</p>
+<ul>
+<li>ps auxw | head -1;ps auxw|sort -rn -k4|head -1  </li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">  ps auxw | head -1;ps auxw|sort -rn -k4|head -1</span></span><br><span class="line">USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</span><br><span class="line">mysql    28882  0.0 10.9 1143416 205484 ?      Sl   Apr02   7:20 /usr/sbin/mysqld --daemonize --pid-file=/var/run/mysqld/mysqld.pid</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>内存的单位是kb，VSZ是虚拟内存的占用，RSS是真实的内存的占用。</li>
+</ul>
+<ul>
+<li>命令分解：</li>
+<li>ps auxw显示系统资源占用情况；</li>
+<li>head -1表示显示第一列，即标题列；</li>
+<li>sort -r 表示反向排序，-n表示按数字排序，-k4表示列的第4个字符。</li>
+</ul>
+<p>查看CPU占用前1的进程</p>
+<ul>
+<li>ps auxw|head -1;ps auxw|sort -rn -k3|head -1</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ps auxw|head -1;ps auxw|sort -rn -k3|head -5</span></span><br><span class="line">USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</span><br><span class="line">root      1690  0.1  0.6 536692 12436 ?        Sl   Apr10  29:58 barad_agent</span><br><span class="line">USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</span><br><span class="line">root         9  0.0  0.0      0     0 ?        R    Mar08   1:45 [rcu_sched]</span><br><span class="line">root       884  0.0  0.0 110044   808 ttyS0    Ss+  Mar08   0:00 /sbin/agetty --keep-baud 115200 38400 9600 ttyS0 vt220</span><br><span class="line">root       883  0.0  0.0 110044   788 tty1     Ss+  Mar08   0:00 /sbin/agetty --noclear tty1 linux</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/04/23/Linux%E5%9F%BA%E7%A1%80%E5%91%BD%E4%BB%A4/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/05/27/%E6%80%BB%E7%BB%93%E4%BB%A3%E7%A0%81%E9%A3%8E%E6%A0%BC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/05/27/%E6%80%BB%E7%BB%93%E4%BB%A3%E7%A0%81%E9%A3%8E%E6%A0%BC/" class="post-title-link" itemprop="url">总结代码风格</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-05-27 20:49:08" itemprop="dateCreated datePublished" datetime="2019-05-27T20:49:08+08:00">2019-05-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-15 09:10:22" itemprop="dateModified" datetime="2020-08-15T09:10:22+08:00">2020-08-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">软件工程</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>好久没更新博客，最近公司让我出一个代码规范，我吓了一跳。赶忙翻出阿里《 码出高效》，不敢造次，我就补充点个人的想法吧。代码是给人看的。代码风格应该遵循<code>极简主义</code>                                                                                                      </p>
+</blockquote>
+<h3 id="1、避免复杂、追求简单"><a href="#1、避免复杂、追求简单" class="headerlink" title="1、避免复杂、追求简单"></a>1、避免复杂、追求简单</h3><blockquote>
+<p>日常开发中，除了解决业务问题还需要解决许多的工程问题。如何选择当下合适的方法解决问题；需要不断尝试和摸索，没有最好的方法只有更好的方法。</p>
+</blockquote>
+<h3 id="2、合理平滑的处理技术债务"><a href="#2、合理平滑的处理技术债务" class="headerlink" title="2、合理平滑的处理技术债务"></a>2、合理平滑的处理技术债务</h3><blockquote>
+<p>技术的演变速度太快，如何避免长时间的技术债务是非常严重的问题，总之弊大于利。尽可能保持轻装上阵，避免拖油瓶项目。</p>
+<p>关键字：</p>
+<ul>
+<li>一方库: 本工程内部子项目模块依赖的库(jar 包)。 </li>
+<li>二方库: 公司内部发布到中央仓库，可供公司内部其它应用依赖的库(jar包)。 </li>
+<li>三方库: 公司之外的开源库(jar 包)。 </li>
+</ul>
+</blockquote>
+<h4 id="『避免过度封装』"><a href="#『避免过度封装』" class="headerlink" title="『避免过度封装』"></a>『避免过度封装』</h4><blockquote>
+<p>特别是没有完整的技术人员编制的情况下，怎么简单怎么处理（去除中间商赚差价一个道理。）避免过度开发<code>一方库</code>；建议使用原生方式(综合评估代码量)<code>避免框架过度封装</code>。（Java的方法调用链过长是出了名的恶心）</p>
+</blockquote>
+<h4 id="『避免代码过度重复』"><a href="#『避免代码过度重复』" class="headerlink" title="『避免代码过度重复』"></a>『避免代码过度重复』</h4><blockquote>
+<p>每次开发业务都会写很多的代码。定期对公司项目进行基础代码的重构。合理的拆分<code>业务无关的基础代码</code>。</p>
+</blockquote>
+<h4 id="『避免版本混乱』"><a href="#『避免版本混乱』" class="headerlink" title="『避免版本混乱』"></a>『避免版本混乱』</h4><p>使用统一的版本管理。约束所有的项目jar版本依赖。防止因为过度使用<code>三方库</code>出现奇怪的bug。公司<code>bom</code>需要单独处理。尽量保持与社区版本同步，比如springboot最新版是2.1.3 ，那么公司使用的版本最好是近半年的GA版本。</p>
+<h4 id="『物极必反』"><a href="#『物极必反』" class="headerlink" title="『物极必反』"></a>『物极必反』</h4><blockquote>
+<p>请勿过度依赖某框架栈或者解决方式，客观的对比相关解决方案优缺点。</p>
+</blockquote>
+<h4 id="『选择大于努力』"><a href="#『选择大于努力』" class="headerlink" title="『选择大于努力』"></a>『选择大于努力』</h4><blockquote>
+<p>集中精力掌握核心知识。按照目前技术演变的速度，更新最快的是应用技术，其次是行业规范相关技术。最后才是革命性的技术。</p>
+</blockquote>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/%E4%BB%A3%E7%A0%81%E6%80%BB%E7%BB%93/%E6%8A%80%E6%9C%AF%E8%B1%A1%E9%99%90%E5%9B%BE.png"></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/05/27/%E6%80%BB%E7%BB%93%E4%BB%A3%E7%A0%81%E9%A3%8E%E6%A0%BC/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/04/10/%E5%AE%9E%E8%B7%B5-spring-redis-timeout-0%E4%BE%9D%E7%84%B6%E8%B6%85%E6%97%B6%E7%9A%84%E9%97%AE%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/04/10/%E5%AE%9E%E8%B7%B5-spring-redis-timeout-0%E4%BE%9D%E7%84%B6%E8%B6%85%E6%97%B6%E7%9A%84%E9%97%AE%E9%A2%98/" class="post-title-link" itemprop="url">实践-spring.redis.timeout=0依然超时的问题</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-04-10 22:16:10" itemprop="dateCreated datePublished" datetime="2019-04-10T22:16:10+08:00">2019-04-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-15 06:06:07" itemprop="dateModified" datetime="2020-08-15T06:06:07+08:00">2020-08-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>最近在看项目的时候发现一个临时问题，就是redis.timeout设置0依然超时的问题。</p>
+</blockquote>
+<ul>
+<li>代码适用版本 <code>jedis:2.9.0</code> , <code>org.springframework.data.redis:1.8.1</code></li>
+</ul>
+<h3 id="timeout设置0的问题"><a href="#timeout设置0的问题" class="headerlink" title="timeout设置0的问题"></a>timeout设置0的问题</h3><blockquote>
+<p>spring.redis.timeout =0 如果设置成0 redis默认超时时间就是2秒. </p>
+</blockquote>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Jedis/jedis-timeout-1.jpg"></p>
+<blockquote>
+<p>根据debug发现设置0点时候依然是2000毫秒。</p>
+</blockquote>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Jedis/jedis-timeout-2.jpg"></p>
+<blockquote>
+<p>根据初始化方法找到的原因。</p>
+</blockquote>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Jedis/jedis-timeout-3.png"></p>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Jedis/jedis-timeout-4.png"></p>
+<blockquote>
+<p>这里可以看到，当timeout设置0点时候不会被赋值。</p>
+</blockquote>
+<h3 id="END"><a href="#END" class="headerlink" title="END"></a>END</h3>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/07/12/%E9%9D%A2%E8%AF%95%E9%A2%98-%E4%BA%A4%E6%8D%A2%E4%B8%A4%E4%B8%AA%E5%8F%98%E9%87%8F%E7%9A%84%E5%80%BC/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -901,292 +1230,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/03/24/Hexo%E5%9F%BA%E7%A1%80/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/03/24/Hexo%E5%9F%BA%E7%A1%80/" class="post-title-link" itemprop="url">Hexo基础使用方法</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-03-24 22:49:40" itemprop="dateCreated datePublished" datetime="2018-03-24T22:49:40+08:00">2018-03-24</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-12-15 14:59:35" itemprop="dateModified" datetime="2019-12-15T14:59:35+08:00">2019-12-15</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E9%9A%8F%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">随记</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Create-a-new-draft"><a href="#Create-a-new-draft" class="headerlink" title="Create a new draft"></a>Create a new draft</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new draft <span class="string">"new draft"</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="Crete-a-new-page"><a href="#Crete-a-new-page" class="headerlink" title="Crete a new page"></a>Crete a new page</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo <span class="keyword">new</span> page <span class="string">"new page"</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br><span class="line">$ hexo g</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br><span class="line">$ hexo d</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-<h3 id="Localization-testing"><a href="#Localization-testing" class="headerlink" title="Localization testing"></a>Localization testing</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server -g</span><br></pre></td></tr></table></figure>
-
-<p>visit website : <a href="http://localhost:4000/" target="_blank" rel="noopener">http://localhost:4000</a> </p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/04/03/%E5%88%9D%E6%8E%A2Grpc/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/04/03/%E5%88%9D%E6%8E%A2Grpc/" class="post-title-link" itemprop="url">初探Grpc</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-04-03 22:18:34" itemprop="dateCreated datePublished" datetime="2019-04-03T22:18:34+08:00">2019-04-03</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-05-06 09:28:57" itemprop="dateModified" datetime="2019-05-06T09:28:57+08:00">2019-05-06</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA/" itemprop="url" rel="index"><span itemprop="name">基础理论</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>17年年底做的技术调研，文档好想没有写完。</p>
-</blockquote>
-<h2 id="gRPC"><a href="#gRPC" class="headerlink" title="gRPC "></a><a href="https://github.com/grpc/grpc" target="_blank" rel="noopener">gRPC </a></h2><h3 id="流程概念"><a href="#流程概念" class="headerlink" title="流程概念"></a>流程概念</h3><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Grpc/grpc-1.png"></p>
-<h3 id="性能对比"><a href="#性能对比" class="headerlink" title="性能对比"></a>性能对比</h3><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Grpc/grpc-2.png"></p>
-<h3 id="谁在使用"><a href="#谁在使用" class="headerlink" title="谁在使用"></a>谁在使用</h3><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Grpc/grpc-3.png"></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/04/03/%E5%88%9D%E6%8E%A2Grpc/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/04/21/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-skywalking%E6%BA%90%E7%A0%81%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/04/21/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-skywalking%E6%BA%90%E7%A0%81%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" class="post-title-link" itemprop="url">源码分析-skywalking源码环境搭建</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-04-21 18:40:55" itemprop="dateCreated datePublished" datetime="2019-04-21T18:40:55+08:00">2019-04-21</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-04-23 00:03:29" itemprop="dateModified" datetime="2019-04-23T00:03:29+08:00">2019-04-23</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">源码分析</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="0x00-阅读源代码"><a href="#0x00-阅读源代码" class="headerlink" title="0x00 阅读源代码"></a>0x00 阅读源代码</h2><blockquote>
-<p>长达9天的断网终于结束了。</p>
-</blockquote>
-<h3 id="下载源代码"><a href="#下载源代码" class="headerlink" title="下载源代码"></a>下载源代码</h3><ul>
-<li>代码仓库地址 <a href="https://gitee.com/Z201/skywalking.git" target="_blank" rel="noopener">https://gitee.com/Z201/skywalking.git</a></li>
-<li>阅读版本号 <code>v6.0.0-GA</code></li>
-<li>下载版本<code>git clone -b v6.0.0-GA https://github.com/apache/skywalking.git</code><ul>
-<li>由于github下载速度是在太慢了，这里用gitee克隆一个镜像。</li>
-<li>下载版本<code>git clone -b v6.0.0-GA https://gitee.com/Z201/skywalking.git</code></li>
-</ul>
-</li>
-</ul>
-<h3 id="查看源代码结构"><a href="#查看源代码结构" class="headerlink" title="查看源代码结构"></a>查看源代码结构</h3><blockquote>
-<p>源码设计子项目过多，这里简单暂时2级目录。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">tree -d L 2</span><br><span class="line">.</span><br><span class="line">├── src  </span><br><span class="line">│   ├── main # 源代码</span><br><span class="line">│   ├── site # 站点稳当</span><br><span class="line">│   └── test # 单元测试</span><br><span class="line">└── travis   # 官方的ci集成</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>查看项目源码主目录</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">➜  skywalking git:(8b638258b) tree -d -L 1</span><br><span class="line">.</span><br><span class="line">├── apm-application-toolkit</span><br><span class="line">├── apm-checkstyle</span><br><span class="line">├── apm-commons</span><br><span class="line">├── apm-dist</span><br><span class="line">├── apm-protocol <span class="comment"># pd文件</span></span><br><span class="line">├── apm-sniffer <span class="comment"># 插件</span></span><br><span class="line">├── apm-webapp  </span><br><span class="line">├── docker</span><br><span class="line">├── docs</span><br><span class="line">├── licenses</span><br><span class="line">├── oap-server <span class="comment"># 这里和5.x 有很大的不同改动了很多东西。</span></span><br><span class="line">├── skywalking-ui </span><br><span class="line">└── tools</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>将项目导入idea中。</li>
-</ul>
-<p>官方文档:<a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/How-to-build.md" target="_blank" rel="noopener">如何构建</a></p>
-<p><code>git submodule init</code></p>
-<p><code>git submodule update</code></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">➜  skywalking git:(8b638258b) git submodule init</span><br><span class="line">Submodule <span class="string">'apm-protocol/apm-network/src/main/proto'</span> (https://github.com/apache/incubator-skywalking-data-collect-protocol.git) registered <span class="keyword">for</span> path <span class="string">'apm-protocol/apm-network/src/main/proto'</span></span><br><span class="line">Submodule <span class="string">'oap-server/server-query-plugin/query-graphql-plugin/src/main/resources/query-protocol'</span> (https://github.com/apache/incubator-skywalking-query-protocol.git) registered <span class="keyword">for</span> path <span class="string">'oap-server/server-query-plugin/query-graphql-plugin/src/main/resources/query-protocol'</span></span><br><span class="line">Submodule <span class="string">'skywalking-ui'</span> (https://github.com/apache/incubator-skywalking-ui) registered <span class="keyword">for</span> path <span class="string">'skywalking-ui'</span></span><br><span class="line">➜  skywalking git:(8b638258b) git submodule update</span><br><span class="line">Cloning into <span class="string">'/Users/zengqingfeng/word/source-code/skywalking/apm-protocol/apm-network/src/main/proto'</span>...</span><br><span class="line">Cloning into <span class="string">'/Users/zengqingfeng/word/source-code/skywalking/oap-server/server-query-plugin/query-graphql-plugin/src/main/resources/query-protocol'</span>...</span><br><span class="line">Cloning into <span class="string">'/Users/zengqingfeng/word/source-code/skywalking/skywalking-ui'</span>...</span><br><span class="line">Submodule path <span class="string">'apm-protocol/apm-network/src/main/proto'</span>: checked out <span class="string">'b66fa070fd647662f06497e4ed3657eb258cb6e9'</span></span><br><span class="line">Submodule path <span class="string">'oap-server/server-query-plugin/query-graphql-plugin/src/main/resources/query-protocol'</span>: checked out <span class="string">'c65a23bd6b9bba8d1df30d4de261624952df2b7b'</span></span><br><span class="line">Submodule path <span class="string">'skywalking-ui'</span>: checked out <span class="string">'c44642f73b9f73a54b0d716cade5094304e1a67b'</span></span><br></pre></td></tr></table></figure>
-
-<p><code>clean package -DskipTests</code></p>
-<blockquote>
-<p>这个时候慢慢等吧v6.0.0-GA有120个子项目。更新完之后导入IDEA就好了。</p>
-</blockquote>
-<h3 id="END"><a href="#END" class="headerlink" title="END"></a>END</h3>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1257,18 +1300,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">91</span>
+          <span class="site-state-item-count">94</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-count">19</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">93</span>
+        <span class="site-state-item-count">97</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
