@@ -239,6 +239,110 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/02/26/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-mybatis%E6%BA%90%E7%A0%81%E7%8E%AF%E8%8A%82%E6%90%AD%E5%BB%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/02/26/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-mybatis%E6%BA%90%E7%A0%81%E7%8E%AF%E8%8A%82%E6%90%AD%E5%BB%BA/" class="post-title-link" itemprop="url">源码分析-mybatis源码环境搭建</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-02-26 14:17:54" itemprop="dateCreated datePublished" datetime="2019-02-26T14:17:54+08:00">2019-02-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-03-16 20:41:07" itemprop="dateModified" datetime="2019-03-16T20:41:07+08:00">2019-03-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">源码分析</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>mybatis学习笔记。</p>
+</blockquote>
+<h2 id="0x00-阅读源代码"><a href="#0x00-阅读源代码" class="headerlink" title="0x00 阅读源代码"></a>0x00 阅读源代码</h2><h3 id="下载源代码"><a href="#下载源代码" class="headerlink" title="下载源代码"></a>下载源代码</h3><ul>
+<li>代码仓库地址 <a href="https://github.com/mybatis/mybatis-3.git" target="_blank" rel="noopener">https://github.com/mybatis/mybatis-3.git</a></li>
+<li>阅读版本号 <code>myabtis-3.5.0</code></li>
+<li>下载版本<code>git clone -b mybatis-3.5.0 https://github.com/mybatis/mybatis-3.git</code><ul>
+<li>由于github下载速度是在太慢了，这里用gitee克隆一个镜像。</li>
+<li>下载版本<code>git clone -b mybatis-3.5.0 https://gitee.com/Z201/mybatis-3.git</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="查看源代码结构"><a href="#查看源代码结构" class="headerlink" title="查看源代码结构"></a>查看源代码结构</h3><ul>
+<li>查看项目主要文件夹</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">tree -d L 2</span><br><span class="line">.</span><br><span class="line">├── src  </span><br><span class="line">│   ├── main <span class="comment"># 源代码</span></span><br><span class="line">│   ├── site <span class="comment"># 站点稳当</span></span><br><span class="line">│   └── <span class="built_in">test</span> <span class="comment"># 单元测试</span></span><br><span class="line">└── travis   <span class="comment"># 官方的ci集成</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>查看项目源码主目录</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">tree -d src/main -L 5</span><br><span class="line">src/main</span><br><span class="line">└── java</span><br><span class="line">    └── org</span><br><span class="line">        └── apache</span><br><span class="line">            └── ibatis</span><br><span class="line">                ├── annotations <span class="comment"># 注解</span></span><br><span class="line">                ├── binding     <span class="comment"># 代理</span></span><br><span class="line">                ├── builder     <span class="comment"># 构造</span></span><br><span class="line">                ├── cache       <span class="comment"># 缓存</span></span><br><span class="line">                ├── cursor      <span class="comment"># 返回值类型为游标的方法</span></span><br><span class="line">                ├── datasource  <span class="comment"># 数据源</span></span><br><span class="line">                ├── exceptions  <span class="comment"># 异常</span></span><br><span class="line">                ├── executor    <span class="comment"># 数据操作具体执行</span></span><br><span class="line">                ├── io          <span class="comment"># 文件流</span></span><br><span class="line">                ├── jdbc        <span class="comment"># jdbc模块</span></span><br><span class="line">                ├── lang        <span class="comment"># 工具</span></span><br><span class="line">                ├── logging     <span class="comment"># 日志</span></span><br><span class="line">                ├── mapping     <span class="comment"># 映射、参数、结果集。</span></span><br><span class="line">                ├── parsing     <span class="comment"># 解析器</span></span><br><span class="line">                ├── plugin      <span class="comment"># 插件</span></span><br><span class="line">                ├── reflection  <span class="comment"># 反射</span></span><br><span class="line">                ├── scripting   <span class="comment"># sql解析</span></span><br><span class="line">                ├── session     <span class="comment"># 接口层会话</span></span><br><span class="line">                ├── transaction <span class="comment"># 事物</span></span><br><span class="line">                └── <span class="built_in">type</span>        <span class="comment"># 类型</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>将项目导入idea中，就可以看到完整的源代码了。</li>
+</ul>
+<h2 id="0x01-根据官方文档快速入门"><a href="#0x01-根据官方文档快速入门" class="headerlink" title="0x01 根据官方文档快速入门"></a>0x01 根据官方文档快速入门</h2><blockquote>
+<p>强烈推荐认真阅读mybatis的官方文档。</p>
+</blockquote>
+<ul>
+<li>官方文档地址 ： <a href="http://www.mybatis.org/mybatis-3/zh/getting-started.html" target="_blank" rel="noopener">http://www.mybatis.org/mybatis-3/zh/getting-started.html</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/01/2016-09-30-%E6%88%90%E9%83%BD3%E6%97%A5%E6%B8%B8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -689,7 +793,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">94</span>
+          <span class="site-state-item-count">95</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -700,7 +804,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">97</span>
+        <span class="site-state-item-count">98</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
