@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://z201.github.io/"/>
-  <updated>2021-12-09T04:12:15.756Z</updated>
+  <updated>2021-11-24T10:58:55.257Z</updated>
   <id>https://z201.github.io/</id>
   
   <author>
@@ -15,31 +15,6 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
-  
-  <entry>
-    <title>查缺补漏-Zookeeper</title>
-    <link href="https://z201.github.io/2021/12/09/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Zookeeper/"/>
-    <id>https://z201.github.io/2021/12/09/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Zookeeper/</id>
-    <published>2021-12-09T04:10:31.000Z</published>
-    <updated>2021-12-09T04:12:15.756Z</updated>
-    
-    <content type="html"><![CDATA[<h3 id="Zookeeper概述"><a href="#Zookeeper概述" class="headerlink" title="Zookeeper概述"></a>Zookeeper概述</h3><blockquote><p>Zookeeper可以让企业的IT架构逐步从集中式向分布式过度，所谓的分布式是指：把一个计算任务分解成若干个计算单元，并且分派到若干不同的计算机中去执行，然后汇总计算结果的过程。</p></blockquote><ul><li><p>Zookeeper介绍</p><ul><li>Zookeeper是源代码开放的分布式协调服务，由雅虎创建，是Google Chubby开源实现。Zookeeper是一个高性能的分布式数据一致性解决方案，它将那些复杂、容易出错的分布式一致性服务封装起来，构成一个搞笑可靠的原语集，并提供一系列简单易用的接口给用户使用。</li></ul></li><li><p>Zookeeper的典型应用场景</p><ul><li>数据发布/订阅 顾名思义就是一方把数据发布出来，另一方通过某种手动可以得到这些数据。<ul><li>通常数据订阅有两种方式：推模式和拉模式，推模式一般是服务器主动向客户端推送消息，拉模式是客户端主动去服务端获取数据（通常采用的是轮询的方式）。</li><li>Zookeeper采用两种方式的结合。<ul><li>发布者将数据发布到Zookeeper集群节点上，订阅者通过一定的方法告诉服务器，我对那个节点的数据感兴趣，那个服务器在这些节点的数据发送变化时，就通知客户端，客户端得到通知后可以去服务器获取数据信息。</li><li>分布式协调/通知<ul><li>心跳检测：在分布式系统中，通常需要机器是否可以用，Zookeeper中我们让所有的机器都注册一个临时节点，所以只需要判断这个节点是否存在就可以了，不需要直接去连接需要检查的机器，降低系统的负载度（节点分为临时和持久）。</li></ul></li></ul></li></ul></li></ul></li><li><p>Zookpeeper重量级使用</p><ul><li>Hadoop、HBase、Storm、Solr。</li></ul></li><li><p>集群角色</p><ul><li>Leader、Follower、Observer<ul><li>Leader服务器是整个Zookeeper集群工作机制的核心</li><li>Follower服务器是Zookeeper集群状态的跟随者</li><li>Oserver服务器充当一个观察者的角色</li><li>Leader、Follower设计模式，Observer观察者模式</li></ul></li></ul></li><li><p>会话</p><ul><li>会话是指客户端Zookeeper服务器的连接，Zookeeper中的会话叫Session，客户端与服务器建立TCP的长连接来维持一个Session,客户端在启动的时候首先会与服务器建立一个TCP连接,通过这个连接客户端能够通过心跳检测与服务器保持有效的会话，也能向Zookeeper服务器发送请求并获得响应。</li></ul></li><li><p>数据节点</p><ul><li>Zookeeper中的节点有两类<ul><li>集群中的一台机器称为一个节点</li><li>数据模型中的数据单元Znode，分别为持久节点和临时节点。（其实数据节点就是一个tree节点就是Znode）</li></ul></li></ul></li><li><p>版本</p><ul><li>Zookeeper中的版本<ul><li>version<ul><li>当前数据节点数据内容版本</li></ul></li><li>cversion<ul><li>当前数据节点子节点的版本号</li></ul></li><li>aversion<ul><li>当前数据节点ACL变更版本号</li></ul></li></ul></li></ul></li><li><p>watcher（事件监听器）</p><ul><li>Zookeeper允许用户在指定节点上注册一些Watcher，当数据节点发生变化的时候，Zookeeper服务器会把这个变化通知发送给感兴趣的客户端。</li></ul></li><li><p>ACL权限控制</p><ul><li>ACL是Access Contril Lists 的缩写,Zookeeper采用ACL策略来进行权限控制,有以下权限：<ul><li>CREATE：创建子节点</li><li>READ：获取子节点</li><li>WRITE:更新子节点数据权限</li><li>DELETE:删除子节点权限</li><li>ADMIN：设置节点ACL权限</li></ul></li></ul></li></ul><h3 id="Zoopeeper环境搭建（集群、单机、伪集群）"><a href="#Zoopeeper环境搭建（集群、单机、伪集群）" class="headerlink" title="Zoopeeper环境搭建（集群、单机、伪集群）"></a>Zoopeeper环境搭建（集群、单机、伪集群）</h3><ul><li>单机模式（设备环境有限暂时单机）<ul><li>准备工作<ul><li>下载Zookeeper（此处自行处理）</li><li>解压 tar xzvf xxx.gz 解压</li><li>重命名文件夹 Zookeeper 命令mv xxx xxx 后面的参数是新名字（可以不做）</li><li>进入文件夹中/conf/</li><li>复制配置文件zoo_sample.cfg（样例文件） 并重命名 zoo.cfg</li></ul></li><li>编辑zoo.cfg内容（仅供参考,具体环境自行修改）</li><li>tickTime = 2000<ul><li>tickTime：基本事件单元，以毫秒为单位。这个时间是作为 Zookeeper 服务器之间或客户端与服务器之间维持心跳的时间间隔，也就是每个 tickTime 时间就会发送一个心跳。</li></ul></li><li>initLimit= 5<ul><li>initLimit:这个配置项用来配置Zookeeper接受客户端初始化连接时最长能忍受多少个心跳时间间隔数，当已超过5个心跳的时间（也就是tickTime）长度后Zookeeper服务器还没有收到客户端的返回信息，那么表明这个客户端连接失败。总的时间长度是5 * 2000=4s。</li></ul></li><li>dataDir = D:\zookeeper\data<ul><li>顾名思义就是 Zookeeper 保存数据快照的目录，默认情况下，Zookeeper 将写数据的日志文件也保存在这个目录里）。</li></ul></li><li>dataLogDir= D:\zookeeper\log<ul><li>顾名思义就是 Zookeeper 保存日志的目录。</li></ul></li><li>synclimit = 5<ul><li>这个配置项表示Leader与Follower之间发送消息，请求和应答时间长长度，最长不能超过多少个tickTime的时间长度,总的时间长度是2 * 2000 = 4s。</li></ul></li><li>clientPort = 2181<ul><li>这个端口就是客户端连接 Zookeeper 服务器的端口，Zookeeper 会监听这个端口，接受客户端的访问请求。</li></ul></li><li>Server（待续）<ul><li>格式：server.id=host:port:port（两个port保证可以正常使用就行）<ul><li>id：通常为整数，并且不能重复使用整数。</li><li>host：服务器的IP地址。</li><li>port: Follower端口</li><li>port: Leader选举投票。</li></ul></li><li>ZooKeeper建议使用hostname，而非ip。这需要对主机的/etc/hostname和/etc/hosts做host绑定(不用的OS不同修改方式)。</li><li>创建一个myid文件（放在 dataDir文件下面）</li><li>写入一行数据（请查阅zoo.cfg文件）<ul><li>写入id位置的数据即可。表示当前系统环境Zookeeper是哪一个Server（通讯用的）。</li></ul></li></ul></li><li>启动服务与停止服务</li><li>进入bin/文件</li><li>执行zkServer.cmd 或则 <a href="http://zkserver.sh/" target="_blank" rel="noopener">zkServer.sh</a></li><li>CMD直接双击运行 ,SH则 sudo sh ./zkServer.sh start 启动 stop 关闭</li><li>验证 使用telnet来测试(自行安装)<ul><li>telnet ip port 敲命令 stat 若返回数据表示当前服务器不能对外提供服务表明集群下其他服务器未启动（在Zookeeper中只要有半数的服务器正常工作就可以向外提供服务）。</li></ul></li><li>在此简单说明下何为伪集群就是在一台服务器上的多个Zookeeper的集群叫伪集群（伪集群 两个port不能与其他zookeeper的port一样）。</li><li>单机模式就删除其他服务器运行的时候就是单机模式。</li></ul></li></ul>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h3 id=&quot;Zookeeper概述&quot;&gt;&lt;a href=&quot;#Zookeeper概述&quot; class=&quot;headerlink&quot; title=&quot;Zookeeper概述&quot;&gt;&lt;/a&gt;Zookeeper概述&lt;/h3&gt;&lt;blockquote&gt;
-&lt;p&gt;Zookeeper可以让企业的IT架构逐步
-      
-    
-    </summary>
-    
-    
-      <category term="未分类" scheme="https://z201.github.io/categories/%E6%9C%AA%E5%88%86%E7%B1%BB/"/>
-    
-    
-  </entry>
   
   <entry>
     <title>Rust-入门</title>
@@ -568,6 +543,31 @@
     
     
       <category term="MySQL" scheme="https://z201.github.io/tags/MySQL/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>查缺补漏-Zookeeper</title>
+    <link href="https://z201.github.io/2020/12/09/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Zookeeper/"/>
+    <id>https://z201.github.io/2020/12/09/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Zookeeper/</id>
+    <published>2020-12-09T04:10:31.000Z</published>
+    <updated>2021-12-13T14:25:21.124Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="Zookeeper概述"><a href="#Zookeeper概述" class="headerlink" title="Zookeeper概述"></a>Zookeeper概述</h3><blockquote><p>Zookeeper可以让企业的IT架构逐步从集中式向分布式过度，所谓的分布式是指：把一个计算任务分解成若干个计算单元，并且分派到若干不同的计算机中去执行，然后汇总计算结果的过程。</p></blockquote><ul><li><p>Zookeeper介绍</p><ul><li>Zookeeper是源代码开放的分布式协调服务，由雅虎创建，是Google Chubby开源实现。Zookeeper是一个高性能的分布式数据一致性解决方案，它将那些复杂、容易出错的分布式一致性服务封装起来，构成一个搞笑可靠的原语集，并提供一系列简单易用的接口给用户使用。</li></ul></li><li><p>Zookeeper的典型应用场景</p><ul><li>数据发布/订阅 顾名思义就是一方把数据发布出来，另一方通过某种手动可以得到这些数据。<ul><li>通常数据订阅有两种方式：推模式和拉模式，推模式一般是服务器主动向客户端推送消息，拉模式是客户端主动去服务端获取数据（通常采用的是轮询的方式）。</li><li>Zookeeper采用两种方式的结合。<ul><li>发布者将数据发布到Zookeeper集群节点上，订阅者通过一定的方法告诉服务器，我对那个节点的数据感兴趣，那个服务器在这些节点的数据发送变化时，就通知客户端，客户端得到通知后可以去服务器获取数据信息。</li><li>分布式协调/通知<ul><li>心跳检测：在分布式系统中，通常需要机器是否可以用，Zookeeper中我们让所有的机器都注册一个临时节点，所以只需要判断这个节点是否存在就可以了，不需要直接去连接需要检查的机器，降低系统的负载度（节点分为临时和持久）。</li></ul></li></ul></li></ul></li></ul></li><li><p>Zookpeeper重量级使用</p><ul><li>Hadoop、HBase、Storm、Solr。</li></ul></li><li><p>集群角色</p><ul><li>Leader、Follower、Observer<ul><li>Leader服务器是整个Zookeeper集群工作机制的核心</li><li>Follower服务器是Zookeeper集群状态的跟随者</li><li>Oserver服务器充当一个观察者的角色</li><li>Leader、Follower设计模式，Observer观察者模式</li></ul></li></ul></li><li><p>会话</p><ul><li>会话是指客户端Zookeeper服务器的连接，Zookeeper中的会话叫Session，客户端与服务器建立TCP的长连接来维持一个Session,客户端在启动的时候首先会与服务器建立一个TCP连接,通过这个连接客户端能够通过心跳检测与服务器保持有效的会话，也能向Zookeeper服务器发送请求并获得响应。</li></ul></li><li><p>数据节点</p><ul><li>Zookeeper中的节点有两类<ul><li>集群中的一台机器称为一个节点</li><li>数据模型中的数据单元Znode，分别为持久节点和临时节点。（其实数据节点就是一个tree节点就是Znode）</li></ul></li></ul></li><li><p>版本</p><ul><li>Zookeeper中的版本<ul><li>version<ul><li>当前数据节点数据内容版本</li></ul></li><li>cversion<ul><li>当前数据节点子节点的版本号</li></ul></li><li>aversion<ul><li>当前数据节点ACL变更版本号</li></ul></li></ul></li></ul></li><li><p>watcher（事件监听器）</p><ul><li>Zookeeper允许用户在指定节点上注册一些Watcher，当数据节点发生变化的时候，Zookeeper服务器会把这个变化通知发送给感兴趣的客户端。</li></ul></li><li><p>ACL权限控制</p><ul><li>ACL是Access Contril Lists 的缩写,Zookeeper采用ACL策略来进行权限控制,有以下权限：<ul><li>CREATE：创建子节点</li><li>READ：获取子节点</li><li>WRITE:更新子节点数据权限</li><li>DELETE:删除子节点权限</li><li>ADMIN：设置节点ACL权限</li></ul></li></ul></li></ul><h3 id="Zoopeeper环境搭建（集群、单机、伪集群）"><a href="#Zoopeeper环境搭建（集群、单机、伪集群）" class="headerlink" title="Zoopeeper环境搭建（集群、单机、伪集群）"></a>Zoopeeper环境搭建（集群、单机、伪集群）</h3><ul><li>单机模式（设备环境有限暂时单机）<ul><li>准备工作<ul><li>下载Zookeeper（此处自行处理）</li><li>解压 tar xzvf xxx.gz 解压</li><li>重命名文件夹 Zookeeper 命令mv xxx xxx 后面的参数是新名字（可以不做）</li><li>进入文件夹中/conf/</li><li>复制配置文件zoo_sample.cfg（样例文件） 并重命名 zoo.cfg</li></ul></li><li>编辑zoo.cfg内容（仅供参考,具体环境自行修改）</li><li>tickTime = 2000<ul><li>tickTime：基本事件单元，以毫秒为单位。这个时间是作为 Zookeeper 服务器之间或客户端与服务器之间维持心跳的时间间隔，也就是每个 tickTime 时间就会发送一个心跳。</li></ul></li><li>initLimit= 5<ul><li>initLimit:这个配置项用来配置Zookeeper接受客户端初始化连接时最长能忍受多少个心跳时间间隔数，当已超过5个心跳的时间（也就是tickTime）长度后Zookeeper服务器还没有收到客户端的返回信息，那么表明这个客户端连接失败。总的时间长度是5 * 2000=4s。</li></ul></li><li>dataDir = D:\zookeeper\data<ul><li>顾名思义就是 Zookeeper 保存数据快照的目录，默认情况下，Zookeeper 将写数据的日志文件也保存在这个目录里）。</li></ul></li><li>dataLogDir= D:\zookeeper\log<ul><li>顾名思义就是 Zookeeper 保存日志的目录。</li></ul></li><li>synclimit = 5<ul><li>这个配置项表示Leader与Follower之间发送消息，请求和应答时间长长度，最长不能超过多少个tickTime的时间长度,总的时间长度是2 * 2000 = 4s。</li></ul></li><li>clientPort = 2181<ul><li>这个端口就是客户端连接 Zookeeper 服务器的端口，Zookeeper 会监听这个端口，接受客户端的访问请求。</li></ul></li><li>Server（待续）<ul><li>格式：server.id=host:port:port（两个port保证可以正常使用就行）<ul><li>id：通常为整数，并且不能重复使用整数。</li><li>host：服务器的IP地址。</li><li>port: Follower端口</li><li>port: Leader选举投票。</li></ul></li><li>ZooKeeper建议使用hostname，而非ip。这需要对主机的/etc/hostname和/etc/hosts做host绑定(不用的OS不同修改方式)。</li><li>创建一个myid文件（放在 dataDir文件下面）</li><li>写入一行数据（请查阅zoo.cfg文件）<ul><li>写入id位置的数据即可。表示当前系统环境Zookeeper是哪一个Server（通讯用的）。</li></ul></li></ul></li><li>启动服务与停止服务</li><li>进入bin/文件</li><li>执行zkServer.cmd 或则 <a href="http://zkserver.sh/" target="_blank" rel="noopener">zkServer.sh</a></li><li>CMD直接双击运行 ,SH则 sudo sh ./zkServer.sh start 启动 stop 关闭</li><li>验证 使用telnet来测试(自行安装)<ul><li>telnet ip port 敲命令 stat 若返回数据表示当前服务器不能对外提供服务表明集群下其他服务器未启动（在Zookeeper中只要有半数的服务器正常工作就可以向外提供服务）。</li></ul></li><li>在此简单说明下何为伪集群就是在一台服务器上的多个Zookeeper的集群叫伪集群（伪集群 两个port不能与其他zookeeper的port一样）。</li><li>单机模式就删除其他服务器运行的时候就是单机模式。</li></ul></li></ul>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;Zookeeper概述&quot;&gt;&lt;a href=&quot;#Zookeeper概述&quot; class=&quot;headerlink&quot; title=&quot;Zookeeper概述&quot;&gt;&lt;/a&gt;Zookeeper概述&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;Zookeeper可以让企业的IT架构逐步
+      
+    
+    </summary>
+    
+    
+      <category term="未分类" scheme="https://z201.github.io/categories/%E6%9C%AA%E5%88%86%E7%B1%BB/"/>
+    
     
   </entry>
   
