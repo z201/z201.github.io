@@ -239,7 +239,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/04/01/%E5%88%9D%E6%8E%A2Arthas/">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/26/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-Vector/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -253,7 +253,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2019/04/01/%E5%88%9D%E6%8E%A2Arthas/" class="post-title-link" itemprop="url">初探Arthas</a>
+            <a href="/2018/04/26/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-Vector/" class="post-title-link" itemprop="url">深入浅出Vector</a>
         </h2>
 
         <div class="post-meta">
@@ -263,14 +263,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2019-04-01 22:19:20" itemprop="dateCreated datePublished" datetime="2019-04-01T22:19:20+08:00">2019-04-01</time>
+              <time title="Created: 2018-04-26 20:07:27" itemprop="dateCreated datePublished" datetime="2018-04-26T20:07:27+08:00">2018-04-26</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-04-02 23:54:00" itemprop="dateModified" datetime="2019-04-02T23:54:00+08:00">2019-04-02</time>
+                <time title="Modified: 2021-10-06 01:15:46" itemprop="dateModified" datetime="2021-10-06T01:15:46+08:00">2021-10-06</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -278,242 +278,7 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA/" itemprop="url" rel="index"><span itemprop="name">基础理论</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>基础理论篇学习笔记</p>
-</blockquote>
-<h2 id="Arthas（阿尔萨斯）-能为你做什么？"><a href="#Arthas（阿尔萨斯）-能为你做什么？" class="headerlink" title="Arthas（阿尔萨斯） 能为你做什么？"></a>Arthas（阿尔萨斯） 能为你做什么？</h2><p><img src="https://alibaba.github.io/arthas/_images/arthas.png" alt="arthas"></p>
-<p><code>Arthas</code> 是Alibaba开源的Java诊断工具，深受开发者喜爱。</p>
-<p>当你遇到以下类似问题而束手无策时，<code>Arthas</code>可以帮助你解决：</p>
-<ol>
-<li>这个类从哪个 jar 包加载的？为什么会报各种类相关的 Exception？</li>
-<li>我改的代码为什么没有执行到？难道是我没 commit？分支搞错了？</li>
-<li>遇到问题无法在线上 debug，难道只能通过加日志再重新发布吗？</li>
-<li>线上遇到某个用户的数据处理有问题，但线上同样无法 debug，线下无法重现！</li>
-<li>是否有一个全局视角来查看系统的运行状况？</li>
-<li>有什么办法可以监控到JVM的实时运行状态？</li>
-</ol>
-<p><code>Arthas</code>支持JDK 6+，支持Linux/Mac/Winodws，采用命令行交互模式，同时提供丰富的 <code>Tab</code> 自动补全功能，进一步方便进行问题的定位和诊断。</p>
-<h3 id="快速入门"><a href="#快速入门" class="headerlink" title="快速入门"></a>快速入门</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget https://alibaba.github.io/arthas/arthas-boot.jar</span><br><span class="line">java -jar arthas-boot.jar</span><br></pre></td></tr></table></figure>
-
-<p>打印帮助信息</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar arthas-boot.jar -h</span><br></pre></td></tr></table></figure>
-
-<p>快速启动(使用国内阿里下载包)</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar arthas-boot.jar --repo-mirror aliyun</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Arthas/arthas-up-01.png"></p>
-<ul>
-<li>如果当前没有java程序运行则提示这个内容，并且不会被正常启动。</li>
-</ul>
-<p>demo程序作为演示</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://github.com/hengyunabc/spring-boot-inside</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>运行效果</li>
-</ul>
-<blockquote>
-<p>我们先运行一个demo，然后让arthas运行起来。</p>
-</blockquote>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> spring-boot-inside // 进入文件夹</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> demo-arthas-spring-boot // 进入demo项目</span><br><span class="line"></span><br><span class="line">mvn clean install  // 构建项目</span><br><span class="line"></span><br><span class="line">java -jar demo-arthas-spring-boot-0.0.1-SNAPSHOT.jar  // 启动项目</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>启动项目之后在运行arthas</p>
-</blockquote>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar arthas-boot.jar</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Arthas/arthas-up-02.png"></p>
-<blockquote>
-<p>如果已经有启动的项目,会提示 [1] project-name 这种。输入数字选择对应的项目即可。</p>
-</blockquote>
-<p>END</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/02/Redis%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%8C%EF%BC%89/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/03/02/Redis%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%8C%EF%BC%89/" class="post-title-link" itemprop="url">Redis基础（二）</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-03-02 11:53:38" itemprop="dateCreated datePublished" datetime="2019-03-02T11:53:38+08:00">2019-03-02</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-03-31 04:29:44" itemprop="dateModified" datetime="2019-03-31T04:29:44+08:00">2019-03-31</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA/" itemprop="url" rel="index"><span itemprop="name">基础理论</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。 </p>
-</blockquote>
-<h3 id="Redis分布式锁"><a href="#Redis分布式锁" class="headerlink" title="Redis分布式锁"></a>Redis分布式锁</h3><ul>
-<li>在日常开发中,redis主要用在缓存处理。为保证缓存所以会使用集群的方式，避免缓存雪崩。都使用集群了应用层也不太可能是单应用。在分布式的情况下就会涉及分布式锁。a应用和b应用一起对某条缓存记录操作，a查完数据在内存修改，在放回去。如果这个操作两个应用同时进行就会出现并发问题。为了保证操作的原子性，所以就要使用锁来保证操作执行的顺序。</li>
-</ul>
-<h3 id="set扩展"><a href="#set扩展" class="headerlink" title="set扩展"></a>set扩展</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用set的扩展命令 一次把expire和 setnx的特性带上。下面这条命令就是 过期时间5s 并且不可以重复添加。只能删除或者到期。</span></span><br><span class="line">192.168.31.7:6379&gt; <span class="built_in">set</span> lock:redis <span class="literal">true</span> ex 5 nx</span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; <span class="built_in">set</span> lock:redis <span class="literal">true</span> ex 5 nx  <span class="comment"># 第二次在设置就失败了。</span></span><br><span class="line">(nil)</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>但是这种分布式锁并不能完美解决问题，因为锁有过期时间，如果时间过期了但是操作依然未执行完成，后面的操作进来就可能会造成不可控影响。</li>
-</ul>
-<h3 id="异步消息列队"><a href="#异步消息列队" class="headerlink" title="异步消息列队"></a>异步消息列队</h3><blockquote>
-<p>Redis list这个数据类型，非常适合做列队。使用rpush / lpush 操作入列，使用 lpop 和 rpop来出列队。</p>
-</blockquote>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">192.168.31.7:6379&gt; rpush queue a b c d </span><br><span class="line">(<span class="built_in">integer</span>) 4</span><br><span class="line">192.168.31.7:6379&gt; llen queue</span><br><span class="line">(<span class="built_in">integer</span>) 4</span><br><span class="line"><span class="comment"># rpop 压栈</span></span><br><span class="line">192.168.31.7:6379&gt; lpop queue</span><br><span class="line"><span class="string">"a"</span></span><br><span class="line">192.168.31.7:6379&gt; lpop queue</span><br><span class="line"><span class="string">"b"</span></span><br><span class="line">192.168.31.7:6379&gt; lpop queue</span><br><span class="line"><span class="string">"c"</span></span><br><span class="line">192.168.31.7:6379&gt; lpop queue</span><br><span class="line"><span class="string">"d"</span></span><br><span class="line"><span class="comment"># lpop 列队</span></span><br><span class="line">192.168.31.7:6379&gt; lpop queue</span><br><span class="line"><span class="string">"a"</span></span><br><span class="line">192.168.31.7:6379&gt; lpop queue</span><br><span class="line"><span class="string">"b"</span></span><br><span class="line">192.168.31.7:6379&gt; lpop queue</span><br><span class="line"><span class="string">"c"</span></span><br><span class="line">192.168.31.7:6379&gt; lpop queue</span><br><span class="line"><span class="string">"d"</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>但是，redis的list一旦被消费完就会被删除，为了避免客户端一直读取。建议使用阻塞列队<code>blpop\brpop</code>的方式</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用blocking 阻塞读，1就是阻塞时间。这样可以避免不断的读。</span></span><br><span class="line">192.168.31.7:6379&gt; rpush queue a b c d </span><br><span class="line">(<span class="built_in">integer</span>) 4</span><br><span class="line">192.168.31.7:6379&gt; blpop queue 1</span><br><span class="line">1) <span class="string">"queue"</span></span><br><span class="line">2) <span class="string">"a"</span></span><br><span class="line">192.168.31.7:6379&gt; blpop queue 1</span><br><span class="line">1) <span class="string">"queue"</span></span><br><span class="line">2) <span class="string">"b"</span></span><br><span class="line">192.168.31.7:6379&gt; blpop queue 1</span><br><span class="line">1) <span class="string">"queue"</span></span><br><span class="line">2) <span class="string">"c"</span></span><br><span class="line">192.168.31.7:6379&gt; blpop queue 1</span><br><span class="line">1) <span class="string">"queue"</span></span><br><span class="line">2) <span class="string">"d"</span></span><br><span class="line">192.168.31.7:6379&gt; blpop queue 1 <span class="comment"># 最后一次 list已经空了。</span></span><br><span class="line">(nil)</span><br><span class="line">(1.08s)  <span class="comment"># 阻塞了一秒</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="key查询"><a href="#key查询" class="headerlink" title="key查询"></a>key查询</h3><ul>
-<li>虽然redis已经有keys，并不能像mysql一个提供limit这种，导致读取的太多了。Redis是一个单线程，数据太多会阻塞。<code>scan</code>提供了三个参数 <code>cursor key limit </code>分别是 </li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">192.168.31.7:6379&gt; <span class="built_in">set</span> key1 1</span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; <span class="built_in">set</span> key2 1</span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; <span class="built_in">set</span> key3 1</span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; <span class="built_in">set</span> key4 1</span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; <span class="built_in">set</span> key5 1</span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; scan 0 match key* count 10</span><br><span class="line">1) <span class="string">"0"</span></span><br><span class="line">2) 1) <span class="string">"key4"</span></span><br><span class="line">   2) <span class="string">"key3"</span></span><br><span class="line">   3) <span class="string">"key2"</span></span><br><span class="line">   4) <span class="string">"key5"</span></span><br><span class="line">   5) <span class="string">"key1"</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="Redis事务"><a href="#Redis事务" class="headerlink" title="Redis事务"></a>Redis事务</h3><blockquote>
-<p>Redis事物分别是multi/exec/discard 对应的就是begin/commit/rollback。Redis在收到exec的指令才会执行事务列队，执行完毕后一次返回指令运行结果。但是Redis仅仅是保证了个隔离性。在使用事物的时候建议使用管道pipe，这样可以减少网络请求。</p>
-</blockquote>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 简单的演示事务</span></span><br><span class="line">192.168.31.7:6379&gt; multi</span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; <span class="built_in">set</span> name wang</span><br><span class="line">QUEUED</span><br><span class="line">192.168.31.7:6379&gt; <span class="built_in">set</span> name zhang</span><br><span class="line">QUEUED</span><br><span class="line">192.168.31.7:6379&gt; <span class="built_in">exec</span></span><br><span class="line">1) OK</span><br><span class="line">2) OK</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>事务丢弃 discard</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建一个字符串并对value进行累加。</span></span><br><span class="line">192.168.31.7:6379&gt; <span class="built_in">set</span> count 1</span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; get count</span><br><span class="line"><span class="string">"1"</span></span><br><span class="line">192.168.31.7:6379&gt; multi <span class="comment"># 开启事物</span></span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; incr count</span><br><span class="line">QUEUED</span><br><span class="line">192.168.31.7:6379&gt; incr count</span><br><span class="line">QUEUED</span><br><span class="line">192.168.31.7:6379&gt; discard <span class="comment"># 丢弃事物</span></span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; get count <span class="comment">#检查数据。</span></span><br><span class="line"><span class="string">"1"</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="Watch"><a href="#Watch" class="headerlink" title="Watch"></a>Watch</h3><blockquote>
-<p>上面的分布式锁其实是一个悲观锁，实际上可以使用watch实现乐观锁。watch会在事务开始之前，监听一个或者多个参数，当执行exec的时候redis会检查被监听的参数是否改变，如果改变了事务执行失败。这里需要注意的是watch必须在事务之前开启。</p>
-</blockquote>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 监听count</span></span><br><span class="line">192.168.31.7:6379&gt; watch count </span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; incr count <span class="comment"># 自增count的value。</span></span><br><span class="line">(<span class="built_in">integer</span>) 2</span><br><span class="line">192.168.31.7:6379&gt; multi <span class="comment">#开启事物</span></span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; incr count </span><br><span class="line">QUEUED</span><br><span class="line">192.168.31.7:6379&gt; <span class="built_in">exec</span>  </span><br><span class="line">(nil) <span class="comment">#事务执行失败。</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="END"><a href="#END" class="headerlink" title="END"></a>END</h3>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/22/Docker-Redis/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/03/22/Docker-Redis/" class="post-title-link" itemprop="url">Docker-Redis</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-03-22 13:00:51" itemprop="dateCreated datePublished" datetime="2019-03-22T13:00:51+08:00">2019-03-22</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-03-26 23:19:16" itemprop="dateModified" datetime="2019-03-26T23:19:16+08:00">2019-03-26</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Docker/" itemprop="url" rel="index"><span itemprop="name">Docker</span></a>
+                  <a href="/categories/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">源码分析</span></a>
                 </span>
             </span>
 
@@ -531,16 +296,18 @@
           <blockquote>
 <p>本章是整理知识内容，为强化知识长期更新。</p>
 </blockquote>
-<h2 id="Docker环境下部署redis"><a href="#Docker环境下部署redis" class="headerlink" title="Docker环境下部署redis"></a>Docker环境下部署redis</h2><h3 id="确认已经安装好了Docker环境"><a href="#确认已经安装好了Docker环境" class="headerlink" title="确认已经安装好了Docker环境"></a>确认已经安装好了Docker环境</h3><blockquote>
-<p> windows 和  linux 可以用 docker info检查是否安装</p>
-</blockquote>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Docker/docker.png"></p>
-<ul>
-<li>在mac下就是这么个情况。需要注意的是，请不用使用email登录，否则在查找官方镜像的时候会抛出认证失败的问题。比如我是登录用户<code>z201</code></li>
+<h2 id="Vector"><a href="#Vector" class="headerlink" title="Vector"></a>Vector</h2><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Vector/Vector.png"></p>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><ul>
+<li>Vector是Java Collection Franmework成员。</li>
+<li>列队允许添加重复元素</li>
+<li>列队允许null的存在</li>
+<li>列队从0开始，也就是列队头部的下标是0。</li>
+<li>列队支持泛型，这样可以避免<code>ClassCastException</code>异常。</li>
 </ul>
+<h2 id="与ArrayList的区别"><a href="#与ArrayList的区别" class="headerlink" title="与ArrayList的区别"></a>与ArrayList的区别</h2>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2019/03/22/Docker-Redis/#more" rel="contents">
+              <a class="btn" href="/2018/04/26/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-Vector/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -564,7 +331,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/23/Docker-Mysql5-7/">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/26/Centos7-RabbitMQ%E5%8D%95%E5%AE%9E%E4%BE%8B%E9%83%A8%E7%BD%B2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -578,7 +345,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2019/03/23/Docker-Mysql5-7/" class="post-title-link" itemprop="url">Docker-Mysql5.7</a>
+            <a href="/2018/04/26/Centos7-RabbitMQ%E5%8D%95%E5%AE%9E%E4%BE%8B%E9%83%A8%E7%BD%B2/" class="post-title-link" itemprop="url">Centos7-RabbitMQ单实例部署</a>
         </h2>
 
         <div class="post-meta">
@@ -588,197 +355,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2019-03-23 20:19:21" itemprop="dateCreated datePublished" datetime="2019-03-23T20:19:21+08:00">2019-03-23</time>
+              <time title="Created: 2018-04-26 07:10:37" itemprop="dateCreated datePublished" datetime="2018-04-26T07:10:37+08:00">2018-04-26</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-03-26 20:45:05" itemprop="dateModified" datetime="2019-03-26T20:45:05+08:00">2019-03-26</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Docker/" itemprop="url" rel="index"><span itemprop="name">Docker</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="docker查找镜像"><a href="#docker查找镜像" class="headerlink" title="docker查找镜像"></a>docker查找镜像</h3><p><code>docker search mysql</code></p>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Docker/docker-search-mysql.png"></p>
-<h3 id="docker-拉去镜像"><a href="#docker-拉去镜像" class="headerlink" title="docker 拉去镜像"></a>docker 拉去镜像</h3><p><code>docker pull mysql:5.7</code>  直接拉去官方的镜像， 可以使用指定版本。</p>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Docker/docker-pull-mysql5.7.png"></p>
-<h3 id="docker启动mysql"><a href="#docker启动mysql" class="headerlink" title="docker启动mysql"></a>docker启动mysql</h3><p><code>docker run -p 3306:3306 -v $PWD/mysql/conf:/mysql/etc/mysql/conf.d -v $PWD/mysql/logs:/logs -v $PWD/mysql/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=123456 -d mysql:5.7 </code></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">-p 3306:3306 将容器的3306端口映射成主机的3306端口</span><br><span class="line">-v <span class="variable">$PWD</span>/mysql/conf:/mysql/etc/mysql/conf.d 将主机中当前目录下的mysql/conf挂载到容器的/mysql/etc/mysql/conf.d</span><br><span class="line">-v <span class="variable">$PWD</span>/mysql/logs:/logs 将主机中当前目录下的mysql/logs挂载到容器/logs</span><br><span class="line">-v <span class="variable">$PWD</span>/mysql/data:/var/lib/mysql 将主机中当前目录下的mysql/data挂载到容器/var/lib/mysql</span><br><span class="line">-e MYSQL_ROOT_PASSWORD=123456  设置root 密码 123456</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Docker/docker-mysql-ps.png"></p>
-<ul>
-<li>这里需要注意的是，本机有多个Mysql的时候，不要都挂载到一起了。</li>
-</ul>
-<h3 id="进入运行容器中"><a href="#进入运行容器中" class="headerlink" title="进入运行容器中"></a>进入运行容器中</h3><p><code>docker exec -it f1a0ccab4748 /bin/bash</code></p>
-<ul>
-<li><p>f1a0ccab4748 是mysql运行容器的ID</p>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Docker/docker-mysql-exec.png"></p>
-</li>
-</ul>
-<h2 id="END"><a href="#END" class="headerlink" title="END"></a>END</h2>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/22/Docker-Zookeeper/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/03/22/Docker-Zookeeper/" class="post-title-link" itemprop="url">Docker-Zookeeper</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-03-22 13:40:10" itemprop="dateCreated datePublished" datetime="2019-03-22T13:40:10+08:00">2019-03-22</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-03-26 20:17:25" itemprop="dateModified" datetime="2019-03-26T20:17:25+08:00">2019-03-26</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Docker/" itemprop="url" rel="index"><span itemprop="name">Docker</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-<h3 id="docker查找镜像"><a href="#docker查找镜像" class="headerlink" title="docker查找镜像"></a>docker查找镜像</h3><p><code>docker search zookeeper</code></p>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Docker/docker-search-zookeeper.png"></p>
-<h3 id="docker-拉去镜像"><a href="#docker-拉去镜像" class="headerlink" title="docker 拉去镜像"></a>docker 拉去镜像</h3><p><code>docker pull zookeeper</code>  直接拉去官方的镜像，一般第一个就是。</p>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Docker/docker-pull-zookeeper.png"></p>
-<h3 id="docker启动zookeeper"><a href="#docker启动zookeeper" class="headerlink" title="docker启动zookeeper"></a>docker启动zookeeper</h3><p><code>docker run -p 2181:2181 -v $PWD/zookeeper/data:/data  -d zookeeper:latest </code></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-p 2181:2181：将容器的2181端口映射成主机的2181端口</span><br><span class="line">-v <span class="variable">$PWD</span>/zookeeper/data:/data :将主机中当前目录下的data挂载到容器的/data</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Docker/docker-zookeeper-ps.png"></p>
-<ul>
-<li>这里需要注意的是，本机有多zookeeper的时候，不要都挂载到一起了。</li>
-</ul>
-<h3 id="进入运行容器中"><a href="#进入运行容器中" class="headerlink" title="进入运行容器中"></a>进入运行容器中</h3><p><code>docker exec -it 3f6a8c213504 /bin/bash</code></p>
-<ul>
-<li><p>3f6a8c213504 是zookeeper运行容器的ID</p>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Docker/docker-exec-zookeeper.png"></p>
-</li>
-</ul>
-<h2 id="END"><a href="#END" class="headerlink" title="END"></a>END</h2>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/19/Centos7-Install-ELK/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/03/19/Centos7-Install-ELK/" class="post-title-link" itemprop="url">Centos7-Install-ELK</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-03-19 10:31:00" itemprop="dateCreated datePublished" datetime="2019-03-19T10:31:00+08:00">2019-03-19</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-03-23 14:29:14" itemprop="dateModified" datetime="2019-03-23T14:29:14+08:00">2019-03-23</time>
+                <time title="Modified: 2019-03-09 03:05:46" itemprop="dateModified" datetime="2019-03-09T03:05:46+08:00">2019-03-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -801,36 +385,21 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <blockquote>
-<p>18年年初的笔记，被我翻出来了。</p>
-</blockquote>
-<h1 id="EL-B-K平台"><a href="#EL-B-K平台" class="headerlink" title="EL(B)K平台"></a>EL(B)K平台</h1><blockquote>
-<p>Elastic Stack（旧称ELK Stack），是一种能够从任意数据源抽取数据，并实时对数据进行搜索、分析和可视化展现的数据分析框架。（hadoop同一个开发人员）</p>
-<p><a href="https://www.elastic.co/cn/products" target="_blank" rel="noopener">elastic 官网</a></p>
-</blockquote>
-<h2 id="EL-B-K是啥技术"><a href="#EL-B-K是啥技术" class="headerlink" title="EL(B)K是啥技术"></a>EL(B)K是啥技术</h2><ul>
-<li>java 开发的开源的全文搜索引擎工具。</li>
-<li>基于lucence搜索引擎的。</li>
-<li>采用 restful - api 标准的。</li>
-<li>高可用、高扩展的分布式框架。</li>
-<li>实时数据分析的。</li>
+          <h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><ul>
+<li><a href="https://segmentfault.com/a/1190000010693696" target="_blank" rel="noopener">CentOs7.3 搭建 RabbitMQ 3.6 单机服务与使用</a>   </li>
 </ul>
-<h3 id="E"><a href="#E" class="headerlink" title="E"></a>E</h3><blockquote>
-<p>Elasticsearch 是基于 JSON 的分布式搜索和分析引擎，专为实现水平扩展、高可用和管理便捷性而设计。</p>
+<h2 id="RabbitMQ介绍"><a href="#RabbitMQ介绍" class="headerlink" title="RabbitMQ介绍"></a>RabbitMQ介绍</h2><blockquote>
+<p>RabbitMQ 是一个由 Erlang 语言开发的 AMQP 的开源实现。<br>AMQP ：Advanced Message Queue，高级消息队列协议。它是应用层协议的一个开放标准，为面向消息的中间件设计，基于此协议的客户端与消息中间件可传递消息，并不受产品、开发语言等条件的限制。</p>
 </blockquote>
-<h3 id="L"><a href="#L" class="headerlink" title="L"></a>L</h3><blockquote>
-<p>Logstash 是动态数据收集管道，拥有可扩展的插件生态系统，能够与 Elasticsearch 产生强大的协同作用。</p>
+<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><blockquote>
+<p>RabbitMQ 是流行的开源消息队列系统，是 AMQP（Advanced Message Queuing Protocol 高级消息队列协议）的标准实现，用 erlang 语言开发。RabbitMQ 具有良好的性能和时效性，同时还能够非常好的支持集群和负载部署，非常适合在较大规模的分布式系统中使用。</p>
 </blockquote>
-<h3 id="B"><a href="#B" class="headerlink" title="B"></a>B</h3><blockquote>
-<p>Beats 是轻量型采集器的平台，从边缘机器向 Logstash 和 Elasticsearch 发送数据。</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><blockquote>
+<p>RabbitMQ 基于erlang。需要先安装erlang环境。</p>
 </blockquote>
-<h3 id="K"><a href="#K" class="headerlink" title="K"></a>K</h3><blockquote>
-<p>Kibana 能够以图表的形式呈现数据，并且具有可扩展的用户界面，供您全方位配置和管理 Elastic Stack。</p>
-</blockquote>
-<h2 id="下载程序"><a href="#下载程序" class="headerlink" title="下载程序"></a>下载程序</h2>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2019/03/19/Centos7-Install-ELK/#more" rel="contents">
+              <a class="btn" href="/2018/04/26/Centos7-RabbitMQ%E5%8D%95%E5%AE%9E%E4%BE%8B%E9%83%A8%E7%BD%B2/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -854,7 +423,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/18/Centos7-Install-Sonarqube/">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/26/Centos7-Redis%E5%8D%95%E5%AE%9E%E4%BE%8B%E9%83%A8%E7%BD%B2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -868,7 +437,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2019/03/18/Centos7-Install-Sonarqube/" class="post-title-link" itemprop="url">Centos7-Install-Sonarqube</a>
+            <a href="/2018/04/26/Centos7-Redis%E5%8D%95%E5%AE%9E%E4%BE%8B%E9%83%A8%E7%BD%B2/" class="post-title-link" itemprop="url">Centos7.*-Redis单实例部署</a>
         </h2>
 
         <div class="post-meta">
@@ -878,14 +447,104 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2019-03-18 09:38:16" itemprop="dateCreated datePublished" datetime="2019-03-18T09:38:16+08:00">2019-03-18</time>
+              <time title="Created: 2018-04-26 06:34:08" itemprop="dateCreated datePublished" datetime="2018-04-26T06:34:08+08:00">2018-04-26</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-03-23 14:29:09" itemprop="dateModified" datetime="2019-03-23T14:29:09+08:00">2019-03-23</time>
+                <time title="Modified: 2021-12-08 15:38:26" itemprop="dateModified" datetime="2021-12-08T15:38:26+08:00">2021-12-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index"><span itemprop="name">Linux运维</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h1><blockquote>
+<p>Redis全称：Remote Dictionary Server(远程数据服务)。Redis是一个开源的使用ANSI C语言编写、支持网络、可基于内存亦可持久化的日志型、Key-Value数据库，并提供多种语言的API。</p>
+</blockquote>
+<h2 id="单实例安装"><a href="#单实例安装" class="headerlink" title="单实例安装"></a>单实例安装</h2><blockquote>
+<p>只是学习使用使用yum 方式安装比较快。而且centos自带官方源。</p>
+</blockquote>
+<h3 id="yum安装"><a href="#yum安装" class="headerlink" title="yum安装"></a>yum安装</h3><ul>
+<li>yum install epel-release    –下载fedora的epel仓库</li>
+<li>yum install redis    – 安装redis数据库</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/04/26/Centos7-Redis%E5%8D%95%E5%AE%9E%E4%BE%8B%E9%83%A8%E7%BD%B2/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/25/Centos7-Mongodb3-4%E5%8D%95%E5%AE%9E%E4%BE%8B%E9%83%A8%E7%BD%B2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/04/25/Centos7-Mongodb3-4%E5%8D%95%E5%AE%9E%E4%BE%8B%E9%83%A8%E7%BD%B2/" class="post-title-link" itemprop="url">Centos7.*-Mongodb3.4单实例部署</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-04-25 05:16:12" itemprop="dateCreated datePublished" datetime="2018-04-25T05:16:12+08:00">2018-04-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-03-09 03:05:53" itemprop="dateModified" datetime="2019-03-09T03:05:53+08:00">2019-03-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -909,23 +568,174 @@
 
       
           <blockquote>
-<p>18年年初的笔记，被我翻出来了。</p>
+<p>mongodb的安装方式比较简单，下面演示在CentOS7上用yum方式安装。</p>
 </blockquote>
-<h1 id="Sonarqube"><a href="#Sonarqube" class="headerlink" title="Sonarqube"></a>Sonarqube</h1><blockquote>
-<p>代码质量缺陷检测</p>
-</blockquote>
-<p><a href="https://www.sonarqube.org/" target="_blank" rel="noopener">sonarqube官网</a></p>
-<h2 id="安装实例"><a href="#安装实例" class="headerlink" title="安装实例"></a>安装实例</h2><ul>
-<li>sonarqube6.7.1</li>
-<li>sonar-scanner-cli-3.0.2.768</li>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><ul>
+<li>下载地址 <a href="https://www.mongodb.com/download-center#community" target="_blank" rel="noopener">https://www.mongodb.com/download-center#community</a></li>
+<li>在线文档 <a href="https://docs.mongodb.com/manual/introduction/" target="_blank" rel="noopener">https://docs.mongodb.com/manual/introduction/</a></li>
 </ul>
-<blockquote>
-<p>sonarqube是服务端包含es、ec、web。</p>
-<p>sonar-scanner 客户端主要将代码筛选并上传至sonarqube。</p>
+<h2 id="使用yum方式安装"><a href="#使用yum方式安装" class="headerlink" title="使用yum方式安装"></a>使用yum方式安装</h2><blockquote>
+<p>仅供学习参考，若在生产环境中部署请注意修改安全配置。</p>
 </blockquote>
+<ul>
+<li>整个mongodb（社区版）包含如下软件</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>软件名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>mongodb-org-server</td>
+<td>包含mongod守护程序和关联的配置和init脚本</td>
+</tr>
+<tr>
+<td>mongodb-org-mongos</td>
+<td>包含mongos守护程序</td>
+</tr>
+<tr>
+<td>mongodb-org-shell</td>
+<td>包含mongo shell，它是一个连接mongodb的命令行客户端，允许用户直接输入nosql语法管理数据库。</td>
+</tr>
+<tr>
+<td>mongodb-org-tools</td>
+<td>包含以下工具的MongoDB：数据导入、导出、备份、恢复等等</td>
+</tr>
+</tbody></table>
+<ul>
+<li>创建yum源文件</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/yum.repos.d/mongodb-org-3.4.repo1</span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2019/03/18/Centos7-Install-Sonarqube/#more" rel="contents">
+              <a class="btn" href="/2018/04/25/Centos7-Mongodb3-4%E5%8D%95%E5%AE%9E%E4%BE%8B%E9%83%A8%E7%BD%B2/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/23/Linux%E5%9F%BA%E7%A1%80%E5%91%BD%E4%BB%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/04/23/Linux%E5%9F%BA%E7%A1%80%E5%91%BD%E4%BB%A4/" class="post-title-link" itemprop="url">Linux基础命令</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-04-23 08:58:34" itemprop="dateCreated datePublished" datetime="2018-04-23T08:58:34+08:00">2018-04-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-15 09:17:23" itemprop="dateModified" datetime="2020-08-15T09:17:23+08:00">2020-08-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>linux作为个人工作经常使用的系统、做下简单的记录方便以后工作参考。</p>
+</blockquote>
+<h2 id="ps"><a href="#ps" class="headerlink" title="ps"></a><a href="http://man.linuxde.net/ps" target="_blank" rel="noopener">ps</a></h2><blockquote>
+<p>ps命令用于报告系统某个时间内进程的情况</p>
+</blockquote>
+<ul>
+<li>参数</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">-A : 所有的进程均显示出来</span><br><span class="line">-a : 不与terminal有关的所有进程</span><br><span class="line">-u : 有效用户的相关进程</span><br><span class="line">-x : 一般与a参数一起使用，可以列出比较完整的信息。</span><br><span class="line">-l : 较详细地将PID的信息列出。</span><br></pre></td></tr></table></figure>
+
+<h3 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h3><p>查询某程序的情况</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> [root@VM_115_109_centos ~]<span class="comment"># ps -ef | grep mysqld</span></span></span><br><span class="line">root      8013 17307  0 05:34 pts/0    00:00:00 grep --color=auto mysqld</span><br><span class="line">mysql    28882     1  0 Apr02 ?        00:07:03 /usr/sbin/mysqld --daemonize --pid-file=/var/run/mysqld/mysqld.pid</span><br></pre></td></tr></table></figure>
+
+<p>UID      PID   PPID     C STIME   TTY    TIME     CMD (类目描述)</p>
+<ul>
+<li>UID 程序被该 UID 所拥有</li>
+<li>PID 就是这个程序的 ID </li>
+<li>PPID 则是其上级父程序的ID</li>
+<li>C CPU 使用的资源百分比</li>
+<li>STIME 系统启动时间</li>
+<li>TTY 登入者的终端机位置</li>
+<li>TIME 使用掉的 CPU 时间。</li>
+<li>CMD 所下达的指令</li>
+</ul>
+<p>查看内存占用前1的进程</p>
+<ul>
+<li>ps auxw | head -1;ps auxw|sort -rn -k4|head -1  </li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">  ps auxw | head -1;ps auxw|sort -rn -k4|head -1</span></span><br><span class="line">USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</span><br><span class="line">mysql    28882  0.0 10.9 1143416 205484 ?      Sl   Apr02   7:20 /usr/sbin/mysqld --daemonize --pid-file=/var/run/mysqld/mysqld.pid</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>内存的单位是kb，VSZ是虚拟内存的占用，RSS是真实的内存的占用。</li>
+</ul>
+<ul>
+<li>命令分解：</li>
+<li>ps auxw显示系统资源占用情况；</li>
+<li>head -1表示显示第一列，即标题列；</li>
+<li>sort -r 表示反向排序，-n表示按数字排序，-k4表示列的第4个字符。</li>
+</ul>
+<p>查看CPU占用前1的进程</p>
+<ul>
+<li>ps auxw|head -1;ps auxw|sort -rn -k3|head -1</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ps auxw|head -1;ps auxw|sort -rn -k3|head -5</span></span><br><span class="line">USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</span><br><span class="line">root      1690  0.1  0.6 536692 12436 ?        Sl   Apr10  29:58 barad_agent</span><br><span class="line">USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</span><br><span class="line">root         9  0.0  0.0      0     0 ?        R    Mar08   1:45 [rcu_sched]</span><br><span class="line">root       884  0.0  0.0 110044   808 ttyS0    Ss+  Mar08   0:00 /sbin/agetty --keep-baud 115200 38400 9600 ttyS0 vt220</span><br><span class="line">root       883  0.0  0.0 110044   788 tty1     Ss+  Mar08   0:00 /sbin/agetty --noclear tty1 linux</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/04/23/Linux%E5%9F%BA%E7%A1%80%E5%91%BD%E4%BB%A4/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -1033,7 +843,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/20/Centos7-install-cmake/">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/21/%E5%88%9D%E6%8E%A2Eureka%E4%B8%8EZookeeper/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -1047,7 +857,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2019/03/20/Centos7-install-cmake/" class="post-title-link" itemprop="url">Centos7-install-cmake</a>
+            <a href="/2018/04/21/%E5%88%9D%E6%8E%A2Eureka%E4%B8%8EZookeeper/" class="post-title-link" itemprop="url">初探Eureka与Zookeeper</a>
         </h2>
 
         <div class="post-meta">
@@ -1056,10 +866,137 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2019-03-20 10:58:33 / Modified: 11:00:25" itemprop="dateCreated datePublished" datetime="2019-03-20T10:58:33+08:00">2019-03-20</time>
+              <time title="Created: 2018-04-21 06:14:16" itemprop="dateCreated datePublished" datetime="2018-04-21T06:14:16+08:00">2018-04-21</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-17 10:23:45" itemprop="dateModified" datetime="2020-08-17T10:23:45+08:00">2020-08-17</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA/" itemprop="url" rel="index"><span itemprop="name">基础理论</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>服务注册中心，给客户端提供可供调用的服务列表，客户端在进行远程服务调用时，根据服务列表然后选择服务提供方的服务地址进行服务调用。服务注册中心在分布式系统中大量应用，是分布式系统中不可或缺的组件，例如rocketmq的name server，hdfs中的namenode，dubbo中的zk注册中心，spring cloud中的服务注册中心eureka。  在spring cloud中，除了可以使用eureka作为注册中心外，还可以通过配置的方式使用zookeeper作为注册中心。既然这样，我们该如何选择注册中心的实现呢？</p>
+</blockquote>
+<h3 id="CAP定理"><a href="#CAP定理" class="headerlink" title="CAP定理"></a>CAP定理</h3><blockquote>
+<p>又被称作布鲁尔定理（Eric Brewer）它指出对于一个分布式计算系统来说，不可能同时满足以下三点：</p>
+</blockquote>
+<ol>
+<li>强一致性（Consistency）：系统在执行某项操作后数据状态仍然处于一致，例如在分布式系统中，更新操作执行成功后所有的用户都应该读取到最新的值，这样的系统被认为具有强一致性。</li>
+<li>可用性（Availability）：每一个操作总是能够在一定的时间内返回结果</li>
+<li>分区容错性（Partition tolerance）：单个节点故障不应导致整个系统崩溃，也就是说尽管网络在节点之间丢弃（或延迟）任意数量的消息，但是系统继续操作。</li>
+</ol>
+<blockquote>
+<p>根据CAP原理将数据库分成了满足CA原则、满足CP原则和满足AP原则三大类</p>
+</blockquote>
+<ol>
+<li>CA：单点集群，满足一致性，可用性，通常在可扩展性上不太强大，比如RDB。</li>
+<li>CP：满足一致性和分区容错性，通常性能不是特别高，如分布式数据库。</li>
+<li>AP：满足可用性和分区容错性，通常可能对一致性要求低一些，如大多数的NoSQL。</li>
+</ol>
+<h3 id="BASE（Basically-Available，Soft-state，Eventual-consistency）"><a href="#BASE（Basically-Available，Soft-state，Eventual-consistency）" class="headerlink" title="BASE（Basically Available，Soft-state，Eventual consistency）"></a>BASE（Basically Available，Soft-state，Eventual consistency）</h3><blockquote>
+<p>eBay的架构师Dan Pritchett源于对大规模分布式系统的实践总结，在ACM上发表文章提出BASE理论，BASE理论是对CAP理论的延伸，核心思想是即使无法做到强一致性（Strong Consistency，CAP的一致性就是强一致性），但应用可以采用适合的方式达到最终一致性（Eventual Consitency）。</p>
+</blockquote>
+<ol>
+<li>基本可用（Basically Available）：系统能够基本运行并一直提供服务。</li>
+<li>软状态（Soft-state）：系统不要求一直保持强一致状态。</li>
+<li>最终一致性（Eventual consistency）：系统需要在某一时刻后达到一致性要求。</li>
+</ol>
+<h3 id="Zookeeper保证CP"><a href="#Zookeeper保证CP" class="headerlink" title="Zookeeper保证CP"></a><strong>Zookeeper保证CP</strong></h3><ul>
+<li>当向注册中心查询服务列表时，我们可以容忍注册中心返回的是几分钟以前的注册信息，但不能接受服务直接down掉不可用。也就是说，服务注册功能对可用性的要求要高于一致性。但是zk会出现这样一种情况，当master节点因为网络故障与其他节点失去联系时，剩余节点会重新进行leader选举。问题在于，选举leader的时间太长，30 ~ 120s, 且选举期间整个zk集群都是不可用的，这就导致在选举期间注册服务瘫痪。在云部署的环境下，因网络问题使得zk集群失去master节点是较大概率会发生的事，虽然服务能够最终恢复，但是漫长的选举时间导致的注册长期不可用是不能容忍的。</li>
+</ul>
+<h3 id="Eureka保证AP"><a href="#Eureka保证AP" class="headerlink" title="Eureka保证AP"></a>Eureka保证AP</h3><ul>
+<li><p>Eureka各个节点都是平等的，几个节点挂掉不会影响正常节点的工作，剩余的节点依然可以提供注册和查询服务。而Eureka的客户端在向某个Eureka注册或如果发现连接失败，则会自动切换至其它节点，只要有一台Eureka还在，就能保证注册服务可用(保证可用性)，只不过查到的信息可能不是最新的(不保证强一致性)。除此之外，Eureka还有一种自我保护机制，如果在15分钟内超过85%的节点都没有正常的心跳，那么Eureka就认为客户端与注册中心出现了网络故障，此时会出现以下几种情况： </p>
+<ol>
+<li>Eureka不再从注册列表中移除因为长时间没收到心跳而应该过期的服务 </li>
+<li>Eureka仍然能够接受新服务的注册和查询请求，但是不会被同步到其它节点上(即保证当前节点依然可用) </li>
+<li>当网络稳定时，当前实例新的注册信息会被同步到其它节点中</li>
+</ol>
+</li>
+<li><p>因此， Eureka可以很好的应对因网络故障导致部分节点失去联系的情况，而不会像zookeeper那样使整个注册服务瘫痪。</p>
+</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/04/21/%E5%88%9D%E6%8E%A2Eureka%E4%B8%8EZookeeper/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/21/Centos7-Mysql5.7%E5%8D%95%E5%AE%9E%E4%BE%8B%E9%83%A8%E7%BD%B2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/04/21/Centos7-Mysql5.7%E5%8D%95%E5%AE%9E%E4%BE%8B%E9%83%A8%E7%BD%B2/" class="post-title-link" itemprop="url">Centos7.*-Mysql5.7单实例部署</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-04-21 06:04:28" itemprop="dateCreated datePublished" datetime="2018-04-21T06:04:28+08:00">2018-04-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-21 20:41:28" itemprop="dateModified" datetime="2020-11-21T20:41:28+08:00">2020-11-21</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -1082,28 +1019,114 @@
 
       
           <blockquote>
-<p>前年的笔记内容，被我翻出来了。</p>
+<p>Centos7的yum源中默认是没有mysql,因为现在已经用mariaDB代替mysql了。</p>
 </blockquote>
-<h1 id="Centos7-install-cmake"><a href="#Centos7-install-cmake" class="headerlink" title="Centos7-install-cmake"></a>Centos7-install-cmake</h1><blockquote>
-<p>CMake是一个跨平台的安装（<a href="https://baike.baidu.com/item/%E7%BC%96%E8%AF%91" target="_blank" rel="noopener">编译</a>）工具，可以用简单的语句来描述所有平台的安装(编译过程)。他能够输出各种各样的makefile或者project文件，能测试<a href="https://baike.baidu.com/item/%E7%BC%96%E8%AF%91%E5%99%A8" target="_blank" rel="noopener">编译器</a>所支持的C++特性,类似UNIX下的automake。只是 CMake 的<a href="https://baike.baidu.com/item/%E7%BB%84%E6%80%81%E6%A1%A3" target="_blank" rel="noopener">组态档</a>取名为 CMakeLists.txt。Cmake 并不直接建构出最终的软件，而是产生标准的建构档（如 Unix 的 Makefile 或 Windows Visual C++ 的 projects/workspaces），然后再依一般的建构方式使用。这使得熟悉某个<a href="https://baike.baidu.com/item/%E9%9B%86%E6%88%90%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83" target="_blank" rel="noopener">集成开发环境</a>（IDE）的开发者可以用标准的方式建构他的软件，这种可以使用各平台的原生建构系统的能力是 CMake 和 SCons 等其他类似系统的区别之处。</p>
-</blockquote>
-<h2 id="部署过程"><a href="#部署过程" class="headerlink" title="部署过程"></a>部署过程</h2><h3 id="1-下载cmake-Source-Code"><a href="#1-下载cmake-Source-Code" class="headerlink" title="1.下载cmake Source Code"></a>1.下载cmake Source Code</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https:&#x2F;&#x2F;cmake.org&#x2F;files&#x2F;v3.3&#x2F;cmake-3.3.2.tar.gz</span><br></pre></td></tr></table></figure>
+<h2 id="安装前检查"><a href="#安装前检查" class="headerlink" title="安装前检查"></a>安装前检查</h2><h3 id="检查linux系统版本"><a href="#检查linux系统版本" class="headerlink" title="检查linux系统版本"></a>检查linux系统版本</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost backup]<span class="comment"># cat /etc/system-release</span></span><br><span class="line">CentOS Linux release 7.4.1708 (Core)</span><br></pre></td></tr></table></figure>
 
-<h3 id="2-解压缩"><a href="#2-解压缩" class="headerlink" title="2.解压缩"></a>2.解压缩</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar xzvf cmake-3.3.2.tar.gz</span><br></pre></td></tr></table></figure>
+<h3 id="检查是否已经安装mysql"><a href="#检查是否已经安装mysql" class="headerlink" title="检查是否已经安装mysql"></a>检查是否已经安装mysql</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost backup]<span class="comment"># rpm -qa | grep mysql</span></span><br></pre></td></tr></table></figure>
 
-<h3 id="3-执行引导命令"><a href="#3-执行引导命令" class="headerlink" title="3.执行引导命令"></a>3.执行引导命令</h3><ul>
-<li>注意：此时会检查gcc ,gcc-c++,是否安装和版本，如果没有请先安装。</li>
-<li>进入到cmake文件夹中执行</li>
+<ul>
+<li><p>如果存在Mysql可以考虑卸载</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -e --nodeps mysql-connector-odbc-x.x.x-x.el7.x86_64</span><br></pre></td></tr></table></figure>
+
+<p>将/var/lib/mysql文件夹下的所有文件都删除干净。</p>
+</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum install gcc</span><br><span class="line">yum install gcc-c++</span><br></pre></td></tr></table></figure>
+<h3 id="检查是否安装mariaDB"><a href="#检查是否安装mariaDB" class="headerlink" title="检查是否安装mariaDB"></a>检查是否安装mariaDB</h3>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/04/21/Centos7-Mysql5.7%E5%8D%95%E5%AE%9E%E4%BE%8B%E9%83%A8%E7%BD%B2/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
 
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd cmake-3.3.2  </span><br><span class="line">.&#x2F;bootstrap</span><br></pre></td></tr></table></figure>
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
 
-<h3 id="4-执行make"><a href="#4-执行make" class="headerlink" title="4.执行make"></a>4.执行make</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gmake</span><br></pre></td></tr></table></figure>
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/21/Git-Branch/">
 
-<h3 id="5-执行安装（root权限）"><a href="#5-执行安装（root权限）" class="headerlink" title="5.执行安装（root权限）"></a>5.执行安装（root权限）</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make install</span><br></pre></td></tr></table></figure>
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
 
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/04/21/Git-Branch/" class="post-title-link" itemprop="url">Git-Branch</a>
+        </h2>
 
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-04-21 05:16:53" itemprop="dateCreated datePublished" datetime="2018-04-21T05:16:53+08:00">2018-04-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-20 21:39:43" itemprop="dateModified" datetime="2021-09-20T21:39:43+08:00">2021-09-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Git/" itemprop="url" rel="index"><span itemprop="name">Git</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>​    使用git进行合并分支说难也不难，因为就使用一下那几个命令而已！但是不小心操作总会有一些难以预料的问题出现、但是coder们总是会做出奇怪的举动。</p>
+<p>​    合并分支的时候O(∩_∩)O</p>
+</blockquote>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/git/hbfz.gif" alt="合并分支">   </p>
+<h2 id="快速了解下分支流程。"><a href="#快速了解下分支流程。" class="headerlink" title="快速了解下分支流程。"></a>快速了解下分支流程。</h2>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/04/21/Git-Branch/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 

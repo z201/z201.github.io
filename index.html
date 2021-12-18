@@ -239,1313 +239,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/12/09/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Zookeeper/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/12/09/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Zookeeper/" class="post-title-link" itemprop="url">查缺补漏-Zookeeper</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-12-09 12:10:31" itemprop="dateCreated datePublished" datetime="2020-12-09T12:10:31+08:00">2020-12-09</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-12-13 22:25:21" itemprop="dateModified" datetime="2021-12-13T22:25:21+08:00">2021-12-13</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9C%AA%E5%88%86%E7%B1%BB/" itemprop="url" rel="index"><span itemprop="name">未分类</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="Zookeeper概述"><a href="#Zookeeper概述" class="headerlink" title="Zookeeper概述"></a>Zookeeper概述</h3><blockquote>
-<p>Zookeeper可以让企业的IT架构逐步从集中式向分布式过度，所谓的分布式是指：把一个计算任务分解成若干个计算单元，并且分派到若干不同的计算机中去执行，然后汇总计算结果的过程。</p>
-</blockquote>
-<ul>
-<li><p>Zookeeper介绍</p>
-<ul>
-<li>Zookeeper是源代码开放的分布式协调服务，由雅虎创建，是Google Chubby开源实现。Zookeeper是一个高性能的分布式数据一致性解决方案，它将那些复杂、容易出错的分布式一致性服务封装起来，构成一个搞笑可靠的原语集，并提供一系列简单易用的接口给用户使用。</li>
-</ul>
-</li>
-<li><p>Zookeeper的典型应用场景</p>
-<ul>
-<li>数据发布/订阅 顾名思义就是一方把数据发布出来，另一方通过某种手动可以得到这些数据。<ul>
-<li>通常数据订阅有两种方式：推模式和拉模式，推模式一般是服务器主动向客户端推送消息，拉模式是客户端主动去服务端获取数据（通常采用的是轮询的方式）。</li>
-<li>Zookeeper采用两种方式的结合。<ul>
-<li>发布者将数据发布到Zookeeper集群节点上，订阅者通过一定的方法告诉服务器，我对那个节点的数据感兴趣，那个服务器在这些节点的数据发送变化时，就通知客户端，客户端得到通知后可以去服务器获取数据信息。</li>
-<li>分布式协调/通知<ul>
-<li>心跳检测：在分布式系统中，通常需要机器是否可以用，Zookeeper中我们让所有的机器都注册一个临时节点，所以只需要判断这个节点是否存在就可以了，不需要直接去连接需要检查的机器，降低系统的负载度（节点分为临时和持久）。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>Zookpeeper重量级使用</p>
-<ul>
-<li>Hadoop、HBase、Storm、Solr。</li>
-</ul>
-</li>
-<li><p>集群角色</p>
-<ul>
-<li>Leader、Follower、Observer<ul>
-<li>Leader服务器是整个Zookeeper集群工作机制的核心</li>
-<li>Follower服务器是Zookeeper集群状态的跟随者</li>
-<li>Oserver服务器充当一个观察者的角色</li>
-<li>Leader、Follower设计模式，Observer观察者模式</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>会话</p>
-<ul>
-<li>会话是指客户端Zookeeper服务器的连接，Zookeeper中的会话叫Session，客户端与服务器建立TCP的长连接来维持一个Session,客户端在启动的时候首先会与服务器建立一个TCP连接,通过这个连接客户端能够通过心跳检测与服务器保持有效的会话，也能向Zookeeper服务器发送请求并获得响应。</li>
-</ul>
-</li>
-<li><p>数据节点</p>
-<ul>
-<li>Zookeeper中的节点有两类<ul>
-<li>集群中的一台机器称为一个节点</li>
-<li>数据模型中的数据单元Znode，分别为持久节点和临时节点。（其实数据节点就是一个tree节点就是Znode）</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>版本</p>
-<ul>
-<li>Zookeeper中的版本<ul>
-<li>version<ul>
-<li>当前数据节点数据内容版本</li>
-</ul>
-</li>
-<li>cversion<ul>
-<li>当前数据节点子节点的版本号</li>
-</ul>
-</li>
-<li>aversion<ul>
-<li>当前数据节点ACL变更版本号</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>watcher（事件监听器）</p>
-<ul>
-<li>Zookeeper允许用户在指定节点上注册一些Watcher，当数据节点发生变化的时候，Zookeeper服务器会把这个变化通知发送给感兴趣的客户端。</li>
-</ul>
-</li>
-<li><p>ACL权限控制</p>
-<ul>
-<li>ACL是Access Contril Lists 的缩写,Zookeeper采用ACL策略来进行权限控制,有以下权限：<ul>
-<li>CREATE：创建子节点</li>
-<li>READ：获取子节点</li>
-<li>WRITE:更新子节点数据权限</li>
-<li>DELETE:删除子节点权限</li>
-<li>ADMIN：设置节点ACL权限</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="Zoopeeper环境搭建（集群、单机、伪集群）"><a href="#Zoopeeper环境搭建（集群、单机、伪集群）" class="headerlink" title="Zoopeeper环境搭建（集群、单机、伪集群）"></a>Zoopeeper环境搭建（集群、单机、伪集群）</h3><ul>
-<li>单机模式（设备环境有限暂时单机）<ul>
-<li>准备工作<ul>
-<li>下载Zookeeper（此处自行处理）</li>
-<li>解压 tar xzvf xxx.gz 解压</li>
-<li>重命名文件夹 Zookeeper 命令mv xxx xxx 后面的参数是新名字（可以不做）</li>
-<li>进入文件夹中/conf/</li>
-<li>复制配置文件zoo_sample.cfg（样例文件） 并重命名 zoo.cfg</li>
-</ul>
-</li>
-<li>编辑zoo.cfg内容（仅供参考,具体环境自行修改）</li>
-<li>tickTime = 2000<ul>
-<li>tickTime：基本事件单元，以毫秒为单位。这个时间是作为 Zookeeper 服务器之间或客户端与服务器之间维持心跳的时间间隔，也就是每个 tickTime 时间就会发送一个心跳。</li>
-</ul>
-</li>
-<li>initLimit= 5<ul>
-<li>initLimit:这个配置项用来配置Zookeeper接受客户端初始化连接时最长能忍受多少个心跳时间间隔数，当已超过5个心跳的时间（也就是tickTime）长度后Zookeeper服务器还没有收到客户端的返回信息，那么表明这个客户端连接失败。总的时间长度是5 * 2000=4s。</li>
-</ul>
-</li>
-<li>dataDir = D:\zookeeper\data<ul>
-<li>顾名思义就是 Zookeeper 保存数据快照的目录，默认情况下，Zookeeper 将写数据的日志文件也保存在这个目录里）。</li>
-</ul>
-</li>
-<li>dataLogDir= D:\zookeeper\log<ul>
-<li>顾名思义就是 Zookeeper 保存日志的目录。</li>
-</ul>
-</li>
-<li>synclimit = 5<ul>
-<li>这个配置项表示Leader与Follower之间发送消息，请求和应答时间长长度，最长不能超过多少个tickTime的时间长度,总的时间长度是2 * 2000 = 4s。</li>
-</ul>
-</li>
-<li>clientPort = 2181<ul>
-<li>这个端口就是客户端连接 Zookeeper 服务器的端口，Zookeeper 会监听这个端口，接受客户端的访问请求。</li>
-</ul>
-</li>
-<li>Server（待续）<ul>
-<li>格式：server.id=host:port:port（两个port保证可以正常使用就行）<ul>
-<li>id：通常为整数，并且不能重复使用整数。</li>
-<li>host：服务器的IP地址。</li>
-<li>port: Follower端口</li>
-<li>port: Leader选举投票。</li>
-</ul>
-</li>
-<li>ZooKeeper建议使用hostname，而非ip。这需要对主机的/etc/hostname和/etc/hosts做host绑定(不用的OS不同修改方式)。</li>
-<li>创建一个myid文件（放在 dataDir文件下面）</li>
-<li>写入一行数据（请查阅zoo.cfg文件）<ul>
-<li>写入id位置的数据即可。表示当前系统环境Zookeeper是哪一个Server（通讯用的）。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>启动服务与停止服务</li>
-<li>进入bin/文件</li>
-<li>执行zkServer.cmd 或则 <a href="http://zkserver.sh/" target="_blank" rel="noopener">zkServer.sh</a></li>
-<li>CMD直接双击运行 ,SH则 sudo sh ./zkServer.sh start 启动 stop 关闭</li>
-<li>验证 使用telnet来测试(自行安装)<ul>
-<li>telnet ip port 敲命令 stat 若返回数据表示当前服务器不能对外提供服务表明集群下其他服务器未启动（在Zookeeper中只要有半数的服务器正常工作就可以向外提供服务）。</li>
-</ul>
-</li>
-<li>在此简单说明下何为伪集群就是在一台服务器上的多个Zookeeper的集群叫伪集群（伪集群 两个port不能与其他zookeeper的port一样）。</li>
-<li>单机模式就删除其他服务器运行的时候就是单机模式。</li>
-</ul>
-</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/02/25/%E5%B7%AE%E7%BC%BA%E8%A1%A5%E6%BC%8F-Netty/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/02/25/%E5%B7%AE%E7%BC%BA%E8%A1%A5%E6%BC%8F-Netty/" class="post-title-link" itemprop="url">差缺补漏-Netty</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-02-25 12:09:20" itemprop="dateCreated datePublished" datetime="2021-02-25T12:09:20+08:00">2021-02-25</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-12-13 22:19:22" itemprop="dateModified" datetime="2021-12-13T22:19:22+08:00">2021-12-13</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>Netty是一款用于快速开发高性能的网络应用程序的Java框架，正是因为有 Netty 的存在，网络编程领域 Java 才得以与 C++ 并肩而立。</p>
-</blockquote>
-<ul>
-<li>Netty 官网给出了有关 Netty 的整体功能模块结构</li>
-</ul>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211116220629.png"></p>
-<ul>
-<li>Core核心层</li>
-</ul>
-<blockquote>
-<p>提供底层网络通信抽象和实现，其中包括了可扩展的时间模型、通信API、支持零拷贝的buf等。</p>
-</blockquote>
-<ul>
-<li>Protocol Support 协议支持层</li>
-</ul>
-<blockquote>
-<p>协议支持层基本上覆盖了主流协议的编解码实现，比如HTTP、SSL、WebSocket</p>
-</blockquote>
-<ul>
-<li>Transport Service 传输服务层</li>
-</ul>
-<blockquote>
-<p>传输服务层提供了网络传输能力的定义和实现方法，支持 Socket、HTTP 隧道等。Netty 对 TCP、UDP 等数据传输做了抽象和封装</p>
-</blockquote>
-<h3 id="Netty流程"><a href="#Netty流程" class="headerlink" title="Netty流程"></a>Netty流程</h3><blockquote>
-<p>从功能上理解顺序</p>
-</blockquote>
-<ul>
-<li>启动服务 -&gt; 构建连接 -&gt; 接受数据 -&gt; 业务处理 -&gt; 发送数据 -&gt; 断开连接 -&gt; 关闭服务</li>
-</ul>
-<h4 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h4><ul>
-<li>初始化线程池</li>
-<li>初始化channel</li>
-<li>绑定端口并启动</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@Sharable</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">EchoServerHandler</span> <span class="keyword">extends</span> <span class="title">ChannelInboundHandlerAdapter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelRead</span><span class="params">(ChannelHandlerContext ctx, Object msg)</span> </span>&#123;</span><br><span class="line">        ctx.write(msg);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelReadComplete</span><span class="params">(ChannelHandlerContext ctx)</span> </span>&#123;</span><br><span class="line">        ctx.flush();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exceptionCaught</span><span class="params">(ChannelHandlerContext ctx, Throwable cause)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// Close the connection when an exception is raised.</span></span><br><span class="line">        cause.printStackTrace();</span><br><span class="line">        ctx.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Echoes back any received data from a client.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">EchoServer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">boolean</span> SSL = System.getProperty(<span class="string">"ssl"</span>) != <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> PORT = Integer.parseInt(System.getProperty(<span class="string">"port"</span>, <span class="string">"8007"</span>));</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="comment">// Configure SSL.</span></span><br><span class="line">        <span class="keyword">final</span> SslContext sslCtx;</span><br><span class="line">        <span class="keyword">if</span> (SSL) &#123;</span><br><span class="line">            SelfSignedCertificate ssc = <span class="keyword">new</span> SelfSignedCertificate();</span><br><span class="line">            sslCtx = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()).build();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            sslCtx = <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Configure the server.</span></span><br><span class="line">        <span class="comment">// 在官方的example中默认是Reactor主从多线程模式</span></span><br><span class="line">        <span class="comment">// 1.配置线程池</span></span><br><span class="line">        EventLoopGroup bossGroup = <span class="keyword">new</span> NioEventLoopGroup(<span class="number">1</span>);</span><br><span class="line">        EventLoopGroup workerGroup = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line">        <span class="keyword">final</span> EchoServerHandler serverHandler = <span class="keyword">new</span> EchoServerHandler();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            ServerBootstrap b = <span class="keyword">new</span> ServerBootstrap();</span><br><span class="line">            b.group(bossGroup, workerGroup)</span><br><span class="line">             .channel(NioServerSocketChannel<span class="class">.<span class="keyword">class</span>) // 2.初始化<span class="title">channel</span>类型</span></span><br><span class="line"><span class="class">             .<span class="title">option</span>(<span class="title">ChannelOption</span>.<span class="title">SO_BACKLOG</span>, 100) // 2.1.设置<span class="title">channel</span>参数</span></span><br><span class="line"><span class="class">             .<span class="title">handler</span>(<span class="title">new</span> <span class="title">LoggingHandler</span>(<span class="title">LogLevel</span>.<span class="title">INFO</span>))</span></span><br><span class="line"><span class="class">              // 注册<span class="title">channelhandler</span>，在<span class="title">netty</span>中通过<span class="title">ChannelPipeline</span> 去注册多个 <span class="title">ChannelHandler</span></span></span><br><span class="line"><span class="class">             .<span class="title">childHandler</span>(<span class="title">new</span> <span class="title">ChannelInitializer</span>&lt;<span class="title">SocketChannel</span>&gt;() </span>&#123;</span><br><span class="line">                 <span class="meta">@Override</span></span><br><span class="line">                 <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initChannel</span><span class="params">(SocketChannel ch)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                     ChannelPipeline p = ch.pipeline();</span><br><span class="line">                     <span class="keyword">if</span> (sslCtx != <span class="keyword">null</span>) &#123;</span><br><span class="line">                         p.addLast(sslCtx.newHandler(ch.alloc()));</span><br><span class="line">                     &#125;</span><br><span class="line">                     <span class="comment">//p.addLast(new LoggingHandler(LogLevel.INFO));</span></span><br><span class="line">                     p.addLast(serverHandler);</span><br><span class="line">                 &#125;</span><br><span class="line">             &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Start the server. </span></span><br><span class="line">            <span class="comment">// 3.启动 通过bind() 方法会真正触发启动，sync() 方法则会阻塞</span></span><br><span class="line">            ChannelFuture f = b.bind(PORT).sync();</span><br><span class="line">            <span class="comment">// Wait until the server socket is closed.</span></span><br><span class="line">            f.channel().closeFuture().sync();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="comment">// Shut down all event loops to terminate all threads.</span></span><br><span class="line">            bossGroup.shutdownGracefully();</span><br><span class="line">            workerGroup.shutdownGracefully();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/02/25/%E5%B7%AE%E7%BC%BA%E8%A1%A5%E6%BC%8F-Netty/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/01/02/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/01/02/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/" class="post-title-link" itemprop="url">查缺补漏-网络协议</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-01-02 00:00:01" itemprop="dateCreated datePublished" datetime="2021-01-02T00:00:01+08:00">2021-01-02</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-12-13 18:24:55" itemprop="dateModified" datetime="2021-12-13T18:24:55+08:00">2021-12-13</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index"><span itemprop="name">知识点</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-<h3 id="网络协议"><a href="#网络协议" class="headerlink" title="网络协议"></a>网络协议</h3><blockquote>
-<p>网络协议是一组确定的规则，这些规则确定如何在同一网络中的不同设备之间传输数据。本质上，它允许连接的设备彼此通信，而不管其内部过程，结构或设计是否有差异。（两个端点都需要了解协议才能进行交流）。</p>
-</blockquote>
-<h3 id="OSI网络模型"><a href="#OSI网络模型" class="headerlink" title="OSI网络模型"></a>OSI网络模型</h3><blockquote>
-<p>OSI英文全称叫做(Open System Interconnection Model). 中文全称叫做开放式系统互联模型. 也叫做网络7层模型，从下到上依次为，物理层，数据链路层，网络层，传输层，会话层，表示层，应用层。</p>
-</blockquote>
-<ul>
-<li>OIS概念模型<strong>实际上并没有真正实现过，但是我们需要参考这个分层来理解网络协议</strong>一般来说把5-7层叫做上层，1-4层叫做下层。</li>
-</ul>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211123214245.png"></p>
-<ul>
-<li>7-应用层 -&gt; 网络流程应用（表示的是用户界面，例如Telnet，HTTP、FTP、TFTP、SMTP、SNMP、DNS、TELNET、HTTPS、POP3、DHCP）</li>
-<li>6-表示层 -&gt; 数据表示 (数据如何呈现，特殊处理-&gt;例如加密，比如JPEG、ASCLL、EBCDIC、加密格式等）</li>
-<li>5-会话层 -&gt; 主机间的通信（将不同应用程序的数据分开。建立，管理和终止应用之间的会话）</li>
-<li>4-传输层 -&gt; 端到端连接（可靠或不可靠的传递，例如TCP，UDP)</li>
-<li>3-网络层 -&gt; 地址和最佳路径（提供路由器用于路径的逻辑寻址，比如ICMP IGMP IP(IPV4 IPV6)）</li>
-<li>2-数据链路层 -&gt; 媒体访问（将位组合成字节，将字节组合成帧，使用MAC地址访问，错误检测-比如HDLC）</li>
-<li>1-物理层 -&gt; 二进制传输（在设备之间移动bits。例如V.35）</li>
-</ul>
-<h3 id="TCP-IP网络模型"><a href="#TCP-IP网络模型" class="headerlink" title="TCP/IP网络模型"></a>TCP/IP网络模型</h3><blockquote>
-<p>TCP/IP 模型和OSI相比会简单一点，只有四层，分别为数据链路层，网络层，传输层和应用层。</p>
-</blockquote>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211123214318.png"></p>
-<h3 id="OSI模型与TCP-IP模型"><a href="#OSI模型与TCP-IP模型" class="headerlink" title="OSI模型与TCP/IP模型"></a>OSI模型与TCP/IP模型</h3><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211123215305.png"></p>
-<ul>
-<li>4-应用层 -&gt; 对应于OSI的5-7层</li>
-<li>3-传输层 -&gt; 这个是和OSI的第四层想同的</li>
-<li>2-网络层 -&gt; 这个是和OSI的第3网络层对应的</li>
-<li>1-网络访问层 -&gt; 这个是和OSI的第1-2层所对应的</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/01/02/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-SpringMvc/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-SpringMvc/" class="post-title-link" itemprop="url">查缺补漏-SpringMvc</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-12-13 15:14:41" itemprop="dateModified" datetime="2021-12-13T15:14:41+08:00">2021-12-13</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-<h3 id="描述下Controller和RequestMapping注解。"><a href="#描述下Controller和RequestMapping注解。" class="headerlink" title="描述下Controller和RequestMapping注解。"></a>描述下Controller和RequestMapping注解。</h3><ul>
-<li><p>Controller</p>
-<ul>
-<li>声明在类上，该注解表明该类扮演控制器的角色，类似Action。</li>
-</ul>
-</li>
-<li><p>RequestMapping</p>
-<ul>
-<li>该注解是用来映射一个URL到一个类或一个特定的方处理法上。</li>
-</ul>
-</li>
-</ul>
-<h3 id="描述下Spring的作用域以及使用方法。"><a href="#描述下Spring的作用域以及使用方法。" class="headerlink" title="描述下Spring的作用域以及使用方法。"></a>描述下Spring的作用域以及使用方法。</h3><ul>
-<li>当定义一个Bean时，可以给这个Bean声明一个作用域。通过@Scope注解声明在类上。<ul>
-<li>Bean默认作用域是singleton 单例模式，在每个Spring Ioc容器中的一个Bean定义一个实例，也就是无状态Bean，也就是线程不安全的。这个单一实例会被存储到单例缓存（singleton cache）中，并且所有针对该bean的后续请求、访问和引用都将返回被缓存的对象实例。相当于一次创建多次使用。</li>
-<li>prototype 原型模式，在每个Spring Ioc容器中的一个Bean定义多实例，就相当与Java 中new 操作。通常作为有状态的Bean。Prototype作用域的bean会导致在每次对该bean请求（将其注入到另一个bean中，或者以程序的方式调用容器的getBean()方法）时都会创建一个新的bean实例。</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>其它作用域。</p>
-<ul>
-<li>request、session、global session 仅在基于web的应用中使用（不必关心你所采用的是什么web应用框架）。<ul>
-<li>如果不是在web下实现而是通过ApplicationContext这种实现，尝试使用这些作用域将抛出异常IllegalStateException未知作用域。</li>
-<li>request 对每一次HTTP请求都会产生一个新的bean。Spring容器会根据loginAction bean定义创建一个全新的LoginAction bean实例，且该loginAction bean实例仅在当前HTTP request内有效，因此可以根据需要放心的更改所建实例的内部状态，而其他请求中根据loginAction bean定义创建的实例，将不会看到这些特定于某个请求的状态变化。当处理请求结束，request作用域的bean实例将被销毁。</li>
-<li>session 对每一次HTTP请求都会产生一个新的bean，Spring容器会根据userPreferences bean定义创建一个全新的userPreferences bean实例，且该userPreferences bean仅在当前HTTP Session内有效。与request作用域一样，你可以根据需要放心的更改所创建实例的内部状态，而别的HTTP Session中根据userPreferences创建的实例，将不会看到这些特定于某个HTTP Session的状态变化。当HTTP Session最终被废弃的时候，在该HTTP Session作用域内的bean也会被废弃掉。</li>
-<li>‍global session 作用域类似于标准的HTTP Session作用域，不过它仅仅在基于portlet的web应用中才有意义。Portlet规范定义了全局Session的概念，它被所有构成某个portlet web应用的各种不同的portlet所共享。在global session作用域中定义的bean被限定于全局portlet Session的生命周期范围内。在一个标准的基于Servlet的web应用，并且定义了一个或多个具有global session作用域的bean，系统会使用标准的HTTP Session作用域，并且不会引起任何错误。</li>
-</ul>
-</li>
-<li>作用域依赖<ul>
-<li>Spring IoC容器除了管理对象（bean）的实例化，同时还负责协作者（或者叫依赖）的实例化。如果将一个Http request范围的bean注入到另一个bean中，那么需要注入一个AOP代理来替代被注入的作用域bean。也就是说需要注入一个代理对象，该对象具有与被代理对象一样的公共接口，而容器则可以足够智能的从相关作用域中（比如一个HTTP request）获取到真实的目标对象，并把方法调用委派给实际的对象。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="SpringMVc中Restfull风格的使用。"><a href="#SpringMVc中Restfull风格的使用。" class="headerlink" title="SpringMVc中Restfull风格的使用。"></a>SpringMVc中Restfull风格的使用。</h3><ul>
-<li>restfull 支持的请求头GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS, TRACE 。</li>
-<li>通常情况下只使用 GET,PUT,POST,DELETE。<ul>
-<li>GET 通常用来获取数据。</li>
-<li>PUT 通常用来新增数据。</li>
-<li>POST 通常用来更新数据。</li>
-<li>DELETE 通常用来删除数据。</li>
-</ul>
-</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping</span>(value = <span class="string">"/get"</span>, method = RequestMethod.GET)</span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">get</span><span class="params">()</span></span>&#123;</span><br><span class="line">   <span class="keyword">return</span> <span class="string">"200"</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RequestMapping</span>(value = <span class="string">"/post"</span>, method = RequestMethod.POST)</span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">post</span><span class="params">()</span></span>&#123;</span><br><span class="line">   <span class="keyword">return</span> <span class="string">"200"</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RequestMapping</span>(value = <span class="string">"/delete"</span>, method = RequestMethod.DELETE)</span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">delete</span><span class="params">()</span></span>&#123;</span><br><span class="line">   <span class="keyword">return</span> <span class="string">"200"</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RequestMapping</span>(value = <span class="string">"/put"</span>, method = RequestMethod.PUT)</span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">put</span><span class="params">()</span></span>&#123;</span><br><span class="line">   <span class="keyword">return</span> <span class="string">"200"</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="SpringMvc的处理流程"><a href="#SpringMvc的处理流程" class="headerlink" title="SpringMvc的处理流程"></a>SpringMvc的处理流程</h3><p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/SpringMvc%E8%AF%B7%E6%B1%82%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B.png"></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-SpringMvc/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Spring/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Spring/" class="post-title-link" itemprop="url">查缺补漏-Spring</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-12-09 15:31:27" itemprop="dateModified" datetime="2021-12-09T15:31:27+08:00">2021-12-09</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/SpringFrameworkRutime.png"></p>
-<h3 id="Spring"><a href="#Spring" class="headerlink" title="Spring"></a>Spring</h3><ul>
-<li><p>Spring是一个轻量级的IoC和AOP容器框架。是为Java应用程序提供基础性服务的一套框架，目的是用于简化企业应用程序的开发，它使得开发者只需要关心业务需求。</p>
-</li>
-<li><p>主要由以下几个模块组成：</p>
-<ul>
-<li>Spring Core：核心类库，提供IOC服务</li>
-<li>Spring Context：提供框架式的Bean访问方式，以及企业级功能（JNDI、定时任务等）</li>
-<li>Spring AOP：AOP服务切面编程</li>
-<li>Spring DAO：对JDBC的抽象，简化了数据访问异常的处理</li>
-<li>Spring ORM：对现有的ORM框架的支持</li>
-<li>Spring Web：提供了基本的面向Web的综合特性，例如多方文件上传</li>
-<li>Spring MVC：提供面向Web应用的Model-View-Controller实现</li>
-</ul>
-</li>
-<li><p>IoC（Inversion of Control，翻译为“控制反转”）不是一个具体的技术，而是一种设计思想。与传统控制流相比，IoC 会颠倒控制流，在传统的编程中需要开发者自行创建并销毁对象，而在 IoC 中会把这些操作交给框架来处理，这样开发者就不用关注具体的实现细节了，拿来直接用就可以了，这就是控制反转。</p>
-</li>
-<li><p>IoC 很好的体现出了面向对象的设计法则之一——好莱坞法则：“别找我们，我们找你”。即由 IoC 容器帮对象找到相应的依赖对象并注入，而不是由对象主动去找。</p>
-</li>
-<li><p>DI（Dependency Injection，翻译为“依赖注入”）表示组件间的依赖关系交由容器在运行期自动生成，也就是说，由容器动态的将某个依赖关系注入到组件之中，这样就能提升组件的重用频率。通过依赖注入机制，我们只需要通过简单的配置，就可指定目标需要的资源，完成自身的业务逻辑，而不需要关心资源来自哪里、由谁实现等问题。</p>
-</li>
-<li><p>IoC 和 DI 其实是同一个概念从不同角度的描述的，由于控制反转这个概念比较含糊（可能只理解成了容器控制对象这一个层面，很难让人想到谁来维护对象关系），所以 2004 年被开发者尊称为“教父”的 Martin Fowler（世界顶级专家，敏捷开发方法的创始人之一）又给出了一个新的名字“依赖注入”，相对 IoC 而言，“依赖注入”明确描述了“被注入对象依赖 IoC 容器配置依赖对象”。</p>
-</li>
-</ul>
-<h4 id="依赖注入"><a href="#依赖注入" class="headerlink" title="依赖注入"></a>依赖注入</h4><ul>
-<li>平常的Java开发中，程序员在某个类中需要依赖其它类的方法。通常是new一个依赖类再调用类实例的方法，这种开发存在的问题是new的类实例不好统一管理。 Spring提出了依赖注入的思想，即依赖类不由程序员实例化，而是通过Spring容器帮我们new指定实例并且将实例注入到需要该对象的类中。依赖注入的另一种说法是”控制反转”。通俗的理解是：平常我们new一个实例，这个实例的控制权是我们程序员。而控制反转是指new实例工作不由我们程序员来做而是交给Spring容器来做。</li>
-<li>IOC对于Spring框架来说，就是由Spring来负责控制对象的生命周期和对象间的关系。</li>
-<li>所谓依赖注入，就是由IOC容器在运行期间，动态地将某种依赖关系注入到对象之中，所以，以来注入DI 和控制反转IOC 是从不同的角度描述的同一间事情，就是值通过引用IOC容器，利用以来关系注入的方式，实现对象之间的解耦。</li>
-</ul>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/SpringIoc%E5%88%9D%E5%A7%8B%E5%8C%96%E8%BF%87%E7%A8%8B.png"></p>
-<h4 id="注入方式"><a href="#注入方式" class="headerlink" title="注入方式"></a>注入方式</h4><ul>
-<li>Set注入。</li>
-<li>构造方法注入。</li>
-<li>工厂的方法注入。</li>
-<li>通过属性注入。</li>
-<li>通过List注入。</li>
-<li>通过Map注入。</li>
-</ul>
-<h3 id="Spring-AOP"><a href="#Spring-AOP" class="headerlink" title="Spring AOP"></a>Spring AOP</h3><ul>
-<li><p>AOP(Aspect-Oriented Programming:⾯向切⾯编程)能够将那些与业务⽆关，却为业务模块所共同调⽤的逻辑或责任（例如事务处理、⽇志管理、权限控制等）封装起来，便于减少系统的重复代码，降低模块间的耦合度，并有利于未来的可拓展性和可维护性。</p>
-<ul>
-<li><strong>Spring AOP</strong>就是基于动态代理的，如果要代理的对象，实现了某个接⼝，那么Spring AOP会使⽤<strong>JDK</strong> Proxy，去创建代理对象，⽽对于没有实现接⼝的对象，就⽆法使⽤ JDK Proxy 去进⾏代理了，这时候Spring AOP会使⽤<strong>Cglib</strong> ，这时候Spring AOP会使⽤ <strong>Cglib</strong> ⽣成⼀个被代理对象的⼦类来作为代理。</li>
-</ul>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/SpringAopProcess.png"></p>
-<ul>
-<li>Spring Aop是运行时增强。</li>
-<li>Cglib Aop是编译器增强。</li>
-</ul>
-</li>
-<li><p>AOP专门用于处理系统中分布于各个模块中交叉关注点的问题，在JavaEE应用中，常常通过AOP来处理一些横切性质的系统级服务，如事物管理、安全检查、缓存对象池管理。</p>
-<ul>
-<li>1.）切面 -Aspect 切面类 比如日志类</li>
-<li>2.） 连接点 - Join Point 加入切点的那个点</li>
-<li>3.）通知 -Advice 是在切面某个特定的连接点上的动作。</li>
-<li>4.）切入点 - Point Cut 匹配连接点的断点</li>
-<li>5.）引入 - Introduction </li>
-<li>6.）目标对象 - Target Object 被一个或多个通知对象，永远被代理的对象。</li>
-<li>7.） AOP代理 - AOP Proxy AOP创建的对象用来实现切面对象。</li>
-<li>8.）织入 - Weaving </li>
-<li>9.）AOP通俗的理解：<ul>
-<li>一个组建A，不关心其他常用的服务组件B，但是这个组件A使用组件B的时候不是组建A自身去调用，而是通过配置等其他方式，比如Spring中可以通过XML配置文件。这样就使的A压根不需要知道服务组件B是怎么样的，A只关心自己的业务逻辑，具体A使用B的时候，配置文件去做，与具体的A组件无关。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="Spring框架中的设计模式"><a href="#Spring框架中的设计模式" class="headerlink" title="Spring框架中的设计模式"></a>Spring框架中的设计模式</h3><ul>
-<li>工厂模式：BeanFactory就是简单工厂模式的体现，用来创建对象的实例</li>
-<li>单例模式：Bean默认为单例模式</li>
-<li>代理模式：Spring的AOP功能用到了JDK的动态代理和CGLIB字节码生成技术</li>
-<li>模板方法：用来解决代码重复的问题。比如. RestTemplate, JmsTemplate, JpaTemplate</li>
-<li>观察者模式：定义对象键一种一对多的依赖关系，当一个对象的状态发生改变时，所有依赖于它的对象都会得到通知被制动更新，如Spring中listener的实现–ApplicationListener，Spring 事件驱动模型就是观察者模式很经典的⼀个应⽤。</li>
-<li>适配器模式 :Spring AOP 的增强或通知(Advice)使⽤到了适配器模式、spring MVC 中也是⽤到了适配器模式适配 Controller 。</li>
-<li>策略模式： Bean的实例化的时候决定采用何种方式初始化bean实例（反射或者CGLIB动态字节码生成），Resource 接口是具体资源访问策略的抽象。</li>
-<li>装饰器模式：Spring中用到的包装器模式在类名上有两种表现：一种是类名中含有Wrapper，另一种是类名中含有Decorator。</li>
-<li>模版模式：Spring Template 都采用了该模式。</li>
-</ul>
-<h3 id="Spring中Autowired和Resource关键字"><a href="#Spring中Autowired和Resource关键字" class="headerlink" title="Spring中Autowired和Resource关键字"></a>Spring中Autowired和Resource关键字</h3><ul>
-<li>@Resource和@Autowired都是做bean的注入时使用，其实@Resource并不是Spring的注解，它的包是javax.annotation.Resource，需要导入，但是Spring支持该注解的注入。</li>
-<li>Autowired注解是按照类型（byType）装配依赖对象，默认情况下它要求依赖对象必须存在，如果允许null值，可以设置它的required属性为false。如果我们想使用按照名称（byName）来装配，可以结合@Qualififier注解一起使用：</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestServiceImpl</span> </span>&#123; </span><br><span class="line">  <span class="comment">// 下面两种@Autowired只要使用一种即可 </span></span><br><span class="line">  <span class="meta">@Autowired</span> </span><br><span class="line">  <span class="keyword">private</span> UserDao userDao; <span class="comment">// 用于字段上 </span></span><br><span class="line">  </span><br><span class="line">  <span class="meta">@Autowired</span>  <span class="comment">// 用于属性的方法上</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUserDao</span><span class="params">(UserDao userDao)</span> </span></span><br><span class="line"><span class="function">  </span>&#123;  </span><br><span class="line">    <span class="keyword">this</span>.userDao = userDao; </span><br><span class="line">  &#125; </span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// @Autowired注解是按照类型（byType）装配依赖对象，默认情况下它要求依赖对象必须存在，如果允</span></span><br><span class="line"><span class="comment">// 许null值，可以设置它的required属性为false。如果我们想使用按照名称（byName）来装配，可以结</span></span><br><span class="line"><span class="comment">// 合@Qualifier注解一起使用。如下：</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestServiceImpl</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Autowired</span> </span><br><span class="line">  <span class="meta">@Qualifier</span>(<span class="string">"userDao"</span>) <span class="keyword">private</span> UserDao userDao;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>Resource默认按照ByName自动注入，由J2EE提供，需要导入包javax.annotation.Resource。@Resource有两个重要的属性：name和type，而Spring将@Resource注解的name属性解析为bean的名字，而type属性则解析为bean的类型。所以，如果使用name属性，则使用byName的自动注入策略，而使用type属性时则使用byType自动注入策略。如果既不制定name也不制定type属性，这时将通过反射机制使用byName自动注入策略。</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestServiceImpl</span> </span>&#123; </span><br><span class="line">  <span class="comment">// 下面两种@Resource只要使用一种即可 </span></span><br><span class="line">  </span><br><span class="line">  <span class="comment">// 用于字段上 </span></span><br><span class="line">  <span class="meta">@Resource</span>(name=<span class="string">"userDao"</span>) </span><br><span class="line">  <span class="keyword">private</span> UserDao userDao; </span><br><span class="line">  </span><br><span class="line">  <span class="comment">// 用于属性的setter方法上 </span></span><br><span class="line">  <span class="meta">@Resource</span>(name=<span class="string">"userDao"</span>) </span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUserDao</span><span class="params">(UserDao userDao)</span> </span>&#123; </span><br><span class="line">    <span class="keyword">this</span>.userDao = userDao;</span><br><span class="line">  &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="Bean注册方式"><a href="#Bean注册方式" class="headerlink" title="Bean注册方式"></a>Bean注册方式</h3><ul>
-<li>XML 配置文件的注册方式</li>
-</ul>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"person"</span> <span class="attr">class</span>=<span class="string">"org.springframework.beans.Person"</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"id"</span> <span class="attr">value</span>=<span class="string">"1"</span>/&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"name"</span> <span class="attr">value</span>=<span class="string">"Java"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="Java-注解的注册方式"><a href="#Java-注解的注册方式" class="headerlink" title="Java 注解的注册方式"></a>Java 注解的注册方式</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 可以使用 @Component 注解方式来注册 Bean</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">   <span class="keyword">private</span> Integer id;</span><br><span class="line">   <span class="keyword">private</span> String name</span><br><span class="line">   <span class="comment">// 忽略其他方法</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// @Bean 注解方式来注册 Bean</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">   <span class="meta">@Bean</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> Person  <span class="title">person</span><span class="params">()</span></span>&#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">new</span> Person();</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="comment">// 忽略其他方法</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="Java-API-的注册方式"><a href="#Java-API-的注册方式" class="headerlink" title="Java API 的注册方式"></a>Java API 的注册方式</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用 BeanDefinitionRegistry.registerBeanDefinition() 方法的方式注册 Bean	</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomBeanDefinitionRegistry</span> <span class="keyword">implements</span> <span class="title">BeanDefinitionRegistryPostProcessor</span> </span>&#123;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">postProcessBeanFactory</span><span class="params">(ConfigurableListableBeanFactory beanFactory)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">postProcessBeanDefinitionRegistry</span><span class="params">(BeanDefinitionRegistry registry)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">		RootBeanDefinition personBean = <span class="keyword">new</span> RootBeanDefinition(Person<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">		<span class="comment">// 新增 Bean</span></span><br><span class="line">		registry.registerBeanDefinition(<span class="string">"person"</span>, personBean);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Spring/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/07/12/%E9%9D%A2%E8%AF%95%E9%A2%98-%E4%BA%A4%E6%8D%A2%E4%B8%A4%E4%B8%AA%E5%8F%98%E9%87%8F%E7%9A%84%E5%80%BC/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/07/12/%E9%9D%A2%E8%AF%95%E9%A2%98-%E4%BA%A4%E6%8D%A2%E4%B8%A4%E4%B8%AA%E5%8F%98%E9%87%8F%E7%9A%84%E5%80%BC/" class="post-title-link" itemprop="url">面试题-交换两个变量的值</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-07-12 08:02:14" itemprop="dateCreated datePublished" datetime="2018-07-12T08:02:14+08:00">2018-07-12</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-12-09 14:44:25" itemprop="dateModified" datetime="2021-12-09T14:44:25+08:00">2021-12-09</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E9%9D%A2%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">面试</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>刚去杭州面试的第二家公司，做笔试的时候的时候遇到的。最近几天在整理以前的笔记发现了。简单记录下。</p>
-</blockquote>
-<h3 id="互换两个变量的值"><a href="#互换两个变量的值" class="headerlink" title="互换两个变量的值"></a>互换两个变量的值</h3><blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a=<span class="number">10</span>;</span><br><span class="line"><span class="keyword">int</span> b=<span class="number">12</span>;</span><br><span class="line"><span class="comment">// 通过两个变量之间的运算输出结果 a = 12 b = 10</span></span><br></pre></td></tr></table></figure>
-</blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">swapTest1</span><span class="params">()</span></span>&#123;</span><br><span class="line">		<span class="keyword">int</span> a=<span class="number">10</span>;</span><br><span class="line">		<span class="keyword">int</span> b=<span class="number">12</span>;</span><br><span class="line">		a=a^b; <span class="comment">//a=1010^b=1100;</span></span><br><span class="line">		b=a^b; <span class="comment">//a=0110^b=1100;</span></span><br><span class="line">		a=a^b; <span class="comment">//a=0110^b=1010;</span></span><br><span class="line">		<span class="comment">//a=1100=12;b=1010;</span></span><br><span class="line">		System.out.println(a);</span><br><span class="line">		System.out.println(b);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">swapTest2</span><span class="params">()</span></span>&#123;</span><br><span class="line">		<span class="keyword">int</span> a = <span class="number">10</span>;</span><br><span class="line">		<span class="keyword">int</span> b = <span class="number">12</span>;</span><br><span class="line">		a = a + b; <span class="comment">// 22 = 10 + 12</span></span><br><span class="line">		b = a - b; <span class="comment">// 10 = 22 - 12</span></span><br><span class="line">		a = a - b; <span class="comment">// 12 = 22 - 10</span></span><br><span class="line">		System.out.println(a);</span><br><span class="line">		System.out.println(b);</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
-
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Dubbo/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/01/01/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F-Dubbo/" class="post-title-link" itemprop="url">查缺补漏-Dubbo</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-12-09 12:11:55" itemprop="dateModified" datetime="2021-12-09T12:11:55+08:00">2021-12-09</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index"><span itemprop="name">知识点</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-<h3 id="Dubbo概述"><a href="#Dubbo概述" class="headerlink" title="Dubbo概述"></a>Dubbo概述</h3><ul>
-<li>服务治理（SOA）治理框架</li>
-<li>Duboo是一个分布式服务框架<ul>
-<li>远程通讯：提供多种基于长链接的NIO框架抽象封装,包括多种线程模型、序列化“请求-响应”的信息交换方案。</li>
-<li>集群容错：提供基于接口方法的透明远程调用过程，包括多协议支持、软负载均衡、失败容错、地址路由、动态配置等集群支持。</li>
-<li>自动发现：基于注册中心目录服务，使服务消费方能动态地查找提供方，使地址透明，使服务提供方可以平滑增或减少机器。</li>
-<li>介绍：</li>
-<li>致力于提供高性能和透明化的RPC远程服务调用方案，以及SOA服务治理方案。</li>
-<li>Dubbo的命名：澳大利亚达博市</li>
-<li>同类型框架：<ul>
-<li>Apache Thrift、Hessian、RMI、WebService（原生）、HSF（淘宝，不开源）、JSF（京东，不开源）。</li>
-</ul>
-</li>
-<li>Dubbo涉及的基础知识<ul>
-<li>远程调用方面：RMI、Hassion、WebService、Thrift进行底层调用。</li>
-<li>通讯交互：HTTP、Mian、netty。</li>
-<li>序列化：Hession2、Java、Json。</li>
-<li>容器：Jetty、Spring。</li>
-<li>负载均衡：zookeeper、Redis。（大部分都是zookeeper）</li>
-</ul>
-</li>
-<li>简单的使用场景<ul>
-<li>作为对内提供服务应用的容器。</li>
-<li>拆分负载Web应用到服务容器。</li>
-<li>应用负载均和协调。</li>
-<li>引用服务处理。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="架构节点（抽象概念）"><a href="#架构节点（抽象概念）" class="headerlink" title="架构节点（抽象概念）"></a>架构节点（抽象概念）</h3><ul>
-<li>Provider:暴露服务的服务提供方。</li>
-<li>Consumer：调用远程服务的服务消费方。</li>
-<li>Registry：服务注册于发现服务</li>
-<li>Monitor:统计服务的调用次调用时间监控中心</li>
-<li>Container:服务运行容器<ul>
-<li>节点调用关系</li>
-<li>服务提供-服务提供者在启动的时候,向注册中心提供自己提供的服务。</li>
-<li>服务消费-服务消费者在启动的时候,向注册中心订阅自己所需要的服务。<ul>
-<li>注册中心异步返回服务提供者地址列表给消费者,如果有变动,注册中心将给予长连接推送变更数据给消费者。</li>
-</ul>
-</li>
-<li>服务统计-服务者和消费者,在内存中累计调用次数和调用时间,定时每分钟发送一次统计数据到监控中心。<ul>
-<li>异步方式</li>
-</ul>
-</li>
-<li>服务调用关系<ul>
-<li>服务消费者,从提供者地址列表中,基于[软负载均衡算法],选一台提供者进行调用,如果调用失败,在选另一台调用。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="Dubbo源码相关"><a href="#Dubbo源码相关" class="headerlink" title="Dubbo源码相关"></a>Dubbo源码相关</h3><ul>
-<li>源码地址<code>git clone https://github.com/alibaba/dubbo</code></li>
-<li>初次编码不执行Test <code>mvn clean install -Dmaven.test.skip=true</code></li>
-<li>JS错误不修改,请自行忽视。</li>
-<li>修复mavan的警告<br>* 地址：<code>dubbo-parent pom.xml</code><br>* maven-jar-plugin version:2.4<br>* maven-surefire-plugin Version 2.19.1<br>* maven-deploy-plugin Version 3.3.9</li>
-<li>项目导入后修复Dubbo XML校验错误提示</li>
-<li>需要导入dubbo.xsd文件</li>
-<li>下载dubbo-2.5.3.jar 版本尽量保持源码同步,解压dt后导入eclipse中。<ul>
-<li>Preferences-XML-XML Catalog 添加一个自定义的：<ul>
-<li>Location: D:\xsd\dubbo.xsd</li>
-<li>Key: <a href="http://code.alibabatech.com/schema/dubbo/dubbo.xsd" target="_blank" rel="noopener">http://code.alibabatech.com/schema/dubbo/dubbo.xsd</a> （默认生成的不行自行修改）。</li>
-<li>在校验错误的XML头部添加：</li>
-<li><?xml version="1.0" encoding="UTF-8"?> <!DOCTYPE dubbo SYSTEM"http://code.alibabatech.com/schema/dubbo"></li>
-</ul>
-</li>
-</ul>
-</li>
-<li>关于maven-dependency-plugin错误 可能是IDE错误提示，空白处添加空格保存自动消失。<ul>
-<li>错误信息如下：Artifact has not been packaged yet. When used on reactor artifact, unpack should be executed after packaging: see MDEP-98. (org.apache.maven.plugins:maven-dependency-plugin:2.8:unpack:unpack:package)<ul>
-<li>修复方案更改插件配置:</li>
-<li><groupId>org.apache.maven.plugins</groupId><br><artifactId>maven-dependency-plugin</artifactId><br><version>2.10&lt;/version<executions>
-<execution>
-<id>unpack</id>
-<phase>packaged</phase>
-<goals>
-<goal>unpack</goal>
-</goals>
-</execution>
-</executions>
-</plugin></li>
-</ul>
-</li>
-</ul>
-</li>
-<li>Dubbo源码模块<ul>
-<li>Config配置层(Dubbo-config)</li>
-<li>Proxy服务代理层(Dubbo-rpc)</li>
-<li>Registry注册中心层(Dubbo-registry)</li>
-<li>Cluster路由层(Dubbo-cluster)</li>
-<li>Monitor监控层(Dubbo-monitor)</li>
-<li>Protocol远程调用层(Dubbo-rpc)</li>
-<li>Exchange信息交换层(Dubbo-remoting)</li>
-<li>Transport网络传输层(Dubbo-remoting)</li>
-<li>Serialize数据序列化层(Dubbo-common)</li>
-</ul>
-</li>
-</ul>
-<h3 id="Zookeeper"><a href="#Zookeeper" class="headerlink" title="Zookeeper"></a>Zookeeper</h3><blockquote>
-<p>（测试方案采用zookeeper做均衡负载，简单介绍下配置信息）</p>
-</blockquote>
-<ul>
-<li>下载地址 <a href="http://apache.fayea.com/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz" target="_blank" rel="noopener">http://apache.fayea.com/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz</a></li>
-<li>基本配置：<ul>
-<li>单机模式：修改zookeeper-3.4.8/conf zoo.cfg(原始文件名zoo_sanple.cfg复制一份重命名)<ul>
-<li>编辑内容（仅供参考,具体环境自行修改）</li>
-<li>tickTime = 2000<ul>
-<li>tickTime：基本事件单元，以毫秒为单位。这个时间是作为 Zookeeper 服务器之间或客户端与服务器之间维持心跳的时间间隔，也就是每个 tickTime 时间就会发送一个心跳。</li>
-</ul>
-</li>
-<li>initLimit= 5<ul>
-<li>initLimit:这个配置项用来配置Zookeeper接受客户端初始化连接时最长能忍受多少个心跳时间间隔数，当已超过5个心跳的时间（也就是tickTime）长度后Zookeeper服务器还没有收到客户端的返回信息，那么表明这个客户端连接失败。总的时间长度是5 * 2000=4s。</li>
-</ul>
-</li>
-<li>dataDir = D:\zookeeper\data<ul>
-<li>顾名思义就是 Zookeeper 保存数据快照的目录，默认情况下，Zookeeper 将写数据的日志文件也保存在这个目录里）。</li>
-</ul>
-</li>
-<li>dataLogDir= D:\zookeeper\log<ul>
-<li>顾名思义就是 Zookeeper 保存日志的目录。</li>
-</ul>
-</li>
-<li>synclimit = 5<ul>
-<li>这个配置项表示Leader与Follower之间发送消息，请求和应答时间长长度，最长不能超过多少个tickTime的时间长度,总的时间长度是2 * 2000 = 4s。</li>
-</ul>
-</li>
-<li>clientPort = 2181<ul>
-<li>这个端口就是客户端连接 Zookeeper 服务器的端口，Zookeeper 会监听这个端口，接受客户端的访问请求。</li>
-</ul>
-</li>
-<li>Server（待续）<ul>
-<li>格式：server.id=host:port:port（两个port保证可以正常使用就行）<ul>
-<li>id：通常为整数，建议使用整数。</li>
-<li>host：服务器的IP地址。</li>
-<li>port: Follower端口</li>
-<li>port: Leader选举投票。</li>
-</ul>
-</li>
-<li>ZooKeeper建议使用hostname，而非ip。这需要对主机的/etc/hostname和/etc/hosts做host绑定(不用的OS不同修改方式)。</li>
-</ul>
-</li>
-<li>创建一个myid文件（放在 dataDir文件下面）<ul>
-<li>写入一行数据（请查阅zoo.cfg文件）<ul>
-<li>写入当前Zookeeper id位置的数据即可。表示当前系统环境Zookeeper是哪一个Server（通讯用的）。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="Dubbo程序运行"><a href="#Dubbo程序运行" class="headerlink" title="Dubbo程序运行"></a>Dubbo程序运行</h3><ul>
-<li>测试运行,默认配置即可。注意与zookeeper一台机器。</li>
-<li>运行Dubbo-admin本机tomcat启动启动成功后127.0.0.1:8080/dubbo-admin（注意默认请设置跟目录,否则部分功能不发正常显示）<ul>
-<li>默认用户名密码(root/root,guest/guest)</li>
-</ul>
-</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/04/26/Centos7-Openresty%E9%83%A8%E7%BD%B2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/04/26/Centos7-Openresty%E9%83%A8%E7%BD%B2/" class="post-title-link" itemprop="url">Centos7-Openresty部署</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-04-26 06:34:08" itemprop="dateCreated datePublished" datetime="2020-04-26T06:34:08+08:00">2020-04-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-12-08 17:35:27" itemprop="dateModified" datetime="2021-12-08T17:35:27+08:00">2021-12-08</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index"><span itemprop="name">Linux运维</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="OpenResty"><a href="#OpenResty" class="headerlink" title="OpenResty"></a>OpenResty</h2><blockquote>
-<p>OpenResty(又称：ngx_openresty) 是一个基于 NGINX 的可伸缩的 Web 平台，由中国人章亦春发起，提供了很多高质量的第三方模块。OpenResty 是一个强大的 Web 应用服务器</p>
-</blockquote>
-<h3 id="安装方法"><a href="#安装方法" class="headerlink" title="安装方法"></a>安装方法</h3><ul>
-<li>通过源安装</li>
-<li>编译安装</li>
-</ul>
-<h3 id="源安装"><a href="#源安装" class="headerlink" title="源安装"></a>源安装</h3><ul>
-<li>安装yum-utils</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install yum-utils</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>添加openresty源repo</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum-config-manager --add-repo https://openresty.org/package/rhel/openresty.repo</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>安装</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y openresty</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>启动</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start openresty</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>效果</li>
-</ul>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211208162209.png"></p>
-<ul>
-<li>安装openresty命令行工具</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y openresty-resty</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>检查当前安装的openresty</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/openresty/bin/openresty -V</span><br></pre></td></tr></table></figure>
-
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/06/24/Mac%E4%B8%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/06/24/Mac%E4%B8%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/" class="post-title-link" itemprop="url">Mac下开发环境</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-06-24 15:30:34" itemprop="dateCreated datePublished" datetime="2018-06-24T15:30:34+08:00">2018-06-24</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-12-08 16:55:11" itemprop="dateModified" datetime="2021-12-08T16:55:11+08:00">2021-12-08</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/" itemprop="url" rel="index"><span itemprop="name">开发环境</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>最近开始用mac来开发。记录下环境安装过程方便以后快速恢复熟悉的开发环境。</p>
-</blockquote>
-<p>这里提前修改一下控制台前缀</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[dev mc]$ sudo vim &#x2F;etc&#x2F;bashrc</span><br><span class="line">#修改以下内容</span><br><span class="line">PS1&#x3D;&#39;\h:\W \u\$ &#39;</span><br><span class="line">#修改成</span><br><span class="line">PS1&#x3D;&#39;[dev \u]$ &#39;</span><br></pre></td></tr></table></figure>
-
-<h3 id="好用的工具"><a href="#好用的工具" class="headerlink" title="好用的工具"></a>好用的工具</h3><ul>
-<li>pages <code>同事推荐的软件</code>暂时用来写周报。</li>
-<li>brew <code>这是一个神器,和linux 上的yum 类似的工具。</code></li>
-<li>sublime text <code>我之前在windows上都是使用notepad++。上App Store上没找到,该用这个了。</code></li>
-</ul>
-<h3 id="pages"><a href="#pages" class="headerlink" title="pages"></a>pages</h3><ul>
-<li>直接在app store安装就好了</li>
-</ul>
-<h3 id="brew"><a href="#brew" class="headerlink" title="brew"></a>brew</h3><ul>
-<li>安装过程使用终端安装。</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#  这里并没有换行，复制的时候请注意。</span><br><span class="line">&#x2F;usr&#x2F;bin&#x2F;ruby -e &quot;$(curl -fsSL https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;Homebrew&#x2F;install&#x2F;master&#x2F;install)&quot;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>基本操作方式</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># 更新</span><br><span class="line">brew update </span><br><span class="line"># 安装软件 </span><br><span class="line">brew install xxx（软件名）</span><br><span class="line"></span><br><span class="line">#常见命令整理如下，以下命令都可带上 cask 参数：	</span><br><span class="line"></span><br><span class="line">brew search name：联网搜索软件是否存在 brew 中</span><br><span class="line">brew install name：安装软件</span><br><span class="line">brew upgrade name：更新软件</span><br><span class="line">brew uninstall name：卸载软件</span><br><span class="line">brew reinstall name：重新安装软件</span><br><span class="line">brew info name：查看软件安装地址</span><br><span class="line">brew cleanup：清理缓存等</span><br><span class="line">brew doctor：查看建议，例如升级等</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/06/24/Mac%E4%B8%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/11/24/Rust-%E5%85%A5%E9%97%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1660,6 +353,1002 @@
 <li>快速检查是否可以编译</li>
 </ul>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cargo check</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/09/20/Permission-design/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/09/20/Permission-design/" class="post-title-link" itemprop="url">Permission-Design</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-20 21:38:35 / Modified: 22:19:13" itemprop="dateCreated datePublished" datetime="2021-09-20T21:38:35+08:00">2021-09-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/" itemprop="url" rel="index"><span itemprop="name">系统设计</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><blockquote>
+<p>权限管理是一个几乎所有大中型 B 端系统都会涉及的重要组成部分，其目的是对整个系统进行权限控制，避免造成误操作及数据泄露等风险问题。</p>
+</blockquote>
+<h2 id="权限与权限管理"><a href="#权限与权限管理" class="headerlink" title="权限与权限管理"></a>权限与权限管理</h2><h3 id="名词定义"><a href="#名词定义" class="headerlink" title="名词定义"></a>名词定义</h3><blockquote>
+<p>权限相关的基本概念：</p>
+</blockquote>
+<ul>
+<li>权限：用户可操作行为的最小单位。</li>
+<li>用户：每个用户都有唯一标识，并被授予一个或多个角色。</li>
+<li>角色：由不同的权限组合而成，最终分配给具体用户。</li>
+<li>权限管理：控制用户的权限，只能访问授权内容。</li>
+</ul>
+<h3 id="模型选择"><a href="#模型选择" class="headerlink" title="模型选择"></a>模型选择</h3><ul>
+<li>ACL（Access Control List）：基于用户级别的权限控制。<ul>
+<li>将系统的各种权限直接授予具体的用户。抽象来说，为每个用户维护了单独的权限列表，当需要分配权限、收回权限时，需要修改对应用户的权限信息。</li>
+</ul>
+</li>
+<li>RBAC（Role Base Access Control）：基于角色级别的权限控制。<ul>
+<li>与 ACL 对比，RBAC不用给用户单个分配权限，权限与用户之前通过角色关联。通过给不同的角色分配不同的权限，只需要将用户指向对应的角色就会有对应的权限。分配权限、收回权限只需要通过修改用户的角色即可。</li>
+</ul>
+</li>
+<li>ABAC（Attribute Base Access Control）：基于属性级别的权限控制。<ul>
+<li>不同于常见的将用户通过某种方式直接关联到权限的方式，ABAC 是通过动态计算一个或一组属性来是否满足某种条件来进行权限判断。属性一般分为四类：用户属性（自然人属性，如年龄、性别等），环境属性（物理环境，如时间、地点、气候），操作属性（读、写）和对象属性（操作对象，如资金、某张图片、某个特定的页面，又称资源属性）。</li>
+</ul>
+</li>
+<li>因此理论上能够实现灵活的权限控制、将在权限与用户之前通过一组或多组属性实现关联，几乎能满足所有类型的需求。</li>
+</ul>
+<h3 id="权限管控"><a href="#权限管控" class="headerlink" title="权限管控"></a>权限管控</h3><blockquote>
+<p>抽象来看权限体系可以分为如下两类：功能权限 与 数据权限 两部分。</p>
+</blockquote>
+<ul>
+<li>功能权限指的是在系统中的功能可否使用，通常我们将功能权限分为查看、编辑、删除等，同时编辑、删除权限又包含了查看。通过小的权限点拆分更精细的赋予了员工能否进入某个页面查看信息、编辑信息的能力。</li>
+<li>数据权限指数据中存在的数据是否能查看，是一个更细粒度的权限。比如一个页面，不同角色查看不同的数据就需要通过数据权限控制。<br>从管理对象维度又可以分为：企业能力 与 员工能力。</li>
+<li>企业能力店铺维度的权限，比如开通某服务，可以通过企业能力去体现。</li>
+<li>企业能力赋予用户的权限，比如收电子发票、资金管理等。</li>
+<li>企业能力优先级绝对高于员工能力，所有场景的权限判断，店铺能力必须先于员工能力。简单地说，企业能力决定了“企业能做什么”，员工能力决定了“用户能做什么”。</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/09/20/Git-Develop-Branch/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/09/20/Git-Develop-Branch/" class="post-title-link" itemprop="url">Git-Develop-Branch</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-09-20 21:34:52" itemprop="dateCreated datePublished" datetime="2021-09-20T21:34:52+08:00">2021-09-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-22 23:40:44" itemprop="dateModified" datetime="2021-09-22T23:40:44+08:00">2021-09-22</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Git/" itemprop="url" rel="index"><span itemprop="name">Git</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="规范代码开发流程"><a href="#规范代码开发流程" class="headerlink" title="规范代码开发流程"></a>规范代码开发流程</h2><blockquote>
+<p>git 分支分为集成分支、功能分支和修复分支，分别命名为 develop、feature 和 hotfix，均为单数。不可使用 features、future、hotfixes、hotfixs 等错误名称。</p>
+</blockquote>
+<p>1.git主分支(master)。它是自动建立，用于发布重大版本更新（github 现在默认是是main 因种族歧视问题）<br>2.git开发主分支(develop)。日常开发在此分支上进行<br>3.git临时性分支：用于应对一些特定目的的版本开发(验证OK后，应该删除此分支)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- 功能（feature）分支：它是为了开发某种特定功能，从Develop分支上面分出来的。开发完成后，要再并入Develop。可以采用feature-的形式命名。</span><br><span class="line">- 预发布（release）分支：指发布正式版本之前（即合并到Master分支之前），我们可能需要有一个预发布的版本进行测试。预发布分支是从Develop分支上面分出来的，预发布结束以后，</span><br><span class="line">必须合并进Develop和Master分支。它的命名，可以采用release-的形式。</span><br><span class="line">- 修补bug（hotfix）分支：软件正式发布以后，难免会出现bug。这时就需要创建一个分支，进行bug修补。修补bug分支是从Master或Develop分支上面分出来的。修补结束以后，</span><br><span class="line">再合并进Master和Develop分支。它的命名，可以采用hotfix-***的形式。</span><br></pre></td></tr></table></figure>
+
+<p>开发流程</p>
+<blockquote>
+<p>暂定临时分支feature、hotfix两种启用。暂不启用RP、code review。</p>
+</blockquote>
+<p>1.基于develop生成新临时开发分支。<br>2.测试、正式环境上线通过。<br>3.合并至develop分支，并生成对应的tag版本。<br>4.完成特定功能开发后(验证OK后，应该删除此分支)。<br>5.README.md文档中记录tag版本生成时间以及具体的功能名称。</p>
+<p>修复bug流程</p>
+<blockquote>
+<p>根据最新已经上线的分支代码创建hotfix分支。</p>
+</blockquote>
+<p>1.基于develop或者上个tag版本(根据实际情况而定)生成新临时开发分支。<br>2.测试、正式环境上线通过。<br>3.合并至develop分支，并生成对应的tag版本。<br>4.<code>若存在临时开发分支</code>-完成特定功能开发后(验证OK后，应该删除此分支)。<br>5.<code>若存在临时开发分支</code>-临时开发分支合并已经修复bug的develop代码。<br>6.<code>若存在临时开发分支</code>-临时开发分支完成特定功能开发后(验证OK后，应该删除此分支)。<br>7.README.md文档中记录tag版本生成时间以及具体的功能名称。</p>
+<h2 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h2><h3 id="开发尺码"><a href="#开发尺码" class="headerlink" title="开发尺码"></a>开发尺码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">git checkout develop &#x2F;&#x2F; 切换开发分支，git pull origin develop 并同步最新的develop分支代码。（强制）</span><br><span class="line">git checkout -b feature-sizeGroup &#x2F;&#x2F;基于develop分支创建新的开发分支（强制）</span><br><span class="line">git checkout develop &#x2F;&#x2F; feature-sizeGroup完成上线后develop分支准备合并分支（强制）</span><br><span class="line">git merge feature-sizeGroup &#x2F;&#x2F; 合并开发功能分支（强制）</span><br><span class="line">git tag -a v1.4 -m &quot;my version 1.4&quot; &#x2F;&#x2F; 合并完成创建标签备注中简单说明开发功能（强制）</span><br><span class="line">git push origin v1.4 &#x2F;&#x2F; 推送tag标签到远程仓库（强制）</span><br><span class="line">git branch -d feature-sizeGroup &#x2F;&#x2F;删除本地的临时开发分支(非强制)</span><br><span class="line">git push origin --delete feature-sizeGroup &#x2F;&#x2F; 删除远程的临时开发分支（强制）</span><br><span class="line">vim README.md &#x2F;&#x2F; 保存新增tag版本记录（强制）</span><br><span class="line">git add README.md &#x2F;&#x2F; 追踪README.md文件。（强制）</span><br><span class="line">git commit -m &quot;发布新的tag&quot; &#x2F;&#x2F; 将暂存区里的改动给提交到本地的版本库（强制）</span><br><span class="line">git push origin develop &#x2F;&#x2F; 推送改动后的develop（强制）</span><br></pre></td></tr></table></figure>
+
+<h3 id="master-合并周期"><a href="#master-合并周期" class="headerlink" title="master 合并周期"></a>master 合并周期</h3><blockquote>
+<p>每月月底最后几个工作日完成对master 对develop分支的合并。</p>
+</blockquote>
+<h3 id="tag-版本命名"><a href="#tag-版本命名" class="headerlink" title="tag 版本命名"></a>tag 版本命名</h3><blockquote>
+<p>版本命名规范</p>
+</blockquote>
+<ul>
+<li>版本: v1.1.1 ( Build 101001 )</li>
+<li>版本格式 bigVersion.middleVersion.smallVersion</li>
+<li>bigVersion 大版本(年度或者重大更新（强制更新，老版本存在不兼容等情况）) 取值范围 1-99</li>
+<li>middleVersion 迭代版本 取值范围 1-99</li>
+<li>smallVersion bug修复增强发布。 取值范围 1-999</li>
+<li>Build为版本纯数字格式化。</li>
+</ul>
+<h3 id="git帮助文档"><a href="#git帮助文档" class="headerlink" title="git帮助文档"></a>git帮助文档</h3><p><a href="https://gitee.com/all-about-git" target="_blank" rel="noopener">git 大全</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/08/19/Jvm-optimization/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/08/19/Jvm-optimization/" class="post-title-link" itemprop="url">Jvm-optimization</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-08-19 14:09:45" itemprop="dateCreated datePublished" datetime="2021-08-19T14:09:45+08:00">2021-08-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-11-24 01:53:10" itemprop="dateModified" datetime="2021-11-24T01:53:10+08:00">2021-11-24</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Jvm/" itemprop="url" rel="index"><span itemprop="name">Jvm</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>jvm调优是日常工作中经常会使用的技巧，整理下。</p>
+</blockquote>
+<h3 id="项目启动的时候加上的参数都是些啥意思？"><a href="#项目启动的时候加上的参数都是些啥意思？" class="headerlink" title="项目启动的时候加上的参数都是些啥意思？"></a>项目启动的时候加上的参数都是些啥意思？</h3><blockquote>
+<p>刚开始工作的时候发现同事会在jar启动的命令上增加很多参数,很长一段时间都不清楚是干啥的。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:MetaspaceSize=<span class="number">128</span>m -XX:MaxMetaspaceSize=<span class="number">128</span>m -Xms1024m -Xmx1024m -Xmn256m -Xss256k -XX:SurvivorRatio=<span class="number">8</span> -XX:+UseConcMarkSweepGC</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>简单介绍下参数</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">-XX:MetaspaceSize=128m （元空间默认大小）</span><br><span class="line">-XX:MaxMetaspaceSize=128m （元空间最大大小）</span><br><span class="line">-Xms1024m （堆最大大小）</span><br><span class="line">-Xmx1024m （堆默认大小）</span><br><span class="line">-Xmn256m （新生代大小）</span><br><span class="line">-Xss256k （棧最大深度大小）</span><br><span class="line">-XX:SurvivorRatio=8 （新生代分区比例 8:2）</span><br><span class="line">-XX:+UseConcMarkSweepGC （指定使用的垃圾收集器，这里使用CMS收集器）</span><br><span class="line">-XX:+PrintGCDetails （打印详细的GC日志）</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>虽然有了介绍但是依然不清楚具体是干啥的。并且Java虚拟机提供了非常多的参数命令。下面代码可以输出支持的参数数量</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">java -XX:+PrintFlagsFinal -XX:+UnlockDiagnosticVMOptions -version | wc -l</span><br><span class="line">openjdk version <span class="string">"1.8.0_275"</span></span><br><span class="line"><span class="function">OpenJDK Runtime <span class="title">Environment</span> <span class="params">(AdoptOpenJDK)</span><span class="params">(build <span class="number">1.8</span><span class="number">.0</span>_275-b01)</span></span></span><br><span class="line"><span class="function">OpenJDK 64-Bit Server <span class="title">VM</span> <span class="params">(AdoptOpenJDK)</span><span class="params">(build <span class="number">25.275</span>-b01, mixed mode)</span></span></span><br><span class="line"><span class="function">     838</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>堆内存大小配置</li>
+</ul>
+<blockquote>
+<p>建议 -Xms = 最大内存 * [0.6. ~0.8] 这里需要考虑系统损耗内存、和实际物理内存。</p>
+</blockquote>
+<ul>
+<li><p>堆内存与堆外内存</p>
+<ul>
+<li>堆内存</li>
+</ul>
+<blockquote>
+<p>必须是1024的倍数，且不能低于2M。</p>
+<p>32位机器，最大1G/4G 64位机器最大可以超过 32G/64G</p>
+</blockquote>
+<ul>
+<li>堆外内存</li>
+</ul>
+<blockquote>
+<p>堆外内存一般指 Direct Memory ，不受GC控制，JVM、Netty都可能使用堆外内存。</p>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:MaxDirectMemorySize 限制</span><br></pre></td></tr></table></figure>
+
+<h3 id="如何理解这些参数的含义？"><a href="#如何理解这些参数的含义？" class="headerlink" title="如何理解这些参数的含义？"></a>如何理解这些参数的含义？</h3><blockquote>
+<p>首先我们需要理解java是如何运行的，为什么需要java虚拟机？    </p>
+<p>我们常用方式一般是安装java运行环境(jre)用命令行的方式启动或者直接双击jar运行。jre包含的java运行的必要环境。</p>
+<p>Java 作为一门高级程序语言，它的语法非常复杂，抽象程度也很高。编译出来的也不是机器可以直接直接运行代码。所以使用面向Java语言的虚拟机运行Java编译以后的特定代码。这里的特定代码指的是Java字节指令码。</p>
+</blockquote>
+<h3 id="JVM-内存分配性能问题"><a href="#JVM-内存分配性能问题" class="headerlink" title="JVM 内存分配性能问题"></a>JVM 内存分配性能问题</h3><ul>
+<li>在应用服务的特定场景下，JVM 内存分配不合理带来的性能表现并不会像内存溢出问题这么突出。如果没有深入到各项性能指标中去，是很难发现其中隐藏的性能损耗。</li>
+<li>JVM 内存分配不合理最直接的表现就是频繁的 GC，这会导致上下文切换等性能问题，从而降低系统的吞吐量、增加系统的响应时间。</li>
+</ul>
+<h3 id="分析-GC-日志"><a href="#分析-GC-日志" class="headerlink" title="分析 GC 日志"></a>分析 GC 日志</h3><ul>
+<li>在进行压测的时候，我们需要对GC日志进行分析。</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:+PrintGCTimeStamps -XX:+PrintGCDetails -Xloggc:/log/heap.log</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>-XX:PrintGCTimeStamps：打印 GC 具体时间；</li>
+<li>-XX:PrintGCDetails ：打印出 GC 详细日志；</li>
+<li>-Xloggc: path：GC 日志生成路径。</li>
+<li>JVM 内存调优通常和 GC 调优是互补的，基于以上调优，可以对年轻代和堆内存的垃圾回收算法进行调优。</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/08/19/Jvm-optimization/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/08/18/Nginx-log-format/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/08/18/Nginx-log-format/" class="post-title-link" itemprop="url">Nginx-log-format</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-08-18 18:11:55" itemprop="dateCreated datePublished" datetime="2021-08-18T18:11:55+08:00">2021-08-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-08-19 14:07:24" itemprop="dateModified" datetime="2021-08-19T14:07:24+08:00">2021-08-19</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Nginx/" itemprop="url" rel="index"><span itemprop="name">Nginx</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>Ngxin 日志格式化</p>
+</blockquote>
+<ul>
+<li>Nginx提供的访问日志里就蕴藏着大量有用信息。今天这篇要说的就是如果修改Nginx默认日志格式，以便于我们更好的挖掘有效指标。</li>
+</ul>
+<p>编辑<code>/etc/nginx.conf</code>配置文件，在日志部分添加下面两段代码，编辑完成后重启Nginx服务即可。</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">log_format</span> main <span class="string">'<span class="variable">$host</span> - <span class="variable">$remote_addr</span> - [<span class="variable">$time_local</span>] "<span class="variable">$request</span>" '</span></span><br><span class="line">                <span class="string">'<span class="variable">$status</span> <span class="variable">$upstream_response_time</span> <span class="variable">$request_time</span> "<span class="variable">$http_referer</span>"'</span></span><br><span class="line">                <span class="string">'"<span class="variable">$http_user_agent</span>" "<span class="variable">$http_x_forwarded_for</span>" <span class="variable">$body_bytes_sent</span> '</span>;</span><br><span class="line"><span class="attribute">access_log</span> /var/log/nginx/access.log main;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>简单罗列一下变量的含义:</p>
+</blockquote>
+<ul>
+<li><code>$host</code> 访问域名</li>
+<li><code>$remote_addr</code> 客户端IP地址</li>
+<li><code>$time_local</code> 访问时间</li>
+<li><code>$status</code> 访问状态码</li>
+<li><code>$upstream_response_time</code> 应用返回到Nginx的时间</li>
+<li><code>$request_time</code> 请求时间</li>
+<li><code>$http_referer</code> 请求来源</li>
+<li><code>$http_user_agent</code> 访问客户端</li>
+<li><code>$http_x_forwarded_for</code> 客户端IP地址</li>
+<li><code>$body_bytes_sent</code> 返回给客户端大小</li>
+</ul>
+<blockquote>
+<p>在server中不生效的问题</p>
+</blockquote>
+<ul>
+<li>在server中增加 <code>access_log /var/log/nginx/access.log main;</code></li>
+</ul>
+<blockquote>
+<p>日期显示问题</p>
+</blockquote>
+<ul>
+<li><p><code>[01/Jul/2020:03:25:17 +0800]  </code>官方默认是这种</p>
+</li>
+<li><p>修改默认格式</p>
+</li>
+</ul>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">log_format</span> main <span class="string">'<span class="variable">$host</span> - <span class="variable">$remote_addr</span> - [<span class="variable">$time_iso8601</span>] "<span class="variable">$request</span>" '</span></span><br><span class="line">                <span class="string">'<span class="variable">$status</span> <span class="variable">$upstream_response_time</span> <span class="variable">$request_time</span> "<span class="variable">$http_referer</span>"'</span></span><br><span class="line">                <span class="string">'"<span class="variable">$http_user_agent</span>" "<span class="variable">$http_x_forwarded_for</span>" <span class="variable">$body_bytes_sent</span> '</span>;</span><br><span class="line"><span class="attribute">access_log</span> /var/log/nginx/access.log main;</span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>在server中增加下面代码</li>
+</ul>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="section">server</span> &#123;</span><br><span class="line"></span><br><span class="line">	if ($time_iso8601 ~ "^(\d&#123;4&#125;)-(\d&#123;2&#125;)-(\d&#123;2&#125;) (\d&#123;2&#125;):(\d&#123;2&#125;):(\d&#123;2&#125;)") &#123;</span><br><span class="line">			<span class="attribute">set</span> <span class="variable">$year</span> <span class="variable">$1</span>;</span><br><span class="line">			<span class="attribute">set</span> <span class="variable">$month</span> <span class="variable">$2</span>;</span><br><span class="line">			<span class="attribute">set</span> <span class="variable">$day</span> <span class="variable">$3</span>;</span><br><span class="line">			<span class="attribute">set</span> <span class="variable">$hour</span> <span class="variable">$4</span>;</span><br><span class="line">			<span class="attribute">set</span> <span class="variable">$minutes</span> <span class="variable">$5</span>;</span><br><span class="line">			<span class="attribute">set</span> <span class="variable">$seconds</span> <span class="variable">$6</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/05/25/Centos7-jenkins%E9%83%A8%E7%BD%B2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/05/25/Centos7-jenkins%E9%83%A8%E7%BD%B2/" class="post-title-link" itemprop="url">Centos7_jenkins部署</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-05-25 21:20:35" itemprop="dateCreated datePublished" datetime="2021-05-25T21:20:35+08:00">2021-05-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-21 15:04:54" itemprop="dateModified" datetime="2021-09-21T15:04:54+08:00">2021-09-21</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index"><span itemprop="name">Linux运维</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>记录最近在Centos7上面部署jenkens。安装的方法有很多，下面采用最简单的方式安装。</p>
+</blockquote>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><ul>
+<li>在线文档 <a href="https://jenkins.io/doc/" target="_blank" rel="noopener">https://jenkins.io/doc/</a></li>
+<li>名词解释：<ul>
+<li>CI</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>jenkins 是一个协调者的身份，管理和协调了代码库，代码仓库，代码运行环境等。</p>
+</blockquote>
+<h2 id="jenkins-简介"><a href="#jenkins-简介" class="headerlink" title="jenkins 简介"></a>jenkins 简介</h2><blockquote>
+<p>Jenkins是一个开源软件项目，旨在提供一个开放易用的软件平台，使软件的持续集成变成可能。持续集成（CI）已成为当前许多软件开发团队在整个软件开发生命周期内侧重于保证代码质量的常见做法。它是一种实践，旨在缓和和稳固软件的构建过程。并且能够帮助您的开发团队应对如下挑战：</p>
+</blockquote>
+<ul>
+<li>持续、自动地构建/测试软件项目。</li>
+<li>监控一些定时执行的任务。</li>
+<li>高度可扩展性、全球大量团队使用，并共享代码。</li>
+<li>基于插件、可以做出非常多有趣的事情。</li>
+</ul>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/jenkins/2.jpg"> </p>
+<h2 id="安裝部署"><a href="#安裝部署" class="headerlink" title="安裝部署"></a>安裝部署</h2>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/05/25/Centos7-jenkins%E9%83%A8%E7%BD%B2/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/02/25/%E5%B7%AE%E7%BC%BA%E8%A1%A5%E6%BC%8F-Netty/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/02/25/%E5%B7%AE%E7%BC%BA%E8%A1%A5%E6%BC%8F-Netty/" class="post-title-link" itemprop="url">差缺补漏-Netty</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-02-25 12:09:20" itemprop="dateCreated datePublished" datetime="2021-02-25T12:09:20+08:00">2021-02-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-12-17 14:39:46" itemprop="dateModified" datetime="2021-12-17T14:39:46+08:00">2021-12-17</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>Netty是一款用于快速开发高性能的网络应用程序的Java框架，正是因为有 Netty 的存在，网络编程领域 Java 才得以与 C++ 并肩而立。</p>
+</blockquote>
+<ul>
+<li>Netty 官网给出了有关 Netty 的整体功能模块结构</li>
+</ul>
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211116220629.png"></p>
+<ul>
+<li>Core核心层</li>
+</ul>
+<blockquote>
+<p>提供底层网络通信抽象和实现，其中包括了可扩展的时间模型、通信API、支持零拷贝的buf等。</p>
+</blockquote>
+<ul>
+<li>Protocol Support 协议支持层</li>
+</ul>
+<blockquote>
+<p>协议支持层基本上覆盖了主流协议的编解码实现，比如HTTP、SSL、WebSocket</p>
+</blockquote>
+<ul>
+<li>Transport Service 传输服务层</li>
+</ul>
+<blockquote>
+<p>传输服务层提供了网络传输能力的定义和实现方法，支持 Socket、HTTP 隧道等。Netty 对 TCP、UDP 等数据传输做了抽象和封装</p>
+</blockquote>
+<h3 id="Netty流程"><a href="#Netty流程" class="headerlink" title="Netty流程"></a>Netty流程</h3><blockquote>
+<p>从功能上理解顺序</p>
+</blockquote>
+<ul>
+<li>启动服务 -&gt; 构建连接 -&gt; 接受数据 -&gt; 业务处理 -&gt; 发送数据 -&gt; 断开连接 -&gt; 关闭服务</li>
+</ul>
+<h4 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h4><ul>
+<li>初始化线程池</li>
+<li>初始化channel</li>
+<li>绑定端口并启动</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@Sharable</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">EchoServerHandler</span> <span class="keyword">extends</span> <span class="title">ChannelInboundHandlerAdapter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelRead</span><span class="params">(ChannelHandlerContext ctx, Object msg)</span> </span>&#123;</span><br><span class="line">        ctx.write(msg);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelReadComplete</span><span class="params">(ChannelHandlerContext ctx)</span> </span>&#123;</span><br><span class="line">        ctx.flush();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exceptionCaught</span><span class="params">(ChannelHandlerContext ctx, Throwable cause)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// Close the connection when an exception is raised.</span></span><br><span class="line">        cause.printStackTrace();</span><br><span class="line">        ctx.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Echoes back any received data from a client.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">EchoServer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">boolean</span> SSL = System.getProperty(<span class="string">"ssl"</span>) != <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> PORT = Integer.parseInt(System.getProperty(<span class="string">"port"</span>, <span class="string">"8007"</span>));</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="comment">// Configure SSL.</span></span><br><span class="line">        <span class="keyword">final</span> SslContext sslCtx;</span><br><span class="line">        <span class="keyword">if</span> (SSL) &#123;</span><br><span class="line">            SelfSignedCertificate ssc = <span class="keyword">new</span> SelfSignedCertificate();</span><br><span class="line">            sslCtx = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()).build();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            sslCtx = <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Configure the server.</span></span><br><span class="line">        <span class="comment">// 在官方的example中默认是Reactor主从多线程模式</span></span><br><span class="line">        <span class="comment">// 1.配置线程池</span></span><br><span class="line">        EventLoopGroup bossGroup = <span class="keyword">new</span> NioEventLoopGroup(<span class="number">1</span>);</span><br><span class="line">        EventLoopGroup workerGroup = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line">        <span class="keyword">final</span> EchoServerHandler serverHandler = <span class="keyword">new</span> EchoServerHandler();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            ServerBootstrap b = <span class="keyword">new</span> ServerBootstrap();</span><br><span class="line">            b.group(bossGroup, workerGroup)</span><br><span class="line">             .channel(NioServerSocketChannel<span class="class">.<span class="keyword">class</span>) // 2.初始化<span class="title">channel</span>类型</span></span><br><span class="line"><span class="class">             .<span class="title">option</span>(<span class="title">ChannelOption</span>.<span class="title">SO_BACKLOG</span>, 100) // 2.1.设置<span class="title">channel</span>参数</span></span><br><span class="line"><span class="class">             .<span class="title">handler</span>(<span class="title">new</span> <span class="title">LoggingHandler</span>(<span class="title">LogLevel</span>.<span class="title">INFO</span>))</span></span><br><span class="line"><span class="class">              // 注册<span class="title">channelhandler</span>，在<span class="title">netty</span>中通过<span class="title">ChannelPipeline</span> 去注册多个 <span class="title">ChannelHandler</span></span></span><br><span class="line"><span class="class">             .<span class="title">childHandler</span>(<span class="title">new</span> <span class="title">ChannelInitializer</span>&lt;<span class="title">SocketChannel</span>&gt;() </span>&#123;</span><br><span class="line">                 <span class="meta">@Override</span></span><br><span class="line">                 <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initChannel</span><span class="params">(SocketChannel ch)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                     ChannelPipeline p = ch.pipeline();</span><br><span class="line">                     <span class="keyword">if</span> (sslCtx != <span class="keyword">null</span>) &#123;</span><br><span class="line">                         p.addLast(sslCtx.newHandler(ch.alloc()));</span><br><span class="line">                     &#125;</span><br><span class="line">                     <span class="comment">//p.addLast(new LoggingHandler(LogLevel.INFO));</span></span><br><span class="line">                     p.addLast(serverHandler);</span><br><span class="line">                 &#125;</span><br><span class="line">             &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Start the server. </span></span><br><span class="line">            <span class="comment">// 3.启动 通过bind() 方法会真正触发启动，sync() 方法则会阻塞</span></span><br><span class="line">            ChannelFuture f = b.bind(PORT).sync();</span><br><span class="line">            <span class="comment">// Wait until the server socket is closed.</span></span><br><span class="line">            f.channel().closeFuture().sync();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="comment">// Shut down all event loops to terminate all threads.</span></span><br><span class="line">            bossGroup.shutdownGracefully();</span><br><span class="line">            workerGroup.shutdownGracefully();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/02/25/%E5%B7%AE%E7%BC%BA%E8%A1%A5%E6%BC%8F-Netty/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/02/21/Jenkins-local-deployment-level/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/02/21/Jenkins-local-deployment-level/" class="post-title-link" itemprop="url">Jenkins-local-deployment-level</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-02-21 14:40:48" itemprop="dateCreated datePublished" datetime="2021-02-21T14:40:48+08:00">2021-02-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-11-23 23:43:02" itemprop="dateModified" datetime="2021-11-23T23:43:02+08:00">2021-11-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>整理下Jenkins本地部署程序的过程。</p>
+</blockquote>
+<ul>
+<li><p>在开发阶段，许多编译工具会将我们的源码编译可使用的文件。例如 <code>vue-cli</code> 的项目会被 <code>webpack</code> 打包编译为浏览器的文件，<code>Java</code> 项目会被编译为 <code>.class/jar</code> 文件以供服务器使用。</p>
+<ol>
+<li><p>开发人员将源代码，经过编译、压缩等一系列流程打包</p>
+</li>
+<li><p>上传到服务器。</p>
+</li>
+<li><p>在服务器将编译后的文件，手动可用的容器服务内（例如 <code>Nginx，Tomcat，Apache</code> 等服务）</p>
+</li>
+</ol>
+</li>
+</ul>
+<h3 id="单机部署"><a href="#单机部署" class="headerlink" title="单机部署"></a>单机部署</h3><blockquote>
+<p>在jenkins所在的机器上部署程序</p>
+</blockquote>
+<ol>
+<li><a href="https://z201.cn/2021/05/25/Centos7-jenkins%E9%83%A8%E7%BD%B2/" target="_blank" rel="noopener">部署jenkins</a>并配置环境</li>
+<li>设置jenkins-credentials (后续用于从git仓库中获取代码)</li>
+<li>创建任务<ol>
+<li>设置仓库地址</li>
+<li>设置程序部署shell脚本</li>
+</ol>
+</li>
+</ol>
+<ul>
+<li><p>jenkins shell</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mvn clean install -Dmaven.test.skip=true</span><br><span class="line">cp x x x/target/xxx-1.0.0-SNAPSHOT.jar /opt/xxx/upgrade</span><br><span class="line">cd /opt/xxx</span><br><span class="line">BUILD_ID=dontKillMe sh xxx.sh</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>编写程序运行shell脚本。</p>
+</li>
+<li><p>部署java</p>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line">app=xxx</span><br><span class="line">appName=$&#123;app&#125;-1.0.0-SNAPSHOT</span><br><span class="line">projPath=/opt/xxx</span><br><span class="line">upgradePath=$&#123;projPath&#125;/upgrade</span><br><span class="line">backPath=$&#123;projPath&#125;/backup</span><br><span class="line">logFile=$&#123;projPath&#125;/data/logs/$&#123;app&#125;.log</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 检查升级文件是否存在</span></span><br><span class="line">echo "checking upgrade file..."</span><br><span class="line">if [ ! -f $&#123;upgradePath&#125;/$&#123;appName&#125;.jar ]; then</span><br><span class="line">    echo "cann't found file $&#123;upgradePath&#125;/$&#123;appName&#125;.jar!"</span><br><span class="line">    exit</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 结束进程</span></span><br><span class="line">pid=`ps aux | grep $&#123;projPath&#125;/$&#123;appName&#125;.jar | grep -v grep | grep -v kill | awk '&#123;print $2&#125;'`</span><br><span class="line">if [ $&#123;pid&#125; ]; then</span><br><span class="line">    echo "kill $&#123;appName&#125;!"</span><br><span class="line">    kill -9 $pid</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 备份原升级文件,如果存在的话</span></span><br><span class="line">if [ -f $&#123;projPath&#125;/$&#123;appName&#125;.jar ]; then</span><br><span class="line">    timeStr=`date +%Y%m%d%H%M%S`</span><br><span class="line">    mv $&#123;projPath&#125;/$&#123;appName&#125;.jar $&#123;backPath&#125;/$&#123;appName&#125;.jar.bak_$&#123;timeStr&#125;</span><br><span class="line">    echo "load $&#123;appName&#125; success!"</span><br><span class="line">    echo "backup $&#123;appName&#125; success!"</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 拷贝升级文件</span></span><br><span class="line">echo "copy $&#123;appName&#125;.jar..."</span><br><span class="line">cp $&#123;upgradePath&#125;/$&#123;appName&#125;.jar $&#123;projPath&#125;/$&#123;appName&#125;.jar</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 启动进程</span></span><br><span class="line">echo "start $&#123;appName&#125;..."</span><br><span class="line">nohup java -Djava.security.egd=file:/dev/./urandom -Xms512m -Xmx512m -XX:MetaspaceSize=256m -XX:MaxMetaspaceSize=256m -jar $&#123;projPath&#125;/$&#123;appName&#125;.jar --spring.profiles.active=test &gt;/dev/null 2&gt;&amp;1 &amp;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 查看日志</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 判断当天日志文件是否存在</span></span><br><span class="line">if [ ! -f $&#123;logFile&#125; ]; then</span><br><span class="line">    # 文件不存在则创建文件，再执行tail命令</span><br><span class="line">    touch $&#123;logFile&#125;</span><br><span class="line">fi</span><br><span class="line">echo "tail -f $&#123;logFile&#125;"</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>部署vue</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> git revert</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> git restore .</span></span><br><span class="line"></span><br><span class="line">applicationPath=/opt/view/xxxx</span><br><span class="line"></span><br><span class="line">echo 'delete old files...'</span><br><span class="line">rm -rf $&#123;applicationPath&#125;/*</span><br><span class="line"></span><br><span class="line">echo 'copy files after npm build!'</span><br><span class="line">cp -rf dist/* $&#123;applicationPath&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/02/19/Mac%E5%AE%89%E8%A3%85neo4j%E5%92%8Cjupyter/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/02/19/Mac%E5%AE%89%E8%A3%85neo4j%E5%92%8Cjupyter/" class="post-title-link" itemprop="url">Mac安装neo4j和jupyter</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-02-19 00:39:21" itemprop="dateCreated datePublished" datetime="2021-02-19T00:39:21+08:00">2021-02-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-10-15 11:05:33" itemprop="dateModified" datetime="2021-10-15T11:05:33+08:00">2021-10-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>准备学习下neo4j记录在mac下安装neo4j的坑。</p>
+</blockquote>
+<h2 id="neo4j官网网站下载失败"><a href="#neo4j官网网站下载失败" class="headerlink" title="neo4j官网网站下载失败"></a>neo4j官网网站下载失败</h2><blockquote>
+<p>国内只能从镜像地址下载</p>
+</blockquote>
+<p><a href="http://doc.we-yun.com:1008/" target="_blank" rel="noopener">http://doc.we-yun.com:1008/</a> </p>
+<h2 id="配置jdk11"><a href="#配置jdk11" class="headerlink" title="配置jdk11"></a>配置jdk11</h2><blockquote>
+<p>可以查看我上面内容实用Jenv管理多个版本。</p>
+</blockquote>
+<h2 id="启动neo4j"><a href="#启动neo4j" class="headerlink" title="启动neo4j"></a>启动neo4j</h2><blockquote>
+<p>下载完成后解压</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 启动</span></span><br><span class="line">./neo4j  start</span><br><span class="line"><span class="meta">#</span><span class="bash"> 关闭</span></span><br><span class="line">./neo4j  stop</span><br></pre></td></tr></table></figure>
+
+<h2 id="neo4j界面"><a href="#neo4j界面" class="headerlink" title="neo4j界面"></a>neo4j界面</h2><ul>
+<li>在浏览器中输入localhost:7474</li>
+<li>初始用户名、密码均为neo4j， 第一次登录需要修改密码</li>
+</ul>
+<h2 id="安装jupyter"><a href="#安装jupyter" class="headerlink" title="安装jupyter"></a>安装jupyter</h2><blockquote>
+<p>注意提前安装python环境</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pip install jupyter notebook -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host=mirrors.aliyun.com</span><br><span class="line"><span class="meta">#</span><span class="bash"> 检查版本</span></span><br><span class="line">jupyter --version</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/02/15/Mac%E4%B8%8BOpenJdk11-JavaFx%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/02/15/Mac%E4%B8%8BOpenJdk11-JavaFx%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" class="post-title-link" itemprop="url">Mac下OpenJdk11-JavaFx开发环境配置</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-02-15 03:12:07" itemprop="dateCreated datePublished" datetime="2021-02-15T03:12:07+08:00">2021-02-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-11-21 15:37:26" itemprop="dateModified" datetime="2021-11-21T15:37:26+08:00">2021-11-21</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>OpenJdk 11 环境下JavaFx开发环境设置</p>
+</blockquote>
+<ul>
+<li><a href="https://www.coder.work/article/884639" target="_blank" rel="noopener">https://www.coder.work/article/884639</a></li>
+<li><a href="https://stackoverflow.com/questions/54291958/javafx-11-illegalaccesserror-when-creating-label" target="_blank" rel="noopener">https://stackoverflow.com/questions/54291958/javafx-11-illegalaccesserror-when-creating-label</a></li>
+<li><a href="https://gluonhq.com/products/javafx/" target="_blank" rel="noopener">https://gluonhq.com/products/javafx/</a></li>
+</ul>
+<h2 id="pom依赖"><a href="#pom依赖" class="headerlink" title="pom依赖"></a>pom依赖</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.openjfx<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>javafx-controls<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>11<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.openjfx<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>javafx-fxml<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>11<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="idea设置"><a href="#idea设置" class="headerlink" title="idea设置"></a>idea设置</h3><blockquote>
+<p>下载javafx版本，然后引入依赖。项目lib中引入。启动的时候在vm中添加启动参数</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">--module-path</span><br><span class="line"><span class="meta">/Users/$</span><span class="bash">USER/word/libhome/javafx-sdk-11.0.2/lib</span></span><br><span class="line">--add-modules</span><br><span class="line">javafx.controls</span><br><span class="line">--add-modules</span><br><span class="line">javafx.base</span><br><span class="line">--add-modules</span><br><span class="line">javafx.graphics</span><br><span class="line">--add-modules</span><br><span class="line">javafx.fxml</span><br><span class="line">--add-modules</span><br><span class="line">javafx.media</span><br></pre></td></tr></table></figure>
 
 
       
