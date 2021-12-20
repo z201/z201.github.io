@@ -47,6 +47,15 @@
   
 
 
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?08e7145257fb655dd2db4082efa66876";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
 
 
 
@@ -235,6 +244,103 @@
 
           <div class="content index posts-expand">
             
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/08/31/%E5%AE%9E%E8%B7%B5-centos7%E6%90%AD%E5%BB%BAselenium-java%E8%BF%90%E8%A1%8C%E7%8E%AF%E5%A2%83/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/08/31/%E5%AE%9E%E8%B7%B5-centos7%E6%90%AD%E5%BB%BAselenium-java%E8%BF%90%E8%A1%8C%E7%8E%AF%E5%A2%83/" class="post-title-link" itemprop="url">实践-centos7搭建selenium-java运行环境</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-08-31 09:45:59" itemprop="dateCreated datePublished" datetime="2020-08-31T09:45:59+08:00">2020-08-31</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-10-27 16:31:58" itemprop="dateModified" datetime="2020-10-27T16:31:58+08:00">2020-10-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>最近在编写爬虫程序，这里简单的做下笔记。</p>
+</blockquote>
+<h3 id="阅读注意事项"><a href="#阅读注意事项" class="headerlink" title="阅读注意事项"></a>阅读注意事项</h3><ol>
+<li>需要一台服务器(阿里ESC)这种，分配的公网ip。</li>
+<li>这里使用的yum安装，所以环境配置都创建好了，不需要在手动修改。</li>
+</ol>
+<h3 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h3><blockquote>
+<p>安装Java、maven、git、selenium运行环境</p>
+</blockquote>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用的机器是centos7.4</span></span><br><span class="line"><span class="comment"># 系统环境一个一个来安装。</span></span><br><span class="line"><span class="comment"># 1.检查是否安装jdk</span></span><br><span class="line">-&gt; yum install java-1.8.0-openjdk-devel.x86_64</span><br><span class="line">-&gt; java -version</span><br><span class="line">openjdk version <span class="string">"1.8.0_262"</span></span><br><span class="line">OpenJDK Runtime Environment (build 1.8.0_262-b10)</span><br><span class="line">OpenJDK 64-Bit Server VM (build 25.262-b10, mixed mode)</span><br><span class="line">-&gt; yum install maven</span><br><span class="line">-&gt; mvn -version</span><br><span class="line">Java version: 1.8.0_262, vendor: Oracle Corporation</span><br><span class="line">Java home: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.262.b10-0.el7_8.x86_64/jre</span><br><span class="line">Default locale: zh_CN, platform encoding: UTF-8</span><br><span class="line">OS name: <span class="string">"linux"</span>, version: <span class="string">"3.10.0-862.el7.x86_64"</span>, arch: <span class="string">"amd64"</span>, family: <span class="string">"unix"</span></span><br><span class="line">-&gt; yum install git</span><br><span class="line">git version 1.8.3.1</span><br><span class="line"><span class="comment"># 查看是否生成过证书</span></span><br><span class="line">-&gt; ls -al ~/.ssh</span><br><span class="line"><span class="comment"># 这里配置下ssh公钥方便git拉去代码</span></span><br><span class="line">-&gt; ssh-keygen -t rsa -C “you email@gamil.com”</span><br><span class="line"><span class="comment"># 查看证书</span></span><br><span class="line">-&gt; cat ~/.ssh/id_rsa.pub</span><br><span class="line"><span class="comment"># 开始配置 selenium 运行环境</span></span><br><span class="line">-&gt; wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm</span><br><span class="line">-&gt; yum localinstall google-chrome-stable_current_x86_64.rpm</span><br><span class="line"><span class="comment"># 检查版本 </span></span><br><span class="line">-&gt; google-chrome --version </span><br><span class="line">Google Chrome 85.0.4183.83 </span><br><span class="line"><span class="comment"># 安装 chromedriver</span></span><br><span class="line">-&gt; yum install chromedriver</span><br><span class="line">-&gt; chromedriver -version</span><br><span class="line">ChromeDriver 84.0.4147.89 </span><br><span class="line"><span class="comment"># 这里注意 chromedriver 可能与chrome的版本不一致，去官方网站下载后解压复制到/usr/bin中</span></span><br><span class="line"><span class="comment"># 下载地址 https://chromedriver.chromium.org/</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>注意 google-chrome 和 chromedriver版本是需要对应的具体可以到官方查看。</li>
+<li>在centos上运行需要配置下关键参数</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ChromeOptions chromeOptions = <span class="keyword">new</span> ChromeOptions();</span><br><span class="line">   chromeOptions.addArguments(<span class="string">"--headless"</span>);</span><br><span class="line">   chromeOptions.addArguments(<span class="string">"--disable-gpu"</span>); <span class="comment">// 不配置一定报错</span></span><br><span class="line">   chromeOptions.addArguments(<span class="string">"--no-sandbox"</span>);</span><br><span class="line">   <span class="comment">// 创建无界面浏览器对象</span></span><br><span class="line">   chromeOptions.setHeadless(<span class="keyword">true</span>);</span><br><span class="line">   <span class="keyword">return</span> <span class="keyword">new</span> ChromeDriver(chromeOptions);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>启动代码的需要指定环境变量</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">System.setProperty(<span class="string">"webdriver.chrome.chromedriver"</span>, <span class="string">"/usr/bin/chromedriver"</span>);</span><br><span class="line"># 具体可以通过 whereis chromedriver查看。</span><br></pre></td></tr></table></figure>
+
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p><a href="https://segmentfault.com/a/1190000015389941" target="_blank" rel="noopener">CentOS使用yum安装jdk</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
   
   
@@ -1307,115 +1413,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/05/27/%E6%80%BB%E7%BB%93%E4%BB%A3%E7%A0%81%E9%A3%8E%E6%A0%BC/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/05/27/%E6%80%BB%E7%BB%93%E4%BB%A3%E7%A0%81%E9%A3%8E%E6%A0%BC/" class="post-title-link" itemprop="url">总结代码风格</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-05-27 20:49:08" itemprop="dateCreated datePublished" datetime="2019-05-27T20:49:08+08:00">2019-05-27</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-08-15 09:10:22" itemprop="dateModified" datetime="2020-08-15T09:10:22+08:00">2020-08-15</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">软件工程</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>好久没更新博客，最近公司让我出一个代码规范，我吓了一跳。赶忙翻出阿里《 码出高效》，不敢造次，我就补充点个人的想法吧。代码是给人看的。代码风格应该遵循<code>极简主义</code>                                                                                                      </p>
-</blockquote>
-<h3 id="1、避免复杂、追求简单"><a href="#1、避免复杂、追求简单" class="headerlink" title="1、避免复杂、追求简单"></a>1、避免复杂、追求简单</h3><blockquote>
-<p>日常开发中，除了解决业务问题还需要解决许多的工程问题。如何选择当下合适的方法解决问题；需要不断尝试和摸索，没有最好的方法只有更好的方法。</p>
-</blockquote>
-<h3 id="2、合理平滑的处理技术债务"><a href="#2、合理平滑的处理技术债务" class="headerlink" title="2、合理平滑的处理技术债务"></a>2、合理平滑的处理技术债务</h3><blockquote>
-<p>技术的演变速度太快，如何避免长时间的技术债务是非常严重的问题，总之弊大于利。尽可能保持轻装上阵，避免拖油瓶项目。</p>
-<p>关键字：</p>
-<ul>
-<li>一方库: 本工程内部子项目模块依赖的库(jar 包)。 </li>
-<li>二方库: 公司内部发布到中央仓库，可供公司内部其它应用依赖的库(jar包)。 </li>
-<li>三方库: 公司之外的开源库(jar 包)。 </li>
-</ul>
-</blockquote>
-<h4 id="『避免过度封装』"><a href="#『避免过度封装』" class="headerlink" title="『避免过度封装』"></a>『避免过度封装』</h4><blockquote>
-<p>特别是没有完整的技术人员编制的情况下，怎么简单怎么处理（去除中间商赚差价一个道理。）避免过度开发<code>一方库</code>；建议使用原生方式(综合评估代码量)<code>避免框架过度封装</code>。（Java的方法调用链过长是出了名的恶心）</p>
-</blockquote>
-<h4 id="『避免代码过度重复』"><a href="#『避免代码过度重复』" class="headerlink" title="『避免代码过度重复』"></a>『避免代码过度重复』</h4><blockquote>
-<p>每次开发业务都会写很多的代码。定期对公司项目进行基础代码的重构。合理的拆分<code>业务无关的基础代码</code>。</p>
-</blockquote>
-<h4 id="『避免版本混乱』"><a href="#『避免版本混乱』" class="headerlink" title="『避免版本混乱』"></a>『避免版本混乱』</h4><p>使用统一的版本管理。约束所有的项目jar版本依赖。防止因为过度使用<code>三方库</code>出现奇怪的bug。公司<code>bom</code>需要单独处理。尽量保持与社区版本同步，比如springboot最新版是2.1.3 ，那么公司使用的版本最好是近半年的GA版本。</p>
-<h4 id="『物极必反』"><a href="#『物极必反』" class="headerlink" title="『物极必反』"></a>『物极必反』</h4><blockquote>
-<p>请勿过度依赖某框架栈或者解决方式，客观的对比相关解决方案优缺点。</p>
-</blockquote>
-<h4 id="『选择大于努力』"><a href="#『选择大于努力』" class="headerlink" title="『选择大于努力』"></a>『选择大于努力』</h4><blockquote>
-<p>集中精力掌握核心知识。按照目前技术演变的速度，更新最快的是应用技术，其次是行业规范相关技术。最后才是革命性的技术。</p>
-</blockquote>
-<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/%E4%BB%A3%E7%A0%81%E6%80%BB%E7%BB%93/%E6%8A%80%E6%9C%AF%E8%B1%A1%E9%99%90%E5%9B%BE.png"></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/05/27/%E6%80%BB%E7%BB%93%E4%BB%A3%E7%A0%81%E9%A3%8E%E6%A0%BC/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1486,18 +1483,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">98</span>
+          <span class="site-state-item-count">99</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-count">21</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">99</span>
+        <span class="site-state-item-count">101</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
