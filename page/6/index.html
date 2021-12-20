@@ -239,6 +239,172 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/15/%E5%AE%9E%E8%B7%B5-jjwt%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/03/15/%E5%AE%9E%E8%B7%B5-jjwt%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/" class="post-title-link" itemprop="url">实践-jjwt单元测试</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-03-15 21:34:40" itemprop="dateCreated datePublished" datetime="2019-03-15T21:34:40+08:00">2019-03-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-02-18 14:04:50" itemprop="dateModified" datetime="2021-02-18T14:04:50+08:00">2021-02-18</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="JJWT"><a href="#JJWT" class="headerlink" title="JJWT"></a>JJWT</h2><blockquote>
+<p>之前有介绍过<a href="https://z201.cn/2019/03/09/%E5%88%9D%E6%8E%A2Jwk/" target="_blank" rel="noopener">JWT</a>的基本了解，本章内容主要是用来实际运行下jjwt的api，完成相应的单元测试。</p>
+</blockquote>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">junit.version</span>&gt;</span>4.12<span class="tag">&lt;/<span class="name">junit.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">jjwt.version</span>&gt;</span>0.10.5<span class="tag">&lt;/<span class="name">jjwt.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">lmbok.version</span>&gt;</span>1.18.4<span class="tag">&lt;/<span class="name">lmbok.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">h2.version</span>&gt;</span>1.4.197<span class="tag">&lt;/<span class="name">h2.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">slf4j.version</span>&gt;</span>1.7.25<span class="tag">&lt;/<span class="name">slf4j.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">logback.version</span>&gt;</span>1.2.3<span class="tag">&lt;/<span class="name">logback.version</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- pom文件需要指定打包编码集，[WARNING] File encoding has not been set, using platform encoding GBK, i.e. build is platform dependent!  --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">project.build.sourceEncoding</span>&gt;</span>UTF-8<span class="tag">&lt;/<span class="name">project.build.sourceEncoding</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.jsonwebtoken<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jjwt-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;jjwt.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.jsonwebtoken<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jjwt-impl<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;jjwt.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">scope</span>&gt;</span>runtime<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.jsonwebtoken<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jjwt-jackson<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;jjwt.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">scope</span>&gt;</span>runtime<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!--log --&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.slf4j<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>slf4j-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;slf4j.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>ch.qos.logback<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>logback-classic<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;logback.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- 测试框架 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>junit<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>junit<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;junit.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  	<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  	<span class="tag">&lt;<span class="name">version</span>&gt;</span>1.18.6<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="测试代码"><a href="#测试代码" class="headerlink" title="测试代码"></a>测试代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> cn.z201.java.test.jjwt;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> io.jsonwebtoken.Claims;</span><br><span class="line"><span class="keyword">import</span> io.jsonwebtoken.JwtBuilder;</span><br><span class="line"><span class="keyword">import</span> io.jsonwebtoken.Jwts;</span><br><span class="line"><span class="keyword">import</span> io.jsonwebtoken.SignatureAlgorithm;</span><br><span class="line"><span class="keyword">import</span> io.jsonwebtoken.security.Keys;</span><br><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.junit.Test;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.crypto.SecretKey;</span><br><span class="line"><span class="keyword">import</span> java.time.Clock;</span><br><span class="line"><span class="keyword">import</span> java.util.Date;</span><br><span class="line"><span class="keyword">import</span> java.util.UUID;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> z201.coding@gmail.com</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JwtExampleTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> String <span class="title">createJWT</span><span class="params">(String id, String issuer, String subject, <span class="keyword">long</span> ttlMillis, SecretKey key)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        Clock clock = Clock.systemDefaultZone();</span><br><span class="line">        Date now = <span class="keyword">new</span> Date(clock.millis());</span><br><span class="line">        <span class="comment">//Let's set the JWT Claims</span></span><br><span class="line">        JwtBuilder builder = Jwts.builder()</span><br><span class="line">                .setId(id)</span><br><span class="line">                .setIssuedAt(now)</span><br><span class="line">                .setSubject(subject)</span><br><span class="line">                .setIssuer(issuer)</span><br><span class="line">                .signWith(key);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 设置过期时间</span></span><br><span class="line">        <span class="keyword">if</span> (ttlMillis &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">long</span> expMillis = clock.millis() + ttlMillis;</span><br><span class="line">            Date exp = <span class="keyword">new</span> Date(expMillis);</span><br><span class="line">            builder.setExpiration(exp);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 返回编码之后的字符串</span></span><br><span class="line">        <span class="keyword">return</span> builder.compact();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">parseJWT</span><span class="params">(String jwt, SecretKey key)</span> </span>&#123;</span><br><span class="line">        Claims claims = Jwts.parser()</span><br><span class="line">                .setSigningKey(key)</span><br><span class="line">                .parseClaimsJws(jwt).getBody();</span><br><span class="line">        log.info(<span class="string">"ID: "</span> + claims.getId());</span><br><span class="line">        log.info(<span class="string">"Subject: "</span> + claims.getSubject());</span><br><span class="line">        log.info(<span class="string">"Issuer: "</span> + claims.getIssuer());</span><br><span class="line">        log.info(<span class="string">"Expiration: "</span> + claims.getExpiration());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testJwt</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">//The JWT signature algorithm we will be using to sign the token</span></span><br><span class="line">        SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256);</span><br><span class="line">        String jwt = createJWT(UUID.randomUUID().toString() ,  <span class="string">"issuer"</span>  , <span class="string">"subject"</span> , <span class="number">10000</span> ,key);</span><br><span class="line">        log.info(<span class="string">"createJWT &#123;&#125; "</span> , jwt );</span><br><span class="line">        parseJWT(jwt,key);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">输出</span><br><span class="line"></span><br><span class="line"><span class="number">22</span>:<span class="number">18</span>:<span class="number">48.641</span> [main] INFO cn.z201.java.test.jjwt.JwtExampleTest - createJWT eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJjNjFmNzNmZi02OTM4LTQ2MDItYTNkNC1hY2FlZmI3N2Q2YTEiLCJpYXQiOjE1NTI3NDU5MjgsInN1YiI6InN1YmplY3QiLCJpc3MiOiJpc3N1ZXIiLCJleHAiOjE1NTI3NDU5Mzh9.t_ra42L21PMVzto1r2x1fSxCRZFkuk0hSzl2k-b-VWA </span><br><span class="line"><span class="number">22</span>:<span class="number">18</span>:<span class="number">48.694</span> [main] INFO cn.z201.java.test.jjwt.JwtExampleTest - ID: c61f73ff-<span class="number">6938</span>-<span class="number">4602</span>-a3d4-acaefb77d6a1</span><br><span class="line"><span class="number">22</span>:<span class="number">18</span>:<span class="number">48.694</span> [main] INFO cn.z201.java.test.jjwt.JwtExampleTest - Subject: subject</span><br><span class="line"><span class="number">22</span>:<span class="number">18</span>:<span class="number">48.694</span> [main] INFO cn.z201.java.test.jjwt.JwtExampleTest - Issuer: issuer</span><br><span class="line"><span class="number">22</span>:<span class="number">18</span>:<span class="number">48.696</span> [main] INFO cn.z201.java.test.jjwt.JwtExampleTest - Expiration: Sat Mar <span class="number">16</span> <span class="number">22</span>:<span class="number">18</span>:<span class="number">58</span> CST <span class="number">2019</span></span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/14/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-spring%E6%BA%90%E7%A0%81%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/03/14/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-spring%E6%BA%90%E7%A0%81%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" class="post-title-link" itemprop="url">源码分析-spring源码环境搭建</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-03-14 20:43:32" itemprop="dateCreated datePublished" datetime="2019-03-14T20:43:32+08:00">2019-03-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-03-16 21:07:49" itemprop="dateModified" datetime="2019-03-16T21:07:49+08:00">2019-03-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">源码分析</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="0x00-阅读源代码"><a href="#0x00-阅读源代码" class="headerlink" title="0x00 阅读源代码"></a>0x00 阅读源代码</h2><h3 id="下载源代码"><a href="#下载源代码" class="headerlink" title="下载源代码"></a>下载源代码</h3><ul>
+<li>代码仓库地址 <a href="https://gitee.com/Z201/spring-framework.git" target="_blank" rel="noopener">https://gitee.com/Z201/spring-framework.git</a></li>
+<li>阅读版本号 <code>v5.1.5.RELEASE</code></li>
+<li>下载版本<code>git clone -b v5.1.5.RELEASE https://github.com/spring-projects/spring-framework.git</code><ul>
+<li>由于github下载速度是在太慢了，这里用gitee克隆一个镜像。</li>
+<li>下载版本<code>git clone -b v5.1.5.RELEASE https://gitee.com/Z201/spring-framework.git</code></li>
+</ul>
+</li>
+<li>官方提供的文档<a href="https://github.com/spring-projects/spring-framework/blob/master/import-into-idea.md" target="_blank" rel="noopener"><strong>import-into-idea</strong></a></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">➜  spring-framework git:(master) ./gradlew :spring-oxm:compileTestJava</span><br><span class="line"></span><br><span class="line">Downloading https://services.gradle.org/distributions/gradle-4.10.3-bin.zip</span><br><span class="line">..........................................................................</span><br><span class="line"></span><br><span class="line">Welcome to Gradle 4.10.3!</span><br><span class="line"></span><br><span class="line">Here are the highlights of this release:</span><br><span class="line"> - Incremental Java compilation by default</span><br><span class="line"> - Periodic Gradle caches cleanup</span><br><span class="line"> - Gradle Kotlin DSL 1.0-RC6</span><br><span class="line"> - Nested included builds</span><br><span class="line"> - SNAPSHOT plugin versions <span class="keyword">in</span> the `plugins &#123;&#125;` block</span><br><span class="line"></span><br><span class="line">For more details see https://docs.gradle.org/4.10.3/release-notes.html</span><br><span class="line"></span><br><span class="line">Starting a Gradle Daemon (subsequent builds will be faster)</span><br><span class="line"></span><br><span class="line">&gt; Task :spring-beans:compileTestJava</span><br><span class="line">注: 某些输入文件使用或覆盖了已过时的 API。</span><br><span class="line">注: 有关详细信息, 请使用 -Xlint:deprecation 重新编译。</span><br><span class="line">注: 某些输入文件使用了未经检查或不安全的操作。</span><br><span class="line">注: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。</span><br><span class="line"></span><br><span class="line">&gt; Task :spring-context:compileTestJava</span><br><span class="line">注: 某些输入文件使用或覆盖了已过时的 API。</span><br><span class="line">注: 有关详细信息, 请使用 -Xlint:deprecation 重新编译。</span><br><span class="line">注: 某些输入文件使用了未经检查或不安全的操作。</span><br><span class="line">注: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。</span><br><span class="line"></span><br><span class="line">&gt; Task :spring-oxm:genJaxb</span><br><span class="line">[ant:javac] : warning: <span class="string">'includeantruntime'</span> was not <span class="built_in">set</span>, defaulting to build.sysclasspath=last; <span class="built_in">set</span> to <span class="literal">false</span> <span class="keyword">for</span> repeatable builds</span><br><span class="line"></span><br><span class="line">BUILD SUCCESSFUL <span class="keyword">in</span> 9m 18s</span><br><span class="line">58 actionable tasks: 58 executed</span><br><span class="line">➜  spring-framework git:(master)</span><br></pre></td></tr></table></figure>
+
+<p>如果显示BUILD SUCCESSFUL 说明构建成功了，但是由于项目太大了，所以下面就不介绍模块了。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/14/%E5%AE%9E%E8%B7%B5-Junit%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1072,201 +1238,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/02/26/%E5%AE%9E%E8%B7%B5-mybatis+h2%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/02/26/%E5%AE%9E%E8%B7%B5-mybatis+h2%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/" class="post-title-link" itemprop="url">实践-mybatis+h2单元测试</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-02-26 20:46:08" itemprop="dateCreated datePublished" datetime="2019-02-26T20:46:08+08:00">2019-02-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-04-10 23:44:02" itemprop="dateModified" datetime="2019-04-10T23:44:02+08:00">2019-04-10</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>接着上章内容<a href="https://z201.cn/2019/02/26/mybatis%E6%BA%90%E7%A0%81%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" target="_blank" rel="noopener">mybatis源码环境搭建</a>,根据官方文档，运行一个demo项目。</p>
-</blockquote>
-<h3 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h3><ul>
-<li>项目源代码:<a href="https://github.com/z201/z201.github.io.code/tree/master/mybatis-learning/mybatis-learning-01" target="_blank" rel="noopener">mybatis-learning-01</a></li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">mybatis-learning/mybatis-learning-01</span><br><span class="line">├── mybatis-learning-01.iml</span><br><span class="line">├── pom.xml  <span class="comment">#项目依赖管理 1</span></span><br><span class="line">└── src</span><br><span class="line">    ├── main</span><br><span class="line">    │   ├── java</span><br><span class="line">    │   │   ├── cn</span><br><span class="line">    │   │   │   └── z201</span><br><span class="line">    │   │   │       └── mybatis</span><br><span class="line">    │   │   │           └── learning</span><br><span class="line">    │   │   │               ├── SetUpSessionFactory.java <span class="comment"># mybatis 初始化  3</span></span><br><span class="line">    │   │   │               ├── User.java <span class="comment"># 实体 5</span></span><br><span class="line">    │   │   │               └── UserDao.java <span class="comment"># 实体dao 6</span></span><br><span class="line">    │   │   └── package-info.java</span><br><span class="line">    │   └── resources</span><br><span class="line">    │       ├── init_table.sql <span class="comment"># h2数据库初始化sql 4</span></span><br><span class="line">    │       ├── mybatis</span><br><span class="line">    │       │   └── UserDao.xml <span class="comment"># dao 对应的mapper 7</span></span><br><span class="line">    │       └── mybatis-config.xml <span class="comment"># mybatis 配置文件 2</span></span><br><span class="line">    └── <span class="built_in">test</span></span><br><span class="line">        └── java</span><br><span class="line">            └── cn</span><br><span class="line">                └── z201</span><br><span class="line">                    └── mybatis</span><br><span class="line">                        └── <span class="built_in">test</span></span><br><span class="line">                            ├── MybatisTest01.java <span class="comment"># 单元测试 8</span></span><br><span class="line">                            └── package-info.java</span><br><span class="line"></span><br><span class="line">15 directories, 11 files</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>根据上面注释的顺序，我们依次介绍项目代码。</p>
-</blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/02/26/%E5%AE%9E%E8%B7%B5-mybatis+h2%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/02/26/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-mybatis%E6%BA%90%E7%A0%81%E7%8E%AF%E8%8A%82%E6%90%AD%E5%BB%BA/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/02/26/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-mybatis%E6%BA%90%E7%A0%81%E7%8E%AF%E8%8A%82%E6%90%AD%E5%BB%BA/" class="post-title-link" itemprop="url">源码分析-mybatis源码环境搭建</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-02-26 14:17:54" itemprop="dateCreated datePublished" datetime="2019-02-26T14:17:54+08:00">2019-02-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-03-16 20:41:07" itemprop="dateModified" datetime="2019-03-16T20:41:07+08:00">2019-03-16</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">源码分析</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>mybatis学习笔记。</p>
-</blockquote>
-<h2 id="0x00-阅读源代码"><a href="#0x00-阅读源代码" class="headerlink" title="0x00 阅读源代码"></a>0x00 阅读源代码</h2><h3 id="下载源代码"><a href="#下载源代码" class="headerlink" title="下载源代码"></a>下载源代码</h3><ul>
-<li>代码仓库地址 <a href="https://github.com/mybatis/mybatis-3.git" target="_blank" rel="noopener">https://github.com/mybatis/mybatis-3.git</a></li>
-<li>阅读版本号 <code>myabtis-3.5.0</code></li>
-<li>下载版本<code>git clone -b mybatis-3.5.0 https://github.com/mybatis/mybatis-3.git</code><ul>
-<li>由于github下载速度是在太慢了，这里用gitee克隆一个镜像。</li>
-<li>下载版本<code>git clone -b mybatis-3.5.0 https://gitee.com/Z201/mybatis-3.git</code></li>
-</ul>
-</li>
-</ul>
-<h3 id="查看源代码结构"><a href="#查看源代码结构" class="headerlink" title="查看源代码结构"></a>查看源代码结构</h3><ul>
-<li>查看项目主要文件夹</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">tree -d L 2</span><br><span class="line">.</span><br><span class="line">├── src  </span><br><span class="line">│   ├── main <span class="comment"># 源代码</span></span><br><span class="line">│   ├── site <span class="comment"># 站点稳当</span></span><br><span class="line">│   └── <span class="built_in">test</span> <span class="comment"># 单元测试</span></span><br><span class="line">└── travis   <span class="comment"># 官方的ci集成</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>查看项目源码主目录</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">tree -d src/main -L 5</span><br><span class="line">src/main</span><br><span class="line">└── java</span><br><span class="line">    └── org</span><br><span class="line">        └── apache</span><br><span class="line">            └── ibatis</span><br><span class="line">                ├── annotations <span class="comment"># 注解</span></span><br><span class="line">                ├── binding     <span class="comment"># 代理</span></span><br><span class="line">                ├── builder     <span class="comment"># 构造</span></span><br><span class="line">                ├── cache       <span class="comment"># 缓存</span></span><br><span class="line">                ├── cursor      <span class="comment"># 返回值类型为游标的方法</span></span><br><span class="line">                ├── datasource  <span class="comment"># 数据源</span></span><br><span class="line">                ├── exceptions  <span class="comment"># 异常</span></span><br><span class="line">                ├── executor    <span class="comment"># 数据操作具体执行</span></span><br><span class="line">                ├── io          <span class="comment"># 文件流</span></span><br><span class="line">                ├── jdbc        <span class="comment"># jdbc模块</span></span><br><span class="line">                ├── lang        <span class="comment"># 工具</span></span><br><span class="line">                ├── logging     <span class="comment"># 日志</span></span><br><span class="line">                ├── mapping     <span class="comment"># 映射、参数、结果集。</span></span><br><span class="line">                ├── parsing     <span class="comment"># 解析器</span></span><br><span class="line">                ├── plugin      <span class="comment"># 插件</span></span><br><span class="line">                ├── reflection  <span class="comment"># 反射</span></span><br><span class="line">                ├── scripting   <span class="comment"># sql解析</span></span><br><span class="line">                ├── session     <span class="comment"># 接口层会话</span></span><br><span class="line">                ├── transaction <span class="comment"># 事物</span></span><br><span class="line">                └── <span class="built_in">type</span>        <span class="comment"># 类型</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>将项目导入idea中，就可以看到完整的源代码了。</li>
-</ul>
-<h2 id="0x01-根据官方文档快速入门"><a href="#0x01-根据官方文档快速入门" class="headerlink" title="0x01 根据官方文档快速入门"></a>0x01 根据官方文档快速入门</h2><blockquote>
-<p>强烈推荐认真阅读mybatis的官方文档。</p>
-</blockquote>
-<ul>
-<li>官方文档地址 ： <a href="http://www.mybatis.org/mybatis-3/zh/getting-started.html" target="_blank" rel="noopener">http://www.mybatis.org/mybatis-3/zh/getting-started.html</a></li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1337,7 +1308,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">96</span>
+          <span class="site-state-item-count">98</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1348,7 +1319,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">98</span>
+        <span class="site-state-item-count">99</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

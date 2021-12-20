@@ -239,6 +239,108 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/08/26/%E5%AE%9E%E8%B7%B5-nginx%E9%85%8D%E7%BD%AEhttps/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/08/26/%E5%AE%9E%E8%B7%B5-nginx%E9%85%8D%E7%BD%AEhttps/" class="post-title-link" itemprop="url">实践-nginx配置https</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-08-26 21:42:22" itemprop="dateCreated datePublished" datetime="2020-08-26T21:42:22+08:00">2020-08-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-23 15:32:24" itemprop="dateModified" datetime="2020-11-23T15:32:24+08:00">2020-11-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>最近在搭建测试环境，很久没接触nginx了。</p>
+</blockquote>
+<h3 id="阅读注意事项"><a href="#阅读注意事项" class="headerlink" title="阅读注意事项"></a>阅读注意事项</h3><ol>
+<li>需要一个域名，并且在国内备案过。</li>
+<li>需要一台服务器(阿里ESC)这种，分配的公网ip。</li>
+<li>申请或者购买一张证书。和域名做关联，域名解析到服务器的公网ip。注意开放服务区的80、443端口。<ol>
+<li>证书有两个文件<ol>
+<li><code>domian.name.key domain.name.pem</code></li>
+</ol>
+</li>
+<li>吧证书上传到目标nginx服务器中。</li>
+<li>检查服务器防火墙</li>
+</ol>
+</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo firewall-cmd --permanent --zone=public --add-service=http</span><br><span class="line">sudo firewall-cmd --permanent --zone=public --add-service=https</span><br><span class="line">sudo firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+
+<h3 id="开始步骤"><a href="#开始步骤" class="headerlink" title="开始步骤"></a>开始步骤</h3><h4 id="安装nginx"><a href="#安装nginx" class="headerlink" title="安装nginx"></a>安装nginx</h4><blockquote>
+<p>服务器使用的Centos服务器 使用yum安装nginx。</p>
+</blockquote>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">-&gt; yum install -y nginx</span><br><span class="line"><span class="comment">#检查nginx安装位置信息</span></span><br><span class="line">-&gt; whereis nginx</span><br><span class="line">nginx: /usr/sbin/nginx /usr/lib64/nginx /etc/nginx /usr/share/nginx /usr/share/man/man3/nginx.3pm.gz /usr/share/man/man8/nginx.8.gz</span><br><span class="line"><span class="comment"># 实际上是安装到/etc/nginx里面了</span></span><br><span class="line"><span class="comment"># 设置开机自动启动nginx</span></span><br><span class="line">-&gt; sudo systemctl <span class="built_in">enable</span> nginx</span><br><span class="line">Created symlink from /etc/systemd/system/multi-user.target.wants/nginx.service to /usr/lib/systemd/system/nginx.service.</span><br><span class="line"><span class="comment"># 切换到nginx安装目录</span></span><br><span class="line">-&gt; <span class="built_in">cd</span> /etc/nginx</span><br><span class="line"><span class="comment"># 启动nginx</span></span><br><span class="line">-&gt; nginx</span><br><span class="line"><span class="comment"># 测试nginx 在浏览器里面请求http://ip 就可以了看到nginx页面就算安装成功</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="配置证书"><a href="#配置证书" class="headerlink" title="配置证书"></a>配置证书</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建证书文件并且将证书复制近文件中</span></span><br><span class="line">-&gt; <span class="built_in">cd</span> /etc/nginx</span><br><span class="line">-&gt; mkdir cert</span><br><span class="line">-&gt; mv domian.name.key /etc/nginx/cert/</span><br><span class="line">-&gt; mv domian.name.pem /etc/nginx/cert/</span><br><span class="line"><span class="comment"># 配置nginx.conf文件使证书生效，并将80端口转发到443端口上。</span></span><br><span class="line">-&gt; vim nginx.conf</span><br><span class="line"><span class="comment">#以下属性中以ssl开头的属性代表与证书配置有关，其他属性请根据自己的需要进行配置。</span></span><br><span class="line">server &#123;</span><br><span class="line">         listen 443; <span class="comment">#配置HTTPS的默认访问端口号为443。此处如果未配置HTTPS的默认访问端口，可能会造成Nginx无法启动。Nginx 1.15.0以上版本请使用listen 443 ssl代替listen 443和ssl on。</span></span><br><span class="line">         server_name www.certificatestests.com; <span class="comment">#将www.certificatestests.com修改为您证书绑定的域名，例如：www.example.com。如果您购买的是通配符域名证书，要修改为通配符域名，例如：*.aliyun.com。</span></span><br><span class="line">         root html;</span><br><span class="line">         index index.html index.htm;</span><br><span class="line">         ssl_certificate cert/domain name.pem;  <span class="comment">#将domain name.pem替换成您证书的文件名称。</span></span><br><span class="line">         ssl_certificate_key cert/domain name.key; <span class="comment">#将domain name.key替换成您证书的密钥文件名称。</span></span><br><span class="line">         ssl_session_timeout 5m;</span><br><span class="line">         ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4; <span class="comment">#使用此加密套件。</span></span><br><span class="line">         ssl_protocols TLSv1 TLSv1.1 TLSv1.2; <span class="comment">#使用该协议进行配置。</span></span><br><span class="line">         ssl_prefer_server_ciphers on;</span><br><span class="line">         location / &#123;</span><br><span class="line">         root html;  <span class="comment">#站点目录。</span></span><br><span class="line">         index index.html index.htm;</span><br><span class="line">                    &#125;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line"><span class="comment">#        listen       80 default_server;</span></span><br><span class="line"><span class="comment">#        listen       [::]:80 default_server;</span></span><br><span class="line"><span class="comment">#        server_name  _;</span></span><br><span class="line">        listen 80;</span><br><span class="line">        listen [::]:80;</span><br><span class="line">        server_name www.certificatestests.com;</span><br><span class="line">        <span class="built_in">return</span> 301 https://<span class="variable">$host</span><span class="variable">$request_uri</span>;</span><br><span class="line">       &#125;</span><br><span class="line"><span class="comment"># 保存并推出、检查配置nginx配置文件是否合法、并重启nginx</span></span><br><span class="line">-&gt; nginx -t</span><br><span class="line">nginx: the configuration file /etc/nginx/nginx.conf syntax is ok</span><br><span class="line">nginx: configuration file /etc/nginx/nginx.conf <span class="built_in">test</span> is successful</span><br><span class="line">-&gt; nginx -s reload</span><br></pre></td></tr></table></figure>
+
+<h4 id="测试域名证书是否生效"><a href="#测试域名证书是否生效" class="headerlink" title="测试域名证书是否生效"></a>测试域名证书是否生效</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">https:&#x2F;&#x2F;domian</span><br><span class="line">http:&#x2F;&#x2F;domian 检查是否安全链接即可。一般浏览器上面会出现一个安全的标志</span><br></pre></td></tr></table></figure>
+
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p><a href="https://help.aliyun.com/document_detail/98728.html?spm=5176.2020520163.0.dexternal.3e4756a7jNJMZQ" target="_blank" rel="noopener">阿里云帮助文档-在Nginx上配置证书</a></p>
+<p><a href="https://segmentfault.com/a/1190000018109309" target="_blank" rel="noopener">CentOS 7 上安装最新版 Nginx</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/07/23/%E5%AE%9E%E8%B7%B5-spring-boot%E6%9B%BF%E6%8D%A2%E5%86%85%E7%BD%AEtomcat%E7%89%88%E6%9C%AC/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -912,6 +1014,114 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2020/02/20/Git%E5%90%88%E5%B9%B6%E5%A4%9A%E6%9D%A1commit/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/02/20/Git%E5%90%88%E5%B9%B6%E5%A4%9A%E6%9D%A1commit/" class="post-title-link" itemprop="url">Git合并多条commit</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-02-20 21:59:19" itemprop="dateCreated datePublished" datetime="2020-02-20T21:59:19+08:00">2020-02-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-12-20 22:25:59" itemprop="dateModified" datetime="2021-12-20T22:25:59+08:00">2021-12-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Git/" itemprop="url" rel="index"><span itemprop="name">Git</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>工作中可能出现一个bug修复多次调教或者开发过程中需要临时保存代码到分支上的操作。但是合并主分支的时候不希望把过多的提交记录信息展示出来。这里就需要用到git rebase 命名。</p>
+</blockquote>
+<h2 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h2><blockquote>
+<p>使用git rebase 合并多条commit</p>
+</blockquote>
+<ol>
+<li>查看git log 选择要合并的记录</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">log</span> --oneline</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211220220324.png"></p>
+<p>2.选中一个commit id作为合并到对象，从上至下按照最新提交的记录排序。这里可以选中第三条记录。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git rebase -i 7893ade</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211220220518.png"></p>
+<ul>
+<li>这里会显示可以合并的记录还有git的命令帮助信息</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 命令:</span></span><br><span class="line"><span class="comment"># p, pick &lt;提交&gt; = 使用提交</span></span><br><span class="line"><span class="comment"># r, reword &lt;提交&gt; = 使用提交，但修改提交说明</span></span><br><span class="line"><span class="comment"># e, edit &lt;提交&gt; = 使用提交，进入 shell 以便进行提交修补</span></span><br><span class="line"><span class="comment"># s, squash &lt;提交&gt; = 使用提交，但融合到前一个提交</span></span><br><span class="line"><span class="comment"># f, fixup &lt;提交&gt; = 类似于 "squash"，但丢弃提交说明日志</span></span><br><span class="line"><span class="comment"># x, exec &lt;命令&gt; = 使用 shell 运行命令（此行剩余部分）</span></span><br><span class="line"><span class="comment"># b, break = 在此处停止（使用 'git rebase --continue' 继续变基）</span></span><br><span class="line"><span class="comment"># d, drop &lt;提交&gt; = 删除提交</span></span><br><span class="line"><span class="comment"># l, label &lt;label&gt; = 为当前 HEAD 打上标记</span></span><br><span class="line"><span class="comment"># t, reset &lt;label&gt; = 重置 HEAD 到该标记</span></span><br><span class="line"><span class="comment"># m, merge [-C &lt;commit&gt; | -c &lt;commit&gt;] &lt;label&gt; [# &lt;oneline&gt;]</span></span><br><span class="line"><span class="comment"># .       创建一个合并提交，并使用原始的合并提交说明（如果没有指定</span></span><br><span class="line"><span class="comment"># .       原始提交，使用注释部分的 oneline 作为提交说明）。使用</span></span><br><span class="line"><span class="comment"># .       -c &lt;提交&gt; 可以编辑提交说明。</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># 可以对这些行重新排序，将从上至下执行。</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># 如果您在这里删除一行，对应的提交将会丢失。</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># 然而，如果您删除全部内容，变基操作将会终止。</span></span><br><span class="line"><span class="comment">#</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>这里将要合并的commit 前缀pick 改成 s 或者 squash 就可以开始合并了。这里使用vim <code>:wq</code>保存</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pick a755a10 完善单元测试</span><br><span class="line">s d3f1272 完善代码</span><br><span class="line">s 547947e</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>正常情况下，不回创建临时空间。直接将代码推送到需要存储分支就可以了。这里不直接推送主分支，建议合并过去。</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push -f origin branch</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>不正常的情况，一般是合并冲突，只需要将合并解决掉， 在将合并的文件添加暂存区，在使用git rebase –continue。或者直接放弃git rebase –abort 或者直接切换到其他分支，然后删除刚才操作的文件退回<code>rm -rf .git/rebase-merge</code></li>
+<li>检查<code>git log --oneline</code></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/12/15/Redis-cli%E4%BD%BF%E7%94%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1206,215 +1416,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/05/08/Idea%E4%BD%BF%E7%94%A8%E7%9B%B8%E5%85%B3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/05/08/Idea%E4%BD%BF%E7%94%A8%E7%9B%B8%E5%85%B3/" class="post-title-link" itemprop="url">Idea常用插件</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-05-08 16:35:04" itemprop="dateCreated datePublished" datetime="2019-05-08T16:35:04+08:00">2019-05-08</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-27 22:17:32" itemprop="dateModified" datetime="2021-09-27T22:17:32+08:00">2021-09-27</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>有必要记录下自己常用的插件，避免特殊事件的发生。</p>
-</blockquote>
-<h4 id="Free-Mybatis-plugin"><a href="#Free-Mybatis-plugin" class="headerlink" title="Free Mybatis plugin"></a>Free Mybatis plugin</h4><blockquote>
-<p>Mybatis 插件，可以定位java和xml关系。通过java接口快速生成相关xml文件或者方法。</p>
-</blockquote>
-<h4 id="Mybaits-Log-plugin"><a href="#Mybaits-Log-plugin" class="headerlink" title="Mybaits Log plugin"></a>Mybaits Log plugin</h4><blockquote>
-<p>使用插件将mybaits默认的日志输出转换成可以运行的sql日志。</p>
-</blockquote>
-<h4 id="Alibaba-java-coding-guidelines"><a href="#Alibaba-java-coding-guidelines" class="headerlink" title="Alibaba-java-coding-guidelines"></a>Alibaba-java-coding-guidelines</h4><blockquote>
-<p>阿里巴巴java代码检查工具</p>
-</blockquote>
-<h4 id="json2pojo"><a href="#json2pojo" class="headerlink" title="json2pojo"></a>json2pojo</h4><blockquote>
-<p>json转bean的工具</p>
-</blockquote>
-<h4 id="查看某个方法被调用的地方。-鼠标选中方法名称"><a href="#查看某个方法被调用的地方。-鼠标选中方法名称" class="headerlink" title="查看某个方法被调用的地方。(鼠标选中方法名称)"></a>查看某个方法被调用的地方。(鼠标选中方法名称)</h4><p><code>Navigate | Call Hierarchy </code> 快捷键<code>control + option + h</code></p>
-<h4 id="Genterate-代码生成"><a href="#Genterate-代码生成" class="headerlink" title="Genterate 代码生成"></a>Genterate 代码生成</h4><p><code>Code | Genterate</code> #快捷键 <code>command + n</code></p>
-<h4 id="Copyright-模版"><a href="#Copyright-模版" class="headerlink" title="Copyright 模版"></a>Copyright 模版</h4><p><code>Edit | Copyright | Copyright profiles </code></p>
-<ul>
-<li>样板</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Copyright (c) $today.year  </span><br><span class="line">@Author:z201.coding@gamil.com</span><br><span class="line">@LastModified:$today.format(&quot;yyyy-MM-dd&quot;)</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/05/08/Idea%E4%BD%BF%E7%94%A8%E7%9B%B8%E5%85%B3/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/04/21/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-skywalking%E6%BA%90%E7%A0%81%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/04/21/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-skywalking%E6%BA%90%E7%A0%81%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" class="post-title-link" itemprop="url">源码分析-skywalking源码环境搭建</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-04-21 18:40:55" itemprop="dateCreated datePublished" datetime="2019-04-21T18:40:55+08:00">2019-04-21</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-04-23 00:03:29" itemprop="dateModified" datetime="2019-04-23T00:03:29+08:00">2019-04-23</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">源码分析</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="0x00-阅读源代码"><a href="#0x00-阅读源代码" class="headerlink" title="0x00 阅读源代码"></a>0x00 阅读源代码</h2><blockquote>
-<p>长达9天的断网终于结束了。</p>
-</blockquote>
-<h3 id="下载源代码"><a href="#下载源代码" class="headerlink" title="下载源代码"></a>下载源代码</h3><ul>
-<li>代码仓库地址 <a href="https://gitee.com/Z201/skywalking.git" target="_blank" rel="noopener">https://gitee.com/Z201/skywalking.git</a></li>
-<li>阅读版本号 <code>v6.0.0-GA</code></li>
-<li>下载版本<code>git clone -b v6.0.0-GA https://github.com/apache/skywalking.git</code><ul>
-<li>由于github下载速度是在太慢了，这里用gitee克隆一个镜像。</li>
-<li>下载版本<code>git clone -b v6.0.0-GA https://gitee.com/Z201/skywalking.git</code></li>
-</ul>
-</li>
-</ul>
-<h3 id="查看源代码结构"><a href="#查看源代码结构" class="headerlink" title="查看源代码结构"></a>查看源代码结构</h3><blockquote>
-<p>源码设计子项目过多，这里简单暂时2级目录。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">tree -d L 2</span><br><span class="line">.</span><br><span class="line">├── src  </span><br><span class="line">│   ├── main # 源代码</span><br><span class="line">│   ├── site # 站点稳当</span><br><span class="line">│   └── test # 单元测试</span><br><span class="line">└── travis   # 官方的ci集成</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>查看项目源码主目录</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">➜  skywalking git:(8b638258b) tree -d -L 1</span><br><span class="line">.</span><br><span class="line">├── apm-application-toolkit</span><br><span class="line">├── apm-checkstyle</span><br><span class="line">├── apm-commons</span><br><span class="line">├── apm-dist</span><br><span class="line">├── apm-protocol <span class="comment"># pd文件</span></span><br><span class="line">├── apm-sniffer <span class="comment"># 插件</span></span><br><span class="line">├── apm-webapp  </span><br><span class="line">├── docker</span><br><span class="line">├── docs</span><br><span class="line">├── licenses</span><br><span class="line">├── oap-server <span class="comment"># 这里和5.x 有很大的不同改动了很多东西。</span></span><br><span class="line">├── skywalking-ui </span><br><span class="line">└── tools</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>将项目导入idea中。</li>
-</ul>
-<p>官方文档:<a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/How-to-build.md" target="_blank" rel="noopener">如何构建</a></p>
-<p><code>git submodule init</code></p>
-<p><code>git submodule update</code></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">➜  skywalking git:(8b638258b) git submodule init</span><br><span class="line">Submodule <span class="string">'apm-protocol/apm-network/src/main/proto'</span> (https://github.com/apache/incubator-skywalking-data-collect-protocol.git) registered <span class="keyword">for</span> path <span class="string">'apm-protocol/apm-network/src/main/proto'</span></span><br><span class="line">Submodule <span class="string">'oap-server/server-query-plugin/query-graphql-plugin/src/main/resources/query-protocol'</span> (https://github.com/apache/incubator-skywalking-query-protocol.git) registered <span class="keyword">for</span> path <span class="string">'oap-server/server-query-plugin/query-graphql-plugin/src/main/resources/query-protocol'</span></span><br><span class="line">Submodule <span class="string">'skywalking-ui'</span> (https://github.com/apache/incubator-skywalking-ui) registered <span class="keyword">for</span> path <span class="string">'skywalking-ui'</span></span><br><span class="line">➜  skywalking git:(8b638258b) git submodule update</span><br><span class="line">Cloning into <span class="string">'/Users/zengqingfeng/word/source-code/skywalking/apm-protocol/apm-network/src/main/proto'</span>...</span><br><span class="line">Cloning into <span class="string">'/Users/zengqingfeng/word/source-code/skywalking/oap-server/server-query-plugin/query-graphql-plugin/src/main/resources/query-protocol'</span>...</span><br><span class="line">Cloning into <span class="string">'/Users/zengqingfeng/word/source-code/skywalking/skywalking-ui'</span>...</span><br><span class="line">Submodule path <span class="string">'apm-protocol/apm-network/src/main/proto'</span>: checked out <span class="string">'b66fa070fd647662f06497e4ed3657eb258cb6e9'</span></span><br><span class="line">Submodule path <span class="string">'oap-server/server-query-plugin/query-graphql-plugin/src/main/resources/query-protocol'</span>: checked out <span class="string">'c65a23bd6b9bba8d1df30d4de261624952df2b7b'</span></span><br><span class="line">Submodule path <span class="string">'skywalking-ui'</span>: checked out <span class="string">'c44642f73b9f73a54b0d716cade5094304e1a67b'</span></span><br></pre></td></tr></table></figure>
-
-<p><code>clean package -DskipTests</code></p>
-<blockquote>
-<p>这个时候慢慢等吧v6.0.0-GA有120个子项目。更新完之后导入IDEA就好了。</p>
-</blockquote>
-<h3 id="END"><a href="#END" class="headerlink" title="END"></a>END</h3>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1485,7 +1486,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">96</span>
+          <span class="site-state-item-count">98</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1496,7 +1497,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">98</span>
+        <span class="site-state-item-count">99</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

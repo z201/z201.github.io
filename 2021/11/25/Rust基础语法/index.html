@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"z201.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Rust基础语法 Rust 是一种静态类型的语言。 Rust 中的每个值都是某种数据类型。 编译器可以根据分配给它的值自动推断变量的数据类型。  let 使用let关键字声明变量  12345678910111213fn main() &amp;#123;    println!(&quot;Rust基础语法!&quot;);    let str_ &#x3D; &quot;String&quot;;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Rust基础语法">
+<meta property="og:url" content="https://z201.github.io/2021/11/25/Rust%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/index.html">
+<meta property="og:site_name" content="枫叶的小博客">
+<meta property="og:description" content="Rust基础语法 Rust 是一种静态类型的语言。 Rust 中的每个值都是某种数据类型。 编译器可以根据分配给它的值自动推断变量的数据类型。  let 使用let关键字声明变量  12345678910111213fn main() &amp;#123;    println!(&quot;Rust基础语法!&quot;);    let str_ &#x3D; &quot;String&quot;;">
+<meta property="article:published_time" content="2021-11-25T14:49:11.000Z">
+<meta property="article:modified_time" content="2021-12-20T15:43:47.748Z">
+<meta property="article:author" content="胖枫叶">
+<meta property="article:tag" content="Rust">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://z201.github.io/2021/11/25/Rust%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>Rust基础语法 | 枫叶的小博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="枫叶的小博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">枫叶的小博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">先完成、在完美。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-存档">
+
+    <a href="/archives" rel="section"><i class="archive fa-fw"></i>存档</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories" rel="section"><i class="th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags" rel="section"><i class="tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-实践">
+
+    <a href="/categories/%E5%AE%9E%E8%B7%B5" rel="section"><i class="graduation-cap fa-fw"></i>实践</a>
+
+  </li>
+        <li class="menu-item menu-item-查缺补漏">
+
+    <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" rel="section"><i class="graduation-cap fa-fw"></i>查缺补漏</a>
+
+  </li>
+        <li class="menu-item menu-item-面试">
+
+    <a href="/categories/%E9%9D%A2%E8%AF%95/" rel="section"><i class="graduation-cap fa-fw"></i>面试</a>
+
+  </li>
+        <li class="menu-item menu-item-微服务">
+
+    <a href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1" rel="section"><i class="graduation-cap fa-fw"></i>微服务</a>
+
+  </li>
+        <li class="menu-item menu-item-jvm">
+
+    <a href="/tags/Jvm/" rel="section"><i class="graduation-cap fa-fw"></i>Jvm</a>
+
+  </li>
+        <li class="menu-item menu-item-java">
+
+    <a href="/tags/Java/" rel="section"><i class="graduation-cap fa-fw"></i>Java</a>
+
+  </li>
+        <li class="menu-item menu-item-spring">
+
+    <a href="/tags/Spring" rel="section"><i class="graduation-cap fa-fw"></i>Spring</a>
+
+  </li>
+        <li class="menu-item menu-item-netty">
+
+    <a href="/tags/Netty" rel="section"><i class="graduation-cap fa-fw"></i>Netty</a>
+
+  </li>
+        <li class="menu-item menu-item-git">
+
+    <a href="/tags/Git" rel="section"><i class="graduation-cap fa-fw"></i>Git</a>
+
+  </li>
+        <li class="menu-item menu-item-linux">
+
+    <a href="/tags/Linux" rel="section"><i class="graduation-cap fa-fw"></i>Linux</a>
+
+  </li>
+        <li class="menu-item menu-item-docker">
+
+    <a href="/tags/Docker" rel="section"><i class="graduation-cap fa-fw"></i>Docker</a>
+
+  </li>
+        <li class="menu-item menu-item-redis">
+
+    <a href="/tags/Redis" rel="section"><i class="graduation-cap fa-fw"></i>Redis</a>
+
+  </li>
+        <li class="menu-item menu-item-mysql">
+
+    <a href="/tags/Mysql/" rel="section"><i class="graduation-cap fa-fw"></i>Mysql</a>
+
+  </li>
+        <li class="menu-item menu-item-mybatis">
+
+    <a href="/tags/Mybatis" rel="section"><i class="graduation-cap fa-fw"></i>Mybatis</a>
+
+  </li>
+        <li class="menu-item menu-item-vue">
+
+    <a href="/tags/Vue" rel="section"><i class="graduation-cap fa-fw"></i>Vue</a>
+
+  </li>
+        <li class="menu-item menu-item-公益404">
+
+    <a href="/404.html" rel="section"><i class="heartbeat fa-fw"></i>公益404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2021/11/25/Rust%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Rust基础语法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-11-25 22:49:11" itemprop="dateCreated datePublished" datetime="2021-11-25T22:49:11+08:00">2021-11-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-12-20 23:43:47" itemprop="dateModified" datetime="2021-12-20T23:43:47+08:00">2021-12-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Rust/" itemprop="url" rel="index"><span itemprop="name">Rust</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Rust基础语法"><a href="#Rust基础语法" class="headerlink" title="Rust基础语法"></a>Rust基础语法</h2><blockquote>
+<p>Rust 是一种静态类型的语言。 Rust 中的每个值都是某种数据类型。 编译器可以根据分配给它的值自动推断变量的数据类型。</p>
+</blockquote>
+<h3 id="let"><a href="#let" class="headerlink" title="let"></a>let</h3><blockquote>
+<p>使用let关键字声明变量</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">fn main() &#123;</span><br><span class="line">    println!(&quot;Rust基础语法!&quot;);</span><br><span class="line">    let str_ &#x3D; &quot;String&quot;; &#x2F;&#x2F; string 类型</span><br><span class="line">    let f_ &#x3D; 1.1; &#x2F;&#x2F; float 类型</span><br><span class="line">    let bool_ &#x3D; true; &#x2F;&#x2F; boolean 类型</span><br><span class="line">    let char_ &#x3D; &#39;a&#39;; &#x2F;&#x2F; unicode character </span><br><span class="line">    println!(&quot;string &#123;&#125;&quot;,str_); </span><br><span class="line">    println!(&quot;float &#123;&#125;&quot;,f_); </span><br><span class="line">    println!(&quot;boolean &#123;&#125;&quot;,bool_); </span><br><span class="line">    println!(&quot;icon &#123;&#125;&quot;,char_); </span><br><span class="line">	  </span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Console</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Rust基础语法!</span><br><span class="line">string String</span><br><span class="line"><span class="built_in">float</span> 1.1</span><br><span class="line">boolean <span class="literal">true</span></span><br><span class="line">icon a</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<h3 id="println"><a href="#println" class="headerlink" title="println!"></a>println!</h3><blockquote>
+<p>打印控制台方法</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">#[macro_export]</span><br><span class="line">#[stable(feature &#x3D; &quot;rust1&quot;, since &#x3D; &quot;1.0.0&quot;)]</span><br><span class="line">#[allow_internal_unstable(print_internals, format_args_nl)]</span><br><span class="line">macro_rules! println &#123;</span><br><span class="line">    () &#x3D;&gt; ($crate::print!(&quot;\n&quot;));</span><br><span class="line">    ($($arg:tt)*) &#x3D;&gt; (&#123;</span><br><span class="line">        $crate::io::_print($crate::format_args_nl!($($arg)*));</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>一个参数是占位符 *{ }*，特别的语法</li>
+<li>一个参数是变量或者常量</li>
+</ul>
+<h3 id="scalar-Types"><a href="#scalar-Types" class="headerlink" title="scalar Types"></a>scalar Types</h3><blockquote>
+<p>Rust有四种标量类型 整型、浮点型、布尔型、字符型</p>
+</blockquote>
+<h4 id="整型"><a href="#整型" class="headerlink" title="整型"></a>整型</h4><blockquote>
+<p>整型是指没有小数部分的数字。也就是说，整型是用于表示整数的。整型可以进一步分为有符号（Signed）与无符号（Unsigned）的。可以存储正负值。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>大小</th>
+<th>有符号Signed</th>
+<th>无符号Unsigned</th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td>8bit</td>
+<td>i8</td>
+<td>u8</td>
+</tr>
+<tr>
+<td></td>
+<td>16bit</td>
+<td>i16</td>
+<td>u16</td>
+</tr>
+<tr>
+<td></td>
+<td>32bit</td>
+<td>i32</td>
+<td>u32</td>
+</tr>
+<tr>
+<td></td>
+<td>64bit</td>
+<td>i64</td>
+<td>u64</td>
+</tr>
+<tr>
+<td></td>
+<td>128bit</td>
+<td>i128</td>
+<td>u128</td>
+</tr>
+<tr>
+<td></td>
+<td>arch</td>
+<td>issize</td>
+<td>Size</td>
+</tr>
+</tbody></table>
+<h5 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">let result &#x3D; 1;    &#x2F;&#x2F; 默认类型为i32</span><br><span class="line">let u20:u32 &#x3D; 20;</span><br><span class="line">let i32:i32 &#x3D; -15;</span><br><span class="line">let s:isize &#x3D; 10;</span><br><span class="line">let count:usize &#x3D; 30;</span><br><span class="line">println!(&quot;result value is &#123;&#125;&quot;,result);</span><br><span class="line">println!(&quot;u20 is &#123;&#125; i32 is &#123;&#125;&quot;,u20,i32);</span><br><span class="line">println!(&quot;mark is &#123;&#125; and count is &#123;&#125;&quot;,s,count);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Console</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">result value is 1</span><br><span class="line">u20 is 20 i32 is -15</span><br><span class="line">mark is 10 and count is 30</span><br></pre></td></tr></table></figure>
+
+<h4 id="整型溢出"><a href="#整型溢出" class="headerlink" title="整型溢出"></a>整型溢出</h4><blockquote>
+<p>当分配给整型变量的值超出该整型在 Rust 中定义值的范围时，就会发生整型溢出</p>
+</blockquote>
+<h5 id="案例-1"><a href="#案例-1" class="headerlink" title="案例"></a>案例</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">let u1:u8 &#x3D; 255;</span><br><span class="line">&#x2F;&#x2F; u8数据范围为0~255</span><br><span class="line">let u2:u8 &#x3D; 256;   &#x2F;&#x2F;溢出值为 1</span><br><span class="line">let u3:u8 &#x3D; 257;   &#x2F;&#x2F;溢出值为 2</span><br><span class="line">let u4:u8 &#x3D; 258;    &#x2F;&#x2F;溢出值为 3</span><br><span class="line"></span><br><span class="line">println!(&quot;1 is &#123;&#125; &quot;,u1);</span><br><span class="line">println!(&quot;2 is &#123;&#125;&quot;,u2);</span><br><span class="line">println!(&quot;3 is &#123;&#125;&quot;,u3);</span><br><span class="line">println!(&quot;4 is &#123;&#125;&quot;,u4);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Console</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">error: literal out of range <span class="keyword">for</span> `u8`</span><br><span class="line">  --&gt; src/main.rs:24:16</span><br><span class="line">   |</span><br><span class="line">24 |    <span class="built_in">let</span> u2:u8 = 256;   //溢出值为 1</span><br><span class="line">   |                ^^^</span><br><span class="line">   |</span><br><span class="line">   = note: `<span class="comment">#[deny(overflowing_literals)]` on by default</span></span><br><span class="line">   = note: the literal `256` does not fit into the <span class="built_in">type</span> `u8` whose range is `0..=255`</span><br><span class="line"></span><br><span class="line">error: literal out of range <span class="keyword">for</span> `u8`</span><br><span class="line">  --&gt; src/main.rs:25:16</span><br><span class="line">   |</span><br><span class="line">25 |    <span class="built_in">let</span> u3:u8 = 257;   //溢出值为 2</span><br><span class="line">   |                ^^^</span><br><span class="line">   |</span><br><span class="line">   = note: the literal `257` does not fit into the <span class="built_in">type</span> `u8` whose range is `0..=255`</span><br><span class="line"></span><br><span class="line">error: literal out of range <span class="keyword">for</span> `u8`</span><br><span class="line">  --&gt; src/main.rs:26:16</span><br><span class="line">   |</span><br><span class="line">26 |    <span class="built_in">let</span> u4:u8 = 258;    //溢出值为 3</span><br><span class="line">   |                ^^^</span><br><span class="line">   |</span><br><span class="line">   = note: the literal `258` does not fit into the <span class="built_in">type</span> `u8` whose range is `0..=255`</span><br><span class="line"></span><br><span class="line">error: could not compile `learning-02` due to 3 previous errors</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Rust的提示非常棒</li>
+</ul>
+<h4 id="浮点型"><a href="#浮点型" class="headerlink" title="浮点型"></a>浮点型</h4><blockquote>
+<p>Rust 中的浮点型可被分为 <strong>f32</strong> 和 <strong>f64</strong>。f32 是单精度浮点型，f64 是双精度浮点型。默认浮点型为 f64。</p>
+</blockquote>
+<h5 id="案例-2"><a href="#案例-2" class="headerlink" title="案例"></a>案例</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">let f1 &#x3D; 10.00;        &#x2F;&#x2F;默认为 f64 浮点型</span><br><span class="line">let f2:f32 &#x3D; 8.35;</span><br><span class="line">let f3:f64 &#x3D; 15000.600;  &#x2F;&#x2F;双精度浮点型</span><br><span class="line"></span><br><span class="line">println!(&quot;f1 value is &#123;&#125;&quot;,f1);</span><br><span class="line">println!(&quot;f2 is &#123;&#125;&quot;,f2);</span><br><span class="line">println!(&quot;f3 is &#123;&#125;&quot;,f3);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Console</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">f1 value is 10</span><br><span class="line">f2 is 8.35</span><br><span class="line">f3 is 15000.6</span><br></pre></td></tr></table></figure>
+
+<h4 id="自动类型转换"><a href="#自动类型转换" class="headerlink" title="自动类型转换"></a>自动类型转换</h4><blockquote>
+<p>Rust 中不支持自动类型转换</p>
+</blockquote>
+<h5 id="案例-3"><a href="#案例-3" class="headerlink" title="案例"></a>案例</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">let interest:f32 &#x3D; 8;   &#x2F;&#x2F; 浮点型变量被赋予整型值</span><br><span class="line">println!(&quot;interest is &#123;&#125;&quot;,interest);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Console</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">error[E0308]: mismatched types</span><br><span class="line">  --&gt; src&#x2F;main.rs:41:23</span><br><span class="line">   |</span><br><span class="line">41 |    let interest:f32 &#x3D; 8;   &#x2F;&#x2F; 浮点型变量被赋予整型值</span><br><span class="line">   |                 ---   ^</span><br><span class="line">   |                 |     |</span><br><span class="line">   |                 |     expected &#96;f32&#96;, found integer</span><br><span class="line">   |                 |     help: use a float literal: &#96;8.0&#96;</span><br><span class="line">   |                 expected due to this</span><br></pre></td></tr></table></figure>
+
+<h4 id="布尔值"><a href="#布尔值" class="headerlink" title="布尔值"></a>布尔值</h4><blockquote>
+<p>布尔型有两种可能的值 ——<em>true</em> 或是 <em>false</em>。使用 <strong>bool</strong> 关键字可以声明布尔型变量。</p>
+</blockquote>
+<h5 id="案例-4"><a href="#案例-4" class="headerlink" title="案例"></a>案例</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">let b:bool &#x3D; true;</span><br><span class="line">println!(&quot;boolean &#123;&#125;&quot;,b);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Console</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">boolean true</span><br></pre></td></tr></table></figure>
+
+<h4 id="字符型"><a href="#字符型" class="headerlink" title="字符型"></a>字符型</h4><blockquote>
+<p>Rust 中的字符型支持数字，字母，Unicode 和特殊字符。使用 char 关键字可以声明字符型变量。Rust 中的字符型用 Unicode 标量值储存，即 Rust 中的字符型可以表示比 ASCII 更多的字符。Unicode 标量值的范围包括从 U+0000 到 U+D7FF 和从 U+E000 到 U+10FFFF。</p>
+</blockquote>
+<h5 id="案例-5"><a href="#案例-5" class="headerlink" title="案例"></a>案例</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">let def_c &#x3D; &#39;@&#39;; &#x2F;&#x2F;默认为字符型</span><br><span class="line">let c:char &#x3D; &#39;Z&#39;;</span><br><span class="line">let emoji:char &#x3D; &#39;😁&#39;;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Console</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">character is @</span><br><span class="line">alphabet is Z</span><br><span class="line">emoji is 😁</span><br></pre></td></tr></table></figure>
+
+<h5 id="类型转字符串"><a href="#类型转字符串" class="headerlink" title="类型转字符串"></a>类型转字符串</h5><blockquote>
+<p>to_String()</p>
+</blockquote>
+<h6 id="案例-6"><a href="#案例-6" class="headerlink" title="案例"></a>案例</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">let x: u32 &#x3D; 10;</span><br><span class="line">  let s: String &#x3D; x.to_string();</span><br><span class="line">  println!(&quot;&#123;&#125;&quot;, s);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Console</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">10</span><br></pre></td></tr></table></figure>
+
+<h4 id="let变量"><a href="#let变量" class="headerlink" title="let变量"></a>let变量</h4><blockquote>
+<p>变量是程序可以操纵的命名存储</p>
+</blockquote>
+<ul>
+<li><p>必须以字母或下划线开头。</p>
+</li>
+<li><p>变量的名称可以由字母，数字和下划线字符组成。</p>
+</li>
+<li><p>Rust区分大小写</p>
+</li>
+<li><p>不可变性</p>
+<ul>
+<li>变量默认是不可变的，只读的。也就是说，变量的值在初始化后不可再被改变。比如</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">let var &#x3D; 25_000;</span><br><span class="line"> println!(&quot;var is &#123;&#125; &quot;,var);</span><br><span class="line"> var &#x3D; 35_000;</span><br><span class="line"> println!(&quot;var changed is &#123;&#125;&quot;,var);</span><br></pre></td></tr></table></figure>
+
+<p>Console</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">  --&gt; src&#x2F;main.rs:57:5</span><br><span class="line">   |</span><br><span class="line">55 |     let var &#x3D; 25_000;</span><br><span class="line">   |         ---</span><br><span class="line">   |         |</span><br><span class="line">   |         first assignment to &#96;var&#96;</span><br><span class="line">   |         help: consider making this binding mutable: &#96;mut var&#96;</span><br><span class="line">56 |     println!(&quot;var is &#123;&#125; &quot;,var);</span><br><span class="line">57 |     var &#x3D; 35_000;</span><br><span class="line">   |     ^^^^^^^^^^^^ cannot assign twice to immutable variable</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>可变性<ul>
+<li>在变量名前加上 <strong>mut</strong> 关键字可以使其可变。可变变量的值可以更改。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">let mut var &#x3D; 25_000;</span><br><span class="line">  println!(&quot;var is &#123;&#125; &quot;,var);</span><br><span class="line">  var &#x3D; 35_000;</span><br><span class="line">  println!(&quot;var changed is &#123;&#125;&quot;,var);</span><br></pre></td></tr></table></figure>
+
+<p>Console</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">var is 25000 </span><br><span class="line">var changed is 35000</span><br></pre></td></tr></table></figure>
+
+<h4 id="const常量"><a href="#const常量" class="headerlink" title="const常量"></a>const常量</h4><blockquote>
+<p>常量一定要显式声明它的数据类型。以下是声明常量的语法：</p>
+</blockquote>
+<ul>
+<li>而声明常量时一定要声明它的数据类型。<code>const VARIABLE_NAME:dataType = value;</code></li>
+<li>使用 <strong>let</strong> 关键字声明的变量默认是不可变的。但是你可以选择使用 <strong>mut</strong> 关键字来使其可变。常量则<code>永远是不可变的</code>。</li>
+<li>常量可以在任何范围内声明，包括全局范围。</li>
+</ul>
+<h5 id="案例-7"><a href="#案例-7" class="headerlink" title="案例"></a>案例</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">const VAR_NAME:char &#x3D; &#39;A&#39;;</span><br><span class="line">println!(&quot;VAR_NAME is &#123;&#125;&quot;,VAR_NAME);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Console</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">VAR_NAME is A</span><br></pre></td></tr></table></figure>
+
+<h4 id="shadowing-覆盖"><a href="#shadowing-覆盖" class="headerlink" title="shadowing 覆盖"></a>shadowing 覆盖</h4><blockquote>
+<p>Rust 支持不同数据类型的变量之间的覆盖（隐藏 shadowing）。</p>
+</blockquote>
+<ul>
+<li>变量可以被覆盖，常量不行。</li>
+</ul>
+<h5 id="案例一"><a href="#案例一" class="headerlink" title="案例一"></a>案例一</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">let salary &#x3D; 100.00;</span><br><span class="line">let salary &#x3D; 1.50 ; </span><br><span class="line">&#x2F;&#x2F; 读取salary变量的值</span><br><span class="line">println!(&quot;The value of salary is :&#123;&#125;&quot;,salary);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Console</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">The value of salary is :1.5</span><br></pre></td></tr></table></figure>
+
+<h5 id="案例二"><a href="#案例二" class="headerlink" title="案例二"></a>案例二</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">const salary2 &#x3D; 100.00;</span><br><span class="line">let salary2 &#x3D; 1.50 ; </span><br><span class="line">&#x2F;&#x2F; 读取salary变量的值</span><br><span class="line">println!(&quot;The value of salary is :&#123;&#125;&quot;,salary2);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Console</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">  --&gt; src&#x2F;main.rs:68:11</span><br><span class="line">   |</span><br><span class="line">68 |     const salary2 &#x3D; 100.00;</span><br><span class="line">   |           ^^^^^^^ help: provide a type for the constant: &#96;salary2: f64&#96;</span><br></pre></td></tr></table></figure>
+
+<h3 id="操作符"><a href="#操作符" class="headerlink" title="操作符"></a>操作符</h3><blockquote>
+<p>运算符（操作符）定义了对于数据的的处理。被运算符所作用的数据被称为运算数。</p>
+</blockquote>
+<h4 id="算数运算法"><a href="#算数运算法" class="headerlink" title="算数运算法"></a>算数运算法</h4><ul>
+<li>加 +</li>
+<li>减 -</li>
+<li>乘 *</li>
+<li>除 / </li>
+<li>取余 %</li>
+</ul>
+<h4 id="操作运算符"><a href="#操作运算符" class="headerlink" title="操作运算符"></a>操作运算符</h4><ul>
+<li><code>&gt;</code> 大于</li>
+<li><code>&lt;</code>小于</li>
+<li><code>&gt;=</code> 大于等于</li>
+<li><code>&lt;=</code> 小于等于</li>
+<li><code>==</code> 等于</li>
+<li><code>!=</code> 不等于</li>
+</ul>
+<h4 id="逻辑运算符"><a href="#逻辑运算符" class="headerlink" title="逻辑运算符"></a>逻辑运算符</h4><ul>
+<li><code>&amp;&amp;</code> 与</li>
+<li><code>||</code> 或</li>
+<li><code>! </code>非</li>
+</ul>
+<h4 id="位运算符"><a href="#位运算符" class="headerlink" title="位运算符"></a>位运算符</h4><ul>
+<li>&amp; （按位与）</li>
+<li>|（按位或）</li>
+<li>^（按位异或）</li>
+<li>!（按位非）</li>
+<li>&lt;&lt;（左移）</li>
+<li>&gt;&gt;（右移）</li>
+<li>&gt;&gt;&gt;（无符号右移）</li>
+</ul>
+<h2 id="END"><a href="#END" class="headerlink" title="END"></a>END</h2>
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>胖枫叶
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://z201.github.io/2021/11/25/Rust%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/" title="Rust基础语法">https://z201.github.io/2021/11/25/Rust基础语法/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Rust/" rel="tag"># Rust</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/24/Rust%E5%85%A5%E9%97%A8/" rel="prev" title="Rust入门">
+      <i class="fa fa-chevron-left"></i> Rust入门
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Rust基础语法"><span class="nav-number">1.</span> <span class="nav-text">Rust基础语法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#let"><span class="nav-number">1.1.</span> <span class="nav-text">let</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#println"><span class="nav-number">1.2.</span> <span class="nav-text">println!</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#scalar-Types"><span class="nav-number">1.3.</span> <span class="nav-text">scalar Types</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#整型"><span class="nav-number">1.3.1.</span> <span class="nav-text">整型</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#案例"><span class="nav-number">1.3.1.1.</span> <span class="nav-text">案例</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#整型溢出"><span class="nav-number">1.3.2.</span> <span class="nav-text">整型溢出</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#案例-1"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">案例</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#浮点型"><span class="nav-number">1.3.3.</span> <span class="nav-text">浮点型</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#案例-2"><span class="nav-number">1.3.3.1.</span> <span class="nav-text">案例</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#自动类型转换"><span class="nav-number">1.3.4.</span> <span class="nav-text">自动类型转换</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#案例-3"><span class="nav-number">1.3.4.1.</span> <span class="nav-text">案例</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#布尔值"><span class="nav-number">1.3.5.</span> <span class="nav-text">布尔值</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#案例-4"><span class="nav-number">1.3.5.1.</span> <span class="nav-text">案例</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#字符型"><span class="nav-number">1.3.6.</span> <span class="nav-text">字符型</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#案例-5"><span class="nav-number">1.3.6.1.</span> <span class="nav-text">案例</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#类型转字符串"><span class="nav-number">1.3.6.2.</span> <span class="nav-text">类型转字符串</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#案例-6"><span class="nav-number">1.3.6.2.1.</span> <span class="nav-text">案例</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#let变量"><span class="nav-number">1.3.7.</span> <span class="nav-text">let变量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#const常量"><span class="nav-number">1.3.8.</span> <span class="nav-text">const常量</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#案例-7"><span class="nav-number">1.3.8.1.</span> <span class="nav-text">案例</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#shadowing-覆盖"><span class="nav-number">1.3.9.</span> <span class="nav-text">shadowing 覆盖</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#案例一"><span class="nav-number">1.3.9.1.</span> <span class="nav-text">案例一</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#案例二"><span class="nav-number">1.3.9.2.</span> <span class="nav-text">案例二</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#操作符"><span class="nav-number">1.4.</span> <span class="nav-text">操作符</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#算数运算法"><span class="nav-number">1.4.1.</span> <span class="nav-text">算数运算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#操作运算符"><span class="nav-number">1.4.2.</span> <span class="nav-text">操作运算符</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#逻辑运算符"><span class="nav-number">1.4.3.</span> <span class="nav-text">逻辑运算符</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#位运算符"><span class="nav-number">1.4.4.</span> <span class="nav-text">位运算符</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#END"><span class="nav-number">2.</span> <span class="nav-text">END</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="胖枫叶"
+      src="/images/avatar-min.jpg">
+  <p class="site-author-name" itemprop="name">胖枫叶</p>
+  <div class="site-description" itemprop="description">多听、多看、少说、多做。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">98</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">99</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/z201" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;z201" rel="noopener" target="_blank"><i class="github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:int_java_se@@163.com" title="E-Mail → mailto:int_java_se@@163.com" rel="noopener" target="_blank"><i class="envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.journaldev.com/" title="https:&#x2F;&#x2F;www.journaldev.com&#x2F;" rel="noopener" target="_blank">journaldev</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.geeksforgeeks.org/" title="https:&#x2F;&#x2F;www.geeksforgeeks.org&#x2F;" rel="noopener" target="_blank">geeksforgeeks</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://redisdoc.com/index.html" title="http:&#x2F;&#x2F;redisdoc.com&#x2F;index.html" rel="noopener" target="_blank">redisdoc</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.sczyh30.com/" title="http:&#x2F;&#x2F;www.sczyh30.com&#x2F;" rel="noopener" target="_blank">浮生若梦</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://objcoding.com/" title="https:&#x2F;&#x2F;objcoding.com&#x2F;" rel="noopener" target="_blank">后端进阶</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://spring.hhui.top/spring-blog/" title="https:&#x2F;&#x2F;spring.hhui.top&#x2F;spring-blog&#x2F;" rel="noopener" target="_blank">一灰灰Blog</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.javazhiyin.com/" title="https:&#x2F;&#x2F;www.javazhiyin.com&#x2F;" rel="noopener" target="_blank">Java知音</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://indienova.com/" title="https:&#x2F;&#x2F;indienova.com&#x2F;" rel="noopener" target="_blank">独立精神</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.ityouknow.com/" title="http:&#x2F;&#x2F;www.ityouknow.com&#x2F;" rel="noopener" target="_blank">纯洁的微笑</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://sspai.com/" title="https:&#x2F;&#x2F;sspai.com&#x2F;" rel="noopener" target="_blank">少数派</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://ifeve.com/" title="http:&#x2F;&#x2F;ifeve.com&#x2F;" rel="noopener" target="_blank">并发编程网</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://hacpai.com/" title="https:&#x2F;&#x2F;hacpai.com&#x2F;" rel="noopener" target="_blank">黑客派</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.lintcode.com/" title="https:&#x2F;&#x2F;www.lintcode.com&#x2F;" rel="noopener" target="_blank">lintCode</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://stackoverflow.com/" title="https:&#x2F;&#x2F;stackoverflow.com&#x2F;" rel="noopener" target="_blank">stackoverflow</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.baeldung.com/" title="https:&#x2F;&#x2F;www.baeldung.com&#x2F;" rel="noopener" target="_blank">beeldung</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.fontawesome.com.cn/" title="http:&#x2F;&#x2F;www.fontawesome.com.cn&#x2F;" rel="noopener" target="_blank">Font Awesome中文网</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">胖枫叶</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

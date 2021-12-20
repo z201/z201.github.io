@@ -239,6 +239,301 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/05/07/%E5%88%9D%E6%8E%A2Modbus/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/05/07/%E5%88%9D%E6%8E%A2Modbus/" class="post-title-link" itemprop="url">初探Modbus</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-05-07 00:00:00" itemprop="dateCreated datePublished" datetime="2018-05-07T00:00:00+08:00">2018-05-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-15 09:21:16" itemprop="dateModified" datetime="2020-08-15T09:21:16+08:00">2020-08-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9F%BA%E7%A1%80%E7%90%86%E8%AE%BA/" itemprop="url" rel="index"><span itemprop="name">基础理论</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>本章是整理知识内容，为强化知识长期更新。</p>
+<p>以下部分超链接需要科学上网。</p>
+</blockquote>
+<h2 id="ModBus"><a href="#ModBus" class="headerlink" title="ModBus"></a>ModBus</h2><p>modbus是一种通讯协议，是Modicon公司1979年为使用可编程逻辑控制器（PLC）通讯而发表。Modbus是工业领域通讯协议的业界标准之一，目前也我国国家标准工业通讯协议中的重要成员之一。</p>
+<h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><ul>
+<li><p>Modbus采用主从（Master-Salve）通信模式，仅有主设备（Master）能对传输进行初始化，从设备（Slave）根据主设备的请求进行应答。 __在主从关系中，通信总是成对发生。一个设备必须发起请求，然后等待响应 - 并且发起设备（主设备）负责发起每次交互。 通常，主设备是人机界面（HMI）或监控和数据采集（SCADA）系统，从设备是传感器、可编程逻辑控制器（PLC）或可编程自动化控制器（PAC）。 这些请求和响应的内容以及发送这些消息的网络层由协议的不同层来定义__。 </p>
+<ul>
+<li>在串行链路的主从通信中，Modbus主设备可以连接一个或N（最大为247）个从设备，主从设备之间的通信包括单播模式和广播模式。 </li>
+<li>在广播模式中，Modbus主设备可同时向多个从设备发送请求（设备地址0用于广播模式），从设备对广播请求不进行响应。 </li>
+<li>在单播模式中，主设备发送请求至某个特定的从设备（每个Modbus从设备具有唯一地址），请求的消息帧中会包含功能代码和数据，比如功能代码“01”用来读取离散量线圈的状态。从设备接到请求后，进行应答并把消息反馈主设备。 </li>
+<li>__主设备不发送数据，从数据是不会自己发出数据的；即必须是主设备发出查询请求才能建立通讯。 __</li>
+</ul>
+</li>
+<li><p>消息帧校验方式</p>
+<ul>
+<li>ASCII消息帧：<code>LRC（纵向冗长检测）</code></li>
+<li>CRCi消息帧：<code>CRC(循环冗长检测)</code></li>
+</ul>
+</li>
+<li><p>ModBus是OSI模型第七层上即__应用层__报文传输协议。</p>
+</li>
+<li><p>ModBus支持多工业设备、包括<code>PLC</code>、<code>DSC</code>、<code>变频器</code>、智能仪表等都在应用。</p>
+</li>
+<li><p>ModBus支持多种电气接口，如<code>RS-232</code>、<code>RS-485</code>等，还可以在各种介质上传送，如双绞线、光纤、无线。</p>
+</li>
+<li><p>ModBus协议完全免费；<code>帧格式</code>简单，紧凑。</p>
+</li>
+<li><p>ModBus对线缆的要求、长度、波特率，终端电阻，接地，连接器，通信状态的LED指示，都有电气标准。</p>
+</li>
+<li><p>ModBus数据可以分为两大类，分别为Coil和Register，每一种数据，根据读写方式的不同，又可细分为两种（只读，读写）。 </p>
+<ul>
+<li>Coli是位（bit）变量。</li>
+<li>Register是整型（word ,即 16 - bit ）。</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Primary tabels</th>
+<th>Object Type</th>
+<th>Type Of</th>
+<th>comments</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Discretes Input 离线输入量</td>
+<td>Single bit</td>
+<td>只读</td>
+<td>IO系统提供这种类型的数据</td>
+</tr>
+<tr>
+<td>Coils 线圈</td>
+<td>Single bit</td>
+<td>只写</td>
+<td>通用应用程序改变这种类型的数据</td>
+</tr>
+<tr>
+<td>Input Registers  输入寄存器</td>
+<td>16-bit word</td>
+<td>只读</td>
+<td>IO系统提供这种类型的数据</td>
+</tr>
+<tr>
+<td>Holding Registers 保持寄存器</td>
+<td>16-bit word</td>
+<td>只写</td>
+<td>通用应用程序改变这种类型的数据</td>
+</tr>
+</tbody></table>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/05/07/%E5%88%9D%E6%8E%A2Modbus/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/05/02/MySQL%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%8C%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="多听、多看、少说、多做。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫叶的小博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/05/02/MySQL%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%8C%EF%BC%89/" class="post-title-link" itemprop="url">MySQL基础（二）</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-05-02 05:02:46" itemprop="dateCreated datePublished" datetime="2018-05-02T05:02:46+08:00">2018-05-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-10-05 22:53:51" itemprop="dateModified" datetime="2021-10-05T22:53:51+08:00">2021-10-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>本章是整理知识内容，为强化知识长期更新。</p>
+</blockquote>
+<ul>
+<li>在 <a href="https://z201.cn/2018/04/29/MySQL%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%80%EF%BC%89/" target="_blank" rel="noopener">MySQL基础（一）</a> 已经介绍了MYSQL最常用基础的操作，由于篇幅已经很大，所以分开记录。</li>
+</ul>
+<h2 id="MySql基础操作"><a href="#MySql基础操作" class="headerlink" title="MySql基础操作"></a>MySql基础操作</h2><h3 id="子查询与连接"><a href="#子查询与连接" class="headerlink" title="子查询与连接"></a>子查询与连接</h3><blockquote>
+<p>在MYSQL实际操作中，最大的操作就是查询，下面就关于子查询和链接做记录。</p>
+</blockquote>
+<h4 id="子查询"><a href="#子查询" class="headerlink" title="子查询"></a>子查询</h4><ul>
+<li>子查询(SubQuery)是指出现在其它SQL语句中的SELECT子句。比如</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM table_1 AS t1 WHERE columns_1 &#x3D; (SELECT columns_2 FROM table_2 AS t2);</span><br><span class="line"># 这里的SELECT * FROM table_1 AS t1 称之为 Outer Query&#x2F;Outer Statement;SELECT columns_2 FROM table_2 AS t2 成为 SubQuery。</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>子查询严格以上是指<code>嵌套在查询内部，且必须始终出现在圆括号内</code></li>
+<li>子查询可以包含多个关键字：<code>DISTINCT</code>、<code>GROUP BY</code>、<code>ORDER BY</code>、<code>LIMIT</code>等函数。</li>
+<li>子查询的外层可以是：<code>INSERT</code>、<code>UPDATE</code>、<code>SELECT </code>、<code>DELETE</code>、<code>SET</code>、<code>DO</code>等操作。</li>
+<li>子查询可以返回结果，这个结果可以是<code>标量</code>、<code>一行</code>、<code>一列</code>，或者子查询。</li>
+<li>子查询的引发条件：<code>这里需要特别注意，并不是显示的才是子查询。</code><ul>
+<li>使用比较运算符的子查询：<code>= , &gt; , &lt; , &gt;= , &lt;= , &lt;&gt; , != , &lt;=&gt; </code></li>
+<li>使用结构语法：operand comparison_operator subquery ，可以使用一下修饰符来配合比较运算符。<ul>
+<li>operand comparison_operator <code>ANY</code>(subquery)</li>
+<li>operand comparison_operator <code>SOME</code>(subquery)</li>
+<li>operand comparison_operator <code>ALL</code>(subquery)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>运算符\关键字</th>
+<th>ANY</th>
+<th>SOME</th>
+<th>ALL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&gt;</code> 、<code>&gt;=</code></td>
+<td>最大值</td>
+<td>最小值</td>
+<td>最大</td>
+</tr>
+<tr>
+<td><code>&lt;</code>、<code>&lt;=</code></td>
+<td>最大值</td>
+<td>最大值</td>
+<td>最小值</td>
+</tr>
+<tr>
+<td><code>=</code></td>
+<td>任意值</td>
+<td>任意值</td>
+<td></td>
+</tr>
+<tr>
+<td><code>&lt;&gt;</code>、<code>!=</code></td>
+<td></td>
+<td></td>
+<td>任意值</td>
+</tr>
+</tbody></table>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/05/02/MySQL%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%8C%EF%BC%89/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/29/MySQL%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%80%EF%BC%89/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -631,221 +926,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/26/Centos7-Redis%E5%8D%95%E5%AE%9E%E4%BE%8B%E9%83%A8%E7%BD%B2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/04/26/Centos7-Redis%E5%8D%95%E5%AE%9E%E4%BE%8B%E9%83%A8%E7%BD%B2/" class="post-title-link" itemprop="url">Centos7.*-Redis单实例部署</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-04-26 06:34:08" itemprop="dateCreated datePublished" datetime="2018-04-26T06:34:08+08:00">2018-04-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-12-08 15:38:26" itemprop="dateModified" datetime="2021-12-08T15:38:26+08:00">2021-12-08</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index"><span itemprop="name">Linux运维</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h1><blockquote>
-<p>Redis全称：Remote Dictionary Server(远程数据服务)。Redis是一个开源的使用ANSI C语言编写、支持网络、可基于内存亦可持久化的日志型、Key-Value数据库，并提供多种语言的API。</p>
-</blockquote>
-<h2 id="单实例安装"><a href="#单实例安装" class="headerlink" title="单实例安装"></a>单实例安装</h2><blockquote>
-<p>只是学习使用使用yum 方式安装比较快。而且centos自带官方源。</p>
-</blockquote>
-<h3 id="yum安装"><a href="#yum安装" class="headerlink" title="yum安装"></a>yum安装</h3><ul>
-<li>yum install epel-release    –下载fedora的epel仓库</li>
-<li>yum install redis    – 安装redis数据库</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/04/26/Centos7-Redis%E5%8D%95%E5%AE%9E%E4%BE%8B%E9%83%A8%E7%BD%B2/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/25/Centos7-Mongodb3-4%E5%8D%95%E5%AE%9E%E4%BE%8B%E9%83%A8%E7%BD%B2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="多听、多看、少说、多做。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="枫叶的小博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/04/25/Centos7-Mongodb3-4%E5%8D%95%E5%AE%9E%E4%BE%8B%E9%83%A8%E7%BD%B2/" class="post-title-link" itemprop="url">Centos7.*-Mongodb3.4单实例部署</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-04-25 05:16:12" itemprop="dateCreated datePublished" datetime="2018-04-25T05:16:12+08:00">2018-04-25</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-03-09 03:05:53" itemprop="dateModified" datetime="2019-03-09T03:05:53+08:00">2019-03-09</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index"><span itemprop="name">Linux运维</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>mongodb的安装方式比较简单，下面演示在CentOS7上用yum方式安装。</p>
-</blockquote>
-<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><ul>
-<li>下载地址 <a href="https://www.mongodb.com/download-center#community" target="_blank" rel="noopener">https://www.mongodb.com/download-center#community</a></li>
-<li>在线文档 <a href="https://docs.mongodb.com/manual/introduction/" target="_blank" rel="noopener">https://docs.mongodb.com/manual/introduction/</a></li>
-</ul>
-<h2 id="使用yum方式安装"><a href="#使用yum方式安装" class="headerlink" title="使用yum方式安装"></a>使用yum方式安装</h2><blockquote>
-<p>仅供学习参考，若在生产环境中部署请注意修改安全配置。</p>
-</blockquote>
-<ul>
-<li>整个mongodb（社区版）包含如下软件</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>软件名称</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>mongodb-org-server</td>
-<td>包含mongod守护程序和关联的配置和init脚本</td>
-</tr>
-<tr>
-<td>mongodb-org-mongos</td>
-<td>包含mongos守护程序</td>
-</tr>
-<tr>
-<td>mongodb-org-shell</td>
-<td>包含mongo shell，它是一个连接mongodb的命令行客户端，允许用户直接输入nosql语法管理数据库。</td>
-</tr>
-<tr>
-<td>mongodb-org-tools</td>
-<td>包含以下工具的MongoDB：数据导入、导出、备份、恢复等等</td>
-</tr>
-</tbody></table>
-<ul>
-<li>创建yum源文件</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/yum.repos.d/mongodb-org-3.4.repo1</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/04/25/Centos7-Mongodb3-4%E5%8D%95%E5%AE%9E%E4%BE%8B%E9%83%A8%E7%BD%B2/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/13/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><span class="page-number current">14</span><a class="page-number" href="/page/15/">15</a><a class="page-number" href="/page/16/">16</a><a class="extend next" rel="next" href="/page/15/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/13/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><span class="page-number current">14</span><a class="page-number" href="/page/15/">15</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><a class="extend next" rel="next" href="/page/15/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -912,7 +996,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">96</span>
+          <span class="site-state-item-count">98</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -923,7 +1007,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">98</span>
+        <span class="site-state-item-count">99</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
