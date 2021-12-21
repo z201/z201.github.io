@@ -17,13 +17,13 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"z201.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"z201.cn","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="成长就是不断发现过去傻逼的过程，这里讲讲平时开发经常用到缓存。  缓存穿透和缓存击穿 本内容相关代码地址:cache-breakdown 代码运行需要mysql和redis环境  缓存穿透  理想的情况下我们数据缓存到redis里面，客户访问数据的时候直接去缓存查询，如果没有缓存就去数据库查询。 仔细想想这里其实有一个bug，必须是缓存有的数据才会去数据库查询，如果一直都是在查询一个没有得数据咋">
 <meta property="og:type" content="article">
 <meta property="og:title" content="实践-缓存穿透、击穿">
-<meta property="og:url" content="https://z201.github.io/2019/03/25/%E5%AE%9E%E8%B7%B5-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E5%87%BB%E7%A9%BF/index.html">
+<meta property="og:url" content="https://z201.cn/2019/03/25/%E5%AE%9E%E8%B7%B5-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E5%87%BB%E7%A9%BF/index.html">
 <meta property="og:site_name" content="枫叶的小博客">
 <meta property="og:description" content="成长就是不断发现过去傻逼的过程，这里讲讲平时开发经常用到缓存。  缓存穿透和缓存击穿 本内容相关代码地址:cache-breakdown 代码运行需要mysql和redis环境  缓存穿透  理想的情况下我们数据缓存到redis里面，客户访问数据的时候直接去缓存查询，如果没有缓存就去数据库查询。 仔细想想这里其实有一个bug，必须是缓存有的数据才会去数据库查询，如果一直都是在查询一个没有得数据咋">
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF/%E6%9F%A5%E8%AF%A2%E7%BC%93%E5%AD%98.svg">
@@ -40,7 +40,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF/%E6%9F%A5%E8%AF%A2%E7%BC%93%E5%AD%98.svg">
 
-<link rel="canonical" href="https://z201.github.io/2019/03/25/%E5%AE%9E%E8%B7%B5-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E5%87%BB%E7%A9%BF/">
+<link rel="canonical" href="https://z201.cn/2019/03/25/%E5%AE%9E%E8%B7%B5-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E5%87%BB%E7%A9%BF/">
 
 
 <script id="page-configurations">
@@ -55,6 +55,22 @@
 
   <title>实践-缓存穿透、击穿 | 枫叶的小博客</title>
   
+    <script>
+      function sendPageView() {
+        if (CONFIG.hostname !== location.hostname) return;
+        var uid = localStorage.getItem('uid') || (Math.random() + '.' + Math.random());
+        localStorage.setItem('uid', uid);
+        navigator.sendBeacon('https://www.google-analytics.com/collect', new URLSearchParams({
+          v  : 1,
+          tid: 'sPzmFRc9pkZyDXFyQWRFLjiFff-mdNJseUPpaocLd7c',
+          cid: uid,
+          t  : 'pageview',
+          dp : encodeURIComponent(location.pathname)
+        }));
+      }
+      document.addEventListener('pjax:complete', sendPageView);
+      sendPageView();
+    </script>
 
 
   <script>
@@ -259,7 +275,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2019/03/25/%E5%AE%9E%E8%B7%B5-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E5%87%BB%E7%A9%BF/">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/2019/03/25/%E5%AE%9E%E8%B7%B5-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E5%87%BB%E7%A9%BF/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -519,7 +535,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>Post link: </strong>
-    <a href="https://z201.github.io/2019/03/25/%E5%AE%9E%E8%B7%B5-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E5%87%BB%E7%A9%BF/" title="实践-缓存穿透、击穿">https://z201.github.io/2019/03/25/实践-缓存穿透、击穿/</a>
+    <a href="https://z201.cn/2019/03/25/%E5%AE%9E%E8%B7%B5-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E5%87%BB%E7%A9%BF/" title="实践-缓存穿透、击穿">https://z201.cn/2019/03/25/实践-缓存穿透、击穿/</a>
   </li>
   <li class="post-copyright-license">
     <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.

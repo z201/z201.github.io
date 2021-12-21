@@ -17,13 +17,13 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"z201.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"z201.cn","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="本章内容阐述个人理解，以及使用方法。若有不正确的内容欢迎斧正。睡觉之前赶快记录下来免得有忘记了。  什么是Log? 日志记录的是什么？市面上流行的软件基本都有日志记录功能，作为开发人员的好帮手。日志可以有效的记录程序运行的状态以及运行的异常，比如说操作系统蓝屏了、手机死机了、软件卡死、程序崩溃、写了BUG等等都会有对应的日志留下。  如何利用log？ 笔者是一个Java开发人员，本章内容代码部分">
 <meta property="og:type" content="article">
 <meta property="og:title" content="实践-log4j的使用（一）">
-<meta property="og:url" content="https://z201.github.io/2018/06/12/%E5%AE%9E%E8%B7%B5-log4j%E7%9A%84%E4%BD%BF%E7%94%A8%EF%BC%88%E4%B8%80%EF%BC%89/index.html">
+<meta property="og:url" content="https://z201.cn/2018/06/12/%E5%AE%9E%E8%B7%B5-log4j%E7%9A%84%E4%BD%BF%E7%94%A8%EF%BC%88%E4%B8%80%EF%BC%89/index.html">
 <meta property="og:site_name" content="枫叶的小博客">
 <meta property="og:description" content="本章内容阐述个人理解，以及使用方法。若有不正确的内容欢迎斧正。睡觉之前赶快记录下来免得有忘记了。  什么是Log? 日志记录的是什么？市面上流行的软件基本都有日志记录功能，作为开发人员的好帮手。日志可以有效的记录程序运行的状态以及运行的异常，比如说操作系统蓝屏了、手机死机了、软件卡死、程序崩溃、写了BUG等等都会有对应的日志留下。  如何利用log？ 笔者是一个Java开发人员，本章内容代码部分">
 <meta property="article:published_time" content="2018-06-12T15:24:24.000Z">
@@ -33,7 +33,7 @@
 <meta property="article:tag" content="Log4j">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://z201.github.io/2018/06/12/%E5%AE%9E%E8%B7%B5-log4j%E7%9A%84%E4%BD%BF%E7%94%A8%EF%BC%88%E4%B8%80%EF%BC%89/">
+<link rel="canonical" href="https://z201.cn/2018/06/12/%E5%AE%9E%E8%B7%B5-log4j%E7%9A%84%E4%BD%BF%E7%94%A8%EF%BC%88%E4%B8%80%EF%BC%89/">
 
 
 <script id="page-configurations">
@@ -48,6 +48,22 @@
 
   <title>实践-log4j的使用（一） | 枫叶的小博客</title>
   
+    <script>
+      function sendPageView() {
+        if (CONFIG.hostname !== location.hostname) return;
+        var uid = localStorage.getItem('uid') || (Math.random() + '.' + Math.random());
+        localStorage.setItem('uid', uid);
+        navigator.sendBeacon('https://www.google-analytics.com/collect', new URLSearchParams({
+          v  : 1,
+          tid: 'sPzmFRc9pkZyDXFyQWRFLjiFff-mdNJseUPpaocLd7c',
+          cid: uid,
+          t  : 'pageview',
+          dp : encodeURIComponent(location.pathname)
+        }));
+      }
+      document.addEventListener('pjax:complete', sendPageView);
+      sendPageView();
+    </script>
 
 
   <script>
@@ -252,7 +268,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/06/12/%E5%AE%9E%E8%B7%B5-log4j%E7%9A%84%E4%BD%BF%E7%94%A8%EF%BC%88%E4%B8%80%EF%BC%89/">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/2018/06/12/%E5%AE%9E%E8%B7%B5-log4j%E7%9A%84%E4%BD%BF%E7%94%A8%EF%BC%88%E4%B8%80%EF%BC%89/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -413,7 +429,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>Post link: </strong>
-    <a href="https://z201.github.io/2018/06/12/%E5%AE%9E%E8%B7%B5-log4j%E7%9A%84%E4%BD%BF%E7%94%A8%EF%BC%88%E4%B8%80%EF%BC%89/" title="实践-log4j的使用（一）">https://z201.github.io/2018/06/12/实践-log4j的使用（一）/</a>
+    <a href="https://z201.cn/2018/06/12/%E5%AE%9E%E8%B7%B5-log4j%E7%9A%84%E4%BD%BF%E7%94%A8%EF%BC%88%E4%B8%80%EF%BC%89/" title="实践-log4j的使用（一）">https://z201.cn/2018/06/12/实践-log4j的使用（一）/</a>
   </li>
   <li class="post-copyright-license">
     <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.

@@ -17,13 +17,13 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"z201.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"z201.cn","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="本章是整理知识内容，为强化知识长期更新。 Linked List 链表即是由节点（Node）组成的线性集合，每个节点可以利用指针指向其他节点。它是一种包含了多个节点的、能够用于表示序列的数据结构。 单向链表: 链表中的节点仅指向下一个节点，并且最后一个节点指向空。 双向链表: 其中每个节点具有两个指针 p、n，使得 p 指向先前节点并且 n 指向下一个节点；最后一个节点的 n 指针指向 null">
 <meta property="og:type" content="article">
 <meta property="og:title" content="源码阅读-LinkedList">
-<meta property="og:url" content="https://z201.github.io/2018/04/12/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-LinkedList/index.html">
+<meta property="og:url" content="https://z201.cn/2018/04/12/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-LinkedList/index.html">
 <meta property="og:site_name" content="枫叶的小博客">
 <meta property="og:description" content="本章是整理知识内容，为强化知识长期更新。 Linked List 链表即是由节点（Node）组成的线性集合，每个节点可以利用指针指向其他节点。它是一种包含了多个节点的、能够用于表示序列的数据结构。 单向链表: 链表中的节点仅指向下一个节点，并且最后一个节点指向空。 双向链表: 其中每个节点具有两个指针 p、n，使得 p 指向先前节点并且 n 指向下一个节点；最后一个节点的 n 指针指向 null">
 <meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Collection/Collection-LinkedList.JPG">
@@ -36,7 +36,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Collection/Collection-LinkedList.JPG">
 
-<link rel="canonical" href="https://z201.github.io/2018/04/12/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-LinkedList/">
+<link rel="canonical" href="https://z201.cn/2018/04/12/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-LinkedList/">
 
 
 <script id="page-configurations">
@@ -51,6 +51,22 @@
 
   <title>源码阅读-LinkedList | 枫叶的小博客</title>
   
+    <script>
+      function sendPageView() {
+        if (CONFIG.hostname !== location.hostname) return;
+        var uid = localStorage.getItem('uid') || (Math.random() + '.' + Math.random());
+        localStorage.setItem('uid', uid);
+        navigator.sendBeacon('https://www.google-analytics.com/collect', new URLSearchParams({
+          v  : 1,
+          tid: 'sPzmFRc9pkZyDXFyQWRFLjiFff-mdNJseUPpaocLd7c',
+          cid: uid,
+          t  : 'pageview',
+          dp : encodeURIComponent(location.pathname)
+        }));
+      }
+      document.addEventListener('pjax:complete', sendPageView);
+      sendPageView();
+    </script>
 
 
   <script>
@@ -255,7 +271,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://z201.github.io/2018/04/12/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-LinkedList/">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/2018/04/12/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-LinkedList/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -405,7 +421,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>Post link: </strong>
-    <a href="https://z201.github.io/2018/04/12/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-LinkedList/" title="源码阅读-LinkedList">https://z201.github.io/2018/04/12/源码阅读-LinkedList/</a>
+    <a href="https://z201.cn/2018/04/12/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-LinkedList/" title="源码阅读-LinkedList">https://z201.cn/2018/04/12/源码阅读-LinkedList/</a>
   </li>
   <li class="post-copyright-license">
     <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
