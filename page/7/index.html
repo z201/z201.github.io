@@ -290,7 +290,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/4225444985/">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/2239464817/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -304,7 +304,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/posts/4225444985/" class="post-title-link" itemprop="url">Jwt入门</a>
+            <a href="/posts/2239464817/" class="post-title-link" itemprop="url">实践Nginx日志简单的统计</a>
         </h2>
 
         <div class="post-meta">
@@ -314,14 +314,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2019-03-09 02:02:15" itemprop="dateCreated datePublished" datetime="2019-03-09T02:02:15+08:00">2019-03-09</time>
+              <time title="创建时间：2019-06-04 11:21:21" itemprop="dateCreated datePublished" datetime="2019-06-04T11:21:21+08:00">2019-06-04</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-12-21 23:03:45" itemprop="dateModified" datetime="2021-12-21T23:03:45+08:00">2021-12-21</time>
+                <time title="修改时间：2021-12-21 14:24:58" itemprop="dateModified" datetime="2021-12-21T14:24:58+08:00">2021-12-21</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -329,7 +329,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%85%A5%E9%97%A8/" itemprop="url" rel="index"><span itemprop="name">入门</span></a>
+                  <a href="/categories/Nginx/" itemprop="url" rel="index"><span itemprop="name">Nginx</span></a>
                 </span>
             </span>
 
@@ -339,14 +339,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>2.5k</span>
+              <span>1.6k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
+              <span>1 分钟</span>
             </span>
 
         </div>
@@ -359,24 +359,156 @@
 
       
           <blockquote>
-<p>Json web token (JWT), 是为了在网络应用环境间传递声明而执行的一种基于JSON的开放标准。该token被设计为紧凑且安全的，特别适用于分布式站点的单点登录（SSO）场景。JWT的声明一般被用来在身份提供者和服务提供者间传递被认证的用户身份信息，以便于从资源服务器获取资源，也可以增加一些额外的其它业务逻辑所必须的声明信息，该token也可直接被用于认证，也可被加密。也就是说JWT是Token的一种表述性声明规范。</p>
+<p>公司没有日志采集平台，又不太可能在业务系统里面搞事情。好在之前有玩过elk日志分析组合。直接从服务器上面撸出日志简单的用linux命令分析下吧。</p>
 </blockquote>
-<h2 id="JWT-Json-Web-Token"><a href="#JWT-Json-Web-Token" class="headerlink" title="JWT(Json Web Token)"></a>JWT(Json Web Token)</h2><ul>
-<li>官网地址：<strong><a href="https://jwt.io/" target="_blank" rel="noopener">https://jwt.io/</a></strong></li>
-<li>jwt github：<strong><a href="https://github.com/jwtk/jjwt" target="_blank" rel="noopener">https://github.com/jwtk/jjwt</a></strong></li>
-</ul>
-<h2 id="JWT生成编码后的样子"><a href="#JWT生成编码后的样子" class="headerlink" title="JWT生成编码后的样子"></a>JWT生成编码后的样子</h2><ul>
-<li>结构类似 xxx.yyy.zzz</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImF1ZCI6IuWkqeihjOWBpeeuoeeQhueUqOaItyIsImF1ZGllbmNlIjoid2ViIiwibmJmIjoxNTA3Njg0OTQyLCJpc3MiOiJ3d3cuMW9uZS5jbiIsImV4cCI6MTUwNzY4Njc0MiwiaWF0IjoxNTA3Njg0OTQyLCJqdGkiOjEwMDB9.GGF0kFbxNk2ezzuXEJVBZyyL4e4BYMdpse73cSDrUut7cbVyYuLG1CNr8RI7eI3VHz9sdCB14Kesi8rP-v3VJA</span><br></pre></td></tr></table></figure>
+<p>Nginx日志统计（简单的）</p>
+<p>（日志文件叫access.log 在当前目录下）</p>
+<p><strong>统计 PV，就是日志行数</strong></p>
+<p><code>cat access.log |wc -l</code></p>
+<p><strong>UV, 即是统计 IP 数</strong></p>
+<p><code>cat access.log |awk &#39;{print $1}&#39; |sort |uniq -c |wc -l</code></p>
+<p><strong>使用linux grep 进行统计</strong></p>
+<p><code>grep -E &quot;POST|GET&quot; access.log | awk -F &#39;&quot;&#39; &#39;{print $2,$3}&#39; | awk &#39;{print $2}&#39;| sort | uniq -c | sort -k1nr | head -100</code></p>
+<p><strong>耗时的请求发生时间、所请求的 URI 和耗时</strong></p>
+<p><code>cat access.log | awk &#39;{print $4,$7,$10,$NF}&#39; | sort -k3 -nr | head -100</code></p>
+<p><strong>统计</strong>nginx<strong>访问频次最高的</strong>100<strong>个</strong>Ip**</p>
+<p><code>grep -E &quot;POST|GET&quot; access.log | awk -F &#39;&quot;&#39; &#39;{print $(NF-1)}&#39; | sort | uniq -c | sort -k1nr | head -100</code></p>
+<p><strong>统计</strong>nginx<strong>访问不正常（状态码</strong>400+<strong>）的前</strong>100<strong>个</strong>url<strong>和频次</strong></p>
+<p><code>grep -E &quot;POST|GET&quot; access.log | awk -F &#39;&quot;&#39; &#39;{print $2,$3}&#39; | awk &#39;{if ($4&gt;=&quot;400&quot;) {print $4,$1,$2}}&#39; | sort | uniq -c | sort -k1nr | head -100</code></p>
+<p><strong>统计nginx访问状态码非200的前100个</strong>url<strong>和频次**</strong></p>
+<p><code>grep -E &quot;POST|GET&quot; access.log | awk -F &#39;&quot;&#39; &#39;{print $2,$3}&#39; | awk &#39;{if ($4!=200) {print $4,$1,$2}}&#39; | sort | uniq -c | sort -k1nr | head -100</code></p>
+<p><strong>不同 URI 的平均耗时</strong></p>
+<p><code>grep -E &quot;POST|GET&quot; access.log  | awk &#39;{s[$10] += $NF;c[$10]++}END{for(i in s){print i,s[i]/c[i]}}&#39; |sort -k2 -nr | head</code></p>
+<p><strong>每秒请求量统计</strong></p>
+<p>统计每秒的请求数,top100的时间点(精确到秒)</p>
+<p><code>grep -E &quot;POST|GET&quot; access.log |  awk &#39;{print $4}&#39; access.log |cut -c 14-21|sort|uniq -c|sort -nr|head -n 100</code></p>
+<p><strong>每分钟请求量统计</strong></p>
+<p>统计每分钟的请求数,top100的时间点(精确到分钟)</p>
+<p><code>grep -E &quot;POST|GET&quot; access.log |  awk &#39;{print $4}&#39; access.log |cut -c 14-18|sort|uniq -c|sort -nr|head -n 100</code></p>
+<p><strong>每小时请求量统计</strong></p>
+<p>统计每小时的请求数,top100的时间点(精确到小时)</p>
+<p><code>grep -E &quot;POST|GET&quot; access.log |  awk &#39;{print $4}&#39; access.log |cut -c 14-15|sort|uniq -c|sort -nr|head -n 100</code></p>
+<p><strong>统计蜘蛛抓取次数</strong></p>
+<p><code>grep &#39;Baiduspider&#39; access.log |wc -l</code></p>
 
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/1362086803/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="憨憨在减肥">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/1362086803/" class="post-title-link" itemprop="url">总结代码风格</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-05-27 20:49:08" itemprop="dateCreated datePublished" datetime="2019-05-27T20:49:08+08:00">2019-05-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-12-21 14:24:58" itemprop="dateModified" datetime="2021-12-21T14:24:58+08:00">2021-12-21</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">软件工程</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>8.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>好久没更新博客，最近公司让我出一个代码规范，我吓了一跳。赶忙翻出阿里《 码出高效》，不敢造次，我就补充点个人的想法吧。代码是给人看的。代码风格应该遵循<code>极简主义</code>                                                                                                      </p>
+</blockquote>
+<h3 id="1、避免复杂、追求简单"><a href="#1、避免复杂、追求简单" class="headerlink" title="1、避免复杂、追求简单"></a>1、避免复杂、追求简单</h3><blockquote>
+<p>日常开发中，除了解决业务问题还需要解决许多的工程问题。如何选择当下合适的方法解决问题；需要不断尝试和摸索，没有最好的方法只有更好的方法。</p>
+</blockquote>
+<h3 id="2、合理平滑的处理技术债务"><a href="#2、合理平滑的处理技术债务" class="headerlink" title="2、合理平滑的处理技术债务"></a>2、合理平滑的处理技术债务</h3><blockquote>
+<p>技术的演变速度太快，如何避免长时间的技术债务是非常严重的问题，总之弊大于利。尽可能保持轻装上阵，避免拖油瓶项目。</p>
+<p>关键字：</p>
 <ul>
-<li>base64解析之后</li>
+<li>一方库: 本工程内部子项目模块依赖的库(jar 包)。 </li>
+<li>二方库: 公司内部发布到中央仓库，可供公司内部其它应用依赖的库(jar包)。 </li>
+<li>三方库: 公司之外的开源库(jar 包)。 </li>
 </ul>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	<span class="attr">"body"</span>:&#123;</span><br><span class="line">		<span class="attr">"sub"</span>:<span class="string">"admin"</span>,</span><br><span class="line">		<span class="attr">"aud"</span>:<span class="string">"XXX用户"</span>,</span><br><span class="line">		<span class="attr">"audience"</span>:<span class="string">"web"</span>,</span><br><span class="line">		<span class="attr">"nbf"</span>:<span class="number">1507684942</span>,</span><br><span class="line">		<span class="attr">"iss"</span>:<span class="string">"www.xxx.cn"</span>,</span><br><span class="line">		<span class="attr">"exp"</span>:<span class="number">1507686742</span>,</span><br><span class="line">		<span class="attr">"iat"</span>:<span class="number">1507684942</span>,</span><br><span class="line">		<span class="attr">"jti"</span>:<span class="number">1000</span></span><br><span class="line">	&#125;,</span><br><span class="line">	<span class="attr">"header"</span>:&#123;</span><br><span class="line">		<span class="attr">"typ"</span>:<span class="string">"JWT"</span>,</span><br><span class="line">		<span class="attr">"alg"</span>:<span class="string">"HS512"</span></span><br><span class="line">	&#125;,</span><br><span class="line">	<span class="attr">"signature"</span>:<span class="string">"GGF0kFbxNk2ezzuXEJVBZyyL4e4BYMdpse73cSDrUut7cbVyYuLG1CNr8RI7eI3VHz9sdCB14Kesi8rP-v3VJA"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h4 id="『避免过度封装』"><a href="#『避免过度封装』" class="headerlink" title="『避免过度封装』"></a>『避免过度封装』</h4><blockquote>
+<p>特别是没有完整的技术人员编制的情况下，怎么简单怎么处理（去除中间商赚差价一个道理。）避免过度开发<code>一方库</code>；建议使用原生方式(综合评估代码量)<code>避免框架过度封装</code>。（Java的方法调用链过长是出了名的恶心）</p>
+</blockquote>
+<h4 id="『避免代码过度重复』"><a href="#『避免代码过度重复』" class="headerlink" title="『避免代码过度重复』"></a>『避免代码过度重复』</h4><blockquote>
+<p>每次开发业务都会写很多的代码。定期对公司项目进行基础代码的重构。合理的拆分<code>业务无关的基础代码</code>。</p>
+</blockquote>
+<h4 id="『避免版本混乱』"><a href="#『避免版本混乱』" class="headerlink" title="『避免版本混乱』"></a>『避免版本混乱』</h4><p>使用统一的版本管理。约束所有的项目jar版本依赖。防止因为过度使用<code>三方库</code>出现奇怪的bug。公司<code>bom</code>需要单独处理。尽量保持与社区版本同步，比如springboot最新版是2.1.3 ，那么公司使用的版本最好是近半年的GA版本。</p>
+<h4 id="『物极必反』"><a href="#『物极必反』" class="headerlink" title="『物极必反』"></a>『物极必反』</h4><blockquote>
+<p>请勿过度依赖某框架栈或者解决方式，客观的对比相关解决方案优缺点。</p>
+</blockquote>
+<h4 id="『选择大于努力』"><a href="#『选择大于努力』" class="headerlink" title="『选择大于努力』"></a>『选择大于努力』</h4><blockquote>
+<p>集中精力掌握核心知识。按照目前技术演变的速度，更新最快的是应用技术，其次是行业规范相关技术。最后才是革命性的技术。</p>
+</blockquote>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/%E4%BB%A3%E7%A0%81%E6%80%BB%E7%BB%93/%E6%8A%80%E6%9C%AF%E8%B1%A1%E9%99%90%E5%9B%BE.png"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/posts/4225444985/#more" rel="contents">
+              <a class="btn" href="/posts/1362086803/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -400,7 +532,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/688330038/">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/1247507960/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -414,7 +546,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/posts/688330038/" class="post-title-link" itemprop="url">FastDFS入门</a>
+            <a href="/posts/1247507960/" class="post-title-link" itemprop="url">Idea常用插件</a>
         </h2>
 
         <div class="post-meta">
@@ -424,613 +556,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2019-03-06 10:45:11" itemprop="dateCreated datePublished" datetime="2019-03-06T10:45:11+08:00">2019-03-06</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-12-21 23:07:41" itemprop="dateModified" datetime="2021-12-21T23:07:41+08:00">2021-12-21</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%85%A5%E9%97%A8/" itemprop="url" rel="index"><span itemprop="name">入门</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2.6k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="FastDfs介绍"><a href="#FastDfs介绍" class="headerlink" title="FastDfs介绍"></a>FastDfs介绍</h2><ul>
-<li><p>FastDFS是由国人余庆所开发，其项目地址：<a href="https://github.com/happyfish100" target="_blank" rel="noopener">FastDFS</a>。FastDfs是一个轻量级的开源分布式文件系统，主要解决了大容量的文件存储和高并发访问的问题，文件存取时实现了负载均衡。文件存取时实现了负载均衡FastDFS实现了软件方式的RAID，可以使用廉价的IDE硬盘进行存储支持存储服务器在线扩容支持相同内容的文件只保存一份，节约磁盘空间。</p>
-</li>
-<li><p>FastDFS只能通过Client API访问，不支持POSIX访问方式。</p>
-</li>
-<li><p>FastDFS特别适合大中型网站使用，用来存储资源文件（如：图片、文档、音频、视频等等）。</p>
-</li>
-<li><p>它用纯C语言实现，支持Linux、FreeBSD、AIX等UNIX系统。它只能通过专有API对文件进行存取访问，不支持POSIX接口方式，不能mount使用。准确地讲，Google FS、HDFS、TFS（这三个都是底层上的实现，在文件系统上处理的是数据块）以及FastDFS、mogileFS（这两个是文件级上的实现，处理的是文件）等类Google FS都不是系统级的分布式文件系统，而是应用级的分布式文件存储服务。</p>
-</li>
-<li><p>特性</p>
-<ul>
-<li><pre><code>1、分组存储，灵活简洁、对等结构，不存在单点。
-2、文件ID由FastDFS生成，作为文件访问凭证。FastDFS不需要传统的name server（去重机制在服务端，导致不能达到秒传。）。
-3、和流行的web server无缝衔接，FastDFS已提供apache和nginx扩展模块。
-4、大、中、小文件均可以很好支持，支持海量小文件存储（实际上不建议存储超大文件（大于500M））。
-5、支持多块磁盘，支持单盘数据恢复（理论上，实际出现Storage合并丢操作失数据）。
-6、支持相同文件内容只保存一份，节省存储空间。
-7、存储服务器上可以保存文件附加属性。
-8、下载文件支持多线程方式，支持断点续传。</code></pre>
-</li>
-</ul>
-</li>
-</ul>
-<h2 id="系统架构"><a href="#系统架构" class="headerlink" title="系统架构"></a>系统架构</h2>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/posts/688330038/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/1918301121/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="憨憨在减肥">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/1918301121/" class="post-title-link" itemprop="url">Xpath入门</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-03-04 11:37:52" itemprop="dateCreated datePublished" datetime="2019-03-04T11:37:52+08:00">2019-03-04</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-12-21 23:10:44" itemprop="dateModified" datetime="2021-12-21T23:10:44+08:00">2021-12-21</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%85%A5%E9%97%A8/" itemprop="url" rel="index"><span itemprop="name">入门</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>5.2k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>5 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>​    了解Xpath之前先了解下XML、HTML。如果完全不知道是什么，建议系统学习HTML、XML下阅读下文。</p>
-</blockquote>
-<h2 id="XML"><a href="#XML" class="headerlink" title="XML"></a>XML</h2><blockquote>
-<p><strong>可扩展标记语言</strong>（英语：E<strong>x</strong>tensible <strong>M</strong>arkup <strong>L</strong>anguage，简称：<strong>XML</strong>），是一种标记语言。标记指计算机所能理解的信息符号，通过此种标记，计算机之间可以处理包含各种信息的文章等。如何定义这些标记，既可以选择国际通用的标记语言，比如HTML，也可以使用像XML这样由相关人士自由决定的标记语言，这就是语言的可扩展性。XML是从标准通用标记语言（SGML）中简化修改出来的。它主要用到的有可扩展标记语言、可扩展样式语言（XSL）、XBRL和XPath等。 </p>
-</blockquote>
-<p>示例-0</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">note</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">to</span>&gt;</span>George<span class="tag">&lt;/<span class="name">to</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">from</span>&gt;</span>John<span class="tag">&lt;/<span class="name">from</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">heading</span>&gt;</span>Reminder<span class="tag">&lt;/<span class="name">heading</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span>Don't forget the meeting!<span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">note</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="HTML"><a href="#HTML" class="headerlink" title="HTML"></a>HTML</h2><blockquote>
-<p><strong>超文本标记语言</strong>（英语：<strong>H</strong>yper<strong>T</strong>ext <strong>M</strong>arkup <strong>L</strong>anguage，简称：<strong>HTML</strong>）是一种用于创建网页的标准标记语言。HTML是一种基础技术，常与CSS、JavaScript一起被众多网站用于设计令人赏心悦目的网页、网页应用程序以及移动应用程序的用户界面。网页浏览器可以读取HTML文件，并将其渲染成可视化网页。HTML描述了一个网站的结构语义随着线索的呈现，使之成为一种标记语言而非编程语言。</p>
-<p>HTML元素是构建网站的基石。HTML允许嵌入图像与对象，并且可以用于创建交互式表单，它被用来结构化信息——例如标题、段落和列表等等，也可用来在一定程度上描述文档的外观和语义。HTML的语言形式为尖括号包围的HTML元素（如<code>&lt;html&gt;</code>），浏览器使用HTML标签和脚本来诠释网页内容，但不会将它们显示在页面上。</p>
-<p>HTML可以嵌入如JavaScript的脚本语言，它们会影响HTML网页的行为。网页浏览器也可以引用层叠样式表（CSS）来定义文本和其它元素的外观与布局。维护HTML和CSS标准的组织万维网联盟（W3C）鼓励人们使用CSS替代一些用于表现的HTML元素。</p>
-</blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/posts/1918301121/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/3356989948/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="憨憨在减肥">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/3356989948/" class="post-title-link" itemprop="url">爬虫入门</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-03-02 12:03:21" itemprop="dateCreated datePublished" datetime="2019-03-02T12:03:21+08:00">2019-03-02</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-12-21 23:11:12" itemprop="dateModified" datetime="2021-12-21T23:11:12+08:00">2021-12-21</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%85%A5%E9%97%A8/" itemprop="url" rel="index"><span itemprop="name">入门</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>4.8k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>既然sakila的数据不是很好用，干脆自己爬点数据吧。</p>
-</blockquote>
-<ul>
-<li>在 <a href="https://z201.cn/2019/02/28/%E5%AE%9E%E6%88%98-sakila%E6%95%B0%E6%8D%AE%E5%BA%93%E9%A1%B9%E7%9B%AE/">实战-sakila数据库项目</a> 介绍了sakila数据开发应用，结果发现只有文字数据，而且影片数据也不理想，所以这里需要使用爬虫从万能的互联网上抓点数据。</li>
-</ul>
-<h3 id="目标选择"><a href="#目标选择" class="headerlink" title="目标选择"></a>目标选择</h3><ul>
-<li>腾讯视频</li>
-</ul>
-<h3 id="抓取类型"><a href="#抓取类型" class="headerlink" title="抓取类型"></a>抓取类型</h3><ul>
-<li>电影</li>
-</ul>
-<h3 id="技术选型"><a href="#技术选型" class="headerlink" title="技术选型"></a>技术选型</h3><ul>
-<li><code> jsoup</code></li>
-</ul>
-<h3 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h3><blockquote>
-<p>简单的单元测试入门。jsoup的用法可以直接查看官方文档。</p>
-</blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String UA_PHONE = <span class="string">"Mozilla/5.0 (Linux; Android 4.3; Nexus 10 Build/JSS15Q) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.23 Safari/537.36"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String UA_PC = <span class="string">"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String QQ_PAGE_MOVIE = <span class="string">"http://v.qq.com/x/list/movie?itype=-1&amp;offset=1"</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">	Document document = Jsoup.connect(QQ_PAGE_MOVIE)</span><br><span class="line">            .userAgent(UA_PC)</span><br><span class="line">            .timeout(TIME_OUT)</span><br><span class="line">            .ignoreContentType(<span class="keyword">true</span>).get();</span><br><span class="line">      Elements elements = document.select(<span class="string">"li.list_item a.figure"</span>);</span><br><span class="line">        <span class="keyword">for</span> (Element element : elements) &#123;</span><br><span class="line">            String url = element.attr(<span class="string">"href"</span>);</span><br><span class="line">            String title = element.select(<span class="string">"img"</span>).attr(<span class="string">"alt"</span>);</span><br><span class="line">            String image = element.select(<span class="string">"img"</span>).attr(<span class="string">"r-lazyload"</span>);</span><br><span class="line">            System.out.println(<span class="string">"href  "</span> + url + <span class="string">"   title  "</span> + title + <span class="string">"  image  "</span> + image);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/posts/3356989948/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/1741249225/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="憨憨在减肥">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/1741249225/" class="post-title-link" itemprop="url">Redis基础（二）</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-03-02 11:53:38" itemprop="dateCreated datePublished" datetime="2019-03-02T11:53:38+08:00">2019-03-02</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-12-22 21:57:04" itemprop="dateModified" datetime="2021-12-22T21:57:04+08:00">2021-12-22</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Redis/" itemprop="url" rel="index"><span itemprop="name">Redis</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2.6k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。 </p>
-</blockquote>
-<h3 id="Redis分布式锁"><a href="#Redis分布式锁" class="headerlink" title="Redis分布式锁"></a>Redis分布式锁</h3><ul>
-<li>在日常开发中,redis主要用在缓存处理。为保证缓存所以会使用集群的方式，避免缓存雪崩。都使用集群了应用层也不太可能是单应用。在分布式的情况下就会涉及分布式锁。a应用和b应用一起对某条缓存记录操作，a查完数据在内存修改，在放回去。如果这个操作两个应用同时进行就会出现并发问题。为了保证操作的原子性，所以就要使用锁来保证操作执行的顺序。</li>
-</ul>
-<h3 id="set扩展"><a href="#set扩展" class="headerlink" title="set扩展"></a>set扩展</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用set的扩展命令 一次把expire和 setnx的特性带上。下面这条命令就是 过期时间5s 并且不可以重复添加。只能删除或者到期。</span></span><br><span class="line">192.168.31.7:6379&gt; <span class="built_in">set</span> lock:redis <span class="literal">true</span> ex 5 nx</span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; <span class="built_in">set</span> lock:redis <span class="literal">true</span> ex 5 nx  <span class="comment"># 第二次在设置就失败了。</span></span><br><span class="line">(nil)</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>但是这种分布式锁并不能完美解决问题，因为锁有过期时间，如果时间过期了但是操作依然未执行完成，后面的操作进来就可能会造成不可控影响。</li>
-</ul>
-<h3 id="异步消息列队"><a href="#异步消息列队" class="headerlink" title="异步消息列队"></a>异步消息列队</h3><blockquote>
-<p>Redis list这个数据类型，非常适合做列队。使用rpush / lpush 操作入列，使用 lpop 和 rpop来出列队。</p>
-</blockquote>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">192.168.31.7:6379&gt; rpush queue a b c d </span><br><span class="line">(<span class="built_in">integer</span>) 4</span><br><span class="line">192.168.31.7:6379&gt; llen queue</span><br><span class="line">(<span class="built_in">integer</span>) 4</span><br><span class="line"><span class="comment"># rpop 压栈</span></span><br><span class="line">192.168.31.7:6379&gt; lpop queue</span><br><span class="line"><span class="string">"a"</span></span><br><span class="line">192.168.31.7:6379&gt; lpop queue</span><br><span class="line"><span class="string">"b"</span></span><br><span class="line">192.168.31.7:6379&gt; lpop queue</span><br><span class="line"><span class="string">"c"</span></span><br><span class="line">192.168.31.7:6379&gt; lpop queue</span><br><span class="line"><span class="string">"d"</span></span><br><span class="line"><span class="comment"># lpop 列队</span></span><br><span class="line">192.168.31.7:6379&gt; lpop queue</span><br><span class="line"><span class="string">"a"</span></span><br><span class="line">192.168.31.7:6379&gt; lpop queue</span><br><span class="line"><span class="string">"b"</span></span><br><span class="line">192.168.31.7:6379&gt; lpop queue</span><br><span class="line"><span class="string">"c"</span></span><br><span class="line">192.168.31.7:6379&gt; lpop queue</span><br><span class="line"><span class="string">"d"</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>但是，redis的list一旦被消费完就会被删除，为了避免客户端一直读取。建议使用阻塞列队<code>blpop\brpop</code>的方式</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用blocking 阻塞读，1就是阻塞时间。这样可以避免不断的读。</span></span><br><span class="line">192.168.31.7:6379&gt; rpush queue a b c d </span><br><span class="line">(<span class="built_in">integer</span>) 4</span><br><span class="line">192.168.31.7:6379&gt; blpop queue 1</span><br><span class="line">1) <span class="string">"queue"</span></span><br><span class="line">2) <span class="string">"a"</span></span><br><span class="line">192.168.31.7:6379&gt; blpop queue 1</span><br><span class="line">1) <span class="string">"queue"</span></span><br><span class="line">2) <span class="string">"b"</span></span><br><span class="line">192.168.31.7:6379&gt; blpop queue 1</span><br><span class="line">1) <span class="string">"queue"</span></span><br><span class="line">2) <span class="string">"c"</span></span><br><span class="line">192.168.31.7:6379&gt; blpop queue 1</span><br><span class="line">1) <span class="string">"queue"</span></span><br><span class="line">2) <span class="string">"d"</span></span><br><span class="line">192.168.31.7:6379&gt; blpop queue 1 <span class="comment"># 最后一次 list已经空了。</span></span><br><span class="line">(nil)</span><br><span class="line">(1.08s)  <span class="comment"># 阻塞了一秒</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="key查询"><a href="#key查询" class="headerlink" title="key查询"></a>key查询</h3><ul>
-<li>虽然redis已经有keys，并不能像mysql一个提供limit这种，导致读取的太多了。Redis是一个单线程，数据太多会阻塞。<code>scan</code>提供了三个参数 <code>cursor key limit </code>分别是 </li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">192.168.31.7:6379&gt; <span class="built_in">set</span> key1 1</span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; <span class="built_in">set</span> key2 1</span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; <span class="built_in">set</span> key3 1</span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; <span class="built_in">set</span> key4 1</span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; <span class="built_in">set</span> key5 1</span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; scan 0 match key* count 10</span><br><span class="line">1) <span class="string">"0"</span></span><br><span class="line">2) 1) <span class="string">"key4"</span></span><br><span class="line">   2) <span class="string">"key3"</span></span><br><span class="line">   3) <span class="string">"key2"</span></span><br><span class="line">   4) <span class="string">"key5"</span></span><br><span class="line">   5) <span class="string">"key1"</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="Redis事务"><a href="#Redis事务" class="headerlink" title="Redis事务"></a>Redis事务</h3><blockquote>
-<p>Redis事物分别是multi/exec/discard 对应的就是begin/commit/rollback。Redis在收到exec的指令才会执行事务列队，执行完毕后一次返回指令运行结果。但是Redis仅仅是保证了个隔离性。在使用事物的时候建议使用管道pipe，这样可以减少网络请求。</p>
-</blockquote>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 简单的演示事务</span></span><br><span class="line">192.168.31.7:6379&gt; multi</span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; <span class="built_in">set</span> name wang</span><br><span class="line">QUEUED</span><br><span class="line">192.168.31.7:6379&gt; <span class="built_in">set</span> name zhang</span><br><span class="line">QUEUED</span><br><span class="line">192.168.31.7:6379&gt; <span class="built_in">exec</span></span><br><span class="line">1) OK</span><br><span class="line">2) OK</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>事务丢弃 discard</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建一个字符串并对value进行累加。</span></span><br><span class="line">192.168.31.7:6379&gt; <span class="built_in">set</span> count 1</span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; get count</span><br><span class="line"><span class="string">"1"</span></span><br><span class="line">192.168.31.7:6379&gt; multi <span class="comment"># 开启事物</span></span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; incr count</span><br><span class="line">QUEUED</span><br><span class="line">192.168.31.7:6379&gt; incr count</span><br><span class="line">QUEUED</span><br><span class="line">192.168.31.7:6379&gt; discard <span class="comment"># 丢弃事物</span></span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; get count <span class="comment">#检查数据。</span></span><br><span class="line"><span class="string">"1"</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="Watch"><a href="#Watch" class="headerlink" title="Watch"></a>Watch</h3><blockquote>
-<p>上面的分布式锁其实是一个悲观锁，实际上可以使用watch实现乐观锁。watch会在事务开始之前，监听一个或者多个参数，当执行exec的时候redis会检查被监听的参数是否改变，如果改变了事务执行失败。这里需要注意的是watch必须在事务之前开启。</p>
-</blockquote>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 监听count</span></span><br><span class="line">192.168.31.7:6379&gt; watch count </span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; incr count <span class="comment"># 自增count的value。</span></span><br><span class="line">(<span class="built_in">integer</span>) 2</span><br><span class="line">192.168.31.7:6379&gt; multi <span class="comment">#开启事物</span></span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; incr count </span><br><span class="line">QUEUED</span><br><span class="line">192.168.31.7:6379&gt; <span class="built_in">exec</span>  </span><br><span class="line">(nil) <span class="comment">#事务执行失败。</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="END"><a href="#END" class="headerlink" title="END"></a>END</h3>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/1474278929/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="憨憨在减肥">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/1474278929/" class="post-title-link" itemprop="url">Redis基础（一）</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-02-28 00:40:49" itemprop="dateCreated datePublished" datetime="2019-02-28T00:40:49+08:00">2019-02-28</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-12-21 23:09:30" itemprop="dateModified" datetime="2021-12-21T23:09:30+08:00">2021-12-21</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Redis/" itemprop="url" rel="index"><span itemprop="name">Redis</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>5.2k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>5 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。 </p>
-</blockquote>
-<h2 id="一、初认Redis"><a href="#一、初认Redis" class="headerlink" title="一、初认Redis"></a>一、初认Redis</h2><ul>
-<li>Redis是一个速度非常快的<code>非关系型数据库(non-relationl databases)</code>,它可以是存储键对值（key-vakue）方式存储数据。它拥有5中数据类型。同时可以将存储在内存中的数据持久化到因硬盘中。</li>
-<li>Redis所有的数据都是以唯一的key字符串为名称，然后可以通过这个key来获取对应的value。</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>结构类型</th>
-<th>结构存储的值</th>
-<th>结构的读写能力</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>STRING</td>
-<td>可以是字符串、整数或者浮点类型</td>
-<td>对整个字符串或者字符串的其中一部分执行操作；对整数和浮点数据执行<code>自动</code>或者<code>自减</code>操作</td>
-</tr>
-<tr>
-<td>LIST</td>
-<td>一个链表、链表每个节点上都包含了一个字符串</td>
-<td>从链表的两端推入或者弹出元素；根据偏移量对链表记性修剪<code>trim</code>；读取单个或者多个元素；根据值查询或者移除元素。</td>
-</tr>
-<tr>
-<td>SET</td>
-<td>包含字符串的无序集合，并且每个被包含的字符串都是唯一约束</td>
-<td>添加、查询、移除单个元素；检查一个元素是否存在于集合中；计算交集、并集、差集；从集合里面随机获取元素。</td>
-</tr>
-<tr>
-<td>HASH</td>
-<td>包含键值对的无序散列表</td>
-<td>添加、查询、移除单个键值对；获取全部键对值。</td>
-</tr>
-<tr>
-<td>ZSET（有序集合）</td>
-<td>字符串与浮点分数之间的有序映射，元素的排列顺序由分值大决定。</td>
-<td>添加、查询、移除单个元素；根据分值范围或者成员来获取元素。</td>
-</tr>
-</tbody></table>
-<h3 id="String"><a href="#String" class="headerlink" title="String"></a>String</h3><ul>
-<li>字符串是Redis当中最简单的数据结构。Redis的字符串是动态的字符串，可以被反复修改。内部实现类似Java的ArrayList，采用预分配空间的方式来减少内存频繁分配。预分配大小方式根据字符串的大小决定，字符串小于1m则扩容空间是加倍。若字符串超过1m，扩容一次只会多扩1m的空间。字符串最大长度是512m。</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">192.168.31.7:6379&gt; keys * <span class="comment"># 检查当前空间key</span></span><br><span class="line">(empty list or <span class="built_in">set</span>) <span class="comment"># 空的</span></span><br><span class="line"><span class="comment"># 当个字符串读写</span></span><br><span class="line">192.168.31.7:6379&gt; <span class="built_in">set</span> redis-name redis:latest</span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; keys *</span><br><span class="line">1) <span class="string">"redis-name"</span></span><br><span class="line">192.168.31.7:6379&gt; get redis-name</span><br><span class="line"><span class="string">"redis:latest"</span></span><br><span class="line">192.168.31.7:6379&gt; <span class="built_in">set</span> redis-version 5.0.3</span><br><span class="line">OK</span><br><span class="line"><span class="comment"># 批量获取字符串</span></span><br><span class="line">192.168.31.7:6379&gt; mget redis-name redis-version</span><br><span class="line">1) <span class="string">"redis:latest"</span></span><br><span class="line">2) <span class="string">"5.0.3"</span></span><br><span class="line"><span class="comment"># 批量写入字符串</span></span><br><span class="line">192.168.31.7:6379&gt; mset os mac language Chinese</span><br><span class="line">OK</span><br><span class="line">192.168.31.7:6379&gt; keys *</span><br><span class="line">1) <span class="string">"redis-version"</span></span><br><span class="line">2) <span class="string">"language"</span></span><br><span class="line">3) <span class="string">"os"</span></span><br><span class="line">4) <span class="string">"redis-name"</span></span><br><span class="line">192.168.31.7:6379&gt; mget redis-name redis-version os language </span><br><span class="line">1) <span class="string">"redis:latest"</span></span><br><span class="line">2) <span class="string">"5.0.3"</span></span><br><span class="line">3) <span class="string">"mac"</span></span><br><span class="line">4) <span class="string">"Chinese"</span></span><br><span class="line">192.168.31.7:6379&gt;</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/posts/1474278929/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/899510692/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="憨憨在减肥">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/899510692/" class="post-title-link" itemprop="url">实践-mybatis+h2+logback单元测试</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-02-27 14:16:34" itemprop="dateCreated datePublished" datetime="2019-02-27T14:16:34+08:00">2019-02-27</time>
+              <time title="创建时间：2019-05-08 16:35:04" itemprop="dateCreated datePublished" datetime="2019-05-08T16:35:04+08:00">2019-05-08</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
@@ -1055,14 +581,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>3.9k</span>
+              <span>555</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
+              <span>1 分钟</span>
             </span>
 
         </div>
@@ -1075,136 +601,30 @@
 
       
           <blockquote>
-<p><a href="https://z201.cn/2019/02/26/mybatis%E5%B0%8F%E8%AF%95%E7%89%9B%E5%88%80/">mybatis小试牛刀</a> 在此基础上添加log日志。</p>
+<p>有必要记录下自己常用的插件，避免特殊事件的发生。</p>
 </blockquote>
-<ul>
-<li><p>官方文档 ： <a href="http://www.mybatis.org/mybatis-3/zh/logging.html" target="_blank" rel="noopener">http://www.mybatis.org/mybatis-3/zh/logging.html</a></p>
-</li>
-<li><p>项目地址 ： <a href="https://github.com/z201/z201.github.io.code/tree/master/mybatis-learning/mybatis-learning-02" target="_blank" rel="noopener">mybatis-learning-02</a></p>
-</li>
-</ul>
-<h3 id="0x01-测试控制台的显示内容"><a href="#0x01-测试控制台的显示内容" class="headerlink" title="0x01 测试控制台的显示内容"></a>0x01 测试控制台的显示内容</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">User(id=1, name=TOM, age=12, gender=0)</span><br><span class="line">User(id=2, name=JON, age=13, gender=1)</span><br><span class="line">User(id=3, name=King, age=11, gender=0)</span><br></pre></td></tr></table></figure>
-
-<h3 id="0x02-增加日志输出"><a href="#0x02-增加日志输出" class="headerlink" title="0x02 增加日志输出"></a>0x02 增加日志输出</h3><blockquote>
-<p>根据官方文档显示，支持的log有很多实现，这里使用Slf4j + Logback 多组合。</p>
+<h4 id="Free-Mybatis-plugin"><a href="#Free-Mybatis-plugin" class="headerlink" title="Free Mybatis plugin"></a>Free Mybatis plugin</h4><blockquote>
+<p>Mybatis 插件，可以定位java和xml关系。通过java接口快速生成相关xml文件或者方法。</p>
 </blockquote>
-<ul>
-<li>根据之前的项目，这里偷懒重新创建一个项目并把之前的代码都复制过来。</li>
-<li>添加maven依赖。</li>
-</ul>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"> <span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">mybatis.version</span>&gt;</span>3.5.0<span class="tag">&lt;/<span class="name">mybatis.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">junit.version</span>&gt;</span>4.12<span class="tag">&lt;/<span class="name">junit.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">lmbok.version</span>&gt;</span>1.18.4<span class="tag">&lt;/<span class="name">lmbok.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">mysql.version</span>&gt;</span>5.1.47<span class="tag">&lt;/<span class="name">mysql.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">h2.version</span>&gt;</span>1.4.197<span class="tag">&lt;/<span class="name">h2.version</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 新增内容 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">slf4j.version</span>&gt;</span>1.7.25<span class="tag">&lt;/<span class="name">slf4j.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">logback.version</span>&gt;</span>1.2.3<span class="tag">&lt;/<span class="name">logback.version</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- pom文件需要指定打包编码集，[WARNING] File encoding has not been set, using platform encoding GBK, i.e. build is platform dependent!  --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">project.build.sourceEncoding</span>&gt;</span>UTF-8<span class="tag">&lt;/<span class="name">project.build.sourceEncoding</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.slf4j<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>slf4j-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;slf4j.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>ch.qos.logback<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>logback-classic<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;logback.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>添加logback配置文件</li>
-</ul>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">appender</span> <span class="attr">name</span>=<span class="string">"STDOUT"</span> <span class="attr">class</span>=<span class="string">"ch.qos.logback.core.ConsoleAppender"</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- encoders are assigned the type</span></span><br><span class="line"><span class="comment">             ch.qos.logback.classic.encoder.PatternLayoutEncoder by default --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">encoder</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">pattern</span>&gt;</span>z201.github.cn %d&#123;HH:mm:ss.SSS&#125; [%thread] %-5level %logger&#123;36&#125; - %msg%n<span class="tag">&lt;/<span class="name">pattern</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">encoder</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">appender</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">root</span> <span class="attr">level</span>=<span class="string">"debug"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">appender-ref</span> <span class="attr">ref</span>=<span class="string">"STDOUT"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">root</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>再次运行单元测试。</li>
-</ul>
-<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.046</span> [main] DEBUG org<span class="variable">.apache</span><span class="variable">.ibatis</span><span class="variable">.logging</span><span class="variable">.LogFactory</span> - Logging initialized using '<span class="keyword">class</span> org<span class="variable">.apache</span><span class="variable">.ibatis</span><span class="variable">.logging</span><span class="variable">.slf4j</span><span class="variable">.Slf4jImpl</span>' adapter.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.049</span> [main] DEBUG org<span class="variable">.apache</span><span class="variable">.ibatis</span><span class="variable">.logging</span><span class="variable">.LogFactory</span> - Logging initialized using '<span class="keyword">class</span> org<span class="variable">.apache</span><span class="variable">.ibatis</span><span class="variable">.logging</span><span class="variable">.slf4j</span><span class="variable">.Slf4jImpl</span>' adapter.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.076</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - PooledDataSource forcefully closed/removed all connections.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.076</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - PooledDataSource forcefully closed/removed all connections.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.076</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - PooledDataSource forcefully closed/removed all connections.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.076</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - PooledDataSource forcefully closed/removed all connections.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.155</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.t</span><span class="variable">.jdbc</span><span class="variable">.JdbcTransaction</span> - Opening JDBC Connection</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.356</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - Created connection <span class="number">1839168128</span>.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.356</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.t</span><span class="variable">.jdbc</span><span class="variable">.JdbcTransaction</span> - Setting autocommit to false on JDBC Connection [conn0: url=jdbc:h2:mem:mybatis_learning_01_db user=ROOT]</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.358</span> [main] DEBUG c<span class="variable">.z201</span><span class="variable">.mybatis</span><span class="variable">.learning</span><span class="variable">.UserDao</span><span class="variable">.list</span> - ==&gt;  Preparing: SELECT * FROM <span class="meta">`user` </span></span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.384</span> [main] DEBUG c<span class="variable">.z201</span><span class="variable">.mybatis</span><span class="variable">.learning</span><span class="variable">.UserDao</span><span class="variable">.list</span> - ==&gt; Parameters: </span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.411</span> [main] DEBUG c<span class="variable">.z201</span><span class="variable">.mybatis</span><span class="variable">.learning</span><span class="variable">.UserDao</span><span class="variable">.list</span> - &lt;==      Total: <span class="number">3</span></span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.414</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.t</span><span class="variable">.jdbc</span><span class="variable">.JdbcTransaction</span> - Resetting autocommit to true on JDBC Connection [conn0: url=jdbc:h2:mem:mybatis_learning_01_db user=ROOT]</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.415</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.t</span><span class="variable">.jdbc</span><span class="variable">.JdbcTransaction</span> - Closing JDBC Connection [conn0: url=jdbc:h2:mem:mybatis_learning_01_db user=ROOT]</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.415</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - Returned connection <span class="number">1839168128</span> to pool.</span><br><span class="line">User(id=<span class="number">1</span>, name=TOM, age=<span class="number">12</span>, gender=<span class="number">0</span>)</span><br><span class="line">User(id=<span class="number">2</span>, name=JON, age=<span class="number">13</span>, gender=<span class="number">1</span>)</span><br><span class="line">User(id=<span class="number">3</span>, name=King, age=<span class="number">11</span>, gender=<span class="number">0</span>)</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.416</span> [main] DEBUG cn<span class="variable">.z201</span><span class="variable">.mybatis</span><span class="variable">.test</span><span class="variable">.MybatisTest01</span> - <span class="keyword">end</span>...</span><br></pre></td></tr></table></figure>
-
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/887797189/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="胖枫叶">
-      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="憨憨在减肥">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/887797189/" class="post-title-link" itemprop="url">实践-mybatis+h2单元测试</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-02-26 20:46:08" itemprop="dateCreated datePublished" datetime="2019-02-26T20:46:08+08:00">2019-02-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-12-21 14:24:58" itemprop="dateModified" datetime="2021-12-21T14:24:58+08:00">2021-12-21</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AE%9E%E8%B7%B5/" itemprop="url" rel="index"><span itemprop="name">实践</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>6.3k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>6 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>接着上章内容<a href="https://z201.cn/2019/02/26/mybatis%E6%BA%90%E7%A0%81%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">mybatis源码环境搭建</a>,根据官方文档，运行一个demo项目。</p>
+<h4 id="Mybaits-Log-plugin"><a href="#Mybaits-Log-plugin" class="headerlink" title="Mybaits Log plugin"></a>Mybaits Log plugin</h4><blockquote>
+<p>使用插件将mybaits默认的日志输出转换成可以运行的sql日志。</p>
 </blockquote>
-<h3 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h3><ul>
-<li>项目源代码:<a href="https://github.com/z201/z201.github.io.code/tree/master/mybatis-learning/mybatis-learning-01" target="_blank" rel="noopener">mybatis-learning-01</a></li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">mybatis-learning/mybatis-learning-01</span><br><span class="line">├── mybatis-learning-01.iml</span><br><span class="line">├── pom.xml  <span class="comment">#项目依赖管理 1</span></span><br><span class="line">└── src</span><br><span class="line">    ├── main</span><br><span class="line">    │   ├── java</span><br><span class="line">    │   │   ├── cn</span><br><span class="line">    │   │   │   └── z201</span><br><span class="line">    │   │   │       └── mybatis</span><br><span class="line">    │   │   │           └── learning</span><br><span class="line">    │   │   │               ├── SetUpSessionFactory.java <span class="comment"># mybatis 初始化  3</span></span><br><span class="line">    │   │   │               ├── User.java <span class="comment"># 实体 5</span></span><br><span class="line">    │   │   │               └── UserDao.java <span class="comment"># 实体dao 6</span></span><br><span class="line">    │   │   └── package-info.java</span><br><span class="line">    │   └── resources</span><br><span class="line">    │       ├── init_table.sql <span class="comment"># h2数据库初始化sql 4</span></span><br><span class="line">    │       ├── mybatis</span><br><span class="line">    │       │   └── UserDao.xml <span class="comment"># dao 对应的mapper 7</span></span><br><span class="line">    │       └── mybatis-config.xml <span class="comment"># mybatis 配置文件 2</span></span><br><span class="line">    └── <span class="built_in">test</span></span><br><span class="line">        └── java</span><br><span class="line">            └── cn</span><br><span class="line">                └── z201</span><br><span class="line">                    └── mybatis</span><br><span class="line">                        └── <span class="built_in">test</span></span><br><span class="line">                            ├── MybatisTest01.java <span class="comment"># 单元测试 8</span></span><br><span class="line">                            └── package-info.java</span><br><span class="line"></span><br><span class="line">15 directories, 11 files</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>根据上面注释的顺序，我们依次介绍项目代码。</p>
+<h4 id="Alibaba-java-coding-guidelines"><a href="#Alibaba-java-coding-guidelines" class="headerlink" title="Alibaba-java-coding-guidelines"></a>Alibaba-java-coding-guidelines</h4><blockquote>
+<p>阿里巴巴java代码检查工具</p>
 </blockquote>
+<h4 id="json2pojo"><a href="#json2pojo" class="headerlink" title="json2pojo"></a>json2pojo</h4><blockquote>
+<p>json转bean的工具</p>
+</blockquote>
+<h4 id="查看某个方法被调用的地方。-鼠标选中方法名称"><a href="#查看某个方法被调用的地方。-鼠标选中方法名称" class="headerlink" title="查看某个方法被调用的地方。(鼠标选中方法名称)"></a>查看某个方法被调用的地方。(鼠标选中方法名称)</h4><p><code>Navigate | Call Hierarchy </code> 快捷键<code>control + option + h</code></p>
+<h4 id="Genterate-代码生成"><a href="#Genterate-代码生成" class="headerlink" title="Genterate 代码生成"></a>Genterate 代码生成</h4><p><code>Code | Genterate</code> #快捷键 <code>command + n</code></p>
+<h4 id="Copyright-模版"><a href="#Copyright-模版" class="headerlink" title="Copyright 模版"></a>Copyright 模版</h4><p><code>Edit | Copyright | Copyright profiles </code></p>
+<ul>
+<li>样板</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Copyright (c) $today.year  </span><br><span class="line">@Author:z201.coding@gamil.com</span><br><span class="line">@LastModified:$today.format(&quot;yyyy-MM-dd&quot;)</span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/posts/887797189/#more" rel="contents">
+              <a class="btn" href="/posts/1247507960/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -1228,7 +648,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/716639737/">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/3595703232/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -1242,7 +662,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/posts/716639737/" class="post-title-link" itemprop="url">源码分析-mybatis源码环境搭建</a>
+            <a href="/posts/3595703232/" class="post-title-link" itemprop="url">源码分析-skywalking源码环境搭建</a>
         </h2>
 
         <div class="post-meta">
@@ -1252,7 +672,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2019-02-26 14:17:54" itemprop="dateCreated datePublished" datetime="2019-02-26T14:17:54+08:00">2019-02-26</time>
+              <time title="创建时间：2019-04-21 18:40:55" itemprop="dateCreated datePublished" datetime="2019-04-21T18:40:55+08:00">2019-04-21</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
@@ -1277,14 +697,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>874</span>
+              <span>2.1k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>2 分钟</span>
             </span>
 
         </div>
@@ -1296,38 +716,41 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <blockquote>
-<p>mybatis学习笔记。</p>
+          <h2 id="0x00-阅读源代码"><a href="#0x00-阅读源代码" class="headerlink" title="0x00 阅读源代码"></a>0x00 阅读源代码</h2><blockquote>
+<p>长达9天的断网终于结束了。</p>
 </blockquote>
-<h2 id="0x00-阅读源代码"><a href="#0x00-阅读源代码" class="headerlink" title="0x00 阅读源代码"></a>0x00 阅读源代码</h2><h3 id="下载源代码"><a href="#下载源代码" class="headerlink" title="下载源代码"></a>下载源代码</h3><ul>
-<li>代码仓库地址 <a href="https://github.com/mybatis/mybatis-3.git" target="_blank" rel="noopener">https://github.com/mybatis/mybatis-3.git</a></li>
-<li>阅读版本号 <code>myabtis-3.5.0</code></li>
-<li>下载版本<code>git clone -b mybatis-3.5.0 https://github.com/mybatis/mybatis-3.git</code><ul>
+<h3 id="下载源代码"><a href="#下载源代码" class="headerlink" title="下载源代码"></a>下载源代码</h3><ul>
+<li>代码仓库地址 <a href="https://gitee.com/Z201/skywalking.git" target="_blank" rel="noopener">https://gitee.com/Z201/skywalking.git</a></li>
+<li>阅读版本号 <code>v6.0.0-GA</code></li>
+<li>下载版本<code>git clone -b v6.0.0-GA https://github.com/apache/skywalking.git</code><ul>
 <li>由于github下载速度是在太慢了，这里用gitee克隆一个镜像。</li>
-<li>下载版本<code>git clone -b mybatis-3.5.0 https://gitee.com/Z201/mybatis-3.git</code></li>
+<li>下载版本<code>git clone -b v6.0.0-GA https://gitee.com/Z201/skywalking.git</code></li>
 </ul>
 </li>
 </ul>
-<h3 id="查看源代码结构"><a href="#查看源代码结构" class="headerlink" title="查看源代码结构"></a>查看源代码结构</h3><ul>
-<li>查看项目主要文件夹</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">tree -d L 2</span><br><span class="line">.</span><br><span class="line">├── src  </span><br><span class="line">│   ├── main <span class="comment"># 源代码</span></span><br><span class="line">│   ├── site <span class="comment"># 站点稳当</span></span><br><span class="line">│   └── <span class="built_in">test</span> <span class="comment"># 单元测试</span></span><br><span class="line">└── travis   <span class="comment"># 官方的ci集成</span></span><br></pre></td></tr></table></figure>
+<h3 id="查看源代码结构"><a href="#查看源代码结构" class="headerlink" title="查看源代码结构"></a>查看源代码结构</h3><blockquote>
+<p>源码设计子项目过多，这里简单暂时2级目录。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">tree -d L 2</span><br><span class="line">.</span><br><span class="line">├── src  </span><br><span class="line">│   ├── main # 源代码</span><br><span class="line">│   ├── site # 站点稳当</span><br><span class="line">│   └── test # 单元测试</span><br><span class="line">└── travis   # 官方的ci集成</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>查看项目源码主目录</li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">tree -d src/main -L 5</span><br><span class="line">src/main</span><br><span class="line">└── java</span><br><span class="line">    └── org</span><br><span class="line">        └── apache</span><br><span class="line">            └── ibatis</span><br><span class="line">                ├── annotations <span class="comment"># 注解</span></span><br><span class="line">                ├── binding     <span class="comment"># 代理</span></span><br><span class="line">                ├── builder     <span class="comment"># 构造</span></span><br><span class="line">                ├── cache       <span class="comment"># 缓存</span></span><br><span class="line">                ├── cursor      <span class="comment"># 返回值类型为游标的方法</span></span><br><span class="line">                ├── datasource  <span class="comment"># 数据源</span></span><br><span class="line">                ├── exceptions  <span class="comment"># 异常</span></span><br><span class="line">                ├── executor    <span class="comment"># 数据操作具体执行</span></span><br><span class="line">                ├── io          <span class="comment"># 文件流</span></span><br><span class="line">                ├── jdbc        <span class="comment"># jdbc模块</span></span><br><span class="line">                ├── lang        <span class="comment"># 工具</span></span><br><span class="line">                ├── logging     <span class="comment"># 日志</span></span><br><span class="line">                ├── mapping     <span class="comment"># 映射、参数、结果集。</span></span><br><span class="line">                ├── parsing     <span class="comment"># 解析器</span></span><br><span class="line">                ├── plugin      <span class="comment"># 插件</span></span><br><span class="line">                ├── reflection  <span class="comment"># 反射</span></span><br><span class="line">                ├── scripting   <span class="comment"># sql解析</span></span><br><span class="line">                ├── session     <span class="comment"># 接口层会话</span></span><br><span class="line">                ├── transaction <span class="comment"># 事物</span></span><br><span class="line">                └── <span class="built_in">type</span>        <span class="comment"># 类型</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">➜  skywalking git:(8b638258b) tree -d -L 1</span><br><span class="line">.</span><br><span class="line">├── apm-application-toolkit</span><br><span class="line">├── apm-checkstyle</span><br><span class="line">├── apm-commons</span><br><span class="line">├── apm-dist</span><br><span class="line">├── apm-protocol <span class="comment"># pd文件</span></span><br><span class="line">├── apm-sniffer <span class="comment"># 插件</span></span><br><span class="line">├── apm-webapp  </span><br><span class="line">├── docker</span><br><span class="line">├── docs</span><br><span class="line">├── licenses</span><br><span class="line">├── oap-server <span class="comment"># 这里和5.x 有很大的不同改动了很多东西。</span></span><br><span class="line">├── skywalking-ui </span><br><span class="line">└── tools</span><br></pre></td></tr></table></figure>
 
 <ul>
-<li>将项目导入idea中，就可以看到完整的源代码了。</li>
+<li>将项目导入idea中。</li>
 </ul>
-<h2 id="0x01-根据官方文档快速入门"><a href="#0x01-根据官方文档快速入门" class="headerlink" title="0x01 根据官方文档快速入门"></a>0x01 根据官方文档快速入门</h2><blockquote>
-<p>强烈推荐认真阅读mybatis的官方文档。</p>
+<p>官方文档:<a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/How-to-build.md" target="_blank" rel="noopener">如何构建</a></p>
+<p><code>git submodule init</code></p>
+<p><code>git submodule update</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">➜  skywalking git:(8b638258b) git submodule init</span><br><span class="line">Submodule <span class="string">'apm-protocol/apm-network/src/main/proto'</span> (https://github.com/apache/incubator-skywalking-data-collect-protocol.git) registered <span class="keyword">for</span> path <span class="string">'apm-protocol/apm-network/src/main/proto'</span></span><br><span class="line">Submodule <span class="string">'oap-server/server-query-plugin/query-graphql-plugin/src/main/resources/query-protocol'</span> (https://github.com/apache/incubator-skywalking-query-protocol.git) registered <span class="keyword">for</span> path <span class="string">'oap-server/server-query-plugin/query-graphql-plugin/src/main/resources/query-protocol'</span></span><br><span class="line">Submodule <span class="string">'skywalking-ui'</span> (https://github.com/apache/incubator-skywalking-ui) registered <span class="keyword">for</span> path <span class="string">'skywalking-ui'</span></span><br><span class="line">➜  skywalking git:(8b638258b) git submodule update</span><br><span class="line">Cloning into <span class="string">'/Users/zengqingfeng/word/source-code/skywalking/apm-protocol/apm-network/src/main/proto'</span>...</span><br><span class="line">Cloning into <span class="string">'/Users/zengqingfeng/word/source-code/skywalking/oap-server/server-query-plugin/query-graphql-plugin/src/main/resources/query-protocol'</span>...</span><br><span class="line">Cloning into <span class="string">'/Users/zengqingfeng/word/source-code/skywalking/skywalking-ui'</span>...</span><br><span class="line">Submodule path <span class="string">'apm-protocol/apm-network/src/main/proto'</span>: checked out <span class="string">'b66fa070fd647662f06497e4ed3657eb258cb6e9'</span></span><br><span class="line">Submodule path <span class="string">'oap-server/server-query-plugin/query-graphql-plugin/src/main/resources/query-protocol'</span>: checked out <span class="string">'c65a23bd6b9bba8d1df30d4de261624952df2b7b'</span></span><br><span class="line">Submodule path <span class="string">'skywalking-ui'</span>: checked out <span class="string">'c44642f73b9f73a54b0d716cade5094304e1a67b'</span></span><br></pre></td></tr></table></figure>
+
+<p><code>clean package -DskipTests</code></p>
+<blockquote>
+<p>这个时候慢慢等吧v6.0.0-GA有120个子项目。更新完之后导入IDEA就好了。</p>
 </blockquote>
-<ul>
-<li>官方文档地址 ： <a href="http://www.mybatis.org/mybatis-3/zh/getting-started.html" target="_blank" rel="noopener">http://www.mybatis.org/mybatis-3/zh/getting-started.html</a></li>
-</ul>
-
+<h3 id="END"><a href="#END" class="headerlink" title="END"></a>END</h3>
       
     </div>
 
@@ -1346,7 +769,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/2184043232/">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/51185885/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar-min.jpg">
@@ -1360,7 +783,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/posts/2184043232/" class="post-title-link" itemprop="url">实践-Maven</a>
+            <a href="/posts/51185885/" class="post-title-link" itemprop="url">实践-spring.redis.timeout=0依然超时的问题</a>
         </h2>
 
         <div class="post-meta">
@@ -1370,7 +793,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
+              <time title="创建时间：2019-04-10 22:16:10" itemprop="dateCreated datePublished" datetime="2019-04-10T22:16:10+08:00">2019-04-10</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
@@ -1395,14 +818,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>4.1k</span>
+              <span>223</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
+              <span>1 分钟</span>
             </span>
 
         </div>
@@ -1415,45 +838,123 @@
 
       
           <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
+<p>最近在看项目的时候发现一个临时问题，就是redis.timeout设置0依然超时的问题。</p>
 </blockquote>
-<h3 id="Mavan常用命令以及用法"><a href="#Mavan常用命令以及用法" class="headerlink" title="Mavan常用命令以及用法"></a>Mavan常用命令以及用法</h3><ul>
-<li>常用命令就要先了解Maven的生命周期<ul>
-<li>Maven的生命周期就是对所有的构建过程进行抽象和统一。包含了项目的清理、初始化、编译、测试、打包、集成测试、验证、部署和站点生成等几乎所有的构建步骤。</li>
-<li>Maven的生命周期是抽象的，即生命周期不做任何实际的工作，实际任务由插件完成，类似于设计模式中的模板方法。所以必须有对应的插件才能执行对于的步骤。</li>
-<li>Maven有三套相互独立的生命周期，分别是clean、default和site。每个生命周期包含一些阶段（phase），阶段是有顺序的，后面的阶段依赖于前面的阶段。<ul>
-<li><strong>clean生命周期</strong>：清理项目，包含三个phase。<ul>
-<li>1.）pre-clean：执行清理前需要完成的工作。</li>
-<li>2）clean：清理上一次构建生成的文件。</li>
-<li>3）post-clean：执行清理后需要完成的工作。</li>
+<ul>
+<li>代码适用版本 <code>jedis:2.9.0</code> , <code>org.springframework.data.redis:1.8.1</code></li>
 </ul>
-</li>
-<li><strong>default生命周期</strong>：构建项目，重要的phase如下。<ul>
-<li>1）validate：验证工程是否正确，所有需要的资源是否可用。</li>
-<li>2）compile：编译项目的源代码。  </li>
-<li>3）test：使用合适的单元测试框架来测试已编译的源代码。这些测试不需要已打包和布署。</li>
-<li>4）Package：把已编译的代码打包成可发布的格式，比如jar。</li>
-<li>5）integration-test：如有需要，将包处理和发布到一个能够进行集成测试的环境。</li>
-<li>6）verify：运行所有检查，验证包是否有效且达到质量标准。</li>
-<li>7）install：把包安装到maven本地仓库，可以被其他工程作为依赖来使用。</li>
-<li>8）Deploy：在集成或者发布环境下执行，将最终版本的包拷贝到远程的repository，使得其他的开发者或者工程可以共享。</li>
-</ul>
-</li>
-<li><strong>site生命周期</strong>：建立和发布项目站点，phase如下。<ul>
-<li>1）pre-site：生成项目站点之前需要完成的工作。</li>
-<li>2）site：生成项目站点文档。</li>
-<li>3）post-site：生成项目站点之后需要完成的工作。</li>
-<li>4）site-deploy：将项目站点发布到服务器</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
+<h3 id="timeout设置0的问题"><a href="#timeout设置0的问题" class="headerlink" title="timeout设置0的问题"></a>timeout设置0的问题</h3><blockquote>
+<p>spring.redis.timeout =0 如果设置成0 redis默认超时时间就是2秒. </p>
+</blockquote>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Jedis/jedis-timeout-1.jpg"></p>
+<blockquote>
+<p>根据debug发现设置0点时候依然是2000毫秒。</p>
+</blockquote>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Jedis/jedis-timeout-2.jpg"></p>
+<blockquote>
+<p>根据初始化方法找到的原因。</p>
+</blockquote>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Jedis/jedis-timeout-3.png"></p>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Jedis/jedis-timeout-4.png"></p>
+<blockquote>
+<p>这里可以看到，当timeout设置0点时候不会被赋值。</p>
+</blockquote>
+<h3 id="END"><a href="#END" class="headerlink" title="END"></a>END</h3>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/3210089193/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="胖枫叶">
+      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="憨憨在减肥">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/3210089193/" class="post-title-link" itemprop="url">Grpc入门</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-04-03 22:18:34" itemprop="dateCreated datePublished" datetime="2019-04-03T22:18:34+08:00">2019-04-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-12-21 23:04:15" itemprop="dateModified" datetime="2021-12-21T23:04:15+08:00">2021-12-21</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%85%A5%E9%97%A8/" itemprop="url" rel="index"><span itemprop="name">入门</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>9.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>8 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>17年年底做的技术调研，文档好想没有写完。</p>
+</blockquote>
+<h2 id="gRPC"><a href="#gRPC" class="headerlink" title="gRPC "></a><a href="https://github.com/grpc/grpc" target="_blank" rel="noopener">gRPC </a></h2><h3 id="流程概念"><a href="#流程概念" class="headerlink" title="流程概念"></a>流程概念</h3><p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Grpc/grpc-1.png"></p>
+<h3 id="性能对比"><a href="#性能对比" class="headerlink" title="性能对比"></a>性能对比</h3><p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Grpc/grpc-2.png"></p>
+<h3 id="谁在使用"><a href="#谁在使用" class="headerlink" title="谁在使用"></a>谁在使用</h3><p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/Grpc/grpc-3.png"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/posts/2184043232/#more" rel="contents">
+              <a class="btn" href="/posts/3210089193/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -1476,7 +977,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/6/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/8/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/6/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/18/">18</a><a class="extend next" rel="next" href="/page/8/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1543,7 +1044,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">105</span>
+          <span class="site-state-item-count">106</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1554,7 +1055,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">112</span>
+        <span class="site-state-item-count">113</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1660,13 +1161,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">625k</span>
+    <span title="站点总字数">628k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">9:28</span>
+    <span title="站点阅读时长">9:31</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
