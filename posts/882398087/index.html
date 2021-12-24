@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"z201.cn","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.json"};
+  </script>
+
+  <meta name="description" content="RediSearch 是一个高性能的全文搜索引擎，它可以作为一个 Redis Module（扩展模块）运行在 Redis 服务器上。  RediSearch Redis 哈希中多个字段的全文索引 无性能损失的增量索引 文档排名（使用tf-idf，具有可选的用户提供的权重） 场加权 使用 AND、OR 和 NOT 运算符的复杂布尔查询 前缀匹配、模糊匹配和精确短语查询 支持双变音拼音匹配 自动完成">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis-Redisearch">
+<meta property="og:url" content="https://z201.cn/posts/882398087/index.html">
+<meta property="og:site_name" content="憨憨在减肥的博客">
+<meta property="og:description" content="RediSearch 是一个高性能的全文搜索引擎，它可以作为一个 Redis Module（扩展模块）运行在 Redis 服务器上。  RediSearch Redis 哈希中多个字段的全文索引 无性能损失的增量索引 文档排名（使用tf-idf，具有可选的用户提供的权重） 场加权 使用 AND、OR 和 NOT 运算符的复杂布尔查询 前缀匹配、模糊匹配和精确短语查询 支持双变音拼音匹配 自动完成">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-12-02T12:57:24.000Z">
+<meta property="article:modified_time" content="2021-12-24T17:03:51.822Z">
+<meta property="article:author" content="憨憨在减肥">
+<meta property="article:tag" content="Redisearch">
+<meta property="article:tag" content="搜索引擎">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://z201.cn/posts/882398087/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Redis-Redisearch | 憨憨在减肥的博客</title>
+  
+    <script>
+      function sendPageView() {
+        if (CONFIG.hostname !== location.hostname) return;
+        var uid = localStorage.getItem('uid') || (Math.random() + '.' + Math.random());
+        localStorage.setItem('uid', uid);
+        navigator.sendBeacon('https://www.google-analytics.com/collect', new URLSearchParams({
+          v  : 1,
+          tid: 'sPzmFRc9pkZyDXFyQWRFLjiFff-mdNJseUPpaocLd7c',
+          cid: uid,
+          t  : 'pageview',
+          dp : encodeURIComponent(location.pathname)
+        }));
+      }
+      document.addEventListener('pjax:complete', sendPageView);
+      sendPageView();
+    </script>
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?08e7145257fb655dd2db4082efa66876";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="憨憨在减肥的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">憨憨在减肥的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">爱好电影、音乐、旅游、美食、dota2，瞎折腾浪费时间最在行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-存档">
+
+    <a href="/archives" rel="section"><i class="archive fa-fw"></i>存档</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories" rel="section"><i class="th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags" rel="section"><i class="tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-实践">
+
+    <a href="/categories/%E5%AE%9E%E8%B7%B5" rel="section"><i class="graduation-cap fa-fw"></i>实践</a>
+
+  </li>
+        <li class="menu-item menu-item-查缺补漏">
+
+    <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" rel="section"><i class="graduation-cap fa-fw"></i>查缺补漏</a>
+
+  </li>
+        <li class="menu-item menu-item-微服务">
+
+    <a href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1" rel="section"><i class="graduation-cap fa-fw"></i>微服务</a>
+
+  </li>
+        <li class="menu-item menu-item-jvm">
+
+    <a href="/tags/Jvm/" rel="section"><i class="graduation-cap fa-fw"></i>Jvm</a>
+
+  </li>
+        <li class="menu-item menu-item-java">
+
+    <a href="/tags/Java/" rel="section"><i class="graduation-cap fa-fw"></i>Java</a>
+
+  </li>
+        <li class="menu-item menu-item-spring">
+
+    <a href="/tags/Spring" rel="section"><i class="graduation-cap fa-fw"></i>Spring</a>
+
+  </li>
+        <li class="menu-item menu-item-netty">
+
+    <a href="/tags/Netty" rel="section"><i class="graduation-cap fa-fw"></i>Netty</a>
+
+  </li>
+        <li class="menu-item menu-item-git">
+
+    <a href="/tags/Git" rel="section"><i class="graduation-cap fa-fw"></i>Git</a>
+
+  </li>
+        <li class="menu-item menu-item-linux">
+
+    <a href="/tags/Linux" rel="section"><i class="graduation-cap fa-fw"></i>Linux</a>
+
+  </li>
+        <li class="menu-item menu-item-docker">
+
+    <a href="/tags/Docker" rel="section"><i class="graduation-cap fa-fw"></i>Docker</a>
+
+  </li>
+        <li class="menu-item menu-item-redis">
+
+    <a href="/tags/Redis" rel="section"><i class="graduation-cap fa-fw"></i>Redis</a>
+
+  </li>
+        <li class="menu-item menu-item-mysql">
+
+    <a href="/tags/Mysql/" rel="section"><i class="graduation-cap fa-fw"></i>Mysql</a>
+
+  </li>
+        <li class="menu-item menu-item-mybatis">
+
+    <a href="/tags/Mybatis" rel="section"><i class="graduation-cap fa-fw"></i>Mybatis</a>
+
+  </li>
+        <li class="menu-item menu-item-公益404">
+
+    <a href="/404.html" rel="section"><i class="heartbeat fa-fw"></i>公益404</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/z201" class="github-corner" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/882398087/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="憨憨在减肥">
+      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="憨憨在减肥的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Redis-Redisearch
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-12-02 20:57:24" itemprop="dateCreated datePublished" datetime="2021-12-02T20:57:24+08:00">2021-12-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-12-25 01:03:51" itemprop="dateModified" datetime="2021-12-25T01:03:51+08:00">2021-12-25</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Redis/" itemprop="url" rel="index"><span itemprop="name">Redis</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>RediSearch 是一个高性能的全文搜索引擎，它可以作为一个 Redis Module（扩展模块）运行在 Redis 服务器上。</p>
+</blockquote>
+<h2 id="RediSearch"><a href="#RediSearch" class="headerlink" title="RediSearch"></a>RediSearch</h2><ul>
+<li>Redis 哈希中多个字段的全文索引</li>
+<li>无性能损失的增量索引</li>
+<li>文档排名（使用<a href="https://en.wikipedia.org/wiki/Tf%E2%80%93idf" target="_blank" rel="noopener">tf-idf</a>，具有可选的用户提供的权重）</li>
+<li>场加权</li>
+<li>使用 AND、OR 和 NOT 运算符的复杂布尔查询</li>
+<li>前缀匹配、模糊匹配和精确短语查询</li>
+<li>支持<a href="https://oss.redislabs.com/redisearch/Phonetic_Matching/" target="_blank" rel="noopener">双变音拼音匹配</a></li>
+<li>自动完成建议（带有模糊前缀建议）</li>
+<li><a href="https://oss.redislabs.com/redisearch/Stemming/" target="_blank" rel="noopener">多种语言中</a>基于词干的查询扩展（使用<a href="http://snowballstem.org/" target="_blank" rel="noopener">Snowball</a>）</li>
+<li>支持中文标记化和查询（使用<a href="https://github.com/lionsoul2014/friso" target="_blank" rel="noopener">Friso</a>）</li>
+<li>数字过滤器和范围</li>
+<li>使用<a href="https://redis.io/commands/georadius" target="_blank" rel="noopener">Redis 地理空间索引</a>进行<a href="https://redis.io/commands/georadius" target="_blank" rel="noopener">地理</a>空间搜索</li>
+<li>强大的聚合引擎</li>
+<li>支持所有 utf-8 编码文本</li>
+<li>检索完整文档、选定字段或仅检索文档 ID</li>
+<li>排序结果（例如，按创建日期）</li>
+</ul>
+<h3 id="官方文档"><a href="#官方文档" class="headerlink" title="官方文档"></a>官方文档</h3><ul>
+<li><a href="https://oss.redis.com/redisearch/Commands/#" target="_blank" rel="noopener">Commands</a></li>
+</ul>
+<h3 id="运行环境"><a href="#运行环境" class="headerlink" title="运行环境"></a>运行环境</h3><ul>
+<li>docker</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -p 6379:6379 -v <span class="variable">$PWD</span>/redisearch/data:/data  -d redislabs/redisearch:latest</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>检查安装</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">➜  docker-run redis-cli </span><br><span class="line">127.0.0.1:6379&gt; MODULE LIST</span><br><span class="line">1) 1) <span class="string">"name"</span></span><br><span class="line">   2) <span class="string">"search"</span></span><br><span class="line">   3) <span class="string">"ver"</span></span><br><span class="line">   4) (<span class="built_in">integer</span>) 20015</span><br><span class="line">127.0.0.1:6379&gt; <span class="built_in">exit</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>测试下</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; FT.ADD idx docCn 1.0 LANGUAGE chinese FIELDS txt <span class="string">"Redis支持主从同步。数据可以从主服务器向任意数量的从服务器上同步，从服务器可以是关联其他从服务器的主服务器。这使得Redis可执行单层树复制。从盘可以有意无意的对数据进行写操作。由于完全实现了发布/订阅机制，使得从数据库在任何地方同步树时，可订阅一个频道并接收主服务器完整的消息发布记录。同步对读取操作的可扩展性和数据冗余很有帮助。[8]"</span></span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379&gt; FT.SEARCH idx <span class="string">"数据"</span> LANGUAGE chinese HIGHLIGHT SUMMARIZE</span><br><span class="line">1) (<span class="built_in">integer</span>) 1</span><br><span class="line">2) <span class="string">"docCn"</span></span><br><span class="line">3) 1) <span class="string">"txt"</span></span><br><span class="line">   2) <span class="string">"&lt;b&gt;\xe6\x95\xb0\xe6\x8d\xae&lt;/b&gt;\xe5... &lt;b&gt;\xe6\x95\xb0\xe6\x8d\xae&lt;/b&gt;\xe8\xbf\x9b\xe8\xa1\x8c\xe5\x86\x99\xe6\x93\x8d\xe4\xbd\x9c\xe3\x80\x82\xe7\x94\xb1\xe4\xba\x8e\xe5\xae\x8c\xe5\x85\xa8\xe5\xae\x9e\xe7\x8e\xb0\xe4\xba\x86\xe5\x8f\x91\xe5\xb8\x83... &lt;b&gt;\xe6\x95\xb0\xe6\x8d\xae&lt;/b&gt;\xe5\x86\x97\xe4\xbd\x99\xe5\xbe\x88\xe6\x9c\x89\xe5\xb8\xae\xe5\x8a\xa9\xe3\x80\x82[8... "</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>对中文支持不够好</li>
+</ul>
+<h3 id="代码演示"><a href="#代码演示" class="headerlink" title="代码演示"></a>代码演示</h3><ul>
+<li><p>Spring boot 2.6.0</p>
+</li>
+<li><p>spring-lettucemod 1.8.1 </p>
+</li>
+<li><p>注意这里需要排除commons-pool2</p>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@Autowired</span></span><br><span class="line">StatefulRedisModulesConnection&lt;String, String&gt; connection;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Autowired</span></span><br><span class="line">RedisTemplate redisTemplate;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">search</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Set&lt;String&gt; keys = redisTemplate.keys(<span class="string">"*"</span>);</span><br><span class="line">    keys.forEach(item -&gt; &#123;</span><br><span class="line">                redisTemplate.delete(item);</span><br><span class="line">                log.info(<span class="string">" keys - &gt; &#123;&#125; "</span>, item);</span><br><span class="line">            &#125;</span><br><span class="line">    );</span><br><span class="line">    String searchIndexName = <span class="string">"doc-idx"</span>;</span><br><span class="line">    Gson gson = <span class="keyword">new</span> GsonBuilder().setPrettyPrinting().create();</span><br><span class="line">    RediSearchCommands&lt;String, String&gt; commands = connection.sync();</span><br><span class="line">    RedisCommands redisCommands = connection.sync();</span><br><span class="line">    List&lt;String&gt; list = commands.list();</span><br><span class="line">    <span class="keyword">for</span> (String s : list) &#123;</span><br><span class="line">        commands.dropindex(s);</span><br><span class="line">    &#125;</span><br><span class="line">    CreateOptions&lt;String, String&gt; options = CreateOptions.&lt;String, String&gt;builder()</span><br><span class="line">            .on(CreateOptions.DataType.HASH)</span><br><span class="line">            .languageField(Language.CHINESE.getId())</span><br><span class="line">            .prefix(String.format(<span class="string">"%s:"</span>, DocumentDto<span class="class">.<span class="keyword">class</span>.<span class="title">getName</span>()))</span></span><br><span class="line"><span class="class">            .<span class="title">build</span>()</span>;</span><br><span class="line">    log.info(<span class="string">"&#123;&#125;"</span>,gson.toJson(options));</span><br><span class="line">    Field title = Field.text(<span class="string">"title"</span>).build();</span><br><span class="line">    Field subtitle = Field.text(<span class="string">"subtitle"</span>).build();</span><br><span class="line">    Field description = Field.text(<span class="string">"description"</span>).build();</span><br><span class="line">    Field author = Field.text(<span class="string">"authors"</span>).build();</span><br><span class="line">    commands.create(</span><br><span class="line">            searchIndexName, <span class="comment">//</span></span><br><span class="line">            options, <span class="comment">//</span></span><br><span class="line">            title,</span><br><span class="line">            subtitle,</span><br><span class="line">            description, <span class="comment">//</span></span><br><span class="line">            author</span><br><span class="line">    );</span><br><span class="line">    String key = String.format("%s:%s", DocumentDto.class.getName(), "1");</span><br><span class="line">    Map&lt;String,String&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">    map.put(<span class="string">"title"</span>,<span class="string">"标题"</span>);</span><br><span class="line">    map.put(<span class="string">"subtitle"</span>,<span class="string">"副标题"</span>);</span><br><span class="line">    map.put(<span class="string">"description"</span>,<span class="string">"描述"</span>);</span><br><span class="line">    map.put(<span class="string">"authors"</span>,<span class="string">"作者"</span>);</span><br><span class="line">    Boolean result = redisHash.hMSet(key,map);</span><br><span class="line">    log.info(<span class="string">" \n key &#123;&#125; \n data &#123;&#125; result &#123;&#125; "</span>, key,gson.toJson(map),result);</span><br><span class="line">    map = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">    map.put(<span class="string">"title"</span>,<span class="string">"标题1"</span>);</span><br><span class="line">    map.put(<span class="string">"subtitle"</span>,<span class="string">"副标题2"</span>);</span><br><span class="line">    map.put(<span class="string">"description"</span>,<span class="string">"描述3"</span>);</span><br><span class="line">    map.put(<span class="string">"authors"</span>,<span class="string">"作者4"</span>);</span><br><span class="line">    key = String.format("%s:%s", DocumentDto.class.getName(), "2");</span><br><span class="line">    result = redisHash.hMSet(key,map);</span><br><span class="line">    log.info(<span class="string">" \n key &#123;&#125; \n data &#123;&#125; result &#123;&#125; "</span>, key,gson.toJson(map),result);</span><br><span class="line">    List&lt;String&gt; fields = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    fields.add(<span class="string">"title"</span>);</span><br><span class="line">    fields.add(<span class="string">"subtitle"</span>);</span><br><span class="line">    fields.add(<span class="string">"description"</span>);</span><br><span class="line">    fields.add(<span class="string">"authors"</span>);</span><br><span class="line">    SearchOptions.Summarize summarize = <span class="keyword">new</span> SearchOptions.Summarize();</span><br><span class="line">    summarize.setFields(fields);</span><br><span class="line">    SearchOptions searchOptions = SearchOptions.builder()</span><br><span class="line">            .language(Language.CHINESE)</span><br><span class="line">            .limit(SearchOptions.Limit.of(<span class="number">0</span>,<span class="number">10</span>))</span><br><span class="line">            .summarize(summarize)</span><br><span class="line">            .build();</span><br><span class="line">    log.info(<span class="string">" searchOptions &#123;&#125;"</span>,gson.toJson(searchOptions));</span><br><span class="line">    SearchResults&lt;String, String&gt; results = commands.search(searchIndexName, <span class="string">"标"</span>, searchOptions);</span><br><span class="line">    log.info(<span class="string">"&#123;&#125;"</span>, gson.toJson(results));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Console</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">key cn.z201.learning.redis.operating.DocumentDto:1 </span><br><span class="line"> data &#123;</span><br><span class="line">  &quot;subtitle&quot;: &quot;副标题&quot;,</span><br><span class="line">  &quot;description&quot;: &quot;描述&quot;,</span><br><span class="line">  &quot;title&quot;: &quot;标题&quot;,</span><br><span class="line">  &quot;authors&quot;: &quot;作者&quot;</span><br><span class="line">&#125; result true </span><br><span class="line"></span><br><span class="line"> key cn.z201.learning.redis.operating.DocumentDto:2 </span><br><span class="line"> data &#123;</span><br><span class="line">  &quot;subtitle&quot;: &quot;副标题2&quot;,</span><br><span class="line">  &quot;description&quot;: &quot;描述3&quot;,</span><br><span class="line">  &quot;title&quot;: &quot;标题1&quot;,</span><br><span class="line">  &quot;authors&quot;: &quot;作者4&quot;</span><br><span class="line">&#125; result true </span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 结果</span><br><span class="line">[</span><br><span class="line">  &#123;</span><br><span class="line">    &quot;title&quot;: &quot;标题1... &quot;,</span><br><span class="line">    &quot;subtitle&quot;: &quot;�&quot;,</span><br><span class="line">    &quot;description&quot;: &quot;�&quot;,</span><br><span class="line">    &quot;authors&quot;: &quot;�&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    &quot;title&quot;: &quot;标题... &quot;,</span><br><span class="line">    &quot;subtitle&quot;: &quot;�&quot;,</span><br><span class="line">    &quot;description&quot;: &quot;�&quot;,</span><br><span class="line">    &quot;authors&quot;: &quot;�&quot;</span><br><span class="line">  &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>结果很不友好，对中文支持一般般。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>憨憨在减肥
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://z201.cn/posts/882398087/" title="Redis-Redisearch">https://z201.cn/posts/882398087/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Redisearch/" rel="tag"># Redisearch</a>
+              <a href="/tags/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/" rel="tag"># 搜索引擎</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/posts/2485590586/" rel="prev" title="Hexo博客优化">
+      <i class="fa fa-chevron-left"></i> Hexo博客优化
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#RediSearch"><span class="nav-number">1.</span> <span class="nav-text">RediSearch</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#官方文档"><span class="nav-number">1.1.</span> <span class="nav-text">官方文档</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行环境"><span class="nav-number">1.2.</span> <span class="nav-text">运行环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码演示"><span class="nav-number">1.3.</span> <span class="nav-text">代码演示</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="憨憨在减肥"
+      src="/images/avatar-min.jpg">
+  <p class="site-author-name" itemprop="name">憨憨在减肥</p>
+  <div class="site-description" itemprop="description">SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">108</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">116</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/z201" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;z201" rel="noopener" target="_blank"><i class="github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:int_java_se@@163.com" title="E-Mail → mailto:int_java_se@@163.com" rel="noopener" target="_blank"><i class="envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" class="cc-opacity" rel="noopener" target="_blank"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.journaldev.com/" title="https:&#x2F;&#x2F;www.journaldev.com&#x2F;" rel="noopener" target="_blank">journaldev</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.geeksforgeeks.org/" title="https:&#x2F;&#x2F;www.geeksforgeeks.org&#x2F;" rel="noopener" target="_blank">geeksforgeeks</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://redis.io/commands/" title="https:&#x2F;&#x2F;redis.io&#x2F;commands&#x2F;" rel="noopener" target="_blank">rediscommands</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.lintcode.com/" title="https:&#x2F;&#x2F;www.lintcode.com&#x2F;" rel="noopener" target="_blank">lintCode</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://stackoverflow.com/" title="https:&#x2F;&#x2F;stackoverflow.com&#x2F;" rel="noopener" target="_blank">stackoverflow</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.baeldung.com/" title="https:&#x2F;&#x2F;www.baeldung.com&#x2F;" rel="noopener" target="_blank">beeldung</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.sczyh30.com/" title="http:&#x2F;&#x2F;www.sczyh30.com&#x2F;" rel="noopener" target="_blank">浮生若梦</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://objcoding.com/" title="https:&#x2F;&#x2F;objcoding.com&#x2F;" rel="noopener" target="_blank">后端进阶</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://spring.hhui.top/spring-blog/" title="https:&#x2F;&#x2F;spring.hhui.top&#x2F;spring-blog&#x2F;" rel="noopener" target="_blank">一灰灰Blog</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.javazhiyin.com/" title="https:&#x2F;&#x2F;www.javazhiyin.com&#x2F;" rel="noopener" target="_blank">Java知音</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://indienova.com/" title="https:&#x2F;&#x2F;indienova.com&#x2F;" rel="noopener" target="_blank">独立精神</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.ityouknow.com/" title="http:&#x2F;&#x2F;www.ityouknow.com&#x2F;" rel="noopener" target="_blank">纯洁的微笑</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://ifeve.com/" title="http:&#x2F;&#x2F;ifeve.com&#x2F;" rel="noopener" target="_blank">并发编程网</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://learnku.com/" title="https:&#x2F;&#x2F;learnku.com&#x2F;" rel="noopener" target="_blank">Learnku编程者中文社区</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://rustcc.cn/" title="https:&#x2F;&#x2F;rustcc.cn&#x2F;" rel="noopener" target="_blank">Rust语言中文设计</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">憨憨在减肥</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">639k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">9:41</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script><script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+</html>

@@ -285,6 +285,141 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/3516209833/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="憨憨在减肥">
+      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="憨憨在减肥的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/3516209833/" class="post-title-link" itemprop="url">Nginx-log-format</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-08-18 18:11:55" itemprop="dateCreated datePublished" datetime="2021-08-18T18:11:55+08:00">2021-08-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-12-21 14:24:58" itemprop="dateModified" datetime="2021-12-21T14:24:58+08:00">2021-12-21</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Nginx/" itemprop="url" rel="index"><span itemprop="name">Nginx</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>Ngxin 日志格式化</p>
+</blockquote>
+<ul>
+<li>Nginx提供的访问日志里就蕴藏着大量有用信息。今天这篇要说的就是如果修改Nginx默认日志格式，以便于我们更好的挖掘有效指标。</li>
+</ul>
+<p>编辑<code>/etc/nginx.conf</code>配置文件，在日志部分添加下面两段代码，编辑完成后重启Nginx服务即可。</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">log_format</span> main <span class="string">'<span class="variable">$host</span> - <span class="variable">$remote_addr</span> - [<span class="variable">$time_local</span>] "<span class="variable">$request</span>" '</span></span><br><span class="line">                <span class="string">'<span class="variable">$status</span> <span class="variable">$upstream_response_time</span> <span class="variable">$request_time</span> "<span class="variable">$http_referer</span>"'</span></span><br><span class="line">                <span class="string">'"<span class="variable">$http_user_agent</span>" "<span class="variable">$http_x_forwarded_for</span>" <span class="variable">$body_bytes_sent</span> '</span>;</span><br><span class="line"><span class="attribute">access_log</span> /var/log/nginx/access.log main;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>简单罗列一下变量的含义:</p>
+</blockquote>
+<ul>
+<li><code>$host</code> 访问域名</li>
+<li><code>$remote_addr</code> 客户端IP地址</li>
+<li><code>$time_local</code> 访问时间</li>
+<li><code>$status</code> 访问状态码</li>
+<li><code>$upstream_response_time</code> 应用返回到Nginx的时间</li>
+<li><code>$request_time</code> 请求时间</li>
+<li><code>$http_referer</code> 请求来源</li>
+<li><code>$http_user_agent</code> 访问客户端</li>
+<li><code>$http_x_forwarded_for</code> 客户端IP地址</li>
+<li><code>$body_bytes_sent</code> 返回给客户端大小</li>
+</ul>
+<blockquote>
+<p>在server中不生效的问题</p>
+</blockquote>
+<ul>
+<li>在server中增加 <code>access_log /var/log/nginx/access.log main;</code></li>
+</ul>
+<blockquote>
+<p>日期显示问题</p>
+</blockquote>
+<ul>
+<li><p><code>[01/Jul/2020:03:25:17 +0800]  </code>官方默认是这种</p>
+</li>
+<li><p>修改默认格式</p>
+</li>
+</ul>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">log_format</span> main <span class="string">'<span class="variable">$host</span> - <span class="variable">$remote_addr</span> - [<span class="variable">$time_iso8601</span>] "<span class="variable">$request</span>" '</span></span><br><span class="line">                <span class="string">'<span class="variable">$status</span> <span class="variable">$upstream_response_time</span> <span class="variable">$request_time</span> "<span class="variable">$http_referer</span>"'</span></span><br><span class="line">                <span class="string">'"<span class="variable">$http_user_agent</span>" "<span class="variable">$http_x_forwarded_for</span>" <span class="variable">$body_bytes_sent</span> '</span>;</span><br><span class="line"><span class="attribute">access_log</span> /var/log/nginx/access.log main;</span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>在server中增加下面代码</li>
+</ul>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="section">server</span> &#123;</span><br><span class="line"></span><br><span class="line">	if ($time_iso8601 ~ "^(\d&#123;4&#125;)-(\d&#123;2&#125;)-(\d&#123;2&#125;) (\d&#123;2&#125;):(\d&#123;2&#125;):(\d&#123;2&#125;)") &#123;</span><br><span class="line">			<span class="attribute">set</span> <span class="variable">$year</span> <span class="variable">$1</span>;</span><br><span class="line">			<span class="attribute">set</span> <span class="variable">$month</span> <span class="variable">$2</span>;</span><br><span class="line">			<span class="attribute">set</span> <span class="variable">$day</span> <span class="variable">$3</span>;</span><br><span class="line">			<span class="attribute">set</span> <span class="variable">$hour</span> <span class="variable">$4</span>;</span><br><span class="line">			<span class="attribute">set</span> <span class="variable">$minutes</span> <span class="variable">$5</span>;</span><br><span class="line">			<span class="attribute">set</span> <span class="variable">$seconds</span> <span class="variable">$6</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/1108772964/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1362,127 +1497,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/3237165083/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="憨憨在减肥">
-      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="憨憨在减肥的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/3237165083/" class="post-title-link" itemprop="url">MySQL基础（四）</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-12-29 09:43:58" itemprop="dateCreated datePublished" datetime="2020-12-29T09:43:58+08:00">2020-12-29</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-12-21 23:11:58" itemprop="dateModified" datetime="2021-12-21T23:11:58+08:00">2021-12-21</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.5k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-<h2 id="练手项目"><a href="#练手项目" class="headerlink" title="练手项目"></a>练手项目</h2><h3 id="牛客网"><a href="#牛客网" class="headerlink" title="牛客网"></a>牛客网</h3><h4 id="准备一个mysql-5-7的数据库"><a href="#准备一个mysql-5-7的数据库" class="headerlink" title="准备一个mysql 5.7的数据库"></a>准备一个mysql 5.7的数据库</h4><h4 id="配置本地数据库"><a href="#配置本地数据库" class="headerlink" title="配置本地数据库"></a>配置本地数据库</h4><ul>
-<li><p><a href="https://launchpad.net/test-db/employees-db-1/1.0.6" target="_blank" rel="noopener">https://launchpad.net/test-db/employees-db-1/1.0.6</a> 下载文件 <strong>employees_db-full-1.0.6.tar.bz2</strong></p>
-</li>
-<li><p>解压文件</p>
-</li>
-</ul>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">➜  employees_db tree </span><br><span class="line">.</span><br><span class="line">├── Changelog</span><br><span class="line">├── README</span><br><span class="line">├── employees.sql</span><br><span class="line">├── employees_partitioned.sql</span><br><span class="line">├── employees_partitioned2.sql</span><br><span class="line">├── employees_partitioned3.sql</span><br><span class="line">├── load_departments.dump</span><br><span class="line">├── load_dept_emp.dump</span><br><span class="line">├── load_dept_manager.dump</span><br><span class="line">├── load_employees.dump</span><br><span class="line">├── load_salaries.dump</span><br><span class="line">├── load_titles.dump</span><br><span class="line">├── objects.sql</span><br><span class="line">├── test_employees_md5.sql</span><br><span class="line">└── test_employees_sha.sql</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>在将文件导入数据库</li>
-</ul>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -uroot -p -t &lt; employees.sql</span><br></pre></td></tr></table></figure>
-
-<h4 id="解决问题"><a href="#解决问题" class="headerlink" title="解决问题"></a>解决问题</h4><ul>
-<li>employees.sql 修改内容</li>
-</ul>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 38行 set storage_engine = InnoDB; 替换</span></span><br><span class="line"><span class="keyword">set</span> default_storage_engine = <span class="keyword">InnoDB</span>;</span><br><span class="line"><span class="comment"># 44行 select CONCAT('storage engine: ', @@storage_engine) as INFO; 替换</span></span><br><span class="line"><span class="keyword">select</span> <span class="keyword">CONCAT</span>(<span class="string">'storage engine: '</span>, @@default_storage_engine) <span class="keyword">as</span> INFO;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>注意导入的时候会出现文件打不开的问题</li>
-</ul>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="string">'LOADING departments'</span> <span class="keyword">as</span> <span class="string">'INFO'</span>;</span><br><span class="line">source /home/employees_db/load_departments.dump ;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">'LOADING employees'</span> <span class="keyword">as</span> <span class="string">'INFO'</span>;</span><br><span class="line">source /home/employees_db/load_employees.dump ;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">'LOADING dept_emp'</span> <span class="keyword">as</span> <span class="string">'INFO'</span>;</span><br><span class="line">source /home/employees_db/load_dept_emp.dump ;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">'LOADING dept_manager'</span> <span class="keyword">as</span> <span class="string">'INFO'</span>;</span><br><span class="line">source /home/employees_db/load_dept_manager.dump ;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">'LOADING titles'</span> <span class="keyword">as</span> <span class="string">'INFO'</span>;</span><br><span class="line">source /home/employees_db/load_titles.dump ;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">'LOADING salaries'</span> <span class="keyword">as</span> <span class="string">'INFO'</span>;</span><br><span class="line">source /home/employees_db/load_salaries.dump ;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><p>这里要将文件正确的路径写进去。</p>
-</li>
-<li><p>如果是本地的docker环境部署mysql，可以使用docker cp 命令将文件复制到容器中。在登陆到容器执行导入脚本</p>
-</li>
-</ul>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// 从宿主机器拷贝到容器中</span><br><span class="line">docker cp ~/Downloads/employees_db laughing_black:/home</span><br><span class="line">// laughing_black 是容器的名称</span><br><span class="line"></span><br><span class="line">// 从容器中拷贝会宿主机器中</span><br><span class="line">docker cp laughing_black:/employees_db.sql .</span><br></pre></td></tr></table></figure>
-
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1553,7 +1567,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">106</span>
+          <span class="site-state-item-count">108</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1564,7 +1578,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">113</span>
+        <span class="site-state-item-count">116</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1594,7 +1608,7 @@
           <a href="https://www.geeksforgeeks.org/" title="https:&#x2F;&#x2F;www.geeksforgeeks.org&#x2F;" rel="noopener" target="_blank">geeksforgeeks</a>
         </li>
         <li class="links-of-blogroll-item">
-          <a href="http://redisdoc.com/index.html" title="http:&#x2F;&#x2F;redisdoc.com&#x2F;index.html" rel="noopener" target="_blank">redisdoc</a>
+          <a href="https://redis.io/commands/" title="https:&#x2F;&#x2F;redis.io&#x2F;commands&#x2F;" rel="noopener" target="_blank">rediscommands</a>
         </li>
         <li class="links-of-blogroll-item">
           <a href="https://www.lintcode.com/" title="https:&#x2F;&#x2F;www.lintcode.com&#x2F;" rel="noopener" target="_blank">lintCode</a>
@@ -1664,13 +1678,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">628k</span>
+    <span title="站点总字数">639k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">9:31</span>
+    <span title="站点阅读时长">9:41</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>

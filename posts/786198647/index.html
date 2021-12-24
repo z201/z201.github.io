@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"z201.cn","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.json"};
+  </script>
+
+  <meta name="description" content="Geo Redis 在 3.2 版本中增加了 GEO 类型用于存储和查询地理位置。   GEOADD：添加地理位置  GEOPOS：查询位置信息  GEODIST：距离统计  GEORADIUS：以给定的经纬度为中心， 找出某一半径内的元素  GEORADIUSBYMEMBER 找出位于指定范围内的元素，中心点是由给定的位置元素决定  GEOHASH：返回一个或多个位置元素HASH  关于删除，使">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis-Geo">
+<meta property="og:url" content="https://z201.cn/posts/786198647/index.html">
+<meta property="og:site_name" content="憨憨在减肥的博客">
+<meta property="og:description" content="Geo Redis 在 3.2 版本中增加了 GEO 类型用于存储和查询地理位置。   GEOADD：添加地理位置  GEOPOS：查询位置信息  GEODIST：距离统计  GEORADIUS：以给定的经纬度为中心， 找出某一半径内的元素  GEORADIUSBYMEMBER 找出位于指定范围内的元素，中心点是由给定的位置元素决定  GEOHASH：返回一个或多个位置元素HASH  关于删除，使">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==">
+<meta property="og:image" content="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==">
+<meta property="article:published_time" content="2020-12-24T06:17:42.000Z">
+<meta property="article:modified_time" content="2021-12-24T12:30:49.380Z">
+<meta property="article:author" content="憨憨在减肥">
+<meta property="article:tag" content="Redis">
+<meta property="article:tag" content="Geo">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==">
+
+<link rel="canonical" href="https://z201.cn/posts/786198647/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Redis-Geo | 憨憨在减肥的博客</title>
+  
+    <script>
+      function sendPageView() {
+        if (CONFIG.hostname !== location.hostname) return;
+        var uid = localStorage.getItem('uid') || (Math.random() + '.' + Math.random());
+        localStorage.setItem('uid', uid);
+        navigator.sendBeacon('https://www.google-analytics.com/collect', new URLSearchParams({
+          v  : 1,
+          tid: 'sPzmFRc9pkZyDXFyQWRFLjiFff-mdNJseUPpaocLd7c',
+          cid: uid,
+          t  : 'pageview',
+          dp : encodeURIComponent(location.pathname)
+        }));
+      }
+      document.addEventListener('pjax:complete', sendPageView);
+      sendPageView();
+    </script>
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?08e7145257fb655dd2db4082efa66876";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="憨憨在减肥的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">憨憨在减肥的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">爱好电影、音乐、旅游、美食、dota2，瞎折腾浪费时间最在行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-存档">
+
+    <a href="/archives" rel="section"><i class="archive fa-fw"></i>存档</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories" rel="section"><i class="th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags" rel="section"><i class="tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-实践">
+
+    <a href="/categories/%E5%AE%9E%E8%B7%B5" rel="section"><i class="graduation-cap fa-fw"></i>实践</a>
+
+  </li>
+        <li class="menu-item menu-item-查缺补漏">
+
+    <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" rel="section"><i class="graduation-cap fa-fw"></i>查缺补漏</a>
+
+  </li>
+        <li class="menu-item menu-item-微服务">
+
+    <a href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1" rel="section"><i class="graduation-cap fa-fw"></i>微服务</a>
+
+  </li>
+        <li class="menu-item menu-item-jvm">
+
+    <a href="/tags/Jvm/" rel="section"><i class="graduation-cap fa-fw"></i>Jvm</a>
+
+  </li>
+        <li class="menu-item menu-item-java">
+
+    <a href="/tags/Java/" rel="section"><i class="graduation-cap fa-fw"></i>Java</a>
+
+  </li>
+        <li class="menu-item menu-item-spring">
+
+    <a href="/tags/Spring" rel="section"><i class="graduation-cap fa-fw"></i>Spring</a>
+
+  </li>
+        <li class="menu-item menu-item-netty">
+
+    <a href="/tags/Netty" rel="section"><i class="graduation-cap fa-fw"></i>Netty</a>
+
+  </li>
+        <li class="menu-item menu-item-git">
+
+    <a href="/tags/Git" rel="section"><i class="graduation-cap fa-fw"></i>Git</a>
+
+  </li>
+        <li class="menu-item menu-item-linux">
+
+    <a href="/tags/Linux" rel="section"><i class="graduation-cap fa-fw"></i>Linux</a>
+
+  </li>
+        <li class="menu-item menu-item-docker">
+
+    <a href="/tags/Docker" rel="section"><i class="graduation-cap fa-fw"></i>Docker</a>
+
+  </li>
+        <li class="menu-item menu-item-redis">
+
+    <a href="/tags/Redis" rel="section"><i class="graduation-cap fa-fw"></i>Redis</a>
+
+  </li>
+        <li class="menu-item menu-item-mysql">
+
+    <a href="/tags/Mysql/" rel="section"><i class="graduation-cap fa-fw"></i>Mysql</a>
+
+  </li>
+        <li class="menu-item menu-item-mybatis">
+
+    <a href="/tags/Mybatis" rel="section"><i class="graduation-cap fa-fw"></i>Mybatis</a>
+
+  </li>
+        <li class="menu-item menu-item-公益404">
+
+    <a href="/404.html" rel="section"><i class="heartbeat fa-fw"></i>公益404</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/z201" class="github-corner" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/786198647/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="憨憨在减肥">
+      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="憨憨在减肥的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Redis-Geo
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-12-24 14:17:42" itemprop="dateCreated datePublished" datetime="2020-12-24T14:17:42+08:00">2020-12-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-12-24 20:30:49" itemprop="dateModified" datetime="2021-12-24T20:30:49+08:00">2021-12-24</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Redis/" itemprop="url" rel="index"><span itemprop="name">Redis</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="Geo"><a href="#Geo" class="headerlink" title="Geo"></a>Geo</h3><blockquote>
+<p>Redis 在 3.2 版本中增加了 GEO 类型用于存储和查询地理位置。</p>
+</blockquote>
+<ul>
+<li><p>GEOADD：添加地理位置</p>
+</li>
+<li><p>GEOPOS：查询位置信息</p>
+</li>
+<li><p>GEODIST：距离统计</p>
+</li>
+<li><p>GEORADIUS：以给定的经纬度为中心， 找出某一半径内的元素</p>
+</li>
+<li><p>GEORADIUSBYMEMBER 找出位于指定范围内的元素，中心点是由给定的位置元素决定</p>
+</li>
+<li><p>GEOHASH：返回一个或多个位置元素HASH</p>
+</li>
+<li><p>关于删除，使用集合函数中的zrem，geo本质存在一个集合中。</p>
+</li>
+</ul>
+<h3 id="演示效果"><a href="#演示效果" class="headerlink" title="演示效果"></a>演示效果</h3><p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211224143558.png"></p>
+<ul>
+<li>使用百度地图，标记出5个坐标。<a href="https://api.map.baidu.com/lbsapi/getpoint/index.html" target="_blank" rel="noopener">百度地图坐标获取</a>  <a href="https://map.baidu.com/" target="_blank" rel="noopener">百度地图</a></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1.杭州市 蒋村商务中心 120.075338,30.294845</span></span><br><span class="line"><span class="comment">// 2.杭州市 中节能西溪首座 120.081806,30.294907</span></span><br><span class="line"><span class="comment">// 3.杭州市 西溪蝶园 120.070452,30.294221</span></span><br><span class="line"><span class="comment">// 4.杭州市 西溪财富中心 120.077854,30.296342</span></span><br><span class="line"><span class="comment">// 5.杭州市 九橙 西溪创投中心 120.055468,30.284523</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>使用redis-cli作为客户端测试工具 geo 集合key = hz</li>
+</ul>
+<a id="more"></a>
+
+<h4 id="GEOADD"><a href="#GEOADD" class="headerlink" title="GEOADD"></a>GEOADD</h4><ul>
+<li>添加坐标信息</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; geoadd hz 120.075338 30.294845 1 </span><br><span class="line">(<span class="built_in">integer</span>) 1</span><br><span class="line">127.0.0.1:6379&gt; geoadd hz 120.081806 30.294907 2</span><br><span class="line">(<span class="built_in">integer</span>) 1</span><br><span class="line">127.0.0.1:6379&gt; geoadd hz 120.070452 30.294221 3</span><br><span class="line">(<span class="built_in">integer</span>) 1</span><br><span class="line">127.0.0.1:6379&gt; geoadd hz 120.077854 30.296342 4</span><br><span class="line">(<span class="built_in">integer</span>) 1</span><br><span class="line">127.0.0.1:6379&gt; geoadd hz 120.055468 30.284523 5</span><br><span class="line">(<span class="built_in">integer</span>) 1</span><br><span class="line">127.0.0.1:6379&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="GEOPOS"><a href="#GEOPOS" class="headerlink" title="GEOPOS"></a>GEOPOS</h4><ul>
+<li>从键里面返回所有给定位置元素的位置（经度和纬度）</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; geopos hz 1 2 </span><br><span class="line">1) 1) <span class="string">"120.07533878087997437"</span></span><br><span class="line">   2) <span class="string">"30.29484408467364176"</span></span><br><span class="line">2) 1) <span class="string">"120.08180826902389526"</span></span><br><span class="line">   2) <span class="string">"30.29490745270262408"</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="GEODIST"><a href="#GEODIST" class="headerlink" title="GEODIST"></a>GEODIST</h4><ul>
+<li>返回两个给定位置之间的距离。如果两个位置之间的其中一个不存在， 那么命令返回空值。</li>
+<li>指定单位的参数 <code>unit</code> 必须是以下单位的其中一个<ul>
+<li><code>m</code> 表示单位为米。</li>
+<li><code>km</code> 表示单位为千米。</li>
+<li><code>mi</code> 表示单位为英里。</li>
+<li><code>ft</code> 表示单位为英尺。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; geodist hz 1 2 m</span><br><span class="line"><span class="string">"621.3522"</span></span><br><span class="line"><span class="comment"># 获取 1 和 2 之间的距离米</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>拿<strong>百度地图</strong>的尺子测试下。差了6米问题不大。精度不高的业务够用了。</li>
+</ul>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211224150747.png"></p>
+<h4 id="GEORADIUS"><a href="#GEORADIUS" class="headerlink" title="GEORADIUS"></a>GEORADIUS</h4><ul>
+<li>以给定的经纬度为中心， 返回键包含的位置元素当中， 与中心的距离不超过给定最大距离的所有位置元素。</li>
+<li>范围可以使用以下其中一个单位：<ul>
+<li><code>m</code> 表示单位为米。</li>
+<li><code>km</code> 表示单位为千米。</li>
+<li><code>mi</code> 表示单位为英里。</li>
+<li><code>ft</code> 表示单位为英尺。</li>
+</ul>
+</li>
+<li>在给定以下可选项时， 命令会返回额外的信息：<ul>
+<li><code>WITHDIST</code> ： 在返回位置元素的同时， 将位置元素与中心之间的距离也一并返回。 距离的单位和用户给定的范围单位保持一致。</li>
+<li><code>WITHCOORD</code> ： 将位置元素的经度和维度也一并返回。</li>
+<li><code>WITHHASH</code> ： 以 52 位有符号整数的形式， 返回位置元素经过原始 geohash 编码的有序集合分值。 这个选项主要用于底层应用或者调试， 实际中的作用并不大。</li>
+</ul>
+</li>
+<li>默认命令的排序<ul>
+<li><code>ASC</code> ： 根据中心的位置， 按照从近到远的方式返回位置元素。</li>
+<li><code>DESC</code> ： 根据中心的位置， 按照从远到近的方式返回位置元素。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; georadius hz 120.075338 30.294845 500 m </span><br><span class="line">1) <span class="string">"3"</span></span><br><span class="line">2) <span class="string">"1"</span></span><br><span class="line">3) <span class="string">"4"</span></span><br><span class="line"><span class="comment"># 中心坐标 120.075338 30.294845 500m内的位置。</span></span><br><span class="line"></span><br><span class="line">127.0.0.1:6379&gt; georadius hz 120.075338 30.294845 500 m WITHDIST</span><br><span class="line">1) 1) <span class="string">"3"</span></span><br><span class="line">   2) <span class="string">"474.3718"</span></span><br><span class="line">2) 1) <span class="string">"1"</span></span><br><span class="line">   2) <span class="string">"0.1264"</span></span><br><span class="line">3) 1) <span class="string">"4"</span></span><br><span class="line">   2) <span class="string">"293.5036"</span></span><br><span class="line"><span class="comment"># 中心坐标 120.075338 30.294845 500m内的位置,并显示距离m。</span></span><br><span class="line"></span><br><span class="line">127.0.0.1:6379&gt; georadius hz 120.075338 30.294845 500 m WITHDIST WITHCOORD ASC</span><br><span class="line">1) 1) <span class="string">"1"</span></span><br><span class="line">   2) <span class="string">"0.1264"</span></span><br><span class="line">   3) 1) <span class="string">"120.07533878087997437"</span></span><br><span class="line">      2) <span class="string">"30.29484408467364176"</span></span><br><span class="line">2) 1) <span class="string">"4"</span></span><br><span class="line">   2) <span class="string">"293.5036"</span></span><br><span class="line">   3) 1) <span class="string">"120.0778546929359436"</span></span><br><span class="line">      2) <span class="string">"30.29634210487881063"</span></span><br><span class="line">3) 1) <span class="string">"3"</span></span><br><span class="line">   2) <span class="string">"474.3718"</span></span><br><span class="line">   3) 1) <span class="string">"120.07045179605484009"</span></span><br><span class="line">      2) <span class="string">"30.2942205432684446"</span></span><br><span class="line"><span class="comment"># 中心坐标 120.075338 30.294845 500m内的位置,并显示距离,ASC排序。</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>一般用来做<strong>附近的人(建筑等等)</strong></li>
+</ul>
+<h4 id="GEORADIUSBYMEMBER"><a href="#GEORADIUSBYMEMBER" class="headerlink" title="GEORADIUSBYMEMBER"></a>GEORADIUSBYMEMBER</h4><ul>
+<li><p>找出位于指定范围内的元素，参数是元素而不是坐标。</p>
+</li>
+<li><p>范围可以使用以下其中一个单位：</p>
+<ul>
+<li><code>m</code> 表示单位为米。</li>
+<li><code>km</code> 表示单位为千米。</li>
+<li><code>mi</code> 表示单位为英里。</li>
+<li><code>ft</code> 表示单位为英尺。</li>
+</ul>
+</li>
+<li><p>在给定以下可选项时， 命令会返回额外的信息：</p>
+<ul>
+<li><code>WITHDIST</code> ： 在返回位置元素的同时， 将位置元素与中心之间的距离也一并返回。 距离的单位和用户给定的范围单位保持一致。</li>
+<li><code>WITHCOORD</code> ： 将位置元素的经度和维度也一并返回。</li>
+<li><code>WITHHASH</code> ： 以 52 位有符号整数的形式， 返回位置元素经过原始 geohash 编码的有序集合分值。 这个选项主要用于底层应用或者调试， 实际中的作用并不大。</li>
+</ul>
+</li>
+<li><p>默认命令的排序</p>
+<ul>
+<li><code>ASC</code> ： 根据中心的位置， 按照从近到远的方式返回位置元素。</li>
+<li><code>DESC</code> ： 根据中心的位置， 按照从远到近的方式返回位置元素。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; GEORADIUSBYMEMBER hz 1 500 m</span><br><span class="line">1) <span class="string">"3"</span></span><br><span class="line">2) <span class="string">"1"</span></span><br><span class="line">3) <span class="string">"4"</span></span><br><span class="line"><span class="comment"># 元素 500m的元素</span></span><br><span class="line"></span><br><span class="line">127.0.0.1:6379&gt; GEORADIUSBYMEMBER hz 1 500 m WITHDIST WITHCOORD ASC</span><br><span class="line">1) 1) <span class="string">"1"</span></span><br><span class="line">   2) <span class="string">"0.0000"</span></span><br><span class="line">   3) 1) <span class="string">"120.07533878087997437"</span></span><br><span class="line">      2) <span class="string">"30.29484408467364176"</span></span><br><span class="line">2) 1) <span class="string">"4"</span></span><br><span class="line">   2) <span class="string">"293.4996"</span></span><br><span class="line">   3) 1) <span class="string">"120.0778546929359436"</span></span><br><span class="line">      2) <span class="string">"30.29634210487881063"</span></span><br><span class="line">3) 1) <span class="string">"3"</span></span><br><span class="line">   2) <span class="string">"474.4311"</span></span><br><span class="line">   3) 1) <span class="string">"120.07045179605484009"</span></span><br><span class="line">      2) <span class="string">"30.2942205432684446"</span></span><br><span class="line"><span class="comment"># 元素 500m的元素包含完整信息。</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>一般用来做<strong>附近的人(建筑等等)</strong></li>
+</ul>
+<h4 id="GEOHASH"><a href="#GEOHASH" class="headerlink" title="GEOHASH"></a>GEOHASH</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; GEOHASH hz 1 2 3 </span><br><span class="line">1) <span class="string">"wtmkk7h0q00"</span></span><br><span class="line">2) <span class="string">"wtmkke0bsu0"</span></span><br><span class="line">3) <span class="string">"wtmkk6bssk0"</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="删除坐标"><a href="#删除坐标" class="headerlink" title="删除坐标"></a>删除坐标</h4><ul>
+<li>关于删除，使用集合函数中的zrem，geo本质存在一个集合中。</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; GEORADIUSBYMEMBER hz 1 500 m</span><br><span class="line">1) <span class="string">"3"</span></span><br><span class="line">2) <span class="string">"1"</span></span><br><span class="line">3) <span class="string">"4"</span></span><br><span class="line"><span class="comment"># 元素 500m的元素</span></span><br><span class="line">127.0.0.1:6379&gt; zrem hz 4</span><br><span class="line">(<span class="built_in">integer</span>) 1</span><br><span class="line">127.0.0.1:6379&gt; GEORADIUSBYMEMBER hz 1 500 m</span><br><span class="line">1) <span class="string">"3"</span></span><br><span class="line">2) <span class="string">"1"</span></span><br><span class="line"><span class="comment"># 将 4 元素删除后只能看到 3 1 了。</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="代码演示"><a href="#代码演示" class="headerlink" title="代码演示"></a>代码演示</h3><ul>
+<li>spring boot 2.4.5</li>
+<li>gson</li>
+</ul>
+<h3 id="配置项目"><a href="#配置项目" class="headerlink" title="配置项目"></a>配置项目</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> z201.coding@gmail.com</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/12/24</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedisConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 防止key 出现乱码</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> RedisTemplate <span class="title">redisTemplate</span><span class="params">(LettuceConnectionFactory connectionFactory)</span> </span>&#123;</span><br><span class="line">        RedisTemplate template = <span class="keyword">new</span> RedisTemplate();</span><br><span class="line">        RedisSerializer&lt;String&gt; redisSerializer = <span class="keyword">new</span> StringRedisSerializer();</span><br><span class="line">        template.setConnectionFactory(connectionFactory);</span><br><span class="line">        <span class="comment">// key序列化方式</span></span><br><span class="line">        template.setKeySerializer(redisSerializer);</span><br><span class="line">        <span class="comment">// value序列化</span></span><br><span class="line">        template.setValueSerializer(redisSerializer);</span><br><span class="line">        <span class="keyword">return</span> template;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> StringRedisTemplate <span class="title">stringRedisTemplate</span><span class="params">(LettuceConnectionFactory connectionFactory)</span> </span>&#123;</span><br><span class="line">        StringRedisTemplate stringRedisTemplate = <span class="keyword">new</span> StringRedisTemplate();</span><br><span class="line">        stringRedisTemplate.setConnectionFactory(connectionFactory);</span><br><span class="line">        <span class="keyword">return</span> stringRedisTemplate;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="单元测试代码"><a href="#单元测试代码" class="headerlink" title="单元测试代码"></a>单元测试代码</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@Autowired</span></span><br><span class="line">RedisTemplate redisTemplate;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testGeo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 1.杭州市 蒋村商务中心 120.075338,30.294845</span></span><br><span class="line">    <span class="comment">// 2.杭州市 中节能西溪首座 120.081806,30.294907</span></span><br><span class="line">    <span class="comment">// 3.杭州市 西溪蝶园 120.070452,30.294221</span></span><br><span class="line">    <span class="comment">// 4.杭州市 西溪财富中心 120.077854,30.296342</span></span><br><span class="line">    <span class="comment">// 5.杭州市 九橙 西溪创投中心 120.055468,30.284523</span></span><br><span class="line">    Map&lt;String, Point&gt; points = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">    points.put(<span class="string">"1"</span>, <span class="keyword">new</span> Point(<span class="number">120.075338</span>, <span class="number">30.294845</span>));</span><br><span class="line">    points.put(<span class="string">"2"</span>, <span class="keyword">new</span> Point(<span class="number">120.081806</span>, <span class="number">30.294907</span>));</span><br><span class="line">    points.put(<span class="string">"3"</span>, <span class="keyword">new</span> Point(<span class="number">120.070452</span>, <span class="number">30.294221</span>));</span><br><span class="line">    points.put(<span class="string">"4"</span>, <span class="keyword">new</span> Point(<span class="number">120.077854</span>, <span class="number">30.296342</span>));</span><br><span class="line">    points.put(<span class="string">"5"</span>, <span class="keyword">new</span> Point(<span class="number">120.055468</span>, <span class="number">30.284523</span>));</span><br><span class="line">    <span class="comment">// 添加经纬度信息</span></span><br><span class="line">    Long result = redisTemplate.opsForGeo().add(<span class="string">"site"</span>, points);</span><br><span class="line">    log.info(<span class="string">"&#123;&#125;"</span>, result);</span><br><span class="line">  </span><br><span class="line">    Gson gson =  <span class="keyword">new</span> GsonBuilder().setPrettyPrinting().create();</span><br><span class="line">    <span class="comment">// 查找指定key的经纬度信息，可以指定多个member，批量返回</span></span><br><span class="line">    List&lt;Point&gt; pointList = redisTemplate.opsForGeo().position(<span class="string">"site"</span>, <span class="string">"1"</span>, <span class="string">"2"</span>);</span><br><span class="line">    log.info(<span class="string">"pointList -&gt; &#123;&#125; "</span>, gson.toJson(pointList));</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 	METERS(6378137, "m"),</span></span><br><span class="line"><span class="comment">     * 	KILOMETERS(6378.137, "km"),</span></span><br><span class="line"><span class="comment">     * 	MILES(3963.191, "mi"),</span></span><br><span class="line"><span class="comment">     * 	FEET(20925646.325, "ft");</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">   <span class="comment">// 根据给定的经纬度，返回半径不超过指定距离的元素</span></span><br><span class="line">    Distance distance = redisTemplate.opsForGeo().distance(<span class="string">"site"</span>, <span class="string">"1"</span>, <span class="string">"2"</span>, RedisGeoCommands.DistanceUnit.KILOMETERS);</span><br><span class="line">    log.info(<span class="string">"distance -&gt; &#123;&#125; "</span>, gson.toJson(distance));</span><br><span class="line">    <span class="comment">// 根据指定的地点查询半径在指定范围内的位置</span></span><br><span class="line">    Circle circle = <span class="keyword">new</span> Circle(<span class="keyword">new</span> Point(<span class="number">120.075338</span>, <span class="number">30.294845</span>), <span class="keyword">new</span> Distance(<span class="number">500</span>,RedisGeoCommands.DistanceUnit.KILOMETERS));</span><br><span class="line">    RedisGeoCommands.GeoRadiusCommandArgs args = RedisGeoCommands.GeoRadiusCommandArgs.newGeoRadiusArgs()</span><br><span class="line">            .includeDistance()</span><br><span class="line">            .includeCoordinates()</span><br><span class="line">            .sortAscending();</span><br><span class="line">    log.info(<span class="string">"geoLocationGeoResults -&gt; &#123;&#125; "</span>, gson.toJson(args));</span><br><span class="line">    GeoResults&lt;RedisGeoCommands.GeoLocation&lt;String&gt;&gt; geoLocationGeoResults =  redisTemplate.opsForGeo().radius(<span class="string">"site"</span>,circle,args);</span><br><span class="line">    log.info(<span class="string">"geoLocationGeoResults -&gt; &#123;&#125; "</span>, gson.toJson(geoLocationGeoResults));</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>GEORADIUSBYMEMBER 方法过期了，这里就不演示了。</li>
+</ul>
+<h3 id="End"><a href="#End" class="headerlink" title="End"></a>End</h3>
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>憨憨在减肥
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://z201.cn/posts/786198647/" title="Redis-Geo">https://z201.cn/posts/786198647/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Redis/" rel="tag"># Redis</a>
+              <a href="/tags/Geo/" rel="tag"># Geo</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/posts/2803052659/" rel="prev" title="Tcpdump入门">
+      <i class="fa fa-chevron-left"></i> Tcpdump入门
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/posts/3237165083/" rel="next" title="MySQL基础（四）">
+      MySQL基础（四） <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Geo"><span class="nav-number">1.</span> <span class="nav-text">Geo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#演示效果"><span class="nav-number">2.</span> <span class="nav-text">演示效果</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#GEOADD"><span class="nav-number">2.1.</span> <span class="nav-text">GEOADD</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#GEOPOS"><span class="nav-number">2.2.</span> <span class="nav-text">GEOPOS</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#GEODIST"><span class="nav-number">2.3.</span> <span class="nav-text">GEODIST</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#GEORADIUS"><span class="nav-number">2.4.</span> <span class="nav-text">GEORADIUS</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#GEORADIUSBYMEMBER"><span class="nav-number">2.5.</span> <span class="nav-text">GEORADIUSBYMEMBER</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#GEOHASH"><span class="nav-number">2.6.</span> <span class="nav-text">GEOHASH</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#删除坐标"><span class="nav-number">2.7.</span> <span class="nav-text">删除坐标</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码演示"><span class="nav-number">3.</span> <span class="nav-text">代码演示</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置项目"><span class="nav-number">4.</span> <span class="nav-text">配置项目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#单元测试代码"><span class="nav-number">5.</span> <span class="nav-text">单元测试代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#End"><span class="nav-number">6.</span> <span class="nav-text">End</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="憨憨在减肥"
+      src="/images/avatar-min.jpg">
+  <p class="site-author-name" itemprop="name">憨憨在减肥</p>
+  <div class="site-description" itemprop="description">SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">108</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">116</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/z201" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;z201" rel="noopener" target="_blank"><i class="github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:int_java_se@@163.com" title="E-Mail → mailto:int_java_se@@163.com" rel="noopener" target="_blank"><i class="envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" class="cc-opacity" rel="noopener" target="_blank"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.journaldev.com/" title="https:&#x2F;&#x2F;www.journaldev.com&#x2F;" rel="noopener" target="_blank">journaldev</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.geeksforgeeks.org/" title="https:&#x2F;&#x2F;www.geeksforgeeks.org&#x2F;" rel="noopener" target="_blank">geeksforgeeks</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://redis.io/commands/" title="https:&#x2F;&#x2F;redis.io&#x2F;commands&#x2F;" rel="noopener" target="_blank">rediscommands</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.lintcode.com/" title="https:&#x2F;&#x2F;www.lintcode.com&#x2F;" rel="noopener" target="_blank">lintCode</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://stackoverflow.com/" title="https:&#x2F;&#x2F;stackoverflow.com&#x2F;" rel="noopener" target="_blank">stackoverflow</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.baeldung.com/" title="https:&#x2F;&#x2F;www.baeldung.com&#x2F;" rel="noopener" target="_blank">beeldung</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.sczyh30.com/" title="http:&#x2F;&#x2F;www.sczyh30.com&#x2F;" rel="noopener" target="_blank">浮生若梦</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://objcoding.com/" title="https:&#x2F;&#x2F;objcoding.com&#x2F;" rel="noopener" target="_blank">后端进阶</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://spring.hhui.top/spring-blog/" title="https:&#x2F;&#x2F;spring.hhui.top&#x2F;spring-blog&#x2F;" rel="noopener" target="_blank">一灰灰Blog</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.javazhiyin.com/" title="https:&#x2F;&#x2F;www.javazhiyin.com&#x2F;" rel="noopener" target="_blank">Java知音</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://indienova.com/" title="https:&#x2F;&#x2F;indienova.com&#x2F;" rel="noopener" target="_blank">独立精神</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.ityouknow.com/" title="http:&#x2F;&#x2F;www.ityouknow.com&#x2F;" rel="noopener" target="_blank">纯洁的微笑</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://ifeve.com/" title="http:&#x2F;&#x2F;ifeve.com&#x2F;" rel="noopener" target="_blank">并发编程网</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://learnku.com/" title="https:&#x2F;&#x2F;learnku.com&#x2F;" rel="noopener" target="_blank">Learnku编程者中文社区</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://rustcc.cn/" title="https:&#x2F;&#x2F;rustcc.cn&#x2F;" rel="noopener" target="_blank">Rust语言中文设计</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">憨憨在减肥</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">639k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">9:41</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script><script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+</html>
