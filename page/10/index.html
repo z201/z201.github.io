@@ -260,6 +260,171 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/1103815643/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="憨憨在减肥">
+      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="憨憨在减肥的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/1103815643/" class="post-title-link" itemprop="url">Modbus入门</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-05-07 00:00:00" itemprop="dateCreated datePublished" datetime="2018-05-07T00:00:00+08:00">2018-05-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-12-21 23:03:08" itemprop="dateModified" datetime="2021-12-21T23:03:08+08:00">2021-12-21</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%85%A5%E9%97%A8/" itemprop="url" rel="index"><span itemprop="name">入门</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>本章是整理知识内容，为强化知识长期更新。</p>
+<p>以下部分超链接需要科学上网。</p>
+</blockquote>
+<h2 id="ModBus"><a href="#ModBus" class="headerlink" title="ModBus"></a>ModBus</h2><p>modbus是一种通讯协议，是Modicon公司1979年为使用可编程逻辑控制器（PLC）通讯而发表。Modbus是工业领域通讯协议的业界标准之一，目前也我国国家标准工业通讯协议中的重要成员之一。</p>
+<h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><ul>
+<li><p>Modbus采用主从（Master-Salve）通信模式，仅有主设备（Master）能对传输进行初始化，从设备（Slave）根据主设备的请求进行应答。 __在主从关系中，通信总是成对发生。一个设备必须发起请求，然后等待响应 - 并且发起设备（主设备）负责发起每次交互。 通常，主设备是人机界面（HMI）或监控和数据采集（SCADA）系统，从设备是传感器、可编程逻辑控制器（PLC）或可编程自动化控制器（PAC）。 这些请求和响应的内容以及发送这些消息的网络层由协议的不同层来定义__。 </p>
+<ul>
+<li>在串行链路的主从通信中，Modbus主设备可以连接一个或N（最大为247）个从设备，主从设备之间的通信包括单播模式和广播模式。 </li>
+<li>在广播模式中，Modbus主设备可同时向多个从设备发送请求（设备地址0用于广播模式），从设备对广播请求不进行响应。 </li>
+<li>在单播模式中，主设备发送请求至某个特定的从设备（每个Modbus从设备具有唯一地址），请求的消息帧中会包含功能代码和数据，比如功能代码“01”用来读取离散量线圈的状态。从设备接到请求后，进行应答并把消息反馈主设备。 </li>
+<li>__主设备不发送数据，从数据是不会自己发出数据的；即必须是主设备发出查询请求才能建立通讯。 __</li>
+</ul>
+</li>
+<li><p>消息帧校验方式</p>
+<ul>
+<li>ASCII消息帧：<code>LRC（纵向冗长检测）</code></li>
+<li>CRCi消息帧：<code>CRC(循环冗长检测)</code></li>
+</ul>
+</li>
+<li><p>ModBus是OSI模型第七层上即__应用层__报文传输协议。</p>
+</li>
+<li><p>ModBus支持多工业设备、包括<code>PLC</code>、<code>DSC</code>、<code>变频器</code>、智能仪表等都在应用。</p>
+</li>
+<li><p>ModBus支持多种电气接口，如<code>RS-232</code>、<code>RS-485</code>等，还可以在各种介质上传送，如双绞线、光纤、无线。</p>
+</li>
+<li><p>ModBus协议完全免费；<code>帧格式</code>简单，紧凑。</p>
+</li>
+<li><p>ModBus对线缆的要求、长度、波特率，终端电阻，接地，连接器，通信状态的LED指示，都有电气标准。</p>
+</li>
+<li><p>ModBus数据可以分为两大类，分别为Coil和Register，每一种数据，根据读写方式的不同，又可细分为两种（只读，读写）。 </p>
+<ul>
+<li>Coli是位（bit）变量。</li>
+<li>Register是整型（word ,即 16 - bit ）。</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Primary tabels</th>
+<th>Object Type</th>
+<th>Type Of</th>
+<th>comments</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Discretes Input 离线输入量</td>
+<td>Single bit</td>
+<td>只读</td>
+<td>IO系统提供这种类型的数据</td>
+</tr>
+<tr>
+<td>Coils 线圈</td>
+<td>Single bit</td>
+<td>只写</td>
+<td>通用应用程序改变这种类型的数据</td>
+</tr>
+<tr>
+<td>Input Registers  输入寄存器</td>
+<td>16-bit word</td>
+<td>只读</td>
+<td>IO系统提供这种类型的数据</td>
+</tr>
+<tr>
+<td>Holding Registers 保持寄存器</td>
+<td>16-bit word</td>
+<td>只写</td>
+<td>通用应用程序改变这种类型的数据</td>
+</tr>
+</tbody></table>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/1103815643/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/985694764/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1342,141 +1507,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/596045077/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="憨憨在减肥">
-      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="憨憨在减肥的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/596045077/" class="post-title-link" itemprop="url">Eureka与Zookeeper</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-04-21 06:14:16" itemprop="dateCreated datePublished" datetime="2018-04-21T06:14:16+08:00">2018-04-21</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-12-21 23:12:31" itemprop="dateModified" datetime="2021-12-21T23:12:31+08:00">2021-12-21</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2.5k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>服务注册中心，给客户端提供可供调用的服务列表，客户端在进行远程服务调用时，根据服务列表然后选择服务提供方的服务地址进行服务调用。服务注册中心在分布式系统中大量应用，是分布式系统中不可或缺的组件，例如rocketmq的name server，hdfs中的namenode，dubbo中的zk注册中心，spring cloud中的服务注册中心eureka。  在spring cloud中，除了可以使用eureka作为注册中心外，还可以通过配置的方式使用zookeeper作为注册中心。既然这样，我们该如何选择注册中心的实现呢？</p>
-</blockquote>
-<h3 id="CAP定理"><a href="#CAP定理" class="headerlink" title="CAP定理"></a>CAP定理</h3><blockquote>
-<p>又被称作布鲁尔定理（Eric Brewer）它指出对于一个分布式计算系统来说，不可能同时满足以下三点：</p>
-</blockquote>
-<ol>
-<li>强一致性（Consistency）：系统在执行某项操作后数据状态仍然处于一致，例如在分布式系统中，更新操作执行成功后所有的用户都应该读取到最新的值，这样的系统被认为具有强一致性。</li>
-<li>可用性（Availability）：每一个操作总是能够在一定的时间内返回结果</li>
-<li>分区容错性（Partition tolerance）：单个节点故障不应导致整个系统崩溃，也就是说尽管网络在节点之间丢弃（或延迟）任意数量的消息，但是系统继续操作。</li>
-</ol>
-<blockquote>
-<p>根据CAP原理将数据库分成了满足CA原则、满足CP原则和满足AP原则三大类</p>
-</blockquote>
-<ol>
-<li>CA：单点集群，满足一致性，可用性，通常在可扩展性上不太强大，比如RDB。</li>
-<li>CP：满足一致性和分区容错性，通常性能不是特别高，如分布式数据库。</li>
-<li>AP：满足可用性和分区容错性，通常可能对一致性要求低一些，如大多数的NoSQL。</li>
-</ol>
-<h3 id="BASE（Basically-Available，Soft-state，Eventual-consistency）"><a href="#BASE（Basically-Available，Soft-state，Eventual-consistency）" class="headerlink" title="BASE（Basically Available，Soft-state，Eventual consistency）"></a>BASE（Basically Available，Soft-state，Eventual consistency）</h3><blockquote>
-<p>eBay的架构师Dan Pritchett源于对大规模分布式系统的实践总结，在ACM上发表文章提出BASE理论，BASE理论是对CAP理论的延伸，核心思想是即使无法做到强一致性（Strong Consistency，CAP的一致性就是强一致性），但应用可以采用适合的方式达到最终一致性（Eventual Consitency）。</p>
-</blockquote>
-<ol>
-<li>基本可用（Basically Available）：系统能够基本运行并一直提供服务。</li>
-<li>软状态（Soft-state）：系统不要求一直保持强一致状态。</li>
-<li>最终一致性（Eventual consistency）：系统需要在某一时刻后达到一致性要求。</li>
-</ol>
-<h3 id="Zookeeper保证CP"><a href="#Zookeeper保证CP" class="headerlink" title="Zookeeper保证CP"></a><strong>Zookeeper保证CP</strong></h3><ul>
-<li>当向注册中心查询服务列表时，我们可以容忍注册中心返回的是几分钟以前的注册信息，但不能接受服务直接down掉不可用。也就是说，服务注册功能对可用性的要求要高于一致性。但是zk会出现这样一种情况，当master节点因为网络故障与其他节点失去联系时，剩余节点会重新进行leader选举。问题在于，选举leader的时间太长，30 ~ 120s, 且选举期间整个zk集群都是不可用的，这就导致在选举期间注册服务瘫痪。在云部署的环境下，因网络问题使得zk集群失去master节点是较大概率会发生的事，虽然服务能够最终恢复，但是漫长的选举时间导致的注册长期不可用是不能容忍的。</li>
-</ul>
-<h3 id="Eureka保证AP"><a href="#Eureka保证AP" class="headerlink" title="Eureka保证AP"></a>Eureka保证AP</h3><ul>
-<li><p>Eureka各个节点都是平等的，几个节点挂掉不会影响正常节点的工作，剩余的节点依然可以提供注册和查询服务。而Eureka的客户端在向某个Eureka注册或如果发现连接失败，则会自动切换至其它节点，只要有一台Eureka还在，就能保证注册服务可用(保证可用性)，只不过查到的信息可能不是最新的(不保证强一致性)。除此之外，Eureka还有一种自我保护机制，如果在15分钟内超过85%的节点都没有正常的心跳，那么Eureka就认为客户端与注册中心出现了网络故障，此时会出现以下几种情况： </p>
-<ol>
-<li>Eureka不再从注册列表中移除因为长时间没收到心跳而应该过期的服务 </li>
-<li>Eureka仍然能够接受新服务的注册和查询请求，但是不会被同步到其它节点上(即保证当前节点依然可用) </li>
-<li>当网络稳定时，当前实例新的注册信息会被同步到其它节点中</li>
-</ol>
-</li>
-<li><p>因此， Eureka可以很好的应对因网络故障导致部分节点失去联系的情况，而不会像zookeeper那样使整个注册服务瘫痪。</p>
-</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/posts/596045077/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1547,18 +1577,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">109</span>
+          <span class="site-state-item-count">110</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-count">25</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">117</span>
+        <span class="site-state-item-count">119</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1652,13 +1682,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">649k</span>
+    <span title="站点总字数">657k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">9:50</span>
+    <span title="站点阅读时长">9:58</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
