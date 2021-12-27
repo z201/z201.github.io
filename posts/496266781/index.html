@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"z201.cn","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.json"};
   </script>
 
-  <meta name="description" content="Mybatis使用Snowflake生成主键 在某些业务中为了安全已经扩展性需要弃用mysql自增id。采用Snowflake生成方式。   创建BaseEntity，将基础字段存放此处。实体基类。 Snowflake工具类，生成SnowflakeId。 MybatisInterceptor,用于拦截sql执行，根据Insert、update语句拦截。并修改BaseEntity参数。  Java实">
+  <meta name="description" content="Mybatis使用Snowflake生成主键 在某些业务中为了安全已经扩展性需要弃用mysql自增id。采用Snowflake生成方式。 全局唯一性，不能出现重复的id。 趋势递增，MysqlInnoDB引擎使用的是是聚集索引，使用B-tree的数据结构来存储索引数据。尽量使用有序的主键保证写入性能。 单调递增：保证下一个ID一定大于上一个ID，例如事务版本号、排序等特殊需求。 id是无序的，连续">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Mybatis-Snowflake">
 <meta property="og:url" content="https://z201.cn/posts/496266781/index.html">
 <meta property="og:site_name" content="憨憨在减肥的博客">
-<meta property="og:description" content="Mybatis使用Snowflake生成主键 在某些业务中为了安全已经扩展性需要弃用mysql自增id。采用Snowflake生成方式。   创建BaseEntity，将基础字段存放此处。实体基类。 Snowflake工具类，生成SnowflakeId。 MybatisInterceptor,用于拦截sql执行，根据Insert、update语句拦截。并修改BaseEntity参数。  Java实">
+<meta property="og:description" content="Mybatis使用Snowflake生成主键 在某些业务中为了安全已经扩展性需要弃用mysql自增id。采用Snowflake生成方式。 全局唯一性，不能出现重复的id。 趋势递增，MysqlInnoDB引擎使用的是是聚集索引，使用B-tree的数据结构来存储索引数据。尽量使用有序的主键保证写入性能。 单调递增：保证下一个ID一定大于上一个ID，例如事务版本号、排序等特殊需求。 id是无序的，连续">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-12-28T07:22:38.000Z">
-<meta property="article:modified_time" content="2021-12-27T17:03:35.916Z">
+<meta property="article:modified_time" content="2021-12-27T17:17:23.177Z">
 <meta property="article:author" content="憨憨在减肥">
 <meta property="article:tag" content="Mybatis">
 <meta property="article:tag" content="算法">
@@ -295,7 +295,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-12-28 01:03:35" itemprop="dateModified" datetime="2021-12-28T01:03:35+08:00">2021-12-28</time>
+                <time title="修改时间：2021-12-28 01:17:23" itemprop="dateModified" datetime="2021-12-28T01:17:23+08:00">2021-12-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -313,7 +313,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>8.5k</span>
+              <span>8.7k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -332,10 +332,14 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="Mybatis使用Snowflake生成主键"><a href="#Mybatis使用Snowflake生成主键" class="headerlink" title="Mybatis使用Snowflake生成主键"></a>Mybatis使用Snowflake生成主键</h2><blockquote>
-<p>在某些业务中为了安全已经扩展性需要弃用mysql自增id。采用Snowflake生成方式。</p>
-</blockquote>
-<ul>
+        <h2 id="Mybatis使用Snowflake生成主键"><a href="#Mybatis使用Snowflake生成主键" class="headerlink" title="Mybatis使用Snowflake生成主键"></a>Mybatis使用Snowflake生成主键</h2><ul>
+<li>在某些业务中为了安全已经扩展性需要弃用mysql自增id。采用Snowflake生成方式。</li>
+<li>全局唯一性，不能出现重复的id。</li>
+<li>趋势递增，MysqlInnoDB引擎使用的是是聚集索引，使用B-tree的数据结构来存储索引数据。尽量使用有序的主键保证写入性能。</li>
+<li>单调递增：保证下一个ID一定大于上一个ID，例如事务版本号、排序等特殊需求。</li>
+<li>id是无序的，连续的id容易被社会工程。</li>
+</ul>
+<h3 id="开发思路"><a href="#开发思路" class="headerlink" title="开发思路"></a>开发思路</h3><ul>
 <li>创建BaseEntity，将基础字段存放此处。实体基类。</li>
 <li>Snowflake工具类，生成SnowflakeId。</li>
 <li>MybatisInterceptor,用于拦截sql执行，根据Insert、update语句拦截。并修改BaseEntity参数。</li>
@@ -456,7 +460,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Mybatis使用Snowflake生成主键"><span class="nav-number">1.</span> <span class="nav-text">Mybatis使用Snowflake生成主键</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Java实现代码"><span class="nav-number">1.1.</span> <span class="nav-text">Java实现代码</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#pom-xml依赖"><span class="nav-number">1.1.1.</span> <span class="nav-text">pom.xml依赖</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#BaseEntity基础类"><span class="nav-number">1.1.2.</span> <span class="nav-text">BaseEntity基础类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SnowflakeTool工具类"><span class="nav-number">1.1.3.</span> <span class="nav-text">SnowflakeTool工具类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MybatisInterceptor-拦截器"><span class="nav-number">1.1.4.</span> <span class="nav-text">MybatisInterceptor 拦截器</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Mybatis使用Snowflake生成主键"><span class="nav-number">1.</span> <span class="nav-text">Mybatis使用Snowflake生成主键</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#开发思路"><span class="nav-number">1.1.</span> <span class="nav-text">开发思路</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java实现代码"><span class="nav-number">1.2.</span> <span class="nav-text">Java实现代码</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#pom-xml依赖"><span class="nav-number">1.2.1.</span> <span class="nav-text">pom.xml依赖</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#BaseEntity基础类"><span class="nav-number">1.2.2.</span> <span class="nav-text">BaseEntity基础类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SnowflakeTool工具类"><span class="nav-number">1.2.3.</span> <span class="nav-text">SnowflakeTool工具类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MybatisInterceptor-拦截器"><span class="nav-number">1.2.4.</span> <span class="nav-text">MybatisInterceptor 拦截器</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 

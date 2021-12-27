@@ -412,7 +412,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-12-28 01:03:35" itemprop="dateModified" datetime="2021-12-28T01:03:35+08:00">2021-12-28</time>
+                <time title="修改时间：2021-12-28 01:17:23" itemprop="dateModified" datetime="2021-12-28T01:17:23+08:00">2021-12-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -430,7 +430,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>8.5k</span>
+              <span>8.7k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -449,10 +449,14 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="Mybatis使用Snowflake生成主键"><a href="#Mybatis使用Snowflake生成主键" class="headerlink" title="Mybatis使用Snowflake生成主键"></a>Mybatis使用Snowflake生成主键</h2><blockquote>
-<p>在某些业务中为了安全已经扩展性需要弃用mysql自增id。采用Snowflake生成方式。</p>
-</blockquote>
-<ul>
+          <h2 id="Mybatis使用Snowflake生成主键"><a href="#Mybatis使用Snowflake生成主键" class="headerlink" title="Mybatis使用Snowflake生成主键"></a>Mybatis使用Snowflake生成主键</h2><ul>
+<li>在某些业务中为了安全已经扩展性需要弃用mysql自增id。采用Snowflake生成方式。</li>
+<li>全局唯一性，不能出现重复的id。</li>
+<li>趋势递增，MysqlInnoDB引擎使用的是是聚集索引，使用B-tree的数据结构来存储索引数据。尽量使用有序的主键保证写入性能。</li>
+<li>单调递增：保证下一个ID一定大于上一个ID，例如事务版本号、排序等特殊需求。</li>
+<li>id是无序的，连续的id容易被社会工程。</li>
+</ul>
+<h3 id="开发思路"><a href="#开发思路" class="headerlink" title="开发思路"></a>开发思路</h3><ul>
 <li>创建BaseEntity，将基础字段存放此处。实体基类。</li>
 <li>Snowflake工具类，生成SnowflakeId。</li>
 <li>MybatisInterceptor,用于拦截sql执行，根据Insert、update语句拦截。并修改BaseEntity参数。</li>
