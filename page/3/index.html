@@ -1394,7 +1394,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-08 04:09:15" itemprop="dateModified" datetime="2022-01-08T04:09:15+08:00">2022-01-08</time>
+                <time title="修改时间：2022-01-10 15:40:19" itemprop="dateModified" datetime="2022-01-10T15:40:19+08:00">2022-01-10</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1412,14 +1412,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.1k</span>
+              <span>1.9k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>2 分钟</span>
             </span>
 
         </div>
@@ -1432,30 +1432,43 @@
 
       
           <blockquote>
-<p>记录下自己在阿里云部署docker记录。</p>
+<p>centos7部署docker-ce 和 docker-compose</p>
 </blockquote>
-<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><ol>
-<li>准备一台ESC服务器，并可以使用控制台登录。</li>
-<li>检查ESC是否安装了docker，可以选择是否卸载重装。<ol>
-<li>检查docker是否安装,<code>docker 显示相关信息则表示安装</code></li>
-<li>卸载docker，若不重装直接忽略，<code>yum list installed | grep docker</code>查看安装内容</li>
-</ol>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><ul>
+<li><p>准备一台ESC服务器，并可以使用控制台登录。</p>
 </li>
-</ol>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ yum list installed | grep docker</span><br><span class="line">containerd.io.x86_64                1.3.7-3.1.el7                   @docker-ce-stable</span><br><span class="line">docker-ce.x86_64                    3:19.03.13-3.el7                @docker-ce-stable</span><br><span class="line">docker-ce-cli.x86_64                1:19.03.13-3.el7                @docker-ce-stable</span><br><span class="line"><span class="comment"># 依次卸载</span></span><br><span class="line">$ yum -y remove docker-ce.x86_64</span><br><span class="line">$ yum -y remove docker-ce-cli.x86_64</span><br><span class="line">$ yum -y remove containerd.io.x86_64</span><br><span class="line"><span class="comment"># 检查卸载结果</span></span><br><span class="line">$ yum list installed | grep docker</span><br><span class="line"><span class="comment"># 无输出内容</span></span><br><span class="line">$ docker </span><br><span class="line"><span class="comment"># -bash: docekr: 未找到命令 则表示卸载干净了</span></span><br></pre></td></tr></table></figure>
+<li><p>检查ESC是否安装了docker，可以选择是否卸载重装。</p>
+<ul>
+<li>检查docker是否安装,<code>docker 显示相关信息则表示安装</code></li>
+</ul>
+</li>
+<li><p>卸载docker，若不重装直接忽略，<code>yum list installed | grep docker</code>查看安装内容</p>
+</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ docker </span><br><span class="line"><span class="comment"># -bash: docekr: 未找到命令 则表示未安装了</span></span><br><span class="line"><span class="comment"># 如果安装，卸载默认安装的docer</span></span><br><span class="line">sudo yum remove docker docker-common container-selinux docker-selinux docker-engine</span><br><span class="line">安装 yum-utils，它提供了 yum-config-manager，可用来管理yum源</span><br><span class="line">sudo yum install -y yum-utils</span><br></pre></td></tr></table></figure>
 
-<ol start="3">
-<li>安装docker</li>
-</ol>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#更新yum </span></span><br><span class="line">yum update</span><br><span class="line"><span class="comment">#获取官方源</span></span><br><span class="line">wget -P /etc/yum.repos.d/ https://download.docker.com/linux/centos/docker-ce.repo</span><br><span class="line"><span class="comment">#查看可以安装的版本</span></span><br><span class="line">yum list docker-ce --showduplicates | sort -r</span><br><span class="line"><span class="comment">#选择安装</span></span><br><span class="line">yum install -y docker-ce-18.03.0.ce-1.el7.centos</span><br><span class="line"><span class="comment">#安装docker </span></span><br><span class="line">yum install docker -y</span><br><span class="line"><span class="comment">#检查</span></span><br><span class="line">docker -v <span class="comment">#输出版本信息</span></span><br></pre></td></tr></table></figure>
+<h3 id="安装docker"><a href="#安装docker" class="headerlink" title="安装docker"></a>安装docker</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#更新yum </span></span><br><span class="line">yum update</span><br><span class="line"><span class="comment">#获取官方源</span></span><br><span class="line">wget -P /etc/yum.repos.d/ https://download.docker.com/linux/centos/docker-ce.repo</span><br><span class="line"><span class="comment">##添加yum源</span></span><br><span class="line">sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo</span><br><span class="line"><span class="comment">## 也可以使用下面的方式配置docker的yum源</span></span><br><span class="line"><span class="comment"># 华为 二选一</span></span><br><span class="line">wget -O /etc/yum.repos.d/docker-ce.repo https://repo.huaweicloud.com/docker-ce/linux/centos/docker-ce.repo</span><br><span class="line">sudo sed -i <span class="string">'s+download.docker.com+repo.huaweicloud.com/docker-ce+'</span> /etc/yum.repos.d/docker-ce.repo</span><br><span class="line"><span class="comment"># 阿里 二选一</span></span><br><span class="line">wget https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo -O /etc/yum.repos.d/docker-ce.repo</span><br><span class="line"><span class="comment">##更新索引</span></span><br><span class="line">sudo yum clean all<span class="comment">##推荐先清空索引，特别是新版本docker需要换成老版本docker的时候</span></span><br><span class="line"><span class="comment"># 安装默认的</span></span><br><span class="line">sudo yum install -y docker-ce docker-ce-cli containerd.io </span><br><span class="line"><span class="comment">#查看可以安装的版本</span></span><br><span class="line">yum list docker-ce --showduplicates | sort -r</span><br><span class="line"><span class="comment">#选择安装</span></span><br><span class="line">yum install -y docker-ce-18.03.0.ce-1.el7.centos</span><br><span class="line"><span class="comment">#安装docker </span></span><br><span class="line">yum install docker -y</span><br><span class="line"><span class="comment">#检查</span></span><br><span class="line">docker -v <span class="comment">#输出版本信息</span></span><br></pre></td></tr></table></figure>
 
-<h2 id="设置docker相关信息"><a href="#设置docker相关信息" class="headerlink" title="设置docker相关信息"></a>设置docker相关信息</h2><ol>
+<h3 id="卸载docker"><a href="#卸载docker" class="headerlink" title="卸载docker"></a>卸载docker</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo yum remove docker-ce</span><br></pre></td></tr></table></figure>
+
+<h3 id="配置网络加速"><a href="#配置网络加速" class="headerlink" title="配置网络加速"></a>配置网络加速</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 添加一下内容</span></span><br><span class="line">vim /etc/docker/daemon.json</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"registry-mirrors"</span>: [</span><br><span class="line">    <span class="string">"https://3oq8m6tn.mirror.aliyuncs.com"</span>,</span><br><span class="line">    <span class="string">"https://hub-mirror.c.163.com"</span>,</span><br><span class="line">    <span class="string">"https://mirror.baidubce.com"</span></span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>之后重新启动服务</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl daemon-reload</span><br><span class="line">sudo systemctl restart docker</span><br></pre></td></tr></table></figure>
+
+<h3 id="设置docker相关信息"><a href="#设置docker相关信息" class="headerlink" title="设置docker相关信息"></a>设置docker相关信息</h3><ol>
 <li>设置docker开机启动项<code>systemctl enable docker.service</code></li>
 <li>关闭docker开机启动项 <code>systemctl stop docker.service</code></li>
 <li>检查docker当前运行情况 <code>systemctl status docker</code></li>
 <li>若未启动则启动docker <code>systemctl start docker</code> ,若启动了可以重启<code>systemctl restart docker</code></li>
 <li>检查docker运行情况<code>service docker status</code></li>
 </ol>
+<h3 id="部署docker-compsoe"><a href="#部署docker-compsoe" class="headerlink" title="部署docker-compsoe"></a>部署docker-compsoe</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#更新pip</span></span><br><span class="line">pip install --upgrade pip</span><br><span class="line"><span class="comment">#pip 安装,需要注意pip的版本 docker 与 docker-compose有版本对应 </span></span><br><span class="line">pip install docker-compose </span><br><span class="line">pip3 install docker-compose</span><br><span class="line"></span><br><span class="line"><span class="comment">#如果没有pip</span></span><br></pre></td></tr></table></figure>
+
 <h2 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h2><p><a href="https://developer.aliyun.com/article/336442" target="_blank" rel="noopener">阿里云CentOS 7上安装配置Docker</a></p>
 <p><a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-compose-on-centos-7" target="_blank" rel="noopener">How To Install and Use Docker Compose on CentOS 7</a></p>
 
@@ -1769,13 +1782,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">659k</span>
+    <span title="站点总字数">661k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">9:59</span>
+    <span title="站点阅读时长">10:01</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
