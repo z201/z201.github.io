@@ -20,17 +20,17 @@
     var CONFIG = {"hostname":"z201.cn","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.json"};
   </script>
 
-  <meta name="description" content="后端应用性能指标 很久以前的笔记，被翻出来了。  吞吐量、PV、QPS、TPS、RPS、I&#x2F;O负载概念。 吞吐量:指单位时间内系统处理用户的请求数,不同的角度评估方式也不同。 **PV **  :  是Page View的缩写。来自浏览器的一次html内容请求会被看作一个PV。 QPS：Queries Per Second意思是“每秒查询率”，是一台服务器每秒能够相应的查询次数，是对一个特定的查询">
+  <meta name="description" content="性能指标 在设计系统时，应该多思考**墨菲定律**  任何事情都没表面看起来那么简单。 所以事情都会比你预期的时间长。 可能出错的事情总会出错。 如果你担心某一件发生，那么它就更有可能发生。  在系统划分的时，也要思考**康威定律 **   系统架构是公司组织架构的反映。 应该按照业务闭环进行系统拆分&#x2F;组织架构拆分,实现闭环&#x2F;高内聚&#x2F;低耦合,减少沟通成本。 在合适的时间进行系统拆分,不要一开始就吧">
 <meta property="og:type" content="article">
-<meta property="og:title" content="后端应用性能指标">
+<meta property="og:title" content="查缺补漏-性能指标">
 <meta property="og:url" content="https://z201.cn/posts/3066404175/index.html">
 <meta property="og:site_name" content="憨憨在减肥的博客">
-<meta property="og:description" content="后端应用性能指标 很久以前的笔记，被翻出来了。  吞吐量、PV、QPS、TPS、RPS、I&#x2F;O负载概念。 吞吐量:指单位时间内系统处理用户的请求数,不同的角度评估方式也不同。 **PV **  :  是Page View的缩写。来自浏览器的一次html内容请求会被看作一个PV。 QPS：Queries Per Second意思是“每秒查询率”，是一台服务器每秒能够相应的查询次数，是对一个特定的查询">
+<meta property="og:description" content="性能指标 在设计系统时，应该多思考**墨菲定律**  任何事情都没表面看起来那么简单。 所以事情都会比你预期的时间长。 可能出错的事情总会出错。 如果你担心某一件发生，那么它就更有可能发生。  在系统划分的时，也要思考**康威定律 **   系统架构是公司组织架构的反映。 应该按照业务闭环进行系统拆分&#x2F;组织架构拆分,实现闭环&#x2F;高内聚&#x2F;低耦合,减少沟通成本。 在合适的时间进行系统拆分,不要一开始就吧">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==">
 <meta property="og:image" content="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==">
 <meta property="article:published_time" content="2019-03-20T02:31:19.000Z">
-<meta property="article:modified_time" content="2022-01-08T10:50:54.976Z">
+<meta property="article:modified_time" content="2022-01-16T01:33:37.864Z">
 <meta property="article:author" content="憨憨在减肥">
 <meta property="article:tag" content="吞吐量">
 <meta property="article:tag" content="PV">
@@ -53,7 +53,7 @@
   };
 </script>
 
-  <title>后端应用性能指标 | 憨憨在减肥的博客</title>
+  <title>查缺补漏-性能指标 | 憨憨在减肥的博客</title>
   
     <script>
       function sendPageView() {
@@ -283,7 +283,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          后端应用性能指标
+          查缺补漏-性能指标
         </h1>
 
         <div class="post-meta">
@@ -300,7 +300,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-08 18:50:54" itemprop="dateModified" datetime="2022-01-08T18:50:54+08:00">2022-01-08</time>
+                <time title="修改时间：2022-01-16 09:33:37" itemprop="dateModified" datetime="2022-01-16T09:33:37+08:00">2022-01-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -308,7 +308,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" itemprop="url" rel="index"><span itemprop="name">性能优化</span></a>
+                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
                 </span>
             </span>
 
@@ -318,7 +318,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>4k</span>
+              <span>4.8k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -337,21 +337,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="后端应用性能指标"><a href="#后端应用性能指标" class="headerlink" title="后端应用性能指标"></a>后端应用性能指标</h2><blockquote>
-<p>很久以前的笔记，被翻出来了。</p>
-</blockquote>
-<h3 id="吞吐量、PV、QPS、TPS、RPS、I-O负载概念。"><a href="#吞吐量、PV、QPS、TPS、RPS、I-O负载概念。" class="headerlink" title="吞吐量、PV、QPS、TPS、RPS、I/O负载概念。"></a>吞吐量、PV、QPS、TPS、RPS、I/O负载概念。</h3><blockquote>
-<p><strong>吞吐量</strong>:指单位时间内系统处理用户的请求数,不同的角度评估方式也不同。</p>
-<p>**PV **  :  是Page View的缩写。来自浏览器的一次html内容请求会被看作一个PV。</p>
-<p><strong>QPS</strong>：Queries Per Second意思是“每秒查询率”，是一台服务器每秒能够相应的查询次数，是对一个特定的查询服务器在规定时间内所处理流量多少的衡量标准。</p>
-<p><strong>TPS：</strong>是Transactions Per Second的缩写，也就是事务数/秒。它是软件测试结果的测量单位。一个事务是指一个客户机向服务器发送请求然后服务器做出反应的过程。客户机在发送请求时开始计时，收到服务器响应后结束计时，以此来计算使用的时间和完成的事务个数，</p>
-<p><strong>RPS</strong> : 是Requests Per Second的缩写,指并发数/平均响应时间。</p>
-<p><strong>I/0</strong> 负载: I/O 是 input/output的缩写，即输入输出端口。每个设备都会有一个专用的I/O地址，用来处理自己的输入输出信息。一个系统要能正确工作，必须要有数据通道（data paths）的机制，软件和硬件系统都概莫能外。对于计算机系统而言，必须要有data paths的机制来确保CPU, RAM和I/O设备之间的信息数据能正确的流动。这些data paths,通常被称为总线(BUS)，是计算机内部主要的通信通道。若想深入可以参考  <a href="https://book.douban.com/subject/1776614/" target="_blank" rel="noopener">Understanding the Linux Kernel</a>。</p>
-</blockquote>
-<ul>
-<li>在技术人员的职业生涯中，总是不断开发新的系统。在设计系统的时候，因场景、时间而异。一个系统并不是开始就能设计的非常完美，绝对多数的情况是在有限的资源，优先解决核心问题。并预测可能发生的问题，通过反复迭代的逐步消除痛点。这本身是一个持久性的过程。但是早期优良的架构设计能为未来的工作带来非常大的帮助，如何去评判设计是否合理需要数据佐证。吞吐量、PV、QPS、TPS、RPS、I/O这些指标早设计初期能为开发人员提供非常大的帮助。</li>
-</ul>
-<h2 id="参考定律"><a href="#参考定律" class="headerlink" title="参考定律"></a>参考定律</h2><blockquote>
+        <h2 id="性能指标"><a href="#性能指标" class="headerlink" title="性能指标"></a>性能指标</h2><blockquote>
 <p>在设计系统时，应该多思考**<a href="http://wiki.mbalib.com/wiki/%E5%A2%A8%E8%8F%B2%E5%AE%9A%E5%BE%8B" target="_blank" rel="noopener">墨菲定律</a>**</p>
 <ul>
 <li>任何事情都没表面看起来那么简单。</li>
@@ -367,20 +353,58 @@
 </ul>
 <p>​                                                            —亿级流量网站架构核心技术 </p>
 </blockquote>
+<h3 id="性能指标-1"><a href="#性能指标-1" class="headerlink" title="性能指标"></a>性能指标</h3><blockquote>
+<p>在技术人员的职业生涯中，总是不断开发新的系统。在设计系统的时候，因场景、时间而异。一个系统并不是开始就能设计的非常完美，绝对多数的情况是在有限的资源，优先解决核心问题。并预测可能发生的问题，通过反复迭代的逐步消除痛点。这本身是一个持久性的过程。但是早期优良的架构设计能为未来的工作带来非常大的帮助，如何去评判设计是否合理需要数据佐证。吞吐量、PV、QPS、TPS、RPS、I/O这些指标早设计初期能为开发人员提供非常大的帮助。</p>
+</blockquote>
+<ul>
+<li><strong>吞吐量</strong>:指单位时间内系统处理用户的请求数,不同的角度评估方式也不同。</li>
+<li>**PV **  :  是Page View的缩写。来自浏览器的一次html内容请求会被看作一个PV。</li>
+<li><strong>QPS</strong>：Queries Per Second意思是“每秒查询率”，是一台服务器每秒能够相应的查询次数，是对一个特定的查询服务器在规定时间内所处理流量多少的衡量标准。</li>
+<li><strong>TPS：</strong>是Transactions Per Second的缩写，也就是事务数/秒。它是软件测试结果的测量单位。一个事务是指一个客户机向服务器发送请求然后服务器做出反应的过程。客户机在发送请求时开始计时，收到服务器响应后结束计时，以此来计算使用的时间和完成的事务个数。</li>
+<li><strong>RPS</strong> : 是Requests Per Second的缩写,指并发数/平均响应时间。</li>
+<li><strong>I/0</strong> 负载: I/O 是 input/output的缩写，即输入输出端口。每个设备都会有一个专用的I/O地址，用来处理自己的输入输出信息。一个系统要能正确工作，必须要有数据通道（data paths）的机制，软件和硬件系统都概莫能外。对于计算机系统而言，必须要有data paths的机制来确保CPU, RAM和I/O设备之间的信息数据能正确的流动。这些data paths,通常被称为总线(BUS)，是计算机内部主要的通信通道。若想深入可以参考  <a href="https://book.douban.com/subject/1776614/" target="_blank" rel="noopener">Understanding the Linux Kernel</a>。</li>
+</ul>
 <a id="more"></a>
 
-<h3 id="TPS-吞吐量"><a href="#TPS-吞吐量" class="headerlink" title="TPS(吞吐量)"></a>TPS(吞吐量)</h3><blockquote>
+<h4 id="吞吐量"><a href="#吞吐量" class="headerlink" title="吞吐量"></a>吞吐量</h4><blockquote>
 <p>一个系统的承压能力。单位时间内完成的工作量的量度。通常，平均响应时间越短，系统吞吐量越大；平均响应时间越长，系统吞吐量越小。但是，系统吞吐量越大，未必平均响应时间越短。因为在某些情况（例如，不增加任何硬件配置）吞吐量的增大，有时会把平均响应时间作为牺牲，来换取一段时间处理更多的请求。</p>
 </blockquote>
 <ul>
-<li>影响吞吐量的几个重要参数指标<ul>
-<li>QPS、TPS、并发数、响应。</li>
+<li><p>混合场景负载测试，混合场景测试会将多个接口按照实际大促时候的比例混合起来，然后增加线程数找出多个接口 TPS 的和对应的峰值。这个比例也是混合场景的关键。</p>
+</li>
+<li><p>影响吞吐量的几个重要参数指标</p>
+<ul>
+<li>QPS、TPS、并发数、响应时间、报错率。</li>
 </ul>
 </li>
-<li>名词概述<ul>
+<li><p>名词概述</p>
+<ul>
 <li><strong>并发数</strong> ： 系统同时处理的 reqeust / 事物数。</li>
 <li><strong>响应时间</strong> :  一般取reqeust的平均响应时间，很大程度上受客户端环境因素影响。</li>
 <li><strong>TPS</strong> （<strong>QPS</strong> ）: 并发数 / 响应时间。</li>
+<li><strong>报错率</strong>：报错率的计算方式是在统计时间范围内不符合返回期望的请求数除以总共的请求数。<ul>
+<li>状态码的校验，这在性能工具中不需要特别设置，如 4XX、5XX 这样的状态码会直接报错；</li>
+<li>业务层面的校验，为了保证业务的基本准确性，会通过返回的数据包进行校验；</li>
+<li>数据库校验， 相对于业务测试，性能测试的每一次请求不会都做数据库校验，这样会影响性能测试结果，我一般会在一轮性能测试之后去统计落库数据的数量和状态是否正常。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>流量模型</p>
+<ul>
+<li>以网络流量左右基础数据，筛选出流量占比、服务级的访问数据统计、根据时间维度评估流量趋势。</li>
+</ul>
+</li>
+<li><p>系统健壮</p>
+<ul>
+<li>尽可能早测试、推荐测试驱动开发。</li>
+</ul>
+</li>
+<li><p>正确率</p>
+<ul>
+<li>统计网络中流量的正确处理比例。</li>
+<li>整体处理能力是否稳定，会不会存在处理能力的下滑。</li>
+<li>接口之间的比例是否稳定，随着时间的进行接口之间的访问比例会不会偏离。</li>
 </ul>
 </li>
 </ul>
@@ -498,12 +522,12 @@
 </ol>
 </li>
 </ul>
-<h3 id="2、PV"><a href="#2、PV" class="headerlink" title="2、PV"></a>2、PV</h3><ul>
+<h4 id="PV"><a href="#PV" class="headerlink" title="PV"></a>PV</h4><ul>
 <li>PV（page view）即页面浏览量，通常是衡量一个网络新闻频道或网站甚至一条网络新闻的主要指标。网页浏览数（page view）是评价网站流量最常用的指标之一，简称为PV。搜索引擎会根据网站的PV来判断网站的好与坏，是影响网站排名的重要因素之一。</li>
 <li>一般看新闻也就集中在早上、中午、晚上。假设早上7:30 - 8:30网站有会很大访问量大概3500左右。</li>
 <li><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/web/%E7%BD%91%E7%AB%99PV.png"></li>
 </ul>
-<h3 id="3、QPS、TPS"><a href="#3、QPS、TPS" class="headerlink" title="3、QPS、TPS"></a>3、QPS、TPS</h3><blockquote>
+<h4 id="QPS、TPS"><a href="#QPS、TPS" class="headerlink" title="QPS、TPS"></a>QPS、TPS</h4><blockquote>
 <p>每秒钟request/事务数量，一个事务是指一个客户机向服务器发送请求然后服务器做出反应的过程。</p>
 </blockquote>
 <ol>
@@ -538,10 +562,28 @@
 <li><p>大多数情况下，我们使用加权协函数平均方法来计算客户机的得分，利用客户机的这些信息使用加权协函数平均方法来计算服务器端的整体TPS得分。</p>
 </li>
 </ol>
-<h3 id="5、RPS"><a href="#5、RPS" class="headerlink" title="5、RPS"></a>5、RPS</h3><blockquote>
+<h4 id="RPS"><a href="#RPS" class="headerlink" title="RPS"></a>RPS</h4><blockquote>
 <p>每秒请求数，这里还有两个我们通常认为和RPS相等的名词，arrival rate、TPS。</p>
 </blockquote>
-<h3 id="6、IO"><a href="#6、IO" class="headerlink" title="6、IO"></a>6、IO</h3>
+<h4 id="IO"><a href="#IO" class="headerlink" title="IO"></a>IO</h4><h3 id="基准场景"><a href="#基准场景" class="headerlink" title="基准场景"></a>基准场景</h3><blockquote>
+<p> 基准场景是指单线程或者少量线程（一般在 5 个线程以下）对单接口进行测试，然后将测试结果作为基准数据，在系统调优或者评估的过程中，通过运行相同的业务接口比较测试结果，为系统的优化以及后续测试流程提供决策数据。</p>
+</blockquote>
+<ul>
+<li><p>验证测试脚本及测试参数的正确性，同时也可以验证脚本数据是否能够支持重复性测试等；</p>
+</li>
+<li><p>通过少量线程访问系统获取结果数据，作为对比参考基准；</p>
+</li>
+<li><p>根据测试结果，初步判断可能成为系统瓶颈的场景，并决定是否进行后续的测试；</p>
+</li>
+<li><p>基准场景的结果被一部分公司作为上线的基线指标，不达到要求是不允许上线的，这样的场景也经常被固化成自动化的脚本定时触发和巡检。</p>
+</li>
+<li><p>单接口负载能力</p>
+<ul>
+<li>单接口负载场景就是通过模拟多线程对单接口进行负载测试。<strong>选定线程数后持续循环运行一定时间，比如分别运行 100 线程、200 线程、300线程等，一般相同线程数运行 10～15 min，然后获取事务响应时间、TPS、报错率，监测测试系统的各服务器资源使用情况（CPU、内存、磁盘、网络等），把具体数据记录之后再开始跑下一个线程数。每一组线程数级别会有对应的 TPS，直到你找到 TPS 的拐点。</strong></li>
+</ul>
+</li>
+</ul>
+
     </div>
 
     
@@ -556,7 +598,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="https://z201.cn/posts/3066404175/" title="后端应用性能指标">https://z201.cn/posts/3066404175/</a>
+    <a href="https://z201.cn/posts/3066404175/" title="查缺补漏-性能指标">https://z201.cn/posts/3066404175/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -645,7 +687,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#后端应用性能指标"><span class="nav-number">1.</span> <span class="nav-text">后端应用性能指标</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#吞吐量、PV、QPS、TPS、RPS、I-O负载概念。"><span class="nav-number">1.1.</span> <span class="nav-text">吞吐量、PV、QPS、TPS、RPS、I&#x2F;O负载概念。</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考定律"><span class="nav-number">2.</span> <span class="nav-text">参考定律</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TPS-吞吐量"><span class="nav-number">2.1.</span> <span class="nav-text">TPS(吞吐量)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#系统响应时间计算"><span class="nav-number">2.1.1.</span> <span class="nav-text">系统响应时间计算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#并发用户数的计算公式"><span class="nav-number">2.1.2.</span> <span class="nav-text">并发用户数的计算公式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#吞吐量的计算公式"><span class="nav-number">2.1.3.</span> <span class="nav-text">吞吐量的计算公式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#思考时间的计算公式"><span class="nav-number">2.1.4.</span> <span class="nav-text">思考时间的计算公式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#因素（指标）"><span class="nav-number">2.1.5.</span> <span class="nav-text">因素（指标）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、PV"><span class="nav-number">2.2.</span> <span class="nav-text">2、PV</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、QPS、TPS"><span class="nav-number">2.3.</span> <span class="nav-text">3、QPS、TPS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5、RPS"><span class="nav-number">2.4.</span> <span class="nav-text">5、RPS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6、IO"><span class="nav-number">2.5.</span> <span class="nav-text">6、IO</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#性能指标"><span class="nav-number">1.</span> <span class="nav-text">性能指标</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#性能指标-1"><span class="nav-number">1.1.</span> <span class="nav-text">性能指标</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#吞吐量"><span class="nav-number">1.1.1.</span> <span class="nav-text">吞吐量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#系统响应时间计算"><span class="nav-number">1.1.2.</span> <span class="nav-text">系统响应时间计算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#并发用户数的计算公式"><span class="nav-number">1.1.3.</span> <span class="nav-text">并发用户数的计算公式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#吞吐量的计算公式"><span class="nav-number">1.1.4.</span> <span class="nav-text">吞吐量的计算公式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#思考时间的计算公式"><span class="nav-number">1.1.5.</span> <span class="nav-text">思考时间的计算公式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#因素（指标）"><span class="nav-number">1.1.6.</span> <span class="nav-text">因素（指标）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PV"><span class="nav-number">1.1.7.</span> <span class="nav-text">PV</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#QPS、TPS"><span class="nav-number">1.1.8.</span> <span class="nav-text">QPS、TPS</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#RPS"><span class="nav-number">1.1.9.</span> <span class="nav-text">RPS</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#IO"><span class="nav-number">1.1.10.</span> <span class="nav-text">IO</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基准场景"><span class="nav-number">1.2.</span> <span class="nav-text">基准场景</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -660,18 +702,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">111</span>
+          <span class="site-state-item-count">112</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">30</span>
+        <span class="site-state-item-count">29</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">108</span>
+        <span class="site-state-item-count">110</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -696,6 +738,9 @@
     <ul class="links-of-blogroll-list">
         <li class="links-of-blogroll-item">
           <a href="https://openjdk.java.net/" title="https:&#x2F;&#x2F;openjdk.java.net&#x2F;" rel="noopener" target="_blank">openJdk-docs</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://docs.spring.io/spring-framework/docs/" title="https:&#x2F;&#x2F;docs.spring.io&#x2F;spring-framework&#x2F;docs&#x2F;" rel="noopener" target="_blank">spring-projects-docs</a>
         </li>
         <li class="links-of-blogroll-item">
           <a href="https://www.journaldev.com/" title="https:&#x2F;&#x2F;www.journaldev.com&#x2F;" rel="noopener" target="_blank">journaldev</a>
@@ -789,13 +834,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">710k</span>
+    <span title="站点总字数">718k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">10:45</span>
+    <span title="站点阅读时长">10:52</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>

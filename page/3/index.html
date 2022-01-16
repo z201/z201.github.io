@@ -260,6 +260,174 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/1910693281/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="憨憨在减肥">
+      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="憨憨在减肥的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/1910693281/" class="post-title-link" itemprop="url">查缺补漏-分布式锁</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-01-25 16:35:32" itemprop="dateCreated datePublished" datetime="2021-01-25T16:35:32+08:00">2021-01-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-01-14 01:17:31" itemprop="dateModified" datetime="2022-01-14T01:17:31+08:00">2022-01-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>27k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>24 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>分布式锁是控制分布式系统之间同步访问共享资源的一种方式。是为了解决分布式系统中，不同的系统或是同一个系统的不同主机共享同一个资源的问题，它通常会采用互斥来保证程序的一致性。</p>
+</blockquote>
+<h2 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h2><blockquote>
+<p>锁是一种常用的并发控制机制，用于保证一项资源在任何时候只能被一个线程使用，如果其他线程也要使用同样的资源，必须排队等待上一个线程使用完。</p>
+</blockquote>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20220111020759.png"></p>
+<h2 id="分布式锁"><a href="#分布式锁" class="headerlink" title="分布式锁"></a>分布式锁</h2><blockquote>
+<p>上面说的锁指的是程序级别的锁，例如 Java 语言中的 synchronized 和 ReentrantLock 在单应用中使用不会有任何问题，但如果放到分布式环境下就要使用分布式锁。</p>
+</blockquote>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20220111021039.png"></p>
+<h2 id="实现分布式锁方案"><a href="#实现分布式锁方案" class="headerlink" title="实现分布式锁方案"></a>实现分布式锁方案</h2><ol>
+<li>基于 MySQL 的悲观锁来实现分布式锁,性能不太好。容易写bug造成Mysql死锁问题。<ul>
+<li>基于数据库实现分布式锁比较简单，绝招在于创建一张锁表，为申请者在锁表里建立一条记录，记录建立成功则获得锁，消除记录则释放锁。</li>
+<li><strong>单点故障问题。一旦数据库不可用，会导致整个系统崩溃</strong>。</li>
+<li><strong>死锁问题。数据库锁没有失效时间，未获得锁的进程只能一直等待已获得锁的进程主动释放锁。倘若已获得共享资源访问权限的进程突然挂掉、或者解锁操作失败，使得锁记录一直存在数据库中，无法被删除，而其他进程也无法获得锁，从而产生死锁现象。</strong></li>
+</ul>
+</li>
+<li>基于 Redis 实现分布式锁,目前广泛使用的方案。<ul>
+<li>当多个进程频繁去访问 Redis 时，Redis 可能成为瓶颈。关键Redis并不是和做分布式锁(比较极端的场景下)</li>
+<li>反复尝试会增加通信成本和性能开销，需要指定重试的次数。如果每次都是众多进程进行竞争的话，有可能会导致有些进程永远获取不到锁。</li>
+<li>可以集群部署，可以避免单点故障。</li>
+</ul>
+</li>
+<li>基于 ZooKeeper 实现分布式锁，利用 ZooKeeper 顺序临时节点来实现。<ul>
+<li>ZooKeeper 基于树形数据存储结构实现分布式锁，来解决多个进程同时访问同一临界资源时，数据的一致性问题。</li>
+<li>持久节点（PERSISTENT）。这是默认的节点类型，一直存在于 ZooKeeper 中。</li>
+<li>持久顺序节点（PERSISTENT_SEQUENTIAL）。在创建节点时，ZooKeeper 根据节点创建的时间顺序对节点进行编号命名。</li>
+<li>临时节点（EPHEMERAL）。当客户端与 Zookeeper 连接时临时创建的节点。与持久节点不同，当客户端与 ZooKeeper 断开连接后，该进程创建的临时节点就会被删除。</li>
+<li>临时顺序节点（EPHEMERAL_SEQUENTIAL）。就是按时间顺序编号的临时节点。</li>
+<li>zookeeper在分布式环境下能保证互斥，具备锁失效机制。防止死锁即便出现持有锁崩溃或者锁失败的情况也能被动解锁。保证后续的线程可以获得锁。并且可以多次访问临界资源。有高可用获得锁和释放锁的功能，性能并不是很差。</li>
+<li><strong>羊群效应</strong>，就是在整个 ZooKeeper 分布式锁的竞争过程中，大量的进程都想要获得锁去使用共享资源。每个进程都有自己的“Watcher”来通知节点消息，都会获取整个子节点列表，使得信息冗余，资源浪费。当共享资源被解锁后，Zookeeper 会通知所有监听的进程，这些进程都会尝试争取锁，但最终只有一个进程获得锁，使得其他进程产生了大量的不必要的请求，造成了巨大的通信开销，很有可能导致网络阻塞、系统性能下降。<ul>
+<li>在与该方法对应的持久节点的目录下，为每个进程创建一个临时顺序节点。</li>
+<li>每个进程获取所有临时节点列表，对比自己的编号是否最小，若最小，则获得锁。</li>
+<li>若本进程对应的临时节点编号不是最小的，则注册 Watcher，监听自己的上一个临时顺序节点，当监听到该节点释放锁后，获取锁。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>基于etcd分布式锁实现</li>
+</ol>
+<ul>
+<li>分别对这三种实现方式进行性能压测，可以发现在同样的服务器配置下，Redis 的性能是最好的，Zookeeper 次之，数据库最差。从实现方式和可靠性来说，Zookeeper 的实现方式简单，且基于分布式集群，可以避免单点问题，具有比较高的可靠性。因此，在对业务性能要求不是特别高的场景中，建议使用 Zookeeper 实现的分布式锁。</li>
+</ul>
+<h3 id="部署方案"><a href="#部署方案" class="headerlink" title="部署方案"></a>部署方案</h3><ul>
+<li>单机<ul>
+<li>简单，但是不能保证高可用，一旦出现单点故障就gg了。</li>
+</ul>
+</li>
+<li>集群<ul>
+<li>在Redis场景下有大名鼎鼎的红锁（RedLock）<ul>
+<li>单点故障时，我们第一时间想到的就是搞几个 Slave 从节点做备份，Redis 里很好地支持了哨兵（Sentinel）模式，自动主从切换。<strong>锁写到Master后，还没同步到Slave呢，Master挂了Slave选举成了Master，但是Slave里没有锁，其他线程再次能上锁了。不安全。</strong></li>
+<li>Redis集群只是做了 slot 分片，锁还是只写到一个 Master 上，所以它和哨兵（Sentinel）模式会面临同样的问题。</li>
+<li>如果非要用Redis方案来做锁，在保证高可用的情况下可以通过二次检查的逻辑防止锁故障。</li>
+</ul>
+</li>
+<li>Zookeeper提供了协调分布式应用的基本服务，它向外部应用暴露一组通用服务——分布式同步（Distributed Synchronization）<ul>
+<li>Zookeeper本身就是一个分布式程序（只要有半数以上节点存活，zk就能正常服务）</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="分布式锁的条件"><a href="#分布式锁的条件" class="headerlink" title="分布式锁的条件"></a>分布式锁的条件</h3><ul>
+<li><p>可以提供分布式部署应用集群中，同一个方法只能在某一个应用的线程执行。</p>
+</li>
+<li><p>该锁需要包含一下特性：<strong>分布式互斥、重入锁、锁续期、阻塞锁、公平锁</strong>、良好的<strong>加锁</strong>和<strong>释放锁</strong>性能。</p>
+</li>
+</ul>
+<h3 id="分布式使用场景"><a href="#分布式使用场景" class="headerlink" title="分布式使用场景"></a>分布式使用场景</h3><ul>
+<li>保证接口的幂等性，防止冲突提交数据。</li>
+<li>防止重复消费，比如推送消息或者发送邮件。保证合理的执行次数。</li>
+<li>防止分布式场景缓存击穿，比如秒杀活动的超卖情况。</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/1910693281/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/1183386531/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1350,249 +1518,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/2936478442/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="憨憨在减肥">
-      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="憨憨在减肥的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/2936478442/" class="post-title-link" itemprop="url">查缺补漏-Zookeeper</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-12-09 12:10:31" itemprop="dateCreated datePublished" datetime="2020-12-09T12:10:31+08:00">2020-12-09</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-12 03:17:04" itemprop="dateModified" datetime="2022-01-12T03:17:04+08:00">2022-01-12</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Zookeeper/" itemprop="url" rel="index"><span itemprop="name">Zookeeper</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2.7k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="Zookeeper概述"><a href="#Zookeeper概述" class="headerlink" title="Zookeeper概述"></a>Zookeeper概述</h3><blockquote>
-<p>Zookeeper可以让企业的IT架构逐步从集中式向分布式过度，所谓的分布式是指：把一个计算任务分解成若干个计算单元，并且分派到若干不同的计算机中去执行，然后汇总计算结果的过程。</p>
-</blockquote>
-<ul>
-<li><p>Zookeeper介绍</p>
-<ul>
-<li>Zookeeper是源代码开放的分布式协调服务，由雅虎创建，是Google Chubby开源实现。Zookeeper是一个高性能的分布式数据一致性解决方案，它将那些复杂、容易出错的分布式一致性服务封装起来，构成一个搞笑可靠的原语集，并提供一系列简单易用的接口给用户使用。</li>
-</ul>
-</li>
-<li><p>Zookeeper的典型应用场景</p>
-<ul>
-<li>数据发布/订阅 顾名思义就是一方把数据发布出来，另一方通过某种手动可以得到这些数据。<ul>
-<li>通常数据订阅有两种方式：推模式和拉模式，推模式一般是服务器主动向客户端推送消息，拉模式是客户端主动去服务端获取数据（通常采用的是轮询的方式）。</li>
-<li>Zookeeper采用两种方式的结合。<ul>
-<li>发布者将数据发布到Zookeeper集群节点上，订阅者通过一定的方法告诉服务器，我对那个节点的数据感兴趣，那个服务器在这些节点的数据发送变化时，就通知客户端，客户端得到通知后可以去服务器获取数据信息。</li>
-<li>分布式协调/通知<ul>
-<li>心跳检测：在分布式系统中，通常需要机器是否可以用，Zookeeper中我们让所有的机器都注册一个临时节点，所以只需要判断这个节点是否存在就可以了，不需要直接去连接需要检查的机器，降低系统的负载度（节点分为临时和持久）。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>Zookpeeper重量级使用</p>
-<ul>
-<li>Hadoop、HBase、Storm、Solr。</li>
-</ul>
-</li>
-<li><p>集群角色</p>
-<ul>
-<li>Leader、Follower、Observer<ul>
-<li>Leader服务器是整个Zookeeper集群工作机制的核心</li>
-<li>Follower服务器是Zookeeper集群状态的跟随者</li>
-<li>Oserver服务器充当一个观察者的角色</li>
-<li>Leader、Follower设计模式，Observer观察者模式</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>会话</p>
-<ul>
-<li>会话是指客户端Zookeeper服务器的连接，Zookeeper中的会话叫Session，客户端与服务器建立TCP的长连接来维持一个Session,客户端在启动的时候首先会与服务器建立一个TCP连接,通过这个连接客户端能够通过心跳检测与服务器保持有效的会话，也能向Zookeeper服务器发送请求并获得响应。</li>
-</ul>
-</li>
-<li><p>数据节点</p>
-<ul>
-<li>Zookeeper中的节点有两类<ul>
-<li>集群中的一台机器称为一个节点</li>
-<li>数据模型中的数据单元Znode，分别为持久节点和临时节点。（其实数据节点就是一个tree节点就是Znode）</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>版本</p>
-<ul>
-<li>Zookeeper中的版本<ul>
-<li>version<ul>
-<li>当前数据节点数据内容版本</li>
-</ul>
-</li>
-<li>cversion<ul>
-<li>当前数据节点子节点的版本号</li>
-</ul>
-</li>
-<li>aversion<ul>
-<li>当前数据节点ACL变更版本号</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>watcher（事件监听器）</p>
-<ul>
-<li>Zookeeper允许用户在指定节点上注册一些Watcher，当数据节点发生变化的时候，Zookeeper服务器会把这个变化通知发送给感兴趣的客户端。</li>
-</ul>
-</li>
-<li><p>ACL权限控制</p>
-<ul>
-<li>ACL是Access Contril Lists 的缩写,Zookeeper采用ACL策略来进行权限控制,有以下权限：<ul>
-<li>CREATE：创建子节点</li>
-<li>READ：获取子节点</li>
-<li>WRITE:更新子节点数据权限</li>
-<li>DELETE:删除子节点权限</li>
-<li>ADMIN：设置节点ACL权限</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="Zoopeeper环境搭建（集群、单机、伪集群）"><a href="#Zoopeeper环境搭建（集群、单机、伪集群）" class="headerlink" title="Zoopeeper环境搭建（集群、单机、伪集群）"></a>Zoopeeper环境搭建（集群、单机、伪集群）</h3><ul>
-<li>单机模式（设备环境有限暂时单机）<ul>
-<li>准备工作<ul>
-<li>下载Zookeeper（此处自行处理）</li>
-<li>解压 tar xzvf xxx.gz 解压</li>
-<li>重命名文件夹 Zookeeper 命令mv xxx xxx 后面的参数是新名字（可以不做）</li>
-<li>进入文件夹中/conf/</li>
-<li>复制配置文件zoo_sample.cfg（样例文件） 并重命名 zoo.cfg</li>
-</ul>
-</li>
-<li>编辑zoo.cfg内容（仅供参考,具体环境自行修改）</li>
-<li>tickTime = 2000<ul>
-<li>tickTime：基本事件单元，以毫秒为单位。这个时间是作为 Zookeeper 服务器之间或客户端与服务器之间维持心跳的时间间隔，也就是每个 tickTime 时间就会发送一个心跳。</li>
-</ul>
-</li>
-<li>initLimit= 5<ul>
-<li>initLimit:这个配置项用来配置Zookeeper接受客户端初始化连接时最长能忍受多少个心跳时间间隔数，当已超过5个心跳的时间（也就是tickTime）长度后Zookeeper服务器还没有收到客户端的返回信息，那么表明这个客户端连接失败。总的时间长度是5 * 2000=4s。</li>
-</ul>
-</li>
-<li>dataDir = D:\zookeeper\data<ul>
-<li>顾名思义就是 Zookeeper 保存数据快照的目录，默认情况下，Zookeeper 将写数据的日志文件也保存在这个目录里）。</li>
-</ul>
-</li>
-<li>dataLogDir= D:\zookeeper\log<ul>
-<li>顾名思义就是 Zookeeper 保存日志的目录。</li>
-</ul>
-</li>
-<li>synclimit = 5<ul>
-<li>这个配置项表示Leader与Follower之间发送消息，请求和应答时间长长度，最长不能超过多少个tickTime的时间长度,总的时间长度是2 * 2000 = 4s。</li>
-</ul>
-</li>
-<li>clientPort = 2181<ul>
-<li>这个端口就是客户端连接 Zookeeper 服务器的端口，Zookeeper 会监听这个端口，接受客户端的访问请求。</li>
-</ul>
-</li>
-<li>Server（待续）<ul>
-<li>格式：server.id=host:port:port（两个port保证可以正常使用就行）<ul>
-<li>id：通常为整数，并且不能重复使用整数。</li>
-<li>host：服务器的IP地址。</li>
-<li>port: Follower端口</li>
-<li>port: Leader选举投票。</li>
-</ul>
-</li>
-<li>ZooKeeper建议使用hostname，而非ip。这需要对主机的/etc/hostname和/etc/hosts做host绑定(不用的OS不同修改方式)。</li>
-<li>创建一个myid文件（放在 dataDir文件下面）</li>
-<li>写入一行数据（请查阅zoo.cfg文件）<ul>
-<li>写入id位置的数据即可。表示当前系统环境Zookeeper是哪一个Server（通讯用的）。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>启动服务与停止服务</li>
-<li>进入bin/文件</li>
-<li>执行zkServer.cmd 或则 <a href="http://zkserver.sh/" target="_blank" rel="noopener">zkServer.sh</a></li>
-<li>CMD直接双击运行 ,SH则 sudo sh ./zkServer.sh start 启动 stop 关闭</li>
-<li>验证 使用telnet来测试(自行安装)<ul>
-<li>telnet ip port 敲命令 stat 若返回数据表示当前服务器不能对外提供服务表明集群下其他服务器未启动（在Zookeeper中只要有半数的服务器正常工作就可以向外提供服务）。</li>
-</ul>
-</li>
-<li>在此简单说明下何为伪集群就是在一台服务器上的多个Zookeeper的集群叫伪集群（伪集群 两个port不能与其他zookeeper的port一样）。</li>
-<li>单机模式就删除其他服务器运行的时候就是单机模式。</li>
-</ul>
-</li>
-</ul>
-<h3 id="END"><a href="#END" class="headerlink" title="END"></a>END</h3>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1663,18 +1588,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">111</span>
+          <span class="site-state-item-count">112</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">30</span>
+        <span class="site-state-item-count">29</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">108</span>
+        <span class="site-state-item-count">110</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1699,6 +1624,9 @@
     <ul class="links-of-blogroll-list">
         <li class="links-of-blogroll-item">
           <a href="https://openjdk.java.net/" title="https:&#x2F;&#x2F;openjdk.java.net&#x2F;" rel="noopener" target="_blank">openJdk-docs</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://docs.spring.io/spring-framework/docs/" title="https:&#x2F;&#x2F;docs.spring.io&#x2F;spring-framework&#x2F;docs&#x2F;" rel="noopener" target="_blank">spring-projects-docs</a>
         </li>
         <li class="links-of-blogroll-item">
           <a href="https://www.journaldev.com/" title="https:&#x2F;&#x2F;www.journaldev.com&#x2F;" rel="noopener" target="_blank">journaldev</a>
@@ -1792,13 +1720,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">710k</span>
+    <span title="站点总字数">718k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">10:45</span>
+    <span title="站点阅读时长">10:52</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
