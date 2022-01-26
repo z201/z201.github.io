@@ -260,6 +260,370 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/3237165083/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="憨憨在减肥">
+      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="憨憨在减肥的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/3237165083/" class="post-title-link" itemprop="url">MySQL基础（四）</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-12-29 09:43:58" itemprop="dateCreated datePublished" datetime="2020-12-29T09:43:58+08:00">2020-12-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-01-08 04:05:52" itemprop="dateModified" datetime="2022-01-08T04:05:52+08:00">2022-01-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Mysql/" itemprop="url" rel="index"><span itemprop="name">Mysql</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>本章是整理知识内容，为强化知识长期更新。</p>
+</blockquote>
+<h2 id="练手项目"><a href="#练手项目" class="headerlink" title="练手项目"></a>练手项目</h2><h3 id="牛客网"><a href="#牛客网" class="headerlink" title="牛客网"></a>牛客网</h3><h4 id="准备一个mysql-5-7的数据库"><a href="#准备一个mysql-5-7的数据库" class="headerlink" title="准备一个mysql 5.7的数据库"></a>准备一个mysql 5.7的数据库</h4><h4 id="配置本地数据库"><a href="#配置本地数据库" class="headerlink" title="配置本地数据库"></a>配置本地数据库</h4><ul>
+<li><p><a href="https://launchpad.net/test-db/employees-db-1/1.0.6" target="_blank" rel="noopener">https://launchpad.net/test-db/employees-db-1/1.0.6</a> 下载文件 <strong>employees_db-full-1.0.6.tar.bz2</strong></p>
+</li>
+<li><p>解压文件</p>
+</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">➜  employees_db tree </span><br><span class="line">.</span><br><span class="line">├── Changelog</span><br><span class="line">├── README</span><br><span class="line">├── employees.sql</span><br><span class="line">├── employees_partitioned.sql</span><br><span class="line">├── employees_partitioned2.sql</span><br><span class="line">├── employees_partitioned3.sql</span><br><span class="line">├── load_departments.dump</span><br><span class="line">├── load_dept_emp.dump</span><br><span class="line">├── load_dept_manager.dump</span><br><span class="line">├── load_employees.dump</span><br><span class="line">├── load_salaries.dump</span><br><span class="line">├── load_titles.dump</span><br><span class="line">├── objects.sql</span><br><span class="line">├── test_employees_md5.sql</span><br><span class="line">└── test_employees_sha.sql</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>在将文件导入数据库</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -uroot -p -t &lt; employees.sql</span><br></pre></td></tr></table></figure>
+
+<h4 id="解决问题"><a href="#解决问题" class="headerlink" title="解决问题"></a>解决问题</h4><ul>
+<li>employees.sql 修改内容</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 38行 set storage_engine = InnoDB; 替换</span></span><br><span class="line"><span class="keyword">set</span> default_storage_engine = <span class="keyword">InnoDB</span>;</span><br><span class="line"><span class="comment"># 44行 select CONCAT('storage engine: ', @@storage_engine) as INFO; 替换</span></span><br><span class="line"><span class="keyword">select</span> <span class="keyword">CONCAT</span>(<span class="string">'storage engine: '</span>, @@default_storage_engine) <span class="keyword">as</span> INFO;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>注意导入的时候会出现文件打不开的问题</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="string">'LOADING departments'</span> <span class="keyword">as</span> <span class="string">'INFO'</span>;</span><br><span class="line">source /home/employees_db/load_departments.dump ;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">'LOADING employees'</span> <span class="keyword">as</span> <span class="string">'INFO'</span>;</span><br><span class="line">source /home/employees_db/load_employees.dump ;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">'LOADING dept_emp'</span> <span class="keyword">as</span> <span class="string">'INFO'</span>;</span><br><span class="line">source /home/employees_db/load_dept_emp.dump ;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">'LOADING dept_manager'</span> <span class="keyword">as</span> <span class="string">'INFO'</span>;</span><br><span class="line">source /home/employees_db/load_dept_manager.dump ;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">'LOADING titles'</span> <span class="keyword">as</span> <span class="string">'INFO'</span>;</span><br><span class="line">source /home/employees_db/load_titles.dump ;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">'LOADING salaries'</span> <span class="keyword">as</span> <span class="string">'INFO'</span>;</span><br><span class="line">source /home/employees_db/load_salaries.dump ;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>这里要将文件正确的路径写进去。</p>
+</li>
+<li><p>如果是本地的docker环境部署mysql，可以使用docker cp 命令将文件复制到容器中。在登陆到容器执行导入脚本</p>
+</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// 从宿主机器拷贝到容器中</span><br><span class="line">docker cp ~/Downloads/employees_db laughing_black:/home</span><br><span class="line">// laughing_black 是容器的名称</span><br><span class="line"></span><br><span class="line">// 从容器中拷贝会宿主机器中</span><br><span class="line">docker cp laughing_black:/employees_db.sql .</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/2519242267/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="憨憨在减肥">
+      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="憨憨在减肥的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/2519242267/" class="post-title-link" itemprop="url">Snowflake</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-12-27 15:22:38" itemprop="dateCreated datePublished" datetime="2020-12-27T15:22:38+08:00">2020-12-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-01-08 18:47:30" itemprop="dateModified" datetime="2022-01-08T18:47:30+08:00">2022-01-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">算法</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>8.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>8 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Snowflake"><a href="#Snowflake" class="headerlink" title="Snowflake"></a>Snowflake</h1><blockquote>
+<p>Snowflake，雪花算法是由Twitter开源的分布式ID生成算法，以划分命名空间的方式将 64-bit位分割成多个部分，每个部分代表不同的含义。这种就是将64位划分为不同的段，每段代表不同的涵义，基本就是时间戳、机器ID和序列数，当然这种方案就是需要考虑时钟回拨的问题以及做一些 buffer的缓冲设计提高性能。</p>
+</blockquote>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><blockquote>
+<p>Twitter 早期用 MySQL 存储数据，随着用户的增长，单一的 MySQL 实例没法承受海量的数据，开发团队就开始用 <a href="http://cassandra.apache.org/" target="_blank" rel="noopener">Cassandra</a> 和 sharded MySQL 替代原有的系统。然而和 MySQL 不同的是，Cassandra 没有内置为每一条数据生成唯一 ID 的功能，因为在一个分布式环境下，很难有完美的 ID 生成方案。</p>
+</blockquote>
+<ul>
+<li>对于 Twitter 而言，这样的 ID 生成方案要满足两个基本的要求，一是每秒能生成几十万条 ID 用于标识不同的 tweet；二是这些 ID 应该可以有个大致的顺序，也就是说发布时间相近的两条 tweet，它们的 ID 也应当相近，这样才能方便各种客户端对 tweet 进行排序。</li>
+<li>第一个要求意味着 ID 生成要以一种非协作的（uncoordinated）的方式进行，例如不能有一个全局的原子变量。</li>
+<li>第二个要求使得 tweet 按 ID 排序后满足 <a href="http://ci.nii.ac.jp/naid/110002673489/" target="_blank" rel="noopener">k-sorted</a> 条件。如果序列 A 要满足 k-sorted，当且仅当对于任意的 p, q，如果 1 &lt;= p &lt;= q - k (1 &lt;= p &lt;= q &lt;= n)，则有 A[p] &lt;= A[q]。换句话说，如果元素 p 排在 q 前面，且相差至少 k 个位置，那么 p 必然小于或等于 q。如果 tweet 序列满足这个条件，要获取第 r 条 tweet 之后的消息，只要从第 r - k 条开始查找即可。</li>
+<li>Twitter 解决这两个问题的方案非常简单高效：每一个 ID 都是 64 位数字，由时间戳、节点号和序列编号组成。其中序列编号是每个节点本地生成的序号，而节点号则由 <a href="http://zookeeper.apache.org/" target="_blank" rel="noopener">ZooKeeper</a> 维护。</li>
+</ul>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211227152630.png"></p>
+<ul>
+<li>官网给出的代码是scala写出来的<a href="https://github.com/twitter-archive/snowflake/blob/snowflake-2010/src/main/scala/com/twitter/service/snowflake/IdWorker.scala" target="_blank" rel="noopener">代码</a>。</li>
+<li><strong>1bit</strong>，不用，因为二进制中最高位是符号位，1表示负数，0表示正数。生成的id一般都是用整数，所以最高位固定为0。</li>
+<li><strong>41bit-时间戳</strong>，用来记录时间戳，毫秒级。<ul>
+<li>41位可以表示2^41-1个数字，<br>- 如果只用来表示正整数（计算机中正数包含0），可以表示的数值范围是：0 至 2^41-1，减1是因为可表示的数值范围是从0开始算的，而不是1。<br>- 也就是说41位可以表示2^41-1个毫秒的值，转化成单位年则是(2^{41}-1) / (1000 * 60 * 60 * 24 *365) = 69年</li>
+</ul>
+</li>
+<li><strong>10bit-工作机器id</strong>，用来记录工作机器id。<ul>
+<li>可以部署在2^{10} = 1024个节点，包括5位datacenterId和5位workerId</li>
+<li>5位（bit）可以表示的最大正整数是2^{5}-1 = 31，即可以用0、1、2、3、….31这32个数字，来表示不同的datecenterId或workerId</li>
+</ul>
+</li>
+<li><strong>12bit-序列号</strong>，序列号，用来记录同毫秒内产生的不同id。<br> -  12位（bit）可以表示的最大正整数是2^{12}-1 = 4095，即可以用0、1、2、3、….4094这4095个数字，来表示同一机器同一时间截（毫秒)内产生的4095个ID序号。</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/2519242267/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/786198647/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="憨憨在减肥">
+      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="憨憨在减肥的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/786198647/" class="post-title-link" itemprop="url">Redis-Geo</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-12-24 14:17:42" itemprop="dateCreated datePublished" datetime="2020-12-24T14:17:42+08:00">2020-12-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-01-07 23:19:51" itemprop="dateModified" datetime="2022-01-07T23:19:51+08:00">2022-01-07</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Redis/" itemprop="url" rel="index"><span itemprop="name">Redis</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>6.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>6 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="源码地址"><a href="#源码地址" class="headerlink" title="源码地址"></a><a href="https://github.com/z201/code-example/tree/main/Redis-Geo" target="_blank" rel="noopener">源码地址</a></h3><h3 id="Geo"><a href="#Geo" class="headerlink" title="Geo"></a>Geo</h3><blockquote>
+<p>Redis 在 3.2 版本中增加了 GEO 类型用于存储和查询地理位置。</p>
+</blockquote>
+<ul>
+<li><p>GEOADD：添加地理位置</p>
+</li>
+<li><p>GEOPOS：查询位置信息</p>
+</li>
+<li><p>GEODIST：距离统计</p>
+</li>
+<li><p>GEORADIUS：以给定的经纬度为中心， 找出某一半径内的元素</p>
+</li>
+<li><p>GEORADIUSBYMEMBER 找出位于指定范围内的元素，中心点是由给定的位置元素决定</p>
+</li>
+<li><p>GEOHASH：返回一个或多个位置元素HASH</p>
+</li>
+<li><p>关于删除，使用集合函数中的zrem，geo本质存在一个集合中。</p>
+</li>
+</ul>
+<h3 id="演示效果"><a href="#演示效果" class="headerlink" title="演示效果"></a>演示效果</h3><p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211224143558.png"></p>
+<ul>
+<li>使用百度地图，标记出5个坐标。<a href="https://api.map.baidu.com/lbsapi/getpoint/index.html" target="_blank" rel="noopener">百度地图坐标获取</a>  <a href="https://map.baidu.com/" target="_blank" rel="noopener">百度地图</a></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1.杭州市 蒋村商务中心 120.075338,30.294845</span></span><br><span class="line"><span class="comment">// 2.杭州市 中节能西溪首座 120.081806,30.294907</span></span><br><span class="line"><span class="comment">// 3.杭州市 西溪蝶园 120.070452,30.294221</span></span><br><span class="line"><span class="comment">// 4.杭州市 西溪财富中心 120.077854,30.296342</span></span><br><span class="line"><span class="comment">// 5.杭州市 九橙 西溪创投中心 120.055468,30.284523</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>使用redis-cli作为客户端测试工具 geo 集合key = hz</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/786198647/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/2803052659/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1284,343 +1648,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/4212331734/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="憨憨在减肥">
-      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="憨憨在减肥的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/4212331734/" class="post-title-link" itemprop="url">Centos7-Selenium-Java-Dev</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-08-31 09:45:59" itemprop="dateCreated datePublished" datetime="2020-08-31T09:45:59+08:00">2020-08-31</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-08 04:09:48" itemprop="dateModified" datetime="2022-01-08T04:09:48+08:00">2022-01-08</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Selenium/" itemprop="url" rel="index"><span itemprop="name">Selenium</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.7k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>最近在编写爬虫程序，这里简单的做下笔记。</p>
-</blockquote>
-<h3 id="阅读注意事项"><a href="#阅读注意事项" class="headerlink" title="阅读注意事项"></a>阅读注意事项</h3><ol>
-<li>需要一台服务器(阿里ESC)这种，分配的公网ip。</li>
-<li>这里使用的yum安装，所以环境配置都创建好了，不需要在手动修改。</li>
-</ol>
-<h3 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h3><blockquote>
-<p>安装Java、maven、git、selenium运行环境</p>
-</blockquote>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用的机器是centos7.4</span></span><br><span class="line"><span class="comment"># 系统环境一个一个来安装。</span></span><br><span class="line"><span class="comment"># 1.检查是否安装jdk</span></span><br><span class="line">-&gt; yum install java-1.8.0-openjdk-devel.x86_64</span><br><span class="line">-&gt; java -version</span><br><span class="line">openjdk version <span class="string">"1.8.0_262"</span></span><br><span class="line">OpenJDK Runtime Environment (build 1.8.0_262-b10)</span><br><span class="line">OpenJDK 64-Bit Server VM (build 25.262-b10, mixed mode)</span><br><span class="line">-&gt; yum install maven</span><br><span class="line">-&gt; mvn -version</span><br><span class="line">Java version: 1.8.0_262, vendor: Oracle Corporation</span><br><span class="line">Java home: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.262.b10-0.el7_8.x86_64/jre</span><br><span class="line">Default locale: zh_CN, platform encoding: UTF-8</span><br><span class="line">OS name: <span class="string">"linux"</span>, version: <span class="string">"3.10.0-862.el7.x86_64"</span>, arch: <span class="string">"amd64"</span>, family: <span class="string">"unix"</span></span><br><span class="line">-&gt; yum install git</span><br><span class="line">git version 1.8.3.1</span><br><span class="line"><span class="comment"># 查看是否生成过证书</span></span><br><span class="line">-&gt; ls -al ~/.ssh</span><br><span class="line"><span class="comment"># 这里配置下ssh公钥方便git拉去代码</span></span><br><span class="line">-&gt; ssh-keygen -t rsa -C “you email@gamil.com”</span><br><span class="line"><span class="comment"># 查看证书</span></span><br><span class="line">-&gt; cat ~/.ssh/id_rsa.pub</span><br><span class="line"><span class="comment"># 开始配置 selenium 运行环境</span></span><br><span class="line">-&gt; wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm</span><br><span class="line">-&gt; yum localinstall google-chrome-stable_current_x86_64.rpm</span><br><span class="line"><span class="comment"># 检查版本 </span></span><br><span class="line">-&gt; google-chrome --version </span><br><span class="line">Google Chrome 85.0.4183.83 </span><br><span class="line"><span class="comment"># 安装 chromedriver</span></span><br><span class="line">-&gt; yum install chromedriver</span><br><span class="line">-&gt; chromedriver -version</span><br><span class="line">ChromeDriver 84.0.4147.89 </span><br><span class="line"><span class="comment"># 这里注意 chromedriver 可能与chrome的版本不一致，去官方网站下载后解压复制到/usr/bin中</span></span><br><span class="line"><span class="comment"># 下载地址 https://chromedriver.chromium.org/</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>注意 google-chrome 和 chromedriver版本是需要对应的具体可以到官方查看。</li>
-<li>在centos上运行需要配置下关键参数</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ChromeOptions chromeOptions = <span class="keyword">new</span> ChromeOptions();</span><br><span class="line">   chromeOptions.addArguments(<span class="string">"--headless"</span>);</span><br><span class="line">   chromeOptions.addArguments(<span class="string">"--disable-gpu"</span>); <span class="comment">// 不配置一定报错</span></span><br><span class="line">   chromeOptions.addArguments(<span class="string">"--no-sandbox"</span>);</span><br><span class="line">   <span class="comment">// 创建无界面浏览器对象</span></span><br><span class="line">   chromeOptions.setHeadless(<span class="keyword">true</span>);</span><br><span class="line">   <span class="keyword">return</span> <span class="keyword">new</span> ChromeDriver(chromeOptions);</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>启动代码的需要指定环境变量</li>
-</ul>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">System.setProperty(<span class="string">"webdriver.chrome.chromedriver"</span>, <span class="string">"/usr/bin/chromedriver"</span>);</span><br><span class="line"># 具体可以通过 whereis chromedriver查看。</span><br></pre></td></tr></table></figure>
-
-<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p><a href="https://segmentfault.com/a/1190000015389941" target="_blank" rel="noopener">CentOS使用yum安装jdk</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/2531120770/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="憨憨在减肥">
-      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="憨憨在减肥的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/2531120770/" class="post-title-link" itemprop="url">Nginx-Https</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-08-26 21:42:22" itemprop="dateCreated datePublished" datetime="2020-08-26T21:42:22+08:00">2020-08-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-09 01:43:24" itemprop="dateModified" datetime="2022-01-09T01:43:24+08:00">2022-01-09</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Dev/" itemprop="url" rel="index"><span itemprop="name">Dev</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2.3k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>最近在搭建测试环境，很久没接触nginx了。</p>
-</blockquote>
-<h3 id="阅读注意事项"><a href="#阅读注意事项" class="headerlink" title="阅读注意事项"></a>阅读注意事项</h3><ol>
-<li>需要一个域名，并且在国内备案过。</li>
-<li>需要一台服务器(阿里ESC)这种，分配的公网ip。</li>
-<li>申请或者购买一张证书。和域名做关联，域名解析到服务器的公网ip。注意开放服务区的80、443端口。<ol>
-<li>证书有两个文件<ol>
-<li><code>domian.name.key domain.name.pem</code></li>
-</ol>
-</li>
-<li>吧证书上传到目标nginx服务器中。</li>
-<li>检查服务器防火墙</li>
-</ol>
-</li>
-</ol>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo firewall-cmd --permanent --zone=public --add-service=http</span><br><span class="line">sudo firewall-cmd --permanent --zone=public --add-service=https</span><br><span class="line">sudo firewall-cmd --reload</span><br></pre></td></tr></table></figure>
-
-<h3 id="开始步骤"><a href="#开始步骤" class="headerlink" title="开始步骤"></a>开始步骤</h3><h4 id="安装nginx"><a href="#安装nginx" class="headerlink" title="安装nginx"></a>安装nginx</h4><blockquote>
-<p>服务器使用的Centos服务器 使用yum安装nginx。</p>
-</blockquote>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">-&gt; yum install -y nginx</span><br><span class="line"><span class="comment">#检查nginx安装位置信息</span></span><br><span class="line">-&gt; whereis nginx</span><br><span class="line">nginx: /usr/sbin/nginx /usr/lib64/nginx /etc/nginx /usr/share/nginx /usr/share/man/man3/nginx.3pm.gz /usr/share/man/man8/nginx.8.gz</span><br><span class="line"><span class="comment"># 实际上是安装到/etc/nginx里面了</span></span><br><span class="line"><span class="comment"># 设置开机自动启动nginx</span></span><br><span class="line">-&gt; sudo systemctl <span class="built_in">enable</span> nginx</span><br><span class="line">Created symlink from /etc/systemd/system/multi-user.target.wants/nginx.service to /usr/lib/systemd/system/nginx.service.</span><br><span class="line"><span class="comment"># 切换到nginx安装目录</span></span><br><span class="line">-&gt; <span class="built_in">cd</span> /etc/nginx</span><br><span class="line"><span class="comment"># 启动nginx</span></span><br><span class="line">-&gt; nginx</span><br><span class="line"><span class="comment"># 测试nginx 在浏览器里面请求http://ip 就可以了看到nginx页面就算安装成功</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="配置证书"><a href="#配置证书" class="headerlink" title="配置证书"></a>配置证书</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建证书文件并且将证书复制近文件中</span></span><br><span class="line">-&gt; <span class="built_in">cd</span> /etc/nginx</span><br><span class="line">-&gt; mkdir cert</span><br><span class="line">-&gt; mv domian.name.key /etc/nginx/cert/</span><br><span class="line">-&gt; mv domian.name.pem /etc/nginx/cert/</span><br><span class="line"><span class="comment"># 配置nginx.conf文件使证书生效，并将80端口转发到443端口上。</span></span><br><span class="line">-&gt; vim nginx.conf</span><br><span class="line"><span class="comment">#以下属性中以ssl开头的属性代表与证书配置有关，其他属性请根据自己的需要进行配置。</span></span><br><span class="line">server &#123;</span><br><span class="line">         listen 443; <span class="comment">#配置HTTPS的默认访问端口号为443。此处如果未配置HTTPS的默认访问端口，可能会造成Nginx无法启动。Nginx 1.15.0以上版本请使用listen 443 ssl代替listen 443和ssl on。</span></span><br><span class="line">         server_name www.certificatestests.com; <span class="comment">#将www.certificatestests.com修改为您证书绑定的域名，例如：www.example.com。如果您购买的是通配符域名证书，要修改为通配符域名，例如：*.aliyun.com。</span></span><br><span class="line">         root html;</span><br><span class="line">         index index.html index.htm;</span><br><span class="line">         ssl_certificate cert/domain name.pem;  <span class="comment">#将domain name.pem替换成您证书的文件名称。</span></span><br><span class="line">         ssl_certificate_key cert/domain name.key; <span class="comment">#将domain name.key替换成您证书的密钥文件名称。</span></span><br><span class="line">         ssl_session_timeout 5m;</span><br><span class="line">         ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4; <span class="comment">#使用此加密套件。</span></span><br><span class="line">         ssl_protocols TLSv1 TLSv1.1 TLSv1.2; <span class="comment">#使用该协议进行配置。</span></span><br><span class="line">         ssl_prefer_server_ciphers on;</span><br><span class="line">         location / &#123;</span><br><span class="line">         root html;  <span class="comment">#站点目录。</span></span><br><span class="line">         index index.html index.htm;</span><br><span class="line">                    &#125;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line"><span class="comment">#        listen       80 default_server;</span></span><br><span class="line"><span class="comment">#        listen       [::]:80 default_server;</span></span><br><span class="line"><span class="comment">#        server_name  _;</span></span><br><span class="line">        listen 80;</span><br><span class="line">        listen [::]:80;</span><br><span class="line">        server_name www.certificatestests.com;</span><br><span class="line">        <span class="built_in">return</span> 301 https://<span class="variable">$host</span><span class="variable">$request_uri</span>;</span><br><span class="line">       &#125;</span><br><span class="line"><span class="comment"># 保存并推出、检查配置nginx配置文件是否合法、并重启nginx</span></span><br><span class="line">-&gt; nginx -t</span><br><span class="line">nginx: the configuration file /etc/nginx/nginx.conf syntax is ok</span><br><span class="line">nginx: configuration file /etc/nginx/nginx.conf <span class="built_in">test</span> is successful</span><br><span class="line">-&gt; nginx -s reload</span><br></pre></td></tr></table></figure>
-
-<h4 id="测试域名证书是否生效"><a href="#测试域名证书是否生效" class="headerlink" title="测试域名证书是否生效"></a>测试域名证书是否生效</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">https:&#x2F;&#x2F;domian</span><br><span class="line">http:&#x2F;&#x2F;domian 检查是否安全链接即可。一般浏览器上面会出现一个安全的标志</span><br></pre></td></tr></table></figure>
-
-<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p><a href="https://help.aliyun.com/document_detail/98728.html?spm=5176.2020520163.0.dexternal.3e4756a7jNJMZQ" target="_blank" rel="noopener">阿里云帮助文档-在Nginx上配置证书</a></p>
-<p><a href="https://segmentfault.com/a/1190000018109309" target="_blank" rel="noopener">CentOS 7 上安装最新版 Nginx</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/3681309085/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="憨憨在减肥">
-      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="憨憨在减肥的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/3681309085/" class="post-title-link" itemprop="url">SpringBoot-Change-Tomcat-Version</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-07-23 17:03:27" itemprop="dateCreated datePublished" datetime="2020-07-23T17:03:27+08:00">2020-07-23</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-08 03:55:37" itemprop="dateModified" datetime="2022-01-08T03:55:37+08:00">2022-01-08</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Spring/" itemprop="url" rel="index"><span itemprop="name">Spring</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.4k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章只是回顾一次eureka版本升级后tomcat资源占用过高的问题，临时解决。</p>
-</blockquote>
-<h3 id="升级springBoot、SpringCloud版本"><a href="#升级springBoot、SpringCloud版本" class="headerlink" title="升级springBoot、SpringCloud版本"></a>升级springBoot、SpringCloud版本</h3><ul>
-<li>升级完成后直接在测试环境测试部署，结果发现eureka的cpu资源占用过高，导致假死。通过arthas发现是tomcat线程阻塞。通过dependepency看了下springboot中内嵌tomcat的版本是9了。之前是8，测试环境一大堆人等着测试接口。首先想着降低tomcat版本。</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">查看依赖</span><br><span class="line">gradle dependencies</span><br><span class="line">mvn dependency:tree &gt; output.txt   # 输出到文件里</span><br></pre></td></tr></table></figure>
-
-<h3 id="排除SpringBoot的Tomcat，指定Tomcat版本"><a href="#排除SpringBoot的Tomcat，指定Tomcat版本" class="headerlink" title="排除SpringBoot的Tomcat，指定Tomcat版本"></a>排除SpringBoot的Tomcat，指定Tomcat版本</h3><p>有时候我们需要在特定情况下使用特定的Tomcat版本，这时候总不能因为Tomcat就改变SpringBoot的版本，所以可以采用排除SpringBoot中的Tomcat包，然后手动指定Tomcat的版本，当然还要引入Tomcat相关的包。</p>
-<h5 id="Gradle的配置"><a href="#Gradle的配置" class="headerlink" title="Gradle的配置"></a>Gradle的配置</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">compile(<span class="string">'org.springframework.boot:spring-boot-starter-web'</span>) &#123;</span><br><span class="line">  exclude <span class="keyword">module</span>: <span class="string">"spring-boot-starter-tomcat"</span></span><br><span class="line">&#125;</span><br><span class="line">compile <span class="string">'org.apache.tomcat.embed:tomcat-embed-core:8.5.37'</span></span><br><span class="line">compile <span class="string">'org.apache.tomcat.embed:tomcat-embed-el:8.5.37'</span></span><br><span class="line">compile <span class="string">'org.apache.tomcat.embed:tomcat-embed-logging-juli:8.5.2'</span></span><br><span class="line">compile <span class="string">'org.apache.tomcat.embed:tomcat-embed-websocket:8.5.37'</span></span><br></pre></td></tr></table></figure>
-
-<p>如果不指定版本，则会使用最新的Tomcat版本, 否则直接指定对应的版本号。</p>
-<h5 id="Maven的配置"><a href="#Maven的配置" class="headerlink" title="Maven的配置"></a>Maven的配置</h5><ol>
-<li>在 pom.xml文件里面添加一个标签<properties>，添加期望的版本。</li>
-</ol>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">tomcat.version</span>&gt;</span>8.5.37<span class="tag">&lt;/<span class="name">tomcat.version</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<ol>
-<li>添加必要的Jar包：</li>
-</ol>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span> </span><br><span class="line">   <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.tomcat<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span> </span><br><span class="line">   <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>tomcat-juli<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span> </span><br><span class="line">   <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;tomcat.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span> </span><br><span class="line"> <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.tomcat.embed<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>tomcat-embed-logging-juli<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;tomcat.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>重新部署eureka后一切正常。处理时间短暂，没有影响大家工作。时间过了大半年了，也忘记具体是啥原因了。有机会本地复现试试。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1691,18 +1718,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">113</span>
+          <span class="site-state-item-count">116</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-count">30</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">111</span>
+        <span class="site-state-item-count">116</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1765,7 +1792,7 @@
           <a href="https://stackoverflow.com/" title="https:&#x2F;&#x2F;stackoverflow.com&#x2F;" rel="noopener" target="_blank">stackoverflow</a>
         </li>
         <li class="links-of-blogroll-item">
-          <a href="https://www.baeldung.com/" title="https:&#x2F;&#x2F;www.baeldung.com&#x2F;" rel="noopener" target="_blank">beeldung</a>
+          <a href="https://www.baeldung.com/" title="https:&#x2F;&#x2F;www.baeldung.com&#x2F;" rel="noopener" target="_blank">beeldung教程</a>
         </li>
         <li class="links-of-blogroll-item">
           <a href="http://www.sczyh30.com/" title="http:&#x2F;&#x2F;www.sczyh30.com&#x2F;" rel="noopener" target="_blank">浮生若梦</a>
@@ -1823,13 +1850,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">731k</span>
+    <span title="站点总字数">743k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">11:05</span>
+    <span title="站点阅读时长">11:16</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>

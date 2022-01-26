@@ -260,6 +260,338 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/3325845222/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="憨憨在减肥">
+      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="憨憨在减肥的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/3325845222/" class="post-title-link" itemprop="url">Jvm-optimization</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-08-19 14:09:45" itemprop="dateCreated datePublished" datetime="2021-08-19T14:09:45+08:00">2021-08-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-12-21 14:24:58" itemprop="dateModified" datetime="2021-12-21T14:24:58+08:00">2021-12-21</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Jvm/" itemprop="url" rel="index"><span itemprop="name">Jvm</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>jvm调优是日常工作中经常会使用的技巧，整理下。</p>
+</blockquote>
+<h3 id="项目启动的时候加上的参数都是些啥意思？"><a href="#项目启动的时候加上的参数都是些啥意思？" class="headerlink" title="项目启动的时候加上的参数都是些啥意思？"></a>项目启动的时候加上的参数都是些啥意思？</h3><blockquote>
+<p>刚开始工作的时候发现同事会在jar启动的命令上增加很多参数,很长一段时间都不清楚是干啥的。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:MetaspaceSize=<span class="number">128</span>m -XX:MaxMetaspaceSize=<span class="number">128</span>m -Xms1024m -Xmx1024m -Xmn256m -Xss256k -XX:SurvivorRatio=<span class="number">8</span> -XX:+UseConcMarkSweepGC</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>简单介绍下参数</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">-XX:MetaspaceSize=128m （元空间默认大小）</span><br><span class="line">-XX:MaxMetaspaceSize=128m （元空间最大大小）</span><br><span class="line">-Xms1024m （堆最大大小）</span><br><span class="line">-Xmx1024m （堆默认大小）</span><br><span class="line">-Xmn256m （新生代大小）</span><br><span class="line">-Xss256k （棧最大深度大小）</span><br><span class="line">-XX:SurvivorRatio=8 （新生代分区比例 8:2）</span><br><span class="line">-XX:+UseConcMarkSweepGC （指定使用的垃圾收集器，这里使用CMS收集器）</span><br><span class="line">-XX:+PrintGCDetails （打印详细的GC日志）</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>虽然有了介绍但是依然不清楚具体是干啥的。并且Java虚拟机提供了非常多的参数命令。下面代码可以输出支持的参数数量</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">java -XX:+PrintFlagsFinal -XX:+UnlockDiagnosticVMOptions -version | wc -l</span><br><span class="line">openjdk version <span class="string">"1.8.0_275"</span></span><br><span class="line"><span class="function">OpenJDK Runtime <span class="title">Environment</span> <span class="params">(AdoptOpenJDK)</span><span class="params">(build <span class="number">1.8</span><span class="number">.0</span>_275-b01)</span></span></span><br><span class="line"><span class="function">OpenJDK 64-Bit Server <span class="title">VM</span> <span class="params">(AdoptOpenJDK)</span><span class="params">(build <span class="number">25.275</span>-b01, mixed mode)</span></span></span><br><span class="line"><span class="function">     838</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>堆内存大小配置</li>
+</ul>
+<blockquote>
+<p>建议 -Xms = 最大内存 * [0.6. ~0.8] 这里需要考虑系统损耗内存、和实际物理内存。</p>
+</blockquote>
+<ul>
+<li><p>堆内存与堆外内存</p>
+<ul>
+<li>堆内存</li>
+</ul>
+<blockquote>
+<p>必须是1024的倍数，且不能低于2M。</p>
+<p>32位机器，最大1G/4G 64位机器最大可以超过 32G/64G</p>
+</blockquote>
+<ul>
+<li>堆外内存</li>
+</ul>
+<blockquote>
+<p>堆外内存一般指 Direct Memory ，不受GC控制，JVM、Netty都可能使用堆外内存。</p>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:MaxDirectMemorySize 限制</span><br></pre></td></tr></table></figure>
+
+<h3 id="如何理解这些参数的含义？"><a href="#如何理解这些参数的含义？" class="headerlink" title="如何理解这些参数的含义？"></a>如何理解这些参数的含义？</h3><blockquote>
+<p>首先我们需要理解java是如何运行的，为什么需要java虚拟机？    </p>
+<p>我们常用方式一般是安装java运行环境(jre)用命令行的方式启动或者直接双击jar运行。jre包含的java运行的必要环境。</p>
+<p>Java 作为一门高级程序语言，它的语法非常复杂，抽象程度也很高。编译出来的也不是机器可以直接直接运行代码。所以使用面向Java语言的虚拟机运行Java编译以后的特定代码。这里的特定代码指的是Java字节指令码。</p>
+</blockquote>
+<h3 id="JVM-内存分配性能问题"><a href="#JVM-内存分配性能问题" class="headerlink" title="JVM 内存分配性能问题"></a>JVM 内存分配性能问题</h3><ul>
+<li>在应用服务的特定场景下，JVM 内存分配不合理带来的性能表现并不会像内存溢出问题这么突出。如果没有深入到各项性能指标中去，是很难发现其中隐藏的性能损耗。</li>
+<li>JVM 内存分配不合理最直接的表现就是频繁的 GC，这会导致上下文切换等性能问题，从而降低系统的吞吐量、增加系统的响应时间。</li>
+</ul>
+<h3 id="分析-GC-日志"><a href="#分析-GC-日志" class="headerlink" title="分析 GC 日志"></a>分析 GC 日志</h3><ul>
+<li>在进行压测的时候，我们需要对GC日志进行分析。</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:+PrintGCTimeStamps -XX:+PrintGCDetails -Xloggc:/log/heap.log</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>-XX:PrintGCTimeStamps：打印 GC 具体时间；</li>
+<li>-XX:PrintGCDetails ：打印出 GC 详细日志；</li>
+<li>-Xloggc: path：GC 日志生成路径。</li>
+<li>JVM 内存调优通常和 GC 调优是互补的，基于以上调优，可以对年轻代和堆内存的垃圾回收算法进行调优。</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/3325845222/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/1237801960/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="憨憨在减肥">
+      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="憨憨在减肥的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/1237801960/" class="post-title-link" itemprop="url">SpringBoot-Test-Mock</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-06-14 03:15:50" itemprop="dateCreated datePublished" datetime="2021-06-14T03:15:50+08:00">2021-06-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-01-18 11:00:24" itemprop="dateModified" datetime="2022-01-18T11:00:24+08:00">2022-01-18</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index"><span itemprop="name">Spring</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>7.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="SpringBoot测试解决方案"><a href="#SpringBoot测试解决方案" class="headerlink" title="SpringBoot测试解决方案"></a>SpringBoot测试解决方案</h2><p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20220114050653.png"></p>
+<ul>
+<li><p>mock</p>
+<ul>
+<li>Mock 的意思是模拟，它可以用来对系统、组件或类进行隔离。</li>
+<li>验证组件级别正确性的一大难点在于关于组件与组件之间的依赖关系，这里就需要引出测试领域非常重要的一个概念，即 Mock（模拟）。</li>
+</ul>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20220114053222.png"></p>
+</li>
+<li><p>mvc-mock 测试Controller</p>
+</li>
+<li><p>service-mock 测试 Service </p>
+</li>
+<li><p>repository-mock 测试 Data</p>
+</li>
+<li><p>remote-mock 测试 远程接口</p>
+</li>
+</ul>
+<h3 id="Spring-Boot-Start-Test"><a href="#Spring-Boot-Start-Test" class="headerlink" title="Spring-Boot-Start-Test"></a>Spring-Boot-Start-Test</h3><blockquote>
+<p>Spring Test &amp; Spring Boot Test：为 Spring 和 Spring Boot 框架提供的测试工具。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">[INFO] +- org.springframework.boot:spring-boot-starter-test:jar:2.4.5:test</span><br><span class="line">[INFO] |  +- org.springframework.boot:spring-boot-test:jar:2.4.5:test</span><br><span class="line">[INFO] |  +- org.springframework.boot:spring-boot-test-autoconfigure:jar:2.4.5:test</span><br><span class="line">[INFO] |  +- com.jayway.jsonpath:json-path:jar:2.4.0:test</span><br><span class="line">[INFO] |  |  \- net.minidev:json-smart:jar:2.3:test</span><br><span class="line">[INFO] |  |     \- net.minidev:accessors-smart:jar:1.2:test</span><br><span class="line">[INFO] |  |        \- org.ow2.asm:asm:jar:5.0.4:test</span><br><span class="line">[INFO] |  +- jakarta.xml.bind:jakarta.xml.bind-api:jar:2.3.3:test</span><br><span class="line">[INFO] |  |  \- jakarta.activation:jakarta.activation-api:jar:1.2.2:test</span><br><span class="line">[INFO] |  +- org.assertj:assertj-core:jar:3.18.1:test</span><br><span class="line">[INFO] |  +- org.hamcrest:hamcrest:jar:2.2:test</span><br><span class="line">[INFO] |  +- org.junit.jupiter:junit-jupiter:jar:5.7.1:test</span><br><span class="line">[INFO] |  |  \- org.junit.jupiter:junit-jupiter-params:jar:5.7.1:test</span><br><span class="line">[INFO] |  +- org.mockito:mockito-core:jar:3.6.28:test</span><br><span class="line">[INFO] |  |  +- net.bytebuddy:byte-buddy:jar:1.10.22:test</span><br><span class="line">[INFO] |  |  +- net.bytebuddy:byte-buddy-agent:jar:1.10.22:test</span><br><span class="line">[INFO] |  |  \- org.objenesis:objenesis:jar:3.1:test</span><br><span class="line">[INFO] |  +- org.mockito:mockito-junit-jupiter:jar:3.6.28:test</span><br><span class="line">[INFO] |  +- org.skyscreamer:jsonassert:jar:1.5.0:test</span><br><span class="line">[INFO] |  |  \- com.vaadin.external.google:android-json:jar:0.0.20131108.vaadin1:test</span><br><span class="line">[INFO] |  +- org.springframework:spring-test:jar:5.3.6:test</span><br><span class="line">[INFO] |  \- org.xmlunit:xmlunit-core:jar:2.7.0:test</span><br><span class="line">[INFO] +- org.junit.jupiter:junit-jupiter-api:jar:5.7.1:test</span><br><span class="line">[INFO] |  +- org.apiguardian:apiguardian-api:jar:1.1.0:test</span><br><span class="line">[INFO] |  +- org.opentest4j:opentest4j:jar:1.2.0:test</span><br><span class="line">[INFO] |  \- org.junit.platform:junit-platform-commons:jar:1.7.1:test</span><br><span class="line">[INFO] \- org.junit.jupiter:junit-jupiter-engine:jar:5.7.1:test</span><br><span class="line">[INFO]    \- org.junit.platform:junit-platform-engine:jar:1.7.1:test</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>JUnit：JUnit 是一款非常流行的基于 Java 语言的单元测试框架，在我们的课程中主要使用该框架作为基础的测试框架。</li>
+<li>JSON Path：类似于 XPath 在 XML 文档中的定位，JSON Path 表达式通常用来检索路径或设置 JSON 文件中的数据。</li>
+<li>AssertJ：AssertJ 是一款强大的流式断言工具，它需要遵守 3A 核心原则，即 Arrange（初始化测试对象或准备测试数据）——&gt; Actor（调用被测方法）——&gt;Assert（执行断言）。</li>
+<li>Mockito：Mockito 是 Java 世界中一款流行的 Mock 测试框架，它主要使用简洁的 API 实现模拟操作。在实施集成测试时，我们将大量使用到这个框架。</li>
+<li>Hamcrest：Hamcrest 提供了一套匹配器（Matcher），其中每个匹配器的设计用于执行特定的比较操作。</li>
+<li>JSONassert：JSONassert 是一款专门针对 JSON 提供的断言框架。</li>
+</ul>
+<h3 id="mock框架"><a href="#mock框架" class="headerlink" title="mock框架"></a>mock框架</h3><ul>
+<li>这里推荐使用mockito 和 阿里开源的TestableMock。</li>
+<li>使用spring boot start test 会默认引入mockito</li>
+</ul>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20220116104326.png"></p>
+<ul>
+<li>mockito常用方法</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Mockito.mock(classToMock)	<span class="comment">//模拟对象</span></span><br><span class="line">Mockito.verify(mock)	<span class="comment">//验证行为是否发生</span></span><br><span class="line">Mockito.when(methodCall).thenReturn(value1).thenReturn(value2)	<span class="comment">//触发时第一次返回value1，第n次都返回value2</span></span><br><span class="line">Mockito.doThrow(toBeThrown).when(mock).[method]	<span class="comment">//模拟抛出异常。</span></span><br><span class="line">Mockito.mock(classToMock,defaultAnswer)	<span class="comment">//使用默认Answer模拟对象</span></span><br><span class="line">Mockito.when(methodCall).thenReturn(value)	<span class="comment">//参数匹配</span></span><br><span class="line">Mockito.doReturn(toBeReturned).when(mock).[method]	<span class="comment">//参数匹配（直接执行不判断）</span></span><br><span class="line">Mockito.when(methodCall).thenAnswer(answer))	<span class="comment">//预期回调接口生成期望值</span></span><br><span class="line">Mockito.doAnswer(answer).when(methodCall).[method]	<span class="comment">//预期回调接口生成期望值（直接执行不判断）</span></span><br><span class="line">Mockito.doNothing().when(mock).[method]	<span class="comment">//不做任何返回</span></span><br><span class="line">reset(mock)	<span class="comment">//重置mock</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="演示代码"><a href="#演示代码" class="headerlink" title="演示代码"></a><a href="https://github.com/z201/code-example/tree/main/SpringBoot-Test-Mock" target="_blank" rel="noopener">演示代码</a></h3><h3 id="SpringBoot-mock"><a href="#SpringBoot-mock" class="headerlink" title="SpringBoot-mock"></a>SpringBoot-mock</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="meta">@ExtendWith</span>(SpringExtension<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">SpringBootTest</span>(<span class="title">classes</span> </span>= AppApplication<span class="class">.<span class="keyword">class</span>, <span class="title">webEnvironment</span> </span>= SpringBootTest.WebEnvironment.NONE)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AppApplicationTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> ApplicationContext applicationContext;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testContext</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Assertions.assertThat(applicationContext).isNotNull();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>@ExtendWith(SpringExtension.class) 是junit5的注入方式。</li>
+<li>@SpringBootTest 注解，SpringBoot 专门提供了一个 @SpringBootTest 注解测试 Bootstrap 类。同时 @SpringBootTest 注解也可以引用 Bootstrap 类的配置，因为所有配置都会通过 Bootstrap 类去加载。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * An enumeration web environment modes.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">enum</span> WebEnvironment &#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 加载 WebApplicationContext 并提供一个 Mock 的 Servlet 环境，此时内置的 Servlet 容器并没有正式启动。</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	MOCK(<span class="keyword">false</span>),</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 加载 EmbeddedWebApplicationContext 并提供一个真实的 Servlet 环境，然后使用一个随机端口启动内置容器。</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	RANDOM_PORT(<span class="keyword">true</span>),</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 这个配置也是通过加载 EmbeddedWebApplicationContext 提供一个真实的 Servlet 环境，但使用的是默认端口，如果没有配置端口就使用 8080。</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	DEFINED_PORT(<span class="keyword">true</span>),</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 加载 ApplicationContext 但并不提供任何真实的 Servlet 环境。</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	NONE(<span class="keyword">false</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Controller-mock"><a href="#Controller-mock" class="headerlink" title="Controller-mock"></a>Controller-mock</h3><ul>
+<li>接口测试的时候mock controller层，并开启http端口</li>
+<li>引入@AutoConfigureMockMvc<ul>
+<li>请注意 @SpringBootTest 注解不能和 @WebMvcTest 注解同时使用。</li>
+</ul>
+</li>
+<li>MockMvc提供部分方法<ul>
+<li>Perform：执行一个 RequestBuilder 请求，会自动执行 SpringMVC 流程并映射到相应的 Controller 进行处理。</li>
+<li>get/post/put/delete：声明发送一个 HTTP 请求的方式，根据 URI 模板和 URI 变量值得到一个 HTTP 请求，支持 GET、POST、PUT、DELETE 等 HTTP 方法。</li>
+<li>param：添加请求参数，发送 JSON 数据时将不能使用这种方式，而应该采用 @ResponseBody 注解。</li>
+<li>andExpect：添加 ResultMatcher 验证规则，通过对返回的数据进行判断来验证 Controller 执行结果是否正确。</li>
+<li>andDo：添加 ResultHandler 结果处理器，比如调试时打印结果到控制台。</li>
+<li>andReturn：最后返回相应的 MvcResult，然后执行自定义验证或做异步处理。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="meta">@ExtendWith</span>(SpringExtension<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">SpringBootTest</span>(<span class="title">classes</span> </span>= AppApplication<span class="class">.<span class="keyword">class</span>, <span class="title">webEnvironment</span> </span>= SpringBootTest.WebEnvironment.RANDOM_PORT)</span><br><span class="line"><span class="meta">@AutoConfigureWebFlux</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AppControllerTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> WebTestClient webTestClient;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@MockBean</span></span><br><span class="line">    <span class="keyword">private</span> AppController appController;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testVersion</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="comment">// 准备一组测试数据</span></span><br><span class="line">        Map&lt;String, AppVo&gt; testData = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        testData.put(<span class="string">"undefined"</span>, <span class="keyword">new</span> AppVo(<span class="string">""</span>, <span class="string">"undefined"</span>));</span><br><span class="line">        testData.put(<span class="string">"mysql"</span>, <span class="keyword">new</span> AppVo(<span class="string">"mysql"</span>, <span class="string">"1.0.0"</span>));</span><br><span class="line">        testData.put(<span class="string">"redis"</span>, <span class="keyword">new</span> AppVo(<span class="string">"redis"</span>, <span class="string">"2.0.0"</span>));</span><br><span class="line">        <span class="comment">// 循环测试</span></span><br><span class="line">        <span class="keyword">for</span> (String s : testData.keySet()) &#123;</span><br><span class="line">            Mockito.when(appController.version(s)).thenReturn(testData.get(s));</span><br><span class="line">            EntityExchangeResult&lt;String&gt; result = webTestClient.post()</span><br><span class="line">                    .uri(<span class="string">"/"</span> + s)</span><br><span class="line">                    .contentType(MediaType.APPLICATION_JSON)</span><br><span class="line">                    .exchange()</span><br><span class="line">                    .expectStatus().isOk()</span><br><span class="line">                    .expectHeader().contentType(MediaType.APPLICATION_JSON)</span><br><span class="line">                    .expectBody(String<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">                    .<span class="title">returnResult</span>()</span>;</span><br><span class="line">            log.info(<span class="string">"&#123;&#125;"</span>,result);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Console</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[main]  &#123;&quot;key&quot;:&quot;mysql&quot;,&quot;version&quot;:&quot;1.0.0&quot;&#125;</span><br><span class="line">[main]  &#123;&quot;key&quot;:&quot;redis&quot;,&quot;version&quot;:&quot;2.0.0&quot;&#125;</span><br><span class="line">[main]  &#123;&quot;key&quot;:&quot;&quot;,&quot;version&quot;:&quot;undefined&quot;&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Service-mock"><a href="#Service-mock" class="headerlink" title="Service-mock"></a>Service-mock</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="meta">@ExtendWith</span>(SpringExtension<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">SpringBootTest</span>(<span class="title">classes</span> </span>= AppApplication<span class="class">.<span class="keyword">class</span>, <span class="title">webEnvironment</span> </span>= SpringBootTest.WebEnvironment.NONE)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AppServiceITest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@MockBean</span></span><br><span class="line">    <span class="keyword">private</span> AppServiceI appService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testVersion</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        String key = <span class="string">"mysql"</span>;</span><br><span class="line">        Mockito.when(appService.version(<span class="string">""</span>)).thenReturn(<span class="keyword">new</span> AppVo(<span class="string">""</span>, <span class="string">"undefined"</span>));</span><br><span class="line">        Mockito.when(appService.version(<span class="string">"mysql"</span>)).thenReturn(<span class="keyword">new</span> AppVo(<span class="string">"mysql"</span>, <span class="string">"5.7.36"</span>));</span><br><span class="line">        Mockito.when(appService.version(<span class="string">"redis"</span>)).thenReturn(<span class="keyword">new</span> AppVo(<span class="string">"redis"</span>, <span class="string">"6.2.6"</span>));</span><br><span class="line">        AppVo appVo = appService.version(key);</span><br><span class="line">        Assertions.assertThat(appVo).isNotNull();</span><br><span class="line">        log.info(<span class="string">"&#123;&#125;"</span>,JsonTool.toString(appVo));</span><br><span class="line">        Assertions.assertThat(appVo.getVersion()).isEqualTo(<span class="string">"5.7.36"</span>);</span><br><span class="line">        appVo = appService.version(<span class="string">"redis"</span>);</span><br><span class="line">        Assertions.assertThat(appVo).isNotNull();</span><br><span class="line">        log.info(<span class="string">"&#123;&#125;"</span>,JsonTool.toString(appVo));</span><br><span class="line">        Assertions.assertThat(appVo.getVersion()).isEqualTo(<span class="string">"6.2.6"</span>);</span><br><span class="line">        appVo = appService.version(<span class="string">""</span>);</span><br><span class="line">        Assertions.assertThat(appVo).isNotNull();</span><br><span class="line">        log.info(<span class="string">"&#123;&#125;"</span>,JsonTool.toString(appVo));</span><br><span class="line">        Assertions.assertThat(appVo.getVersion()).isEqualTo(<span class="string">"undefined"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Console</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[main]  &#123;&quot;key&quot;:&quot;mysql&quot;,&quot;version&quot;:&quot;5.7.36&quot;&#125;</span><br><span class="line">[main]  &#123;&quot;key&quot;:&quot;redis&quot;,&quot;version&quot;:&quot;6.2.6&quot;&#125;</span><br><span class="line">[main]  &#123;&quot;key&quot;:&quot;&quot;,&quot;version&quot;:&quot;undefined&quot;&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Remote-mock"><a href="#Remote-mock" class="headerlink" title="Remote-mock"></a>Remote-mock</h3><ul>
+<li>remote-mock 测试 远程接口在spring boot cloud test mock中演示。</li>
+</ul>
+<h3 id="Data-mock"><a href="#Data-mock" class="headerlink" title="Data-mock"></a>Data-mock</h3><blockquote>
+<p>日常开发一般都会使用持久层，引入 DataJdbcTest 注解进行mock测试。如果是mybaits可以使用@MybatisTest、如果是MybatisPuls可以使用@MybatisPulsTest。只需要分别引入依赖即可。</p>
+</blockquote>
+<ul>
+<li>演示项目用的jdbc,平时用的是mybaits，MybaitsTest单独写一篇文档。</li>
+</ul>
+<h2 id="END"><a href="#END" class="headerlink" title="END"></a>END</h2>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/539938723/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -522,6 +854,159 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/3614341308/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="憨憨在减肥">
+      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="憨憨在减肥的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/3614341308/" class="post-title-link" itemprop="url">SpringBoot-WebClient</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-05-18 09:39:51" itemprop="dateCreated datePublished" datetime="2021-05-18T09:39:51+08:00">2021-05-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-01-18 15:26:49" itemprop="dateModified" datetime="2022-01-18T15:26:49+08:00">2022-01-18</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/WebClient/" itemprop="url" rel="index"><span itemprop="name">WebClient</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>7.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="WebClient"><a href="#WebClient" class="headerlink" title="WebClient"></a>WebClient</h2><blockquote>
+<p>Spring 有两个web客户端的实现，一个是RestTemplate另一个是spring5的响应代替WebClient。</p>
+<p>WebClient是一个以Reactive方式处理HTTP请求的非阻塞客户端。</p>
+</blockquote>
+<ul>
+<li><p>RestTemplate是阻塞客户端</p>
+<ul>
+<li>它基于thread-pre-requset模型。</li>
+<li>这意味着线程将阻塞，直到 Web 客户端收到响应。阻塞代码的问题是由于每个线程消耗了一些内存和 CPU 周期。当出现慢速请求的时候，等待结果的线程会堆积起来，将导致创建更多的线程、消耗更多的资源。频繁切换CPU资源也会降低性能。</li>
+</ul>
+</li>
+<li><p>WebClient是异步、非阻塞的方案。</p>
+<ul>
+<li><p><em>WebClient将为</em>每个事件创建类似于“任务”的东西。在幕后，Reactive 框架会将这些“任务”排队并仅在适当的响应可用时执行它们。</p>
+</li>
+<li><p><em>WebClient</em>是Spring WebFlux库的一部分。因此，<strong>我们还可以使用具有反应类型（Mono和Flux的功能性、流畅的 API 作为声明性组合</strong>来编写客户端代码。</p>
+</li>
+<li><p>底层支持的库</p>
+<ul>
+<li>Reactor Netty - ReactorClientHttpConnector</li>
+<li>Jetty ReactiveStream HttpClient - JettyHttpConnector</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>关于IDEA开启 Reactive Streams﻿ DEBUG</p>
+</li>
+</ul>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20220118142001.png"></p>
+<h3 id="演示代码"><a href="#演示代码" class="headerlink" title="演示代码"></a><a href="https://github.com/z201/code-example/tree/main/SpringBoot-WebClient" target="_blank" rel="noopener">演示代码</a></h3><h3 id="基础用法"><a href="#基础用法" class="headerlink" title="基础用法"></a>基础用法</h3><h4 id="创建WebClient"><a href="#创建WebClient" class="headerlink" title="创建WebClient"></a>创建WebClient</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">WebClient.create();</span><br><span class="line">WebClient.builder();</span><br></pre></td></tr></table></figure>
+
+<h4 id="请求方法"><a href="#请求方法" class="headerlink" title="请求方法"></a>请求方法</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">WebClient webClient =   WebClient.create();</span><br><span class="line">     webClient.get();</span><br><span class="line">     webClient.post();</span><br><span class="line">     webClient.delete();</span><br><span class="line">     webClient.put();</span><br><span class="line">     webClient.patch();</span><br><span class="line">     webClient.options();</span><br></pre></td></tr></table></figure>
+
+<h4 id="获取结果"><a href="#获取结果" class="headerlink" title="获取结果"></a>获取结果</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// exchangeToMono方法 </span></span><br><span class="line"><span class="comment">// exchangeToFlux方法</span></span><br><span class="line">Mono&lt;Object&gt; entityMono = webClient.get()</span><br><span class="line">                .uri(<span class="string">"/persons/1"</span>)</span><br><span class="line">                .accept(MediaType.APPLICATION_JSON)</span><br><span class="line">                .exchangeToMono(response -&gt; &#123;</span><br><span class="line">                    <span class="keyword">if</span> (response.statusCode().equals(HttpStatus.OK)) &#123;</span><br><span class="line">                        <span class="keyword">return</span> response.bodyToMono(Object<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">                    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (response.statusCode().is4xxClientError()) &#123;</span><br><span class="line">                        <span class="keyword">return</span> response.bodyToMono(Object<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        <span class="keyword">return</span> Mono.error((Supplier&lt;? extends Throwable&gt;) response.createException());</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;);</span><br><span class="line"></span><br><span class="line">        Flux&lt;Object&gt; entityFlux = webClient.get()</span><br><span class="line">                .uri(<span class="string">"/persons"</span>)</span><br><span class="line">                .accept(MediaType.APPLICATION_JSON)</span><br><span class="line">                .exchangeToFlux(response -&gt; &#123;</span><br><span class="line">                    <span class="keyword">if</span> (response.statusCode().equals(HttpStatus.OK)) &#123;</span><br><span class="line">                        <span class="keyword">return</span> response.bodyToFlux(Object<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">                    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (response.statusCode().is4xxClientError()) &#123;</span><br><span class="line">                        <span class="keyword">return</span> response.bodyToMono(Object<span class="class">.<span class="keyword">class</span>).<span class="title">flux</span>()</span>;</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        <span class="keyword">return</span> Flux.error((Supplier&lt;? extends Throwable&gt;) response.createException());</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;);</span><br></pre></td></tr></table></figure>
+
+<h4 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">.doOnError(t -&gt; log.error(<span class="string">"Error: "</span>, t)) <span class="comment">// 异常回调</span></span><br><span class="line">.doFinally(s -&gt; log.info(<span class="string">"Finally "</span>)) <span class="comment">// Finally 回调</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="请求体"><a href="#请求体" class="headerlink" title="请求体"></a>请求体</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 直接使用bodyValue方法</span></span><br><span class="line">RequestHeadersSpec&lt;?&gt; headersSpec = bodySpec.bodyValue(<span class="string">"data"</span>);</span><br><span class="line"><span class="comment">// 或者Publisher</span></span><br><span class="line">RequestHeadersSpec&lt;?&gt; headersSpec = bodySpec.body(Mono.just(<span class="keyword">new</span> Foo(<span class="string">"name"</span>)), Foo<span class="class">.<span class="keyword">class</span>)</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="代码演示"><a href="#代码演示" class="headerlink" title="代码演示"></a>代码演示</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span>(exclude = &#123;DataSourceAutoConfiguration<span class="class">.<span class="keyword">class</span>&#125;)</span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">class</span> <span class="title">AppApplication</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        ApplicationContext applicationContext = SpringApplication.run(AppApplication<span class="class">.<span class="keyword">class</span>, <span class="title">args</span>)</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 声明默认的WebClient</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> WebClient <span class="title">register</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> WebClient.create();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/"</span>)</span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AppController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> WebClient webClient;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostMapping</span>(<span class="string">"/list"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Flux&lt;UserVo&gt; <span class="title">list</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        List&lt;UserVo&gt; userList = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        userList.add(<span class="keyword">new</span> UserVo(<span class="string">"1"</span>, <span class="string">"张三"</span>));</span><br><span class="line">        userList.add(<span class="keyword">new</span> UserVo(<span class="string">"2"</span>, <span class="string">"王五"</span>));</span><br><span class="line">        <span class="keyword">return</span> Flux.fromIterable(userList);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping</span>(<span class="string">"/&#123;id&#125;"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Mono&lt;UserVo&gt; <span class="title">info</span><span class="params">(@PathVariable(value = <span class="string">"id"</span>)</span> String id) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Mono.just(<span class="keyword">new</span> UserVo(id, <span class="string">"某某"</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping</span>(<span class="string">"/ip/info"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Mono&lt;String&gt; <span class="title">ip</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        String url = <span class="string">"https://myip.ipip.net/"</span>;</span><br><span class="line">        Mono&lt;String&gt; body = webClient.get()</span><br><span class="line">                .uri(url)</span><br><span class="line">                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE) <span class="comment">// 响应的格式json</span></span><br><span class="line">                .acceptCharset(StandardCharsets.UTF_8) <span class="comment">// 编码集 utf-8</span></span><br><span class="line">                .exchangeToMono(response -&gt; &#123;</span><br><span class="line">                    <span class="keyword">if</span> (response.statusCode().equals(HttpStatus.OK)) &#123;</span><br><span class="line">                        <span class="keyword">return</span> response.bodyToMono(String<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        <span class="keyword">return</span> response.createException().flatMap(Mono::error);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;)</span><br><span class="line">                .doOnError(t -&gt; log.error(<span class="string">"Error: "</span>, t)) <span class="comment">// 异常回调</span></span><br><span class="line">                .doFinally(s -&gt; log.error(<span class="string">"Finally "</span>)) <span class="comment">// Finally 回调</span></span><br><span class="line">                .subscribeOn(Schedulers.single());</span><br><span class="line">        <span class="keyword">return</span> body;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="meta">@AllArgsConstructor</span></span><br><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserVo</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String uid;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="接口Mock测试"><a href="#接口Mock测试" class="headerlink" title="接口Mock测试"></a>接口Mock测试</h4><ul>
+<li>添加@WebFluxTest注解</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target</span>(ElementType.TYPE)</span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Inherited</span></span><br><span class="line"><span class="meta">@BootstrapWith</span>(WebFluxTestContextBootstrapper<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">ExtendWith</span>(<span class="title">SpringExtension</span>.<span class="title">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">OverrideAutoConfiguration</span>(<span class="title">enabled</span> </span>= <span class="keyword">false</span>)</span><br><span class="line"><span class="meta">@TypeExcludeFilters</span>(WebFluxTypeExcludeFilter<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">AutoConfigureCache</span></span></span><br><span class="line"><span class="class">@<span class="title">AutoConfigureJson</span></span></span><br><span class="line"><span class="class">@<span class="title">AutoConfigureWebFlux</span> // 自动装配<span class="title">WebFlux</span></span></span><br><span class="line"><span class="class">@<span class="title">AutoConfigureWebTestClient</span> // 自动装配<span class="title">WebTestClient</span></span></span><br><span class="line"><span class="class">@<span class="title">ImportAutoConfiguration</span></span></span><br><span class="line"><span class="class"><span class="title">public</span> @<span class="title">interface</span> <span class="title">WebFluxTest</span> </span>&#123;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>代码</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="meta">@ExtendWith</span>(SpringExtension<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line">@ActiveProfiles("dev")</span><br><span class="line"><span class="meta">@WebFluxTest</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AppApplicationMockTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> WebTestClient webTestClient;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@MockBean</span></span><br><span class="line">    <span class="keyword">private</span> AppController appController;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="meta">@Disabled</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        UserVo user = <span class="keyword">new</span> UserVo(<span class="string">"1"</span>, <span class="string">"张三"</span>);</span><br><span class="line">        Mockito.when(appController.info(<span class="string">"1"</span>)).thenReturn(Mono.just(user));</span><br><span class="line">        EntityExchangeResult&lt;UserVo&gt; result = webTestClient.get()</span><br><span class="line">                .uri(<span class="string">"/1"</span>)</span><br><span class="line">                .exchange()</span><br><span class="line">                .expectStatus().isOk()</span><br><span class="line">                .expectBody(UserVo<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">                .<span class="title">returnResult</span>()</span>;</span><br><span class="line">        log.info(<span class="string">"&#123;&#125;"</span>, result);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="meta">@Disabled</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">list</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        List&lt;UserVo&gt; userList = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        userList.add(<span class="keyword">new</span> UserVo(<span class="string">"1"</span>, <span class="string">"张三"</span>));</span><br><span class="line">        userList.add(<span class="keyword">new</span> UserVo(<span class="string">"2"</span>, <span class="string">"王武"</span>));</span><br><span class="line">        Mockito.when(appController.list()).thenReturn(Flux.fromIterable(userList));</span><br><span class="line">        EntityExchangeResult&lt;List&lt;UserVo&gt;&gt; result = webTestClient.post()</span><br><span class="line">                .uri(<span class="string">"/list"</span>)</span><br><span class="line">                .exchange()</span><br><span class="line">                .expectStatus().isOk()</span><br><span class="line">                .expectBodyList(UserVo<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">                .<span class="title">returnResult</span>()</span>;</span><br><span class="line">        log.info(<span class="string">"&#123;&#125;"</span>, result);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Console</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">[main]  </span><br><span class="line">&gt; GET &#x2F;1</span><br><span class="line">&gt; WebTestClient-Request-Id: [1]</span><br><span class="line"></span><br><span class="line">No content</span><br><span class="line"></span><br><span class="line">&lt; 200 OK OK</span><br><span class="line">&lt; Content-Type: [application&#x2F;json]</span><br><span class="line">&lt; Content-Length: [27]</span><br><span class="line"></span><br><span class="line">&#123;&quot;uid&quot;:&quot;1&quot;,&quot;name&quot;:&quot;张三&quot;&#125;</span><br><span class="line"></span><br><span class="line">[main]  </span><br><span class="line">&gt; POST &#x2F;list</span><br><span class="line">&gt; WebTestClient-Request-Id: [1]</span><br><span class="line"></span><br><span class="line">No content</span><br><span class="line"></span><br><span class="line">&lt; 200 OK OK</span><br><span class="line">&lt; Content-Type: [application&#x2F;json]</span><br><span class="line"></span><br><span class="line">[&#123;&quot;uid&quot;:&quot;1&quot;,&quot;name&quot;:&quot;张三&quot;&#125;,&#123;&quot;uid&quot;:&quot;2&quot;,&quot;name&quot;:&quot;王武&quot;&#125;]</span><br></pre></td></tr></table></figure>
+
+<h4 id="接口测试"><a href="#接口测试" class="headerlink" title="接口测试"></a>接口测试</h4><ul>
+<li>添加@AutoConfigureWebTestClient 启用WebTestClient。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="meta">@ExtendWith</span>(SpringExtension<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">SpringBootTest</span>(<span class="title">classes</span> </span>= AppApplication<span class="class">.<span class="keyword">class</span>, <span class="title">webEnvironment</span> </span>= SpringBootTest.WebEnvironment.RANDOM_PORT)</span><br><span class="line"><span class="meta">@ActiveProfiles</span>(<span class="string">"dev"</span>)</span><br><span class="line"><span class="meta">@AutoConfigureWebTestClient</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AppApplicationTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> WebTestClient webTestClient;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="meta">@Disabled</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        EntityExchangeResult&lt;UserVo&gt; result = webTestClient.get()</span><br><span class="line">                .uri(<span class="string">"/1"</span>)</span><br><span class="line">                .exchange()</span><br><span class="line">                .expectStatus().isOk()</span><br><span class="line">                .expectBody(UserVo<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">                .<span class="title">returnResult</span>()</span>;</span><br><span class="line">        log.info(<span class="string">"&#123;&#125;"</span>, result);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="meta">@Disabled</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ip</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        EntityExchangeResult&lt;String&gt; result = webTestClient.get()</span><br><span class="line">                .uri(<span class="string">"/ip/info"</span>)</span><br><span class="line">                .exchange()</span><br><span class="line">                .expectStatus().isOk()</span><br><span class="line">                .expectBody(String<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">                .<span class="title">returnResult</span>()</span>;</span><br><span class="line">        log.info(<span class="string">"&#123;&#125;"</span>, result);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="meta">@Disabled</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">list</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        EntityExchangeResult&lt;List&lt;UserVo&gt;&gt; result = webTestClient.post()</span><br><span class="line">                .uri(<span class="string">"/list"</span>)</span><br><span class="line">                .exchange()</span><br><span class="line">                .expectStatus().isOk()</span><br><span class="line">                .expectBodyList(UserVo<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">                .<span class="title">returnResult</span>()</span>;</span><br><span class="line">        log.info(<span class="string">"&#123;&#125;"</span>, result);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Console</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">[main]  </span><br><span class="line">&gt; GET &#x2F;1</span><br><span class="line">&gt; WebTestClient-Request-Id: [1]</span><br><span class="line"></span><br><span class="line">No content</span><br><span class="line"></span><br><span class="line">&lt; 200 OK OK</span><br><span class="line">&lt; Content-Type: [application&#x2F;json]</span><br><span class="line">&lt; Content-Length: [27]</span><br><span class="line"></span><br><span class="line">&#123;&quot;uid&quot;:&quot;1&quot;,&quot;name&quot;:&quot;某某&quot;&#125;</span><br><span class="line"></span><br><span class="line">[reactor-http-nio-3]  Finally </span><br><span class="line">[main]  </span><br><span class="line">&gt; GET &#x2F;ip&#x2F;info</span><br><span class="line">&gt; WebTestClient-Request-Id: [1]</span><br><span class="line"></span><br><span class="line">No content</span><br><span class="line"></span><br><span class="line">&lt; 200 OK OK</span><br><span class="line">&lt; Content-Type: [text&#x2F;plain;charset&#x3D;UTF-8]</span><br><span class="line">&lt; Content-Length: [67]</span><br><span class="line"></span><br><span class="line">当前 IP：000.000.00.0  来自于：中国 浙江 杭州  电信</span><br><span class="line"></span><br><span class="line">[main]  </span><br><span class="line">&gt; POST &#x2F;list</span><br><span class="line">&gt; WebTestClient-Request-Id: [1]</span><br><span class="line"></span><br><span class="line">No content</span><br><span class="line"></span><br><span class="line">&lt; 200 OK OK</span><br><span class="line">&lt; Content-Type: [application&#x2F;json]</span><br><span class="line"></span><br><span class="line">[&#123;&quot;uid&quot;:&quot;1&quot;,&quot;name&quot;:&quot;张三&quot;&#125;,&#123;&quot;uid&quot;:&quot;2&quot;,&quot;name&quot;:&quot;王五&quot;&#125;]</span><br></pre></td></tr></table></figure>
+
+<h3 id="END"><a href="#END" class="headerlink" title="END"></a>END</h3>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/232268034/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -553,7 +1038,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-11 16:59:40" itemprop="dateModified" datetime="2022-01-11T16:59:40+08:00">2022-01-11</time>
+                <time title="修改时间：2022-01-19 20:41:22" itemprop="dateModified" datetime="2022-01-19T20:41:22+08:00">2022-01-19</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -571,14 +1056,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>5.4k</span>
+              <span>3.8k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>5 分钟</span>
+              <span>3 分钟</span>
             </span>
 
         </div>
@@ -626,14 +1111,14 @@
 <h2 id="Redisson实现RedLock"><a href="#Redisson实现RedLock" class="headerlink" title="Redisson实现RedLock"></a>Redisson实现RedLock</h2><ul>
 <li>Redisson是一个在Redis的基础上实现的Java驻内存数据网格（In-Memory Data Grid）。Redisson提供了使用Redis的最简单和最便捷的方法。Redisson的宗旨是促进使用者对Redis的关注分离（Separation of Concern），从而让使用者能够将精力更集中地放在处理业务逻辑上。</li>
 </ul>
-<h3 id="Redis主从版本"><a href="#Redis主从版本" class="headerlink" title="Redis主从版本"></a>Redis主从版本</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> cn.z201.example.redisson;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.AllArgsConstructor;</span><br><span class="line"><span class="keyword">import</span> org.redisson.Redisson;</span><br><span class="line"><span class="keyword">import</span> org.redisson.api.RedissonClient;</span><br><span class="line"><span class="keyword">import</span> org.redisson.config.Config;</span><br><span class="line"><span class="keyword">import</span> org.redisson.config.SingleServerConfig;</span><br><span class="line"><span class="keyword">import</span> org.redisson.config.TransportMode;</span><br><span class="line"><span class="keyword">import</span> org.redisson.spring.data.connection.RedissonConnectionFactory;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Bean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.redis.connection.RedisConnectionFactory;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.redis.core.RedisTemplate;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.redis.serializer.RedisSerializer;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.redis.serializer.StringRedisSerializer;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.redis.support.collections.RedisProperties;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> z201.coding@gmail.com</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedisConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> RedissonConnectionFactory <span class="title">redissonConnectionFactory</span><span class="params">(RedissonClient redisson)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> RedissonConnectionFactory(redisson);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> RedisTemplate <span class="title">redisTemplate</span><span class="params">(RedisConnectionFactory redisConnectionFactory)</span> </span>&#123;</span><br><span class="line">        RedisTemplate redisTemplate = <span class="keyword">new</span> RedisTemplate();</span><br><span class="line">        RedisSerializer&lt;String&gt; redisSerializer = <span class="keyword">new</span> StringRedisSerializer();</span><br><span class="line">        redisTemplate.setConnectionFactory(redisConnectionFactory);</span><br><span class="line">        <span class="comment">// key序列化方式</span></span><br><span class="line">        redisTemplate.setKeySerializer(redisSerializer);</span><br><span class="line">        <span class="comment">// value序列化</span></span><br><span class="line">        redisTemplate.setValueSerializer(redisSerializer);</span><br><span class="line">        <span class="comment">// value hashmap序列化</span></span><br><span class="line">        redisTemplate.setHashValueSerializer(redisSerializer);</span><br><span class="line">        <span class="keyword">return</span> redisTemplate;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> RedissonClient <span class="title">redissonClient</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        Config config = <span class="keyword">new</span> Config();</span><br><span class="line">        <span class="comment">// 主从</span></span><br><span class="line">        config.useMasterSlaveServers()</span><br><span class="line">                <span class="comment">//可以用"rediss://"来启用SSL连接</span></span><br><span class="line">                .setMasterAddress(<span class="string">"redis://127.0.0.1:6379"</span>).setPassword(<span class="string">"redis_pwd"</span>)</span><br><span class="line">                .addSlaveAddress(<span class="string">"redis://127.0.0.1:6380"</span>,<span class="string">"redis://127.0.0.1:6381"</span>).setPassword(<span class="string">"redis_pwd"</span>)</span><br><span class="line">                .setRetryInterval(<span class="number">5000</span>)</span><br><span class="line">                .setTimeout(<span class="number">10000</span>)</span><br><span class="line">                .setConnectTimeout(<span class="number">10000</span>);<span class="comment">//（连接超时，单位：毫秒 默认值：3000）;</span></span><br><span class="line">        <span class="keyword">return</span> Redisson.create(config);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Redis主从版本"><a href="#Redis主从版本" class="headerlink" title="Redis主从版本"></a>Redis主从版本</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> z201.coding@gmail.com</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedisConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> RedissonConnectionFactory <span class="title">redissonConnectionFactory</span><span class="params">(RedissonClient redisson)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> RedissonConnectionFactory(redisson);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> RedisTemplate <span class="title">redisTemplate</span><span class="params">(RedisConnectionFactory redisConnectionFactory)</span> </span>&#123;</span><br><span class="line">        RedisTemplate redisTemplate = <span class="keyword">new</span> RedisTemplate();</span><br><span class="line">        RedisSerializer&lt;String&gt; redisSerializer = <span class="keyword">new</span> StringRedisSerializer();</span><br><span class="line">        redisTemplate.setConnectionFactory(redisConnectionFactory);</span><br><span class="line">        <span class="comment">// key序列化方式</span></span><br><span class="line">        redisTemplate.setKeySerializer(redisSerializer);</span><br><span class="line">        <span class="comment">// value序列化</span></span><br><span class="line">        redisTemplate.setValueSerializer(redisSerializer);</span><br><span class="line">        <span class="comment">// value hashmap序列化</span></span><br><span class="line">        redisTemplate.setHashValueSerializer(redisSerializer);</span><br><span class="line">        <span class="keyword">return</span> redisTemplate;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> RedissonClient <span class="title">redissonClient</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        Config config = <span class="keyword">new</span> Config();</span><br><span class="line">        <span class="comment">// 主从</span></span><br><span class="line">        config.useMasterSlaveServers()</span><br><span class="line">                <span class="comment">//可以用"rediss://"来启用SSL连接</span></span><br><span class="line">                .setMasterAddress(<span class="string">"redis://127.0.0.1:6379"</span>).setPassword(<span class="string">"redis_pwd"</span>)</span><br><span class="line">                .addSlaveAddress(<span class="string">"redis://127.0.0.1:6380"</span>,<span class="string">"redis://127.0.0.1:6381"</span>).setPassword(<span class="string">"redis_pwd"</span>)</span><br><span class="line">                .setRetryInterval(<span class="number">5000</span>)</span><br><span class="line">                .setTimeout(<span class="number">10000</span>)</span><br><span class="line">                .setConnectTimeout(<span class="number">10000</span>);<span class="comment">//（连接超时，单位：毫秒 默认值：3000）;</span></span><br><span class="line">        <span class="keyword">return</span> Redisson.create(config);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>单元测试</li>
 </ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> cn.z201.example.redisson;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.junit.jupiter.api.Disabled;</span><br><span class="line"><span class="keyword">import</span> org.junit.jupiter.api.MethodOrderer;</span><br><span class="line"><span class="keyword">import</span> org.junit.jupiter.api.Test;</span><br><span class="line"><span class="keyword">import</span> org.junit.jupiter.api.TestMethodOrder;</span><br><span class="line"><span class="keyword">import</span> org.junit.jupiter.api.extension.ExtendWith;</span><br><span class="line"><span class="keyword">import</span> org.redisson.api.RLock;</span><br><span class="line"><span class="keyword">import</span> org.redisson.api.RedissonClient;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.test.context.SpringBootTest;</span><br><span class="line"><span class="keyword">import</span> org.springframework.test.context.junit.jupiter.SpringExtension;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.UUID;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.CountDownLatch;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.ExecutorService;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.Executors;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.TimeUnit;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="meta">@ExtendWith</span>(SpringExtension<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">SpringBootTest</span>(<span class="title">classes</span> </span>= AppApplication<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">TestMethodOrder</span>(<span class="title">MethodOrderer</span>.<span class="title">OrderAnnotation</span>.<span class="title">class</span>)</span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">class</span> <span class="title">AppApplicationTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> RedissonClient redissonClient;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String LOCK_TITLE = <span class="string">"redisLock_"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="meta">@Disabled</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">contextLoads</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> count = <span class="number">10</span>;</span><br><span class="line">        CountDownLatch countDownLatch = <span class="keyword">new</span> CountDownLatch(count);</span><br><span class="line">        ExecutorService executorService = Executors.newFixedThreadPool(count);</span><br><span class="line">        String key = UUID.randomUUID().toString();</span><br><span class="line">        String lockKey = LOCK_TITLE + key;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; count; i++) &#123;</span><br><span class="line">            executorService.execute(() -&gt; &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    RLock lock = redissonClient.getLock(lockKey);</span><br><span class="line">                    <span class="comment">//加锁，并且设置锁过期时间，防止死锁的产生</span></span><br><span class="line">                    Boolean result = lock.tryLock(<span class="number">2</span>, TimeUnit.MINUTES);</span><br><span class="line">                    log.info(<span class="string">" &#123;&#125; lock &#123;&#125;"</span>, result, lockKey);</span><br><span class="line">                    Thread.sleep(<span class="number">1000L</span>);</span><br><span class="line">                    <span class="comment">//执行具体业务逻辑</span></span><br><span class="line">                    redissonClient.getBucket(<span class="string">"value"</span>).set(String.valueOf(System.currentTimeMillis()));</span><br><span class="line">                    String value = (String) redissonClient.getBucket(<span class="string">"value"</span>).get();</span><br><span class="line">                    log.info(<span class="string">" &#123;&#125; value &#123;&#125;"</span>, Thread.currentThread().getName(), value);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                    log.error(<span class="string">"&#123;&#125;"</span>, e.getMessage());</span><br><span class="line">                &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                    <span class="comment">//获取所对象</span></span><br><span class="line">                    RLock lock = redissonClient.getLock(lockKey);</span><br><span class="line">                    <span class="comment">//释放锁（解锁）</span></span><br><span class="line">                    lock.unlock();</span><br><span class="line">                    log.info(<span class="string">" &#123;&#125; unlock &#123;&#125;"</span>, Thread.currentThread().getName(), lockKey);</span><br><span class="line">                &#125;</span><br><span class="line">                countDownLatch.countDown();</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">        countDownLatch.countDown();</span><br><span class="line">        executorService.shutdown();</span><br><span class="line">        ;</span><br><span class="line">        log.info(<span class="string">"run end~~~"</span>);</span><br><span class="line">        Thread.sleep(<span class="number">11000L</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="meta">@ExtendWith</span>(SpringExtension<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">SpringBootTest</span>(<span class="title">classes</span> </span>= AppApplication<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">TestMethodOrder</span>(<span class="title">MethodOrderer</span>.<span class="title">OrderAnnotation</span>.<span class="title">class</span>)</span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">class</span> <span class="title">AppApplicationTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> RedissonClient redissonClient;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String LOCK_TITLE = <span class="string">"redisLock_"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="meta">@Disabled</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">contextLoads</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> count = <span class="number">10</span>;</span><br><span class="line">        CountDownLatch countDownLatch = <span class="keyword">new</span> CountDownLatch(count);</span><br><span class="line">        ExecutorService executorService = Executors.newFixedThreadPool(count);</span><br><span class="line">        String key = UUID.randomUUID().toString();</span><br><span class="line">        String lockKey = LOCK_TITLE + key;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; count; i++) &#123;</span><br><span class="line">            executorService.execute(() -&gt; &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    RLock lock = redissonClient.getLock(lockKey);</span><br><span class="line">                    <span class="comment">//加锁，并且设置锁过期时间，防止死锁的产生</span></span><br><span class="line">                    Boolean result = lock.tryLock(<span class="number">2</span>, TimeUnit.MINUTES);</span><br><span class="line">                    log.info(<span class="string">" &#123;&#125; lock &#123;&#125;"</span>, result, lockKey);</span><br><span class="line">                    Thread.sleep(<span class="number">1000L</span>);</span><br><span class="line">                    <span class="comment">//执行具体业务逻辑</span></span><br><span class="line">                    redissonClient.getBucket(<span class="string">"value"</span>).set(String.valueOf(System.currentTimeMillis()));</span><br><span class="line">                    String value = (String) redissonClient.getBucket(<span class="string">"value"</span>).get();</span><br><span class="line">                    log.info(<span class="string">" &#123;&#125; value &#123;&#125;"</span>, Thread.currentThread().getName(), value);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                    log.error(<span class="string">"&#123;&#125;"</span>, e.getMessage());</span><br><span class="line">                &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                    <span class="comment">//获取所对象</span></span><br><span class="line">                    RLock lock = redissonClient.getLock(lockKey);</span><br><span class="line">                    <span class="comment">//释放锁（解锁）</span></span><br><span class="line">                    lock.unlock();</span><br><span class="line">                    log.info(<span class="string">" &#123;&#125; unlock &#123;&#125;"</span>, Thread.currentThread().getName(), lockKey);</span><br><span class="line">                &#125;</span><br><span class="line">                countDownLatch.countDown();</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">        countDownLatch.countDown();</span><br><span class="line">        executorService.shutdown();</span><br><span class="line">        ;</span><br><span class="line">        log.info(<span class="string">"run end~~~"</span>);</span><br><span class="line">        Thread.sleep(<span class="number">11000L</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-
+<h2 id="END"><a href="#END" class="headerlink" title="END"></a>END</h2>
       
     </div>
 
@@ -1196,326 +1681,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/1666574776/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="憨憨在减肥">
-      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="憨憨在减肥的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/1666574776/" class="post-title-link" itemprop="url">Mac-Install-Neo4j-Jupyter</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-02-19 00:39:21" itemprop="dateCreated datePublished" datetime="2021-02-19T00:39:21+08:00">2021-02-19</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-08 03:28:54" itemprop="dateModified" datetime="2022-01-08T03:28:54+08:00">2022-01-08</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Neo4j/" itemprop="url" rel="index"><span itemprop="name">Neo4j</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>354</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>准备学习下neo4j记录在mac下安装neo4j的坑。</p>
-</blockquote>
-<h2 id="neo4j官网网站下载失败"><a href="#neo4j官网网站下载失败" class="headerlink" title="neo4j官网网站下载失败"></a>neo4j官网网站下载失败</h2><blockquote>
-<p>国内只能从镜像地址下载</p>
-</blockquote>
-<p><a href="http://doc.we-yun.com:1008/" target="_blank" rel="noopener">http://doc.we-yun.com:1008/</a> </p>
-<h2 id="配置jdk11"><a href="#配置jdk11" class="headerlink" title="配置jdk11"></a>配置jdk11</h2><blockquote>
-<p>可以查看我上面内容实用Jenv管理多个版本。</p>
-</blockquote>
-<h2 id="启动neo4j"><a href="#启动neo4j" class="headerlink" title="启动neo4j"></a>启动neo4j</h2><blockquote>
-<p>下载完成后解压</p>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 启动</span></span><br><span class="line">./neo4j  start</span><br><span class="line"><span class="meta">#</span><span class="bash"> 关闭</span></span><br><span class="line">./neo4j  stop</span><br></pre></td></tr></table></figure>
-
-<h2 id="neo4j界面"><a href="#neo4j界面" class="headerlink" title="neo4j界面"></a>neo4j界面</h2><ul>
-<li>在浏览器中输入localhost:7474</li>
-<li>初始用户名、密码均为neo4j， 第一次登录需要修改密码</li>
-</ul>
-<h2 id="安装jupyter"><a href="#安装jupyter" class="headerlink" title="安装jupyter"></a>安装jupyter</h2><blockquote>
-<p>注意提前安装python环境</p>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pip install jupyter notebook -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host=mirrors.aliyun.com</span><br><span class="line"><span class="meta">#</span><span class="bash"> 检查版本</span></span><br><span class="line">jupyter --version</span><br></pre></td></tr></table></figure>
-
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/4130926005/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="憨憨在减肥">
-      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="憨憨在减肥的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/4130926005/" class="post-title-link" itemprop="url">Mac-OpenJdk11-JavaFx-Dev</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-02-15 03:12:07" itemprop="dateCreated datePublished" datetime="2021-02-15T03:12:07+08:00">2021-02-15</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-08 03:28:24" itemprop="dateModified" datetime="2022-01-08T03:28:24+08:00">2022-01-08</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Dev/" itemprop="url" rel="index"><span itemprop="name">Dev</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>827</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>OpenJdk 11 环境下JavaFx开发环境设置</p>
-</blockquote>
-<ul>
-<li><a href="https://www.coder.work/article/884639" target="_blank" rel="noopener">https://www.coder.work/article/884639</a></li>
-<li><a href="https://stackoverflow.com/questions/54291958/javafx-11-illegalaccesserror-when-creating-label" target="_blank" rel="noopener">https://stackoverflow.com/questions/54291958/javafx-11-illegalaccesserror-when-creating-label</a></li>
-<li><a href="https://gluonhq.com/products/javafx/" target="_blank" rel="noopener">https://gluonhq.com/products/javafx/</a></li>
-</ul>
-<h2 id="pom依赖"><a href="#pom依赖" class="headerlink" title="pom依赖"></a>pom依赖</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.openjfx<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>javafx-controls<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>11<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.openjfx<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>javafx-fxml<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>11<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="idea设置"><a href="#idea设置" class="headerlink" title="idea设置"></a>idea设置</h3><blockquote>
-<p>下载javafx版本，然后引入依赖。项目lib中引入。启动的时候在vm中添加启动参数</p>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">--module-path</span><br><span class="line"><span class="meta">/Users/$</span><span class="bash">USER/word/libhome/javafx-sdk-11.0.2/lib</span></span><br><span class="line">--add-modules</span><br><span class="line">javafx.controls</span><br><span class="line">--add-modules</span><br><span class="line">javafx.base</span><br><span class="line">--add-modules</span><br><span class="line">javafx.graphics</span><br><span class="line">--add-modules</span><br><span class="line">javafx.fxml</span><br><span class="line">--add-modules</span><br><span class="line">javafx.media</span><br></pre></td></tr></table></figure>
-
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/62740049/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="憨憨在减肥">
-      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="憨憨在减肥的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/62740049/" class="post-title-link" itemprop="url">Mac-Install-Jenv</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-02-15 01:09:36" itemprop="dateCreated datePublished" datetime="2021-02-15T01:09:36+08:00">2021-02-15</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-08 03:29:33" itemprop="dateModified" datetime="2022-01-08T03:29:33+08:00">2022-01-08</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Dev/" itemprop="url" rel="index"><span itemprop="name">Dev</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>640</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>简单记录下mac下多版本jdk管理 </p>
-</blockquote>
-<ul>
-<li><a href="https://adoptopenjdk.net/" target="_blank" rel="noopener">https://adoptopenjdk.net/</a></li>
-<li><a href="https://www.jianshu.com/p/1a147d5515f0" target="_blank" rel="noopener">https://www.jianshu.com/p/1a147d5515f0</a></li>
-</ul>
-<h2 id="检查环境"><a href="#检查环境" class="headerlink" title="检查环境"></a>检查环境</h2><h3 id="查看当前安装的jdk版本"><a href="#查看当前安装的jdk版本" class="headerlink" title="查看当前安装的jdk版本"></a>查看当前安装的jdk版本</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/usr/libexec/java_home -V</span><br><span class="line"><span class="meta">#</span><span class="bash"> 如果有安装过jdk版本这里会输出信息</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="使用brew-安装jenv"><a href="#使用brew-安装jenv" class="headerlink" title="使用brew 安装jenv"></a>使用brew 安装jenv</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">brew install jenv</span><br><span class="line"><span class="meta">#</span><span class="bash">检查</span></span><br><span class="line">jenv doctor </span><br><span class="line"><span class="meta">#</span><span class="bash"> 刚安装会提示很多信息</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="初始化jenv"><a href="#初始化jenv" class="headerlink" title="初始化jenv"></a>初始化jenv</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">brew install jenv</span><br><span class="line">jenv init -</span><br><span class="line">echo 'eval "$(jenv init -)"' &gt;&gt; ~/.bash_profile</span><br><span class="line">echo 'eval "$(jenv init -)"' &gt;&gt; ~/.zprofile</span><br><span class="line">jenv add &lt;path-to-java8-Home-Dir&gt; # 这里从/usr/libexec/java_home -V 获取javaHome</span><br></pre></td></tr></table></figure>
-
-<h3 id="切换jdk"><a href="#切换jdk" class="headerlink" title="切换jdk"></a>切换jdk</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ jenv versions</span><br><span class="line">* system (set by /Users/zengqingfeng/.jenv/version)</span><br><span class="line">  1.8</span><br><span class="line">  1.8.0.275</span><br><span class="line">  openjdk64-1.8.0.275</span><br><span class="line">  </span><br><span class="line">➜  ~ jenv local system # 切换版本</span><br></pre></td></tr></table></figure>
-
-<h3 id="可能出现的问题"><a href="#可能出现的问题" class="headerlink" title="可能出现的问题"></a>可能出现的问题</h3><ul>
-<li>使用 jenv 过程可能会发现，当切换 JDK 版本之后， <code>${JAVA_HOME}</code> 环境变量没有改变，还是上一个 JDK 版本配置。</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">这时可以运行 exec $SHELL -l ， $&#123;JAVA_HOME&#125; 将会变成当前版本。</span><br></pre></td></tr></table></figure>
-
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1586,18 +1751,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">113</span>
+          <span class="site-state-item-count">116</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-count">30</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">111</span>
+        <span class="site-state-item-count">116</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1660,7 +1825,7 @@
           <a href="https://stackoverflow.com/" title="https:&#x2F;&#x2F;stackoverflow.com&#x2F;" rel="noopener" target="_blank">stackoverflow</a>
         </li>
         <li class="links-of-blogroll-item">
-          <a href="https://www.baeldung.com/" title="https:&#x2F;&#x2F;www.baeldung.com&#x2F;" rel="noopener" target="_blank">beeldung</a>
+          <a href="https://www.baeldung.com/" title="https:&#x2F;&#x2F;www.baeldung.com&#x2F;" rel="noopener" target="_blank">beeldung教程</a>
         </li>
         <li class="links-of-blogroll-item">
           <a href="http://www.sczyh30.com/" title="http:&#x2F;&#x2F;www.sczyh30.com&#x2F;" rel="noopener" target="_blank">浮生若梦</a>
@@ -1718,13 +1883,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">731k</span>
+    <span title="站点总字数">743k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">11:05</span>
+    <span title="站点阅读时长">11:16</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>

@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"z201.cn","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.json"};
+  </script>
+
+  <meta name="description" content="WebClient Spring 有两个web客户端的实现，一个是RestTemplate另一个是spring5的响应代替WebClient。 WebClient是一个以Reactive方式处理HTTP请求的非阻塞客户端。   RestTemplate是阻塞客户端  它基于thread-pre-requset模型。 这意味着线程将阻塞，直到 Web 客户端收到响应。阻塞代码的问题是由于每个线程消耗">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot-WebClient">
+<meta property="og:url" content="https://z201.cn/posts/3614341308/index.html">
+<meta property="og:site_name" content="憨憨在减肥的博客">
+<meta property="og:description" content="WebClient Spring 有两个web客户端的实现，一个是RestTemplate另一个是spring5的响应代替WebClient。 WebClient是一个以Reactive方式处理HTTP请求的非阻塞客户端。   RestTemplate是阻塞客户端  它基于thread-pre-requset模型。 这意味着线程将阻塞，直到 Web 客户端收到响应。阻塞代码的问题是由于每个线程消耗">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==">
+<meta property="article:published_time" content="2021-05-18T01:39:51.000Z">
+<meta property="article:modified_time" content="2022-01-18T07:26:49.345Z">
+<meta property="article:author" content="憨憨在减肥">
+<meta property="article:tag" content="WebClient">
+<meta property="article:tag" content="WebFlux">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==">
+
+<link rel="canonical" href="https://z201.cn/posts/3614341308/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>SpringBoot-WebClient | 憨憨在减肥的博客</title>
+  
+    <script>
+      function sendPageView() {
+        if (CONFIG.hostname !== location.hostname) return;
+        var uid = localStorage.getItem('uid') || (Math.random() + '.' + Math.random());
+        localStorage.setItem('uid', uid);
+        navigator.sendBeacon('https://www.google-analytics.com/collect', new URLSearchParams({
+          v  : 1,
+          tid: 'sPzmFRc9pkZyDXFyQWRFLjiFff-mdNJseUPpaocLd7c',
+          cid: uid,
+          t  : 'pageview',
+          dp : encodeURIComponent(location.pathname)
+        }));
+      }
+      document.addEventListener('pjax:complete', sendPageView);
+      sendPageView();
+    </script>
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?08e7145257fb655dd2db4082efa66876";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="憨憨在减肥的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">憨憨在减肥的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">流水要争先，争的是滔滔不绝。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-存档">
+
+    <a href="/archives" rel="section"><i class="archive fa-fw"></i>存档</a>
+
+  </li>
+        <li class="menu-item menu-item-查缺补漏">
+
+    <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" rel="section"><i class="graduation-cap fa-fw"></i>查缺补漏</a>
+
+  </li>
+        <li class="menu-item menu-item-jvm">
+
+    <a href="/tags/Jvm/" rel="section"><i class="graduation-cap fa-fw"></i>Jvm</a>
+
+  </li>
+        <li class="menu-item menu-item-java">
+
+    <a href="/tags/Java/" rel="section"><i class="graduation-cap fa-fw"></i>Java</a>
+
+  </li>
+        <li class="menu-item menu-item-spring">
+
+    <a href="/tags/Spring" rel="section"><i class="graduation-cap fa-fw"></i>Spring</a>
+
+  </li>
+        <li class="menu-item menu-item-mybatis">
+
+    <a href="/tags/Mybatis" rel="section"><i class="graduation-cap fa-fw"></i>Mybatis</a>
+
+  </li>
+        <li class="menu-item menu-item-netty">
+
+    <a href="/tags/Netty" rel="section"><i class="graduation-cap fa-fw"></i>Netty</a>
+
+  </li>
+        <li class="menu-item menu-item-linux">
+
+    <a href="/tags/Linux" rel="section"><i class="graduation-cap fa-fw"></i>Linux</a>
+
+  </li>
+        <li class="menu-item menu-item-docker">
+
+    <a href="/tags/Docker" rel="section"><i class="graduation-cap fa-fw"></i>Docker</a>
+
+  </li>
+        <li class="menu-item menu-item-redis">
+
+    <a href="/tags/Redis" rel="section"><i class="graduation-cap fa-fw"></i>Redis</a>
+
+  </li>
+        <li class="menu-item menu-item-mysql">
+
+    <a href="/tags/Mysql/" rel="section"><i class="graduation-cap fa-fw"></i>Mysql</a>
+
+  </li>
+        <li class="menu-item menu-item-rust">
+
+    <a href="/categories/Rust" rel="section"><i class="graduation-cap fa-fw"></i>Rust</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/z201" class="github-corner" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/3614341308/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="憨憨在减肥">
+      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="憨憨在减肥的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SpringBoot-WebClient
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-05-18 09:39:51" itemprop="dateCreated datePublished" datetime="2021-05-18T09:39:51+08:00">2021-05-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-01-18 15:26:49" itemprop="dateModified" datetime="2022-01-18T15:26:49+08:00">2022-01-18</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/WebClient/" itemprop="url" rel="index"><span itemprop="name">WebClient</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>7.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="WebClient"><a href="#WebClient" class="headerlink" title="WebClient"></a>WebClient</h2><blockquote>
+<p>Spring 有两个web客户端的实现，一个是RestTemplate另一个是spring5的响应代替WebClient。</p>
+<p>WebClient是一个以Reactive方式处理HTTP请求的非阻塞客户端。</p>
+</blockquote>
+<ul>
+<li><p>RestTemplate是阻塞客户端</p>
+<ul>
+<li>它基于thread-pre-requset模型。</li>
+<li>这意味着线程将阻塞，直到 Web 客户端收到响应。阻塞代码的问题是由于每个线程消耗了一些内存和 CPU 周期。当出现慢速请求的时候，等待结果的线程会堆积起来，将导致创建更多的线程、消耗更多的资源。频繁切换CPU资源也会降低性能。</li>
+</ul>
+</li>
+<li><p>WebClient是异步、非阻塞的方案。</p>
+<ul>
+<li><p><em>WebClient将为</em>每个事件创建类似于“任务”的东西。在幕后，Reactive 框架会将这些“任务”排队并仅在适当的响应可用时执行它们。</p>
+</li>
+<li><p><em>WebClient</em>是Spring WebFlux库的一部分。因此，<strong>我们还可以使用具有反应类型（Mono和Flux的功能性、流畅的 API 作为声明性组合</strong>来编写客户端代码。</p>
+</li>
+<li><p>底层支持的库</p>
+<ul>
+<li>Reactor Netty - ReactorClientHttpConnector</li>
+<li>Jetty ReactiveStream HttpClient - JettyHttpConnector</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>关于IDEA开启 Reactive Streams﻿ DEBUG</p>
+</li>
+</ul>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20220118142001.png"></p>
+<h3 id="演示代码"><a href="#演示代码" class="headerlink" title="演示代码"></a><a href="https://github.com/z201/code-example/tree/main/SpringBoot-WebClient" target="_blank" rel="noopener">演示代码</a></h3><h3 id="基础用法"><a href="#基础用法" class="headerlink" title="基础用法"></a>基础用法</h3><h4 id="创建WebClient"><a href="#创建WebClient" class="headerlink" title="创建WebClient"></a>创建WebClient</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">WebClient.create();</span><br><span class="line">WebClient.builder();</span><br></pre></td></tr></table></figure>
+
+<h4 id="请求方法"><a href="#请求方法" class="headerlink" title="请求方法"></a>请求方法</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">WebClient webClient =   WebClient.create();</span><br><span class="line">     webClient.get();</span><br><span class="line">     webClient.post();</span><br><span class="line">     webClient.delete();</span><br><span class="line">     webClient.put();</span><br><span class="line">     webClient.patch();</span><br><span class="line">     webClient.options();</span><br></pre></td></tr></table></figure>
+
+<h4 id="获取结果"><a href="#获取结果" class="headerlink" title="获取结果"></a>获取结果</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// exchangeToMono方法 </span></span><br><span class="line"><span class="comment">// exchangeToFlux方法</span></span><br><span class="line">Mono&lt;Object&gt; entityMono = webClient.get()</span><br><span class="line">                .uri(<span class="string">"/persons/1"</span>)</span><br><span class="line">                .accept(MediaType.APPLICATION_JSON)</span><br><span class="line">                .exchangeToMono(response -&gt; &#123;</span><br><span class="line">                    <span class="keyword">if</span> (response.statusCode().equals(HttpStatus.OK)) &#123;</span><br><span class="line">                        <span class="keyword">return</span> response.bodyToMono(Object<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">                    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (response.statusCode().is4xxClientError()) &#123;</span><br><span class="line">                        <span class="keyword">return</span> response.bodyToMono(Object<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        <span class="keyword">return</span> Mono.error((Supplier&lt;? extends Throwable&gt;) response.createException());</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;);</span><br><span class="line"></span><br><span class="line">        Flux&lt;Object&gt; entityFlux = webClient.get()</span><br><span class="line">                .uri(<span class="string">"/persons"</span>)</span><br><span class="line">                .accept(MediaType.APPLICATION_JSON)</span><br><span class="line">                .exchangeToFlux(response -&gt; &#123;</span><br><span class="line">                    <span class="keyword">if</span> (response.statusCode().equals(HttpStatus.OK)) &#123;</span><br><span class="line">                        <span class="keyword">return</span> response.bodyToFlux(Object<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">                    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (response.statusCode().is4xxClientError()) &#123;</span><br><span class="line">                        <span class="keyword">return</span> response.bodyToMono(Object<span class="class">.<span class="keyword">class</span>).<span class="title">flux</span>()</span>;</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        <span class="keyword">return</span> Flux.error((Supplier&lt;? extends Throwable&gt;) response.createException());</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;);</span><br></pre></td></tr></table></figure>
+
+<h4 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">.doOnError(t -&gt; log.error(<span class="string">"Error: "</span>, t)) <span class="comment">// 异常回调</span></span><br><span class="line">.doFinally(s -&gt; log.info(<span class="string">"Finally "</span>)) <span class="comment">// Finally 回调</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="请求体"><a href="#请求体" class="headerlink" title="请求体"></a>请求体</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 直接使用bodyValue方法</span></span><br><span class="line">RequestHeadersSpec&lt;?&gt; headersSpec = bodySpec.bodyValue(<span class="string">"data"</span>);</span><br><span class="line"><span class="comment">// 或者Publisher</span></span><br><span class="line">RequestHeadersSpec&lt;?&gt; headersSpec = bodySpec.body(Mono.just(<span class="keyword">new</span> Foo(<span class="string">"name"</span>)), Foo<span class="class">.<span class="keyword">class</span>)</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="代码演示"><a href="#代码演示" class="headerlink" title="代码演示"></a>代码演示</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span>(exclude = &#123;DataSourceAutoConfiguration<span class="class">.<span class="keyword">class</span>&#125;)</span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">class</span> <span class="title">AppApplication</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        ApplicationContext applicationContext = SpringApplication.run(AppApplication<span class="class">.<span class="keyword">class</span>, <span class="title">args</span>)</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 声明默认的WebClient</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> WebClient <span class="title">register</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> WebClient.create();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/"</span>)</span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AppController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> WebClient webClient;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostMapping</span>(<span class="string">"/list"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Flux&lt;UserVo&gt; <span class="title">list</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        List&lt;UserVo&gt; userList = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        userList.add(<span class="keyword">new</span> UserVo(<span class="string">"1"</span>, <span class="string">"张三"</span>));</span><br><span class="line">        userList.add(<span class="keyword">new</span> UserVo(<span class="string">"2"</span>, <span class="string">"王五"</span>));</span><br><span class="line">        <span class="keyword">return</span> Flux.fromIterable(userList);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping</span>(<span class="string">"/&#123;id&#125;"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Mono&lt;UserVo&gt; <span class="title">info</span><span class="params">(@PathVariable(value = <span class="string">"id"</span>)</span> String id) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Mono.just(<span class="keyword">new</span> UserVo(id, <span class="string">"某某"</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping</span>(<span class="string">"/ip/info"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Mono&lt;String&gt; <span class="title">ip</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        String url = <span class="string">"https://myip.ipip.net/"</span>;</span><br><span class="line">        Mono&lt;String&gt; body = webClient.get()</span><br><span class="line">                .uri(url)</span><br><span class="line">                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE) <span class="comment">// 响应的格式json</span></span><br><span class="line">                .acceptCharset(StandardCharsets.UTF_8) <span class="comment">// 编码集 utf-8</span></span><br><span class="line">                .exchangeToMono(response -&gt; &#123;</span><br><span class="line">                    <span class="keyword">if</span> (response.statusCode().equals(HttpStatus.OK)) &#123;</span><br><span class="line">                        <span class="keyword">return</span> response.bodyToMono(String<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        <span class="keyword">return</span> response.createException().flatMap(Mono::error);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;)</span><br><span class="line">                .doOnError(t -&gt; log.error(<span class="string">"Error: "</span>, t)) <span class="comment">// 异常回调</span></span><br><span class="line">                .doFinally(s -&gt; log.error(<span class="string">"Finally "</span>)) <span class="comment">// Finally 回调</span></span><br><span class="line">                .subscribeOn(Schedulers.single());</span><br><span class="line">        <span class="keyword">return</span> body;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="meta">@AllArgsConstructor</span></span><br><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserVo</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String uid;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="接口Mock测试"><a href="#接口Mock测试" class="headerlink" title="接口Mock测试"></a>接口Mock测试</h4><ul>
+<li>添加@WebFluxTest注解</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target</span>(ElementType.TYPE)</span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Inherited</span></span><br><span class="line"><span class="meta">@BootstrapWith</span>(WebFluxTestContextBootstrapper<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">ExtendWith</span>(<span class="title">SpringExtension</span>.<span class="title">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">OverrideAutoConfiguration</span>(<span class="title">enabled</span> </span>= <span class="keyword">false</span>)</span><br><span class="line"><span class="meta">@TypeExcludeFilters</span>(WebFluxTypeExcludeFilter<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">AutoConfigureCache</span></span></span><br><span class="line"><span class="class">@<span class="title">AutoConfigureJson</span></span></span><br><span class="line"><span class="class">@<span class="title">AutoConfigureWebFlux</span> // 自动装配<span class="title">WebFlux</span></span></span><br><span class="line"><span class="class">@<span class="title">AutoConfigureWebTestClient</span> // 自动装配<span class="title">WebTestClient</span></span></span><br><span class="line"><span class="class">@<span class="title">ImportAutoConfiguration</span></span></span><br><span class="line"><span class="class"><span class="title">public</span> @<span class="title">interface</span> <span class="title">WebFluxTest</span> </span>&#123;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>代码</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="meta">@ExtendWith</span>(SpringExtension<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line">@ActiveProfiles("dev")</span><br><span class="line"><span class="meta">@WebFluxTest</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AppApplicationMockTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> WebTestClient webTestClient;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@MockBean</span></span><br><span class="line">    <span class="keyword">private</span> AppController appController;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="meta">@Disabled</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        UserVo user = <span class="keyword">new</span> UserVo(<span class="string">"1"</span>, <span class="string">"张三"</span>);</span><br><span class="line">        Mockito.when(appController.info(<span class="string">"1"</span>)).thenReturn(Mono.just(user));</span><br><span class="line">        EntityExchangeResult&lt;UserVo&gt; result = webTestClient.get()</span><br><span class="line">                .uri(<span class="string">"/1"</span>)</span><br><span class="line">                .exchange()</span><br><span class="line">                .expectStatus().isOk()</span><br><span class="line">                .expectBody(UserVo<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">                .<span class="title">returnResult</span>()</span>;</span><br><span class="line">        log.info(<span class="string">"&#123;&#125;"</span>, result);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="meta">@Disabled</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">list</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        List&lt;UserVo&gt; userList = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        userList.add(<span class="keyword">new</span> UserVo(<span class="string">"1"</span>, <span class="string">"张三"</span>));</span><br><span class="line">        userList.add(<span class="keyword">new</span> UserVo(<span class="string">"2"</span>, <span class="string">"王武"</span>));</span><br><span class="line">        Mockito.when(appController.list()).thenReturn(Flux.fromIterable(userList));</span><br><span class="line">        EntityExchangeResult&lt;List&lt;UserVo&gt;&gt; result = webTestClient.post()</span><br><span class="line">                .uri(<span class="string">"/list"</span>)</span><br><span class="line">                .exchange()</span><br><span class="line">                .expectStatus().isOk()</span><br><span class="line">                .expectBodyList(UserVo<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">                .<span class="title">returnResult</span>()</span>;</span><br><span class="line">        log.info(<span class="string">"&#123;&#125;"</span>, result);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Console</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">[main]  </span><br><span class="line">&gt; GET &#x2F;1</span><br><span class="line">&gt; WebTestClient-Request-Id: [1]</span><br><span class="line"></span><br><span class="line">No content</span><br><span class="line"></span><br><span class="line">&lt; 200 OK OK</span><br><span class="line">&lt; Content-Type: [application&#x2F;json]</span><br><span class="line">&lt; Content-Length: [27]</span><br><span class="line"></span><br><span class="line">&#123;&quot;uid&quot;:&quot;1&quot;,&quot;name&quot;:&quot;张三&quot;&#125;</span><br><span class="line"></span><br><span class="line">[main]  </span><br><span class="line">&gt; POST &#x2F;list</span><br><span class="line">&gt; WebTestClient-Request-Id: [1]</span><br><span class="line"></span><br><span class="line">No content</span><br><span class="line"></span><br><span class="line">&lt; 200 OK OK</span><br><span class="line">&lt; Content-Type: [application&#x2F;json]</span><br><span class="line"></span><br><span class="line">[&#123;&quot;uid&quot;:&quot;1&quot;,&quot;name&quot;:&quot;张三&quot;&#125;,&#123;&quot;uid&quot;:&quot;2&quot;,&quot;name&quot;:&quot;王武&quot;&#125;]</span><br></pre></td></tr></table></figure>
+
+<h4 id="接口测试"><a href="#接口测试" class="headerlink" title="接口测试"></a>接口测试</h4><ul>
+<li>添加@AutoConfigureWebTestClient 启用WebTestClient。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="meta">@ExtendWith</span>(SpringExtension<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">SpringBootTest</span>(<span class="title">classes</span> </span>= AppApplication<span class="class">.<span class="keyword">class</span>, <span class="title">webEnvironment</span> </span>= SpringBootTest.WebEnvironment.RANDOM_PORT)</span><br><span class="line"><span class="meta">@ActiveProfiles</span>(<span class="string">"dev"</span>)</span><br><span class="line"><span class="meta">@AutoConfigureWebTestClient</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AppApplicationTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> WebTestClient webTestClient;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="meta">@Disabled</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        EntityExchangeResult&lt;UserVo&gt; result = webTestClient.get()</span><br><span class="line">                .uri(<span class="string">"/1"</span>)</span><br><span class="line">                .exchange()</span><br><span class="line">                .expectStatus().isOk()</span><br><span class="line">                .expectBody(UserVo<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">                .<span class="title">returnResult</span>()</span>;</span><br><span class="line">        log.info(<span class="string">"&#123;&#125;"</span>, result);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="meta">@Disabled</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ip</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        EntityExchangeResult&lt;String&gt; result = webTestClient.get()</span><br><span class="line">                .uri(<span class="string">"/ip/info"</span>)</span><br><span class="line">                .exchange()</span><br><span class="line">                .expectStatus().isOk()</span><br><span class="line">                .expectBody(String<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">                .<span class="title">returnResult</span>()</span>;</span><br><span class="line">        log.info(<span class="string">"&#123;&#125;"</span>, result);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="meta">@Disabled</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">list</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        EntityExchangeResult&lt;List&lt;UserVo&gt;&gt; result = webTestClient.post()</span><br><span class="line">                .uri(<span class="string">"/list"</span>)</span><br><span class="line">                .exchange()</span><br><span class="line">                .expectStatus().isOk()</span><br><span class="line">                .expectBodyList(UserVo<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">                .<span class="title">returnResult</span>()</span>;</span><br><span class="line">        log.info(<span class="string">"&#123;&#125;"</span>, result);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Console</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">[main]  </span><br><span class="line">&gt; GET &#x2F;1</span><br><span class="line">&gt; WebTestClient-Request-Id: [1]</span><br><span class="line"></span><br><span class="line">No content</span><br><span class="line"></span><br><span class="line">&lt; 200 OK OK</span><br><span class="line">&lt; Content-Type: [application&#x2F;json]</span><br><span class="line">&lt; Content-Length: [27]</span><br><span class="line"></span><br><span class="line">&#123;&quot;uid&quot;:&quot;1&quot;,&quot;name&quot;:&quot;某某&quot;&#125;</span><br><span class="line"></span><br><span class="line">[reactor-http-nio-3]  Finally </span><br><span class="line">[main]  </span><br><span class="line">&gt; GET &#x2F;ip&#x2F;info</span><br><span class="line">&gt; WebTestClient-Request-Id: [1]</span><br><span class="line"></span><br><span class="line">No content</span><br><span class="line"></span><br><span class="line">&lt; 200 OK OK</span><br><span class="line">&lt; Content-Type: [text&#x2F;plain;charset&#x3D;UTF-8]</span><br><span class="line">&lt; Content-Length: [67]</span><br><span class="line"></span><br><span class="line">当前 IP：000.000.00.0  来自于：中国 浙江 杭州  电信</span><br><span class="line"></span><br><span class="line">[main]  </span><br><span class="line">&gt; POST &#x2F;list</span><br><span class="line">&gt; WebTestClient-Request-Id: [1]</span><br><span class="line"></span><br><span class="line">No content</span><br><span class="line"></span><br><span class="line">&lt; 200 OK OK</span><br><span class="line">&lt; Content-Type: [application&#x2F;json]</span><br><span class="line"></span><br><span class="line">[&#123;&quot;uid&quot;:&quot;1&quot;,&quot;name&quot;:&quot;张三&quot;&#125;,&#123;&quot;uid&quot;:&quot;2&quot;,&quot;name&quot;:&quot;王五&quot;&#125;]</span><br></pre></td></tr></table></figure>
+
+<h3 id="END"><a href="#END" class="headerlink" title="END"></a>END</h3>
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>憨憨在减肥
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://z201.cn/posts/3614341308/" title="SpringBoot-WebClient">https://z201.cn/posts/3614341308/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/WebClient/" rel="tag"># WebClient</a>
+              <a href="/tags/WebFlux/" rel="tag"># WebFlux</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/posts/232268034/" rel="prev" title="SpringBoot-Redison">
+      <i class="fa fa-chevron-left"></i> SpringBoot-Redison
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/posts/1108772964/" rel="next" title="Centos7-jenkins-Deploy">
+      Centos7-jenkins-Deploy <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#WebClient"><span class="nav-number">1.</span> <span class="nav-text">WebClient</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#演示代码"><span class="nav-number">1.1.</span> <span class="nav-text">演示代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基础用法"><span class="nav-number">1.2.</span> <span class="nav-text">基础用法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#创建WebClient"><span class="nav-number">1.2.1.</span> <span class="nav-text">创建WebClient</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#请求方法"><span class="nav-number">1.2.2.</span> <span class="nav-text">请求方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#获取结果"><span class="nav-number">1.2.3.</span> <span class="nav-text">获取结果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#异常处理"><span class="nav-number">1.2.4.</span> <span class="nav-text">异常处理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#请求体"><span class="nav-number">1.2.5.</span> <span class="nav-text">请求体</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码演示"><span class="nav-number">1.3.</span> <span class="nav-text">代码演示</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#接口Mock测试"><span class="nav-number">1.3.1.</span> <span class="nav-text">接口Mock测试</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#接口测试"><span class="nav-number">1.3.2.</span> <span class="nav-text">接口测试</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#END"><span class="nav-number">1.4.</span> <span class="nav-text">END</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="憨憨在减肥"
+      src="/images/avatar-min.jpg">
+  <p class="site-author-name" itemprop="name">憨憨在减肥</p>
+  <div class="site-description" itemprop="description">SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">116</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">30</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">116</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/z201" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;z201" rel="noopener" target="_blank"><i class="github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:int_java_se@@163.com" title="E-Mail → mailto:int_java_se@@163.com" rel="noopener" target="_blank"><i class="envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" class="cc-opacity" rel="noopener" target="_blank"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://openjdk.java.net/" title="https:&#x2F;&#x2F;openjdk.java.net&#x2F;" rel="noopener" target="_blank">openJdk-docs</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://docs.spring.io/spring-framework/docs/" title="https:&#x2F;&#x2F;docs.spring.io&#x2F;spring-framework&#x2F;docs&#x2F;" rel="noopener" target="_blank">spring-projects-docs</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.journaldev.com/" title="https:&#x2F;&#x2F;www.journaldev.com&#x2F;" rel="noopener" target="_blank">journaldev</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.geeksforgeeks.org/" title="https:&#x2F;&#x2F;www.geeksforgeeks.org&#x2F;" rel="noopener" target="_blank">geeksforgeeks</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://dev.mysql.com/doc/" title="https:&#x2F;&#x2F;dev.mysql.com&#x2F;doc&#x2F;" rel="noopener" target="_blank">mysql-docs</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://redis.io/commands/" title="https:&#x2F;&#x2F;redis.io&#x2F;commands&#x2F;" rel="noopener" target="_blank">redis-commands</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://redis.com/community/oss-projects/" title="https:&#x2F;&#x2F;redis.com&#x2F;community&#x2F;oss-projects&#x2F;" rel="noopener" target="_blank">redis-projects</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://rocketmq.apache.org/" title="https:&#x2F;&#x2F;rocketmq.apache.org&#x2F;" rel="noopener" target="_blank">apache-rocketmq</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://docs.docker.com/" title="https:&#x2F;&#x2F;docs.docker.com&#x2F;" rel="noopener" target="_blank">docker-docs</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://mybatis.org/mybatis-3/zh/index.html/" title="https:&#x2F;&#x2F;mybatis.org&#x2F;mybatis-3&#x2F;zh&#x2F;index.html&#x2F;" rel="noopener" target="_blank">mybatis-docs</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://netty.io/wiki/" title="https:&#x2F;&#x2F;netty.io&#x2F;wiki&#x2F;" rel="noopener" target="_blank">netty-docs</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.lintcode.com/" title="https:&#x2F;&#x2F;www.lintcode.com&#x2F;" rel="noopener" target="_blank">lintCode</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://stackoverflow.com/" title="https:&#x2F;&#x2F;stackoverflow.com&#x2F;" rel="noopener" target="_blank">stackoverflow</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.baeldung.com/" title="https:&#x2F;&#x2F;www.baeldung.com&#x2F;" rel="noopener" target="_blank">beeldung教程</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.sczyh30.com/" title="http:&#x2F;&#x2F;www.sczyh30.com&#x2F;" rel="noopener" target="_blank">浮生若梦</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://objcoding.com/" title="https:&#x2F;&#x2F;objcoding.com&#x2F;" rel="noopener" target="_blank">后端进阶</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.javazhiyin.com/" title="https:&#x2F;&#x2F;www.javazhiyin.com&#x2F;" rel="noopener" target="_blank">Java知音</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://ifeve.com/" title="http:&#x2F;&#x2F;ifeve.com&#x2F;" rel="noopener" target="_blank">并发编程网</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://learnku.com/" title="https:&#x2F;&#x2F;learnku.com&#x2F;" rel="noopener" target="_blank">Learnku编程者中文社区</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://rustcc.cn/" title="https:&#x2F;&#x2F;rustcc.cn&#x2F;" rel="noopener" target="_blank">Rust语言中文设计</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://kaiyiwing.gitee.io/qwerty-learner/" title="https:&#x2F;&#x2F;kaiyiwing.gitee.io&#x2F;qwerty-learner&#x2F;" rel="noopener" target="_blank">英语肌肉记忆锻炼软件</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/redisson/redisson/wiki/%E7%9B%AE%E5%BD%95/" title="https:&#x2F;&#x2F;github.com&#x2F;redisson&#x2F;redisson&#x2F;wiki&#x2F;%E7%9B%AE%E5%BD%95&#x2F;" rel="noopener" target="_blank">Redisson-docs</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">憨憨在减肥</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">743k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">11:16</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+</html>

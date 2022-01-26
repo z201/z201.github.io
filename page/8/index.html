@@ -260,6 +260,331 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/1025319372/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="憨憨在减肥">
+      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="憨憨在减肥的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/1025319372/" class="post-title-link" itemprop="url">源码分析-spring源码环境搭建</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-03-14 20:43:32" itemprop="dateCreated datePublished" datetime="2019-03-14T20:43:32+08:00">2019-03-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-12-21 14:24:58" itemprop="dateModified" datetime="2021-12-21T14:24:58+08:00">2021-12-21</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">源码分析</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="0x00-阅读源代码"><a href="#0x00-阅读源代码" class="headerlink" title="0x00 阅读源代码"></a>0x00 阅读源代码</h2><h3 id="下载源代码"><a href="#下载源代码" class="headerlink" title="下载源代码"></a>下载源代码</h3><ul>
+<li>代码仓库地址 <a href="https://gitee.com/Z201/spring-framework.git" target="_blank" rel="noopener">https://gitee.com/Z201/spring-framework.git</a></li>
+<li>阅读版本号 <code>v5.1.5.RELEASE</code></li>
+<li>下载版本<code>git clone -b v5.1.5.RELEASE https://github.com/spring-projects/spring-framework.git</code><ul>
+<li>由于github下载速度是在太慢了，这里用gitee克隆一个镜像。</li>
+<li>下载版本<code>git clone -b v5.1.5.RELEASE https://gitee.com/Z201/spring-framework.git</code></li>
+</ul>
+</li>
+<li>官方提供的文档<a href="https://github.com/spring-projects/spring-framework/blob/master/import-into-idea.md" target="_blank" rel="noopener"><strong>import-into-idea</strong></a></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">➜  spring-framework git:(master) ./gradlew :spring-oxm:compileTestJava</span><br><span class="line"></span><br><span class="line">Downloading https://services.gradle.org/distributions/gradle-4.10.3-bin.zip</span><br><span class="line">..........................................................................</span><br><span class="line"></span><br><span class="line">Welcome to Gradle 4.10.3!</span><br><span class="line"></span><br><span class="line">Here are the highlights of this release:</span><br><span class="line"> - Incremental Java compilation by default</span><br><span class="line"> - Periodic Gradle caches cleanup</span><br><span class="line"> - Gradle Kotlin DSL 1.0-RC6</span><br><span class="line"> - Nested included builds</span><br><span class="line"> - SNAPSHOT plugin versions <span class="keyword">in</span> the `plugins &#123;&#125;` block</span><br><span class="line"></span><br><span class="line">For more details see https://docs.gradle.org/4.10.3/release-notes.html</span><br><span class="line"></span><br><span class="line">Starting a Gradle Daemon (subsequent builds will be faster)</span><br><span class="line"></span><br><span class="line">&gt; Task :spring-beans:compileTestJava</span><br><span class="line">注: 某些输入文件使用或覆盖了已过时的 API。</span><br><span class="line">注: 有关详细信息, 请使用 -Xlint:deprecation 重新编译。</span><br><span class="line">注: 某些输入文件使用了未经检查或不安全的操作。</span><br><span class="line">注: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。</span><br><span class="line"></span><br><span class="line">&gt; Task :spring-context:compileTestJava</span><br><span class="line">注: 某些输入文件使用或覆盖了已过时的 API。</span><br><span class="line">注: 有关详细信息, 请使用 -Xlint:deprecation 重新编译。</span><br><span class="line">注: 某些输入文件使用了未经检查或不安全的操作。</span><br><span class="line">注: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。</span><br><span class="line"></span><br><span class="line">&gt; Task :spring-oxm:genJaxb</span><br><span class="line">[ant:javac] : warning: <span class="string">'includeantruntime'</span> was not <span class="built_in">set</span>, defaulting to build.sysclasspath=last; <span class="built_in">set</span> to <span class="literal">false</span> <span class="keyword">for</span> repeatable builds</span><br><span class="line"></span><br><span class="line">BUILD SUCCESSFUL <span class="keyword">in</span> 9m 18s</span><br><span class="line">58 actionable tasks: 58 executed</span><br><span class="line">➜  spring-framework git:(master)</span><br></pre></td></tr></table></figure>
+
+<p>如果显示BUILD SUCCESSFUL 说明构建成功了，但是由于项目太大了，所以下面就不介绍模块了。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/1499492201/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="憨憨在减肥">
+      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="憨憨在减肥的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/1499492201/" class="post-title-link" itemprop="url">Junit4入门</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-03-14 10:50:21" itemprop="dateCreated datePublished" datetime="2019-03-14T10:50:21+08:00">2019-03-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-01-09 00:53:02" itemprop="dateModified" datetime="2022-01-09T00:53:02+08:00">2022-01-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Junit4/" itemprop="url" rel="index"><span itemprop="name">Junit4</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>本文主要是为了记录很久以前对Junit的回顾。</p>
+</blockquote>
+<h2 id="Junit"><a href="#Junit" class="headerlink" title="Junit"></a>Junit</h2><blockquote>
+<p>Java开发中使用的最多的测试框架，工作中经常会大量使用。</p>
+</blockquote>
+<h3 id="建议遵守约定"><a href="#建议遵守约定" class="headerlink" title="建议遵守约定"></a>建议遵守约定</h3><ul>
+<li>测试类在test包下（如果是maven结构的项目建议建议不要方在源码中，早期的项目很多是没有区分开的）</li>
+<li>测试类命名xxxTest结尾。</li>
+<li>方法命名testxxxx命名。</li>
+<li>测试方法上必须使用@Test进行修饰。</li>
+<li>测试方法必须使用public void 进行修饰，不能带任何的参数。</li>
+<li>测试类的包应该和被测试类保持一致。</li>
+<li>测试单元中的每个方法必须独立测试，测试方法间不能有任何的依赖。</li>
+</ul>
+<h3 id="常用注解"><a href="#常用注解" class="headerlink" title="常用注解"></a>常用注解</h3><ul>
+<li>@Test(expected = ArithmeticException.class) 预期将抛出一个算术异常。</li>
+<li>@Test(timeout = 10) 改方法调用预期的时间范围 10毫秒，若超时算失败。</li>
+<li>@Ignore 被改注解修饰的方法不会被执行。</li>
+<li>@RunWith 可以更改测试运行器，制定的测试运行器需要继承 org.junit.runner.Runner。</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/1499492201/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/4225444985/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="憨憨在减肥">
+      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="憨憨在减肥的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/4225444985/" class="post-title-link" itemprop="url">Web-Json-Toekn-Jjwt</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-03-09 02:02:15" itemprop="dateCreated datePublished" datetime="2019-03-09T02:02:15+08:00">2019-03-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-01-08 03:26:31" itemprop="dateModified" datetime="2022-01-08T03:26:31+08:00">2022-01-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index"><span itemprop="name">Spring</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>Json web token (JWT), 是为了在网络应用环境间传递声明而执行的一种基于JSON的开放标准。该token被设计为紧凑且安全的，特别适用于分布式站点的单点登录（SSO）场景。JWT的声明一般被用来在身份提供者和服务提供者间传递被认证的用户身份信息，以便于从资源服务器获取资源，也可以增加一些额外的其它业务逻辑所必须的声明信息，该token也可直接被用于认证，也可被加密。也就是说JWT是Token的一种表述性声明规范。</p>
+</blockquote>
+<h2 id="JWT-Json-Web-Token"><a href="#JWT-Json-Web-Token" class="headerlink" title="JWT(Json Web Token)"></a>JWT(Json Web Token)</h2><ul>
+<li>官网地址：<strong><a href="https://jwt.io/" target="_blank" rel="noopener">https://jwt.io/</a></strong></li>
+<li>jwt github：<strong><a href="https://github.com/jwtk/jjwt" target="_blank" rel="noopener">https://github.com/jwtk/jjwt</a></strong></li>
+</ul>
+<h2 id="JWT生成编码后的样子"><a href="#JWT生成编码后的样子" class="headerlink" title="JWT生成编码后的样子"></a>JWT生成编码后的样子</h2><ul>
+<li>结构类似 xxx.yyy.zzz</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImF1ZCI6IuWkqeihjOWBpeeuoeeQhueUqOaItyIsImF1ZGllbmNlIjoid2ViIiwibmJmIjoxNTA3Njg0OTQyLCJpc3MiOiJ3d3cuMW9uZS5jbiIsImV4cCI6MTUwNzY4Njc0MiwiaWF0IjoxNTA3Njg0OTQyLCJqdGkiOjEwMDB9.GGF0kFbxNk2ezzuXEJVBZyyL4e4BYMdpse73cSDrUut7cbVyYuLG1CNr8RI7eI3VHz9sdCB14Kesi8rP-v3VJA</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>base64解析之后</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	<span class="attr">"body"</span>:&#123;</span><br><span class="line">		<span class="attr">"sub"</span>:<span class="string">"admin"</span>,</span><br><span class="line">		<span class="attr">"aud"</span>:<span class="string">"XXX用户"</span>,</span><br><span class="line">		<span class="attr">"audience"</span>:<span class="string">"web"</span>,</span><br><span class="line">		<span class="attr">"nbf"</span>:<span class="number">1507684942</span>,</span><br><span class="line">		<span class="attr">"iss"</span>:<span class="string">"www.xxx.cn"</span>,</span><br><span class="line">		<span class="attr">"exp"</span>:<span class="number">1507686742</span>,</span><br><span class="line">		<span class="attr">"iat"</span>:<span class="number">1507684942</span>,</span><br><span class="line">		<span class="attr">"jti"</span>:<span class="number">1000</span></span><br><span class="line">	&#125;,</span><br><span class="line">	<span class="attr">"header"</span>:&#123;</span><br><span class="line">		<span class="attr">"typ"</span>:<span class="string">"JWT"</span>,</span><br><span class="line">		<span class="attr">"alg"</span>:<span class="string">"HS512"</span></span><br><span class="line">	&#125;,</span><br><span class="line">	<span class="attr">"signature"</span>:<span class="string">"GGF0kFbxNk2ezzuXEJVBZyyL4e4BYMdpse73cSDrUut7cbVyYuLG1CNr8RI7eI3VHz9sdCB14Kesi8rP-v3VJA"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/4225444985/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/688330038/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1087,508 +1412,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/716639737/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="憨憨在减肥">
-      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="憨憨在减肥的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/716639737/" class="post-title-link" itemprop="url">源码分析-mybatis源码环境搭建</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-02-26 14:17:54" itemprop="dateCreated datePublished" datetime="2019-02-26T14:17:54+08:00">2019-02-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-12-21 14:24:58" itemprop="dateModified" datetime="2021-12-21T14:24:58+08:00">2021-12-21</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">源码分析</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>874</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>mybatis学习笔记。</p>
-</blockquote>
-<h2 id="0x00-阅读源代码"><a href="#0x00-阅读源代码" class="headerlink" title="0x00 阅读源代码"></a>0x00 阅读源代码</h2><h3 id="下载源代码"><a href="#下载源代码" class="headerlink" title="下载源代码"></a>下载源代码</h3><ul>
-<li>代码仓库地址 <a href="https://github.com/mybatis/mybatis-3.git" target="_blank" rel="noopener">https://github.com/mybatis/mybatis-3.git</a></li>
-<li>阅读版本号 <code>myabtis-3.5.0</code></li>
-<li>下载版本<code>git clone -b mybatis-3.5.0 https://github.com/mybatis/mybatis-3.git</code><ul>
-<li>由于github下载速度是在太慢了，这里用gitee克隆一个镜像。</li>
-<li>下载版本<code>git clone -b mybatis-3.5.0 https://gitee.com/Z201/mybatis-3.git</code></li>
-</ul>
-</li>
-</ul>
-<h3 id="查看源代码结构"><a href="#查看源代码结构" class="headerlink" title="查看源代码结构"></a>查看源代码结构</h3><ul>
-<li>查看项目主要文件夹</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">tree -d L 2</span><br><span class="line">.</span><br><span class="line">├── src  </span><br><span class="line">│   ├── main <span class="comment"># 源代码</span></span><br><span class="line">│   ├── site <span class="comment"># 站点稳当</span></span><br><span class="line">│   └── <span class="built_in">test</span> <span class="comment"># 单元测试</span></span><br><span class="line">└── travis   <span class="comment"># 官方的ci集成</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>查看项目源码主目录</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">tree -d src/main -L 5</span><br><span class="line">src/main</span><br><span class="line">└── java</span><br><span class="line">    └── org</span><br><span class="line">        └── apache</span><br><span class="line">            └── ibatis</span><br><span class="line">                ├── annotations <span class="comment"># 注解</span></span><br><span class="line">                ├── binding     <span class="comment"># 代理</span></span><br><span class="line">                ├── builder     <span class="comment"># 构造</span></span><br><span class="line">                ├── cache       <span class="comment"># 缓存</span></span><br><span class="line">                ├── cursor      <span class="comment"># 返回值类型为游标的方法</span></span><br><span class="line">                ├── datasource  <span class="comment"># 数据源</span></span><br><span class="line">                ├── exceptions  <span class="comment"># 异常</span></span><br><span class="line">                ├── executor    <span class="comment"># 数据操作具体执行</span></span><br><span class="line">                ├── io          <span class="comment"># 文件流</span></span><br><span class="line">                ├── jdbc        <span class="comment"># jdbc模块</span></span><br><span class="line">                ├── lang        <span class="comment"># 工具</span></span><br><span class="line">                ├── logging     <span class="comment"># 日志</span></span><br><span class="line">                ├── mapping     <span class="comment"># 映射、参数、结果集。</span></span><br><span class="line">                ├── parsing     <span class="comment"># 解析器</span></span><br><span class="line">                ├── plugin      <span class="comment"># 插件</span></span><br><span class="line">                ├── reflection  <span class="comment"># 反射</span></span><br><span class="line">                ├── scripting   <span class="comment"># sql解析</span></span><br><span class="line">                ├── session     <span class="comment"># 接口层会话</span></span><br><span class="line">                ├── transaction <span class="comment"># 事物</span></span><br><span class="line">                └── <span class="built_in">type</span>        <span class="comment"># 类型</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>将项目导入idea中，就可以看到完整的源代码了。</li>
-</ul>
-<h2 id="0x01-根据官方文档快速入门"><a href="#0x01-根据官方文档快速入门" class="headerlink" title="0x01 根据官方文档快速入门"></a>0x01 根据官方文档快速入门</h2><blockquote>
-<p>强烈推荐认真阅读mybatis的官方文档。</p>
-</blockquote>
-<ul>
-<li>官方文档地址 ： <a href="http://www.mybatis.org/mybatis-3/zh/getting-started.html" target="_blank" rel="noopener">http://www.mybatis.org/mybatis-3/zh/getting-started.html</a></li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/2184043232/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="憨憨在减肥">
-      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="憨憨在减肥的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/2184043232/" class="post-title-link" itemprop="url">Maven</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-08 03:39:37" itemprop="dateModified" datetime="2022-01-08T03:39:37+08:00">2022-01-08</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Maven/" itemprop="url" rel="index"><span itemprop="name">Maven</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>4.1k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-<h3 id="Mavan常用命令以及用法"><a href="#Mavan常用命令以及用法" class="headerlink" title="Mavan常用命令以及用法"></a>Mavan常用命令以及用法</h3><ul>
-<li>常用命令就要先了解Maven的生命周期<ul>
-<li>Maven的生命周期就是对所有的构建过程进行抽象和统一。包含了项目的清理、初始化、编译、测试、打包、集成测试、验证、部署和站点生成等几乎所有的构建步骤。</li>
-<li>Maven的生命周期是抽象的，即生命周期不做任何实际的工作，实际任务由插件完成，类似于设计模式中的模板方法。所以必须有对应的插件才能执行对于的步骤。</li>
-<li>Maven有三套相互独立的生命周期，分别是clean、default和site。每个生命周期包含一些阶段（phase），阶段是有顺序的，后面的阶段依赖于前面的阶段。<ul>
-<li><strong>clean生命周期</strong>：清理项目，包含三个phase。<ul>
-<li>1.）pre-clean：执行清理前需要完成的工作。</li>
-<li>2）clean：清理上一次构建生成的文件。</li>
-<li>3）post-clean：执行清理后需要完成的工作。</li>
-</ul>
-</li>
-<li><strong>default生命周期</strong>：构建项目，重要的phase如下。<ul>
-<li>1）validate：验证工程是否正确，所有需要的资源是否可用。</li>
-<li>2）compile：编译项目的源代码。  </li>
-<li>3）test：使用合适的单元测试框架来测试已编译的源代码。这些测试不需要已打包和布署。</li>
-<li>4）Package：把已编译的代码打包成可发布的格式，比如jar。</li>
-<li>5）integration-test：如有需要，将包处理和发布到一个能够进行集成测试的环境。</li>
-<li>6）verify：运行所有检查，验证包是否有效且达到质量标准。</li>
-<li>7）install：把包安装到maven本地仓库，可以被其他工程作为依赖来使用。</li>
-<li>8）Deploy：在集成或者发布环境下执行，将最终版本的包拷贝到远程的repository，使得其他的开发者或者工程可以共享。</li>
-</ul>
-</li>
-<li><strong>site生命周期</strong>：建立和发布项目站点，phase如下。<ul>
-<li>1）pre-site：生成项目站点之前需要完成的工作。</li>
-<li>2）site：生成项目站点文档。</li>
-<li>3）post-site：生成项目站点之后需要完成的工作。</li>
-<li>4）site-deploy：将项目站点发布到服务器</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/posts/2184043232/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/2124610325/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="憨憨在减肥">
-      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="憨憨在减肥的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/2124610325/" class="post-title-link" itemprop="url">查缺补漏-Dubbo</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-12-21 23:09:03" itemprop="dateModified" datetime="2021-12-21T23:09:03+08:00">2021-12-21</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>3.1k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-<h3 id="Dubbo概述"><a href="#Dubbo概述" class="headerlink" title="Dubbo概述"></a>Dubbo概述</h3><ul>
-<li>服务治理（SOA）治理框架</li>
-<li>Duboo是一个分布式服务框架<ul>
-<li>远程通讯：提供多种基于长链接的NIO框架抽象封装,包括多种线程模型、序列化“请求-响应”的信息交换方案。</li>
-<li>集群容错：提供基于接口方法的透明远程调用过程，包括多协议支持、软负载均衡、失败容错、地址路由、动态配置等集群支持。</li>
-<li>自动发现：基于注册中心目录服务，使服务消费方能动态地查找提供方，使地址透明，使服务提供方可以平滑增或减少机器。</li>
-<li>介绍：</li>
-<li>致力于提供高性能和透明化的RPC远程服务调用方案，以及SOA服务治理方案。</li>
-<li>Dubbo的命名：澳大利亚达博市</li>
-<li>同类型框架：<ul>
-<li>Apache Thrift、Hessian、RMI、WebService（原生）、HSF（淘宝，不开源）、JSF（京东，不开源）。</li>
-</ul>
-</li>
-<li>Dubbo涉及的基础知识<ul>
-<li>远程调用方面：RMI、Hassion、WebService、Thrift进行底层调用。</li>
-<li>通讯交互：HTTP、Mian、netty。</li>
-<li>序列化：Hession2、Java、Json。</li>
-<li>容器：Jetty、Spring。</li>
-<li>负载均衡：zookeeper、Redis。（大部分都是zookeeper）</li>
-</ul>
-</li>
-<li>简单的使用场景<ul>
-<li>作为对内提供服务应用的容器。</li>
-<li>拆分负载Web应用到服务容器。</li>
-<li>应用负载均和协调。</li>
-<li>引用服务处理。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="架构节点（抽象概念）"><a href="#架构节点（抽象概念）" class="headerlink" title="架构节点（抽象概念）"></a>架构节点（抽象概念）</h3><ul>
-<li>Provider:暴露服务的服务提供方。</li>
-<li>Consumer：调用远程服务的服务消费方。</li>
-<li>Registry：服务注册于发现服务</li>
-<li>Monitor:统计服务的调用次调用时间监控中心</li>
-<li>Container:服务运行容器<ul>
-<li>节点调用关系</li>
-<li>服务提供-服务提供者在启动的时候,向注册中心提供自己提供的服务。</li>
-<li>服务消费-服务消费者在启动的时候,向注册中心订阅自己所需要的服务。<ul>
-<li>注册中心异步返回服务提供者地址列表给消费者,如果有变动,注册中心将给予长连接推送变更数据给消费者。</li>
-</ul>
-</li>
-<li>服务统计-服务者和消费者,在内存中累计调用次数和调用时间,定时每分钟发送一次统计数据到监控中心。<ul>
-<li>异步方式</li>
-</ul>
-</li>
-<li>服务调用关系<ul>
-<li>服务消费者,从提供者地址列表中,基于[软负载均衡算法],选一台提供者进行调用,如果调用失败,在选另一台调用。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="Dubbo源码相关"><a href="#Dubbo源码相关" class="headerlink" title="Dubbo源码相关"></a>Dubbo源码相关</h3><ul>
-<li>源码地址<code>git clone https://github.com/alibaba/dubbo</code></li>
-<li>初次编码不执行Test <code>mvn clean install -Dmaven.test.skip=true</code></li>
-<li>JS错误不修改,请自行忽视。</li>
-<li>修复mavan的警告<br>* 地址：<code>dubbo-parent pom.xml</code><br>* maven-jar-plugin version:2.4<br>* maven-surefire-plugin Version 2.19.1<br>* maven-deploy-plugin Version 3.3.9</li>
-<li>项目导入后修复Dubbo XML校验错误提示</li>
-<li>需要导入dubbo.xsd文件</li>
-<li>下载dubbo-2.5.3.jar 版本尽量保持源码同步,解压dt后导入eclipse中。<ul>
-<li>Preferences-XML-XML Catalog 添加一个自定义的：<ul>
-<li>Location: D:\xsd\dubbo.xsd</li>
-<li>Key: <a href="http://code.alibabatech.com/schema/dubbo/dubbo.xsd" target="_blank" rel="noopener">http://code.alibabatech.com/schema/dubbo/dubbo.xsd</a> （默认生成的不行自行修改）。</li>
-<li>在校验错误的XML头部添加：</li>
-<li><?xml version="1.0" encoding="UTF-8"?> <!DOCTYPE dubbo SYSTEM"http://code.alibabatech.com/schema/dubbo"></li>
-</ul>
-</li>
-</ul>
-</li>
-<li>关于maven-dependency-plugin错误 可能是IDE错误提示，空白处添加空格保存自动消失。<ul>
-<li>错误信息如下：Artifact has not been packaged yet. When used on reactor artifact, unpack should be executed after packaging: see MDEP-98. (org.apache.maven.plugins:maven-dependency-plugin:2.8:unpack:unpack:package)<ul>
-<li>修复方案更改插件配置:</li>
-<li><groupId>org.apache.maven.plugins</groupId><br><artifactId>maven-dependency-plugin</artifactId><br><version>2.10&lt;/version<executions>
-<execution>
-<id>unpack</id>
-<phase>packaged</phase>
-<goals>
-<goal>unpack</goal>
-</goals>
-</execution>
-</executions>
-</plugin></li>
-</ul>
-</li>
-</ul>
-</li>
-<li>Dubbo源码模块<ul>
-<li>Config配置层(Dubbo-config)</li>
-<li>Proxy服务代理层(Dubbo-rpc)</li>
-<li>Registry注册中心层(Dubbo-registry)</li>
-<li>Cluster路由层(Dubbo-cluster)</li>
-<li>Monitor监控层(Dubbo-monitor)</li>
-<li>Protocol远程调用层(Dubbo-rpc)</li>
-<li>Exchange信息交换层(Dubbo-remoting)</li>
-<li>Transport网络传输层(Dubbo-remoting)</li>
-<li>Serialize数据序列化层(Dubbo-common)</li>
-</ul>
-</li>
-</ul>
-<h3 id="Zookeeper"><a href="#Zookeeper" class="headerlink" title="Zookeeper"></a>Zookeeper</h3><blockquote>
-<p>（测试方案采用zookeeper做均衡负载，简单介绍下配置信息）</p>
-</blockquote>
-<ul>
-<li>下载地址 <a href="http://apache.fayea.com/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz" target="_blank" rel="noopener">http://apache.fayea.com/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz</a></li>
-<li>基本配置：<ul>
-<li>单机模式：修改zookeeper-3.4.8/conf zoo.cfg(原始文件名zoo_sanple.cfg复制一份重命名)<ul>
-<li>编辑内容（仅供参考,具体环境自行修改）</li>
-<li>tickTime = 2000<ul>
-<li>tickTime：基本事件单元，以毫秒为单位。这个时间是作为 Zookeeper 服务器之间或客户端与服务器之间维持心跳的时间间隔，也就是每个 tickTime 时间就会发送一个心跳。</li>
-</ul>
-</li>
-<li>initLimit= 5<ul>
-<li>initLimit:这个配置项用来配置Zookeeper接受客户端初始化连接时最长能忍受多少个心跳时间间隔数，当已超过5个心跳的时间（也就是tickTime）长度后Zookeeper服务器还没有收到客户端的返回信息，那么表明这个客户端连接失败。总的时间长度是5 * 2000=4s。</li>
-</ul>
-</li>
-<li>dataDir = D:\zookeeper\data<ul>
-<li>顾名思义就是 Zookeeper 保存数据快照的目录，默认情况下，Zookeeper 将写数据的日志文件也保存在这个目录里）。</li>
-</ul>
-</li>
-<li>dataLogDir= D:\zookeeper\log<ul>
-<li>顾名思义就是 Zookeeper 保存日志的目录。</li>
-</ul>
-</li>
-<li>synclimit = 5<ul>
-<li>这个配置项表示Leader与Follower之间发送消息，请求和应答时间长长度，最长不能超过多少个tickTime的时间长度,总的时间长度是2 * 2000 = 4s。</li>
-</ul>
-</li>
-<li>clientPort = 2181<ul>
-<li>这个端口就是客户端连接 Zookeeper 服务器的端口，Zookeeper 会监听这个端口，接受客户端的访问请求。</li>
-</ul>
-</li>
-<li>Server（待续）<ul>
-<li>格式：server.id=host:port:port（两个port保证可以正常使用就行）<ul>
-<li>id：通常为整数，建议使用整数。</li>
-<li>host：服务器的IP地址。</li>
-<li>port: Follower端口</li>
-<li>port: Leader选举投票。</li>
-</ul>
-</li>
-<li>ZooKeeper建议使用hostname，而非ip。这需要对主机的/etc/hostname和/etc/hosts做host绑定(不用的OS不同修改方式)。</li>
-</ul>
-</li>
-<li>创建一个myid文件（放在 dataDir文件下面）<ul>
-<li>写入一行数据（请查阅zoo.cfg文件）<ul>
-<li>写入当前Zookeeper id位置的数据即可。表示当前系统环境Zookeeper是哪一个Server（通讯用的）。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="Dubbo程序运行"><a href="#Dubbo程序运行" class="headerlink" title="Dubbo程序运行"></a>Dubbo程序运行</h3><ul>
-<li>测试运行,默认配置即可。注意与zookeeper一台机器。</li>
-<li>运行Dubbo-admin本机tomcat启动启动成功后127.0.0.1:8080/dubbo-admin（注意默认请设置跟目录,否则部分功能不发正常显示）<ul>
-<li>默认用户名密码(root/root,guest/guest)</li>
-</ul>
-</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1659,18 +1482,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">113</span>
+          <span class="site-state-item-count">116</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-count">30</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">111</span>
+        <span class="site-state-item-count">116</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1733,7 +1556,7 @@
           <a href="https://stackoverflow.com/" title="https:&#x2F;&#x2F;stackoverflow.com&#x2F;" rel="noopener" target="_blank">stackoverflow</a>
         </li>
         <li class="links-of-blogroll-item">
-          <a href="https://www.baeldung.com/" title="https:&#x2F;&#x2F;www.baeldung.com&#x2F;" rel="noopener" target="_blank">beeldung</a>
+          <a href="https://www.baeldung.com/" title="https:&#x2F;&#x2F;www.baeldung.com&#x2F;" rel="noopener" target="_blank">beeldung教程</a>
         </li>
         <li class="links-of-blogroll-item">
           <a href="http://www.sczyh30.com/" title="http:&#x2F;&#x2F;www.sczyh30.com&#x2F;" rel="noopener" target="_blank">浮生若梦</a>
@@ -1791,13 +1614,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">731k</span>
+    <span title="站点总字数">743k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">11:05</span>
+    <span title="站点阅读时长">11:16</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
