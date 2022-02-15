@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"z201.cn","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.json"};
+  </script>
+
+  <meta name="description" content="在对老系统进行saas改造的时候，在项目初期使用了动态数据源的方式处理业务。   本文内容仅针对数据存储方案。  动态数据源 SaaS是Software-as-a-service（软件即服务）它是一种通过Internet提供软件的模式，厂商将应用软件统一部署在自己的服务器 ①独立性：每个租户的系统相互独立。 ②平台性：所有租户归平台统一管理。 ③隔离性：每个租户的数据相互隔离。  需求 老项目改">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot-Dynamic-Data-Source">
+<meta property="og:url" content="https://z201.cn/posts/2933634961/index.html">
+<meta property="og:site_name" content="憨憨在减肥的博客">
+<meta property="og:description" content="在对老系统进行saas改造的时候，在项目初期使用了动态数据源的方式处理业务。   本文内容仅针对数据存储方案。  动态数据源 SaaS是Software-as-a-service（软件即服务）它是一种通过Internet提供软件的模式，厂商将应用软件统一部署在自己的服务器 ①独立性：每个租户的系统相互独立。 ②平台性：所有租户归平台统一管理。 ③隔离性：每个租户的数据相互隔离。  需求 老项目改">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==">
+<meta property="article:published_time" content="2021-01-14T15:18:50.000Z">
+<meta property="article:modified_time" content="2022-02-15T03:12:21.278Z">
+<meta property="article:author" content="憨憨在减肥">
+<meta property="article:tag" content="Mysql">
+<meta property="article:tag" content="Mybatis">
+<meta property="article:tag" content="Spring">
+<meta property="article:tag" content="MybaitsPuls">
+<meta property="article:tag" content="多数据源">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==">
+
+<link rel="canonical" href="https://z201.cn/posts/2933634961/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>SpringBoot-Dynamic-Data-Source | 憨憨在减肥的博客</title>
+  
+    <script>
+      function sendPageView() {
+        if (CONFIG.hostname !== location.hostname) return;
+        var uid = localStorage.getItem('uid') || (Math.random() + '.' + Math.random());
+        localStorage.setItem('uid', uid);
+        navigator.sendBeacon('https://www.google-analytics.com/collect', new URLSearchParams({
+          v  : 1,
+          tid: 'sPzmFRc9pkZyDXFyQWRFLjiFff-mdNJseUPpaocLd7c',
+          cid: uid,
+          t  : 'pageview',
+          dp : encodeURIComponent(location.pathname)
+        }));
+      }
+      document.addEventListener('pjax:complete', sendPageView);
+      sendPageView();
+    </script>
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?08e7145257fb655dd2db4082efa66876";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="憨憨在减肥的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">憨憨在减肥的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">流水要争先，争的是滔滔不绝。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-首页">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-存档">
+
+    <a href="/archives" rel="section"><i class="archive fa-fw"></i>存档</a>
+
+  </li>
+        <li class="menu-item menu-item-查缺补漏">
+
+    <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" rel="section"><i class="graduation-cap fa-fw"></i>查缺补漏</a>
+
+  </li>
+        <li class="menu-item menu-item-jvm">
+
+    <a href="/tags/Jvm/" rel="section"><i class="graduation-cap fa-fw"></i>Jvm</a>
+
+  </li>
+        <li class="menu-item menu-item-java">
+
+    <a href="/tags/Java/" rel="section"><i class="graduation-cap fa-fw"></i>Java</a>
+
+  </li>
+        <li class="menu-item menu-item-spring">
+
+    <a href="/tags/Spring" rel="section"><i class="graduation-cap fa-fw"></i>Spring</a>
+
+  </li>
+        <li class="menu-item menu-item-mybatis">
+
+    <a href="/tags/Mybatis" rel="section"><i class="graduation-cap fa-fw"></i>Mybatis</a>
+
+  </li>
+        <li class="menu-item menu-item-netty">
+
+    <a href="/tags/Netty" rel="section"><i class="graduation-cap fa-fw"></i>Netty</a>
+
+  </li>
+        <li class="menu-item menu-item-linux">
+
+    <a href="/tags/Linux" rel="section"><i class="graduation-cap fa-fw"></i>Linux</a>
+
+  </li>
+        <li class="menu-item menu-item-docker">
+
+    <a href="/tags/Docker" rel="section"><i class="graduation-cap fa-fw"></i>Docker</a>
+
+  </li>
+        <li class="menu-item menu-item-redis">
+
+    <a href="/tags/Redis" rel="section"><i class="graduation-cap fa-fw"></i>Redis</a>
+
+  </li>
+        <li class="menu-item menu-item-mysql">
+
+    <a href="/tags/Mysql/" rel="section"><i class="graduation-cap fa-fw"></i>Mysql</a>
+
+  </li>
+        <li class="menu-item menu-item-rust">
+
+    <a href="/tags/Rust" rel="section"><i class="graduation-cap fa-fw"></i>Rust</a>
+
+  </li>
+        <li class="menu-item menu-item-python">
+
+    <a href="/tags/Python" rel="section"><i class="graduation-cap fa-fw"></i>Python</a>
+
+  </li>
+        <li class="menu-item menu-item-navigation">
+
+    <a href="/navigation" rel="section"><i class="graduation-cap fa-fw"></i>Navigation</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/z201" class="github-corner" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/2933634961/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="憨憨在减肥">
+      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="憨憨在减肥的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SpringBoot-Dynamic-Data-Source
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-01-14 23:18:50" itemprop="dateCreated datePublished" datetime="2021-01-14T23:18:50+08:00">2021-01-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-02-15 11:12:21" itemprop="dateModified" datetime="2022-02-15T11:12:21+08:00">2022-02-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index"><span itemprop="name">Spring</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>16k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>15 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>在对老系统进行saas改造的时候，在项目初期使用了动态数据源的方式处理业务。</p>
+</blockquote>
+<ul>
+<li>本文内容仅针对数据存储方案。</li>
+</ul>
+<h2 id="动态数据源"><a href="#动态数据源" class="headerlink" title="动态数据源"></a>动态数据源</h2><blockquote>
+<p><strong>SaaS是Software-as-a-service（软件即服务）</strong>它是一种通过Internet提供软件的模式，厂商将应用软件统一部署在自己的服务器</p>
+<p>①独立性：每个租户的系统相互独立。</p>
+<p>②平台性：所有租户归平台统一管理。</p>
+<p>③隔离性：每个租户的数据相互隔离。</p>
+</blockquote>
+<h3 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h3><ul>
+<li>老项目改造对系统进行saas改造工作。</li>
+</ul>
+<h4 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h4><blockquote>
+<p>独立数据库、共享数据库、共享架构、OLTP、OLAP</p>
+</blockquote>
+<ul>
+<li>根据客户需求可以选择隔离数据库。</li>
+<li>也可以选择公用数据库。</li>
+<li>采用OLTP方案进行数据同步。</li>
+<li>采用OLAP方案进行冷数据同步。</li>
+</ul>
+<h4 id="技术方案"><a href="#技术方案" class="headerlink" title="技术方案"></a>技术方案</h4><ul>
+<li>spring boot 2.4.5</li>
+<li>mybatis plus<ul>
+<li>并不是mybatis提供的方案，这里的数据库是需要动态加载。</li>
+</ul>
+</li>
+</ul>
+<h5 id="AbstractRoutingDataSource"><a href="#AbstractRoutingDataSource" class="headerlink" title="AbstractRoutingDataSource"></a>AbstractRoutingDataSource</h5><blockquote>
+<p>Spring 官网提供的切换数据源的抽象方法，基于查找键将getConnection()调用路由到各种目标 DataSource 之一的抽象DataSource实现。后者通常（但不一定）通过一些线程绑定的事务上下文来确定。</p>
+</blockquote>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20220215104558.png"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">  <span class="comment">// 获取数据库连接会调用  determineTargetDataSource() 方法进行切换。</span></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> Connection <span class="title">getConnection</span><span class="params">()</span> <span class="keyword">throws</span> SQLException </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> determineTargetDataSource().getConnection();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> Connection <span class="title">getConnection</span><span class="params">(String username, String password)</span> <span class="keyword">throws</span> SQLException </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> determineTargetDataSource().getConnection(username, password);</span><br><span class="line">	&#125; </span><br><span class="line"></span><br><span class="line"><span class="comment">//确定当前查找键。这通常会被实现来检查线程绑定的事务上下文。允许任意键。返回的键需要匹配存储的查找键类型，由resolveSpecifiedLookupKey方法解析。</span></span><br><span class="line">  <span class="meta">@Nullable</span></span><br><span class="line">	<span class="function"><span class="keyword">protected</span> <span class="keyword">abstract</span> Object <span class="title">determineCurrentLookupKey</span><span class="params">()</span></span>;</span><br><span class="line">  <span class="comment">// 检索当前目标数据源。确定current lookup key ，在targetDataSources映射中执行查找，必要时回退到指定的default target DataSource </span></span><br><span class="line">  <span class="function"><span class="keyword">protected</span> DataSource <span class="title">determineTargetDataSource</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		Assert.notNull(<span class="keyword">this</span>.resolvedDataSources, <span class="string">"DataSource router not initialized"</span>);</span><br><span class="line">		Object lookupKey = determineCurrentLookupKey();</span><br><span class="line">		DataSource dataSource = <span class="keyword">this</span>.resolvedDataSources.get(lookupKey);</span><br><span class="line">		<span class="keyword">if</span> (dataSource == <span class="keyword">null</span> &amp;&amp; (<span class="keyword">this</span>.lenientFallback || lookupKey == <span class="keyword">null</span>)) &#123;</span><br><span class="line">			dataSource = <span class="keyword">this</span>.resolvedDefaultDataSource;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (dataSource == <span class="keyword">null</span>) &#123;</span><br><span class="line">			<span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Cannot determine target DataSource for lookup key ["</span> + lookupKey + <span class="string">"]"</span>);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> dataSource;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="演示代码"><a href="#演示代码" class="headerlink" title="演示代码"></a>演示代码</h3><h4 id="启动效果"><a href="#启动效果" class="headerlink" title="启动效果"></a>启动效果</h4><figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">[main]</span> <span class="string">[SpringApplication.java : 679] The following profiles are active: dev</span></span><br><span class="line"><span class="meta">[main]</span> <span class="string">[Bootstrap.java : 68] UT026010: Buffer pool was not set on WebSocketDeploymentInfo, the default pool will be used</span></span><br><span class="line"><span class="meta">[main]</span> <span class="string">[ServletContextImpl.java : 371] Initializing Spring embedded WebApplicationContext</span></span><br><span class="line"><span class="meta">[main]</span> <span class="string">[ServletWebServerApplicationContext.java : 289] Root WebApplicationContext: initialization completed in 1022 ms</span></span><br><span class="line"><span class="meta">[main]</span> <span class="string">[HikariDataSource.java : 110] HikariPool-1 - Starting...</span></span><br><span class="line"><span class="meta">[main]</span> <span class="string">[HikariDataSource.java : 123] HikariPool-1 - Start completed.</span></span><br><span class="line"><span class="meta">[main]</span> <span class="string">[DynamicRoutingDataSource.java : 33] setDynamicRoutingDataSource ... </span></span><br><span class="line"><span class="meta">[main]</span> <span class="string">[DynamicRoutingDataSourceConfig.java : 82] initDynamicDataSource ...</span></span><br><span class="line"><span class="meta">[main]</span> <span class="string">[BaseJdbcLogger.java : 137] ==&gt;  Preparing: SELECT id,tenant_id,tenant_name,datasource_url,datasource_username,datasource_password,datasource_driver,system_account,system_password,system_project,is_enable,create_time,update_time FROM tenant_info</span></span><br><span class="line"><span class="meta">[main]</span> <span class="string">[BaseJdbcLogger.java : 137] ==&gt; Parameters: </span></span><br><span class="line"><span class="meta">[main]</span> <span class="string">[BaseJdbcLogger.java : 137] &lt;==      Total: 3</span></span><br><span class="line"><span class="meta">[main]</span> <span class="string">[DynamicRoutingDataSourceConfig.java : 98]  init  dataSource OTQyNTkyMjA3ODI5ODYwMzUy</span></span><br><span class="line"><span class="meta">[main]</span> <span class="string">[HikariDataSource.java : 80] HikariPool-2 - Starting...</span></span><br><span class="line"><span class="meta">[main]</span> <span class="string">[HikariDataSource.java : 82] HikariPool-2 - Start completed.</span></span><br><span class="line"><span class="meta">[main]</span> <span class="string">[DynamicRoutingDataSourceConfig.java : 98]  init  dataSource OTQyNTkyMjA3OTA5NTUyMTI4</span></span><br><span class="line"><span class="meta">[main]</span> <span class="string">[HikariDataSource.java : 80] HikariPool-3 - Starting...</span></span><br><span class="line"><span class="meta">[main]</span> <span class="string">[HikariDataSource.java : 82] HikariPool-3 - Start completed.</span></span><br><span class="line"><span class="meta">[main]</span> <span class="string">[DynamicRoutingDataSourceConfig.java : 98]  init  dataSource OTQyNTkyMjA3OTU5ODgzNzc2</span></span><br><span class="line"><span class="meta">[main]</span> <span class="string">[HikariDataSource.java : 80] HikariPool-4 - Starting...</span></span><br><span class="line"><span class="meta">[main]</span> <span class="string">[HikariDataSource.java : 82] HikariPool-4 - Start completed.</span></span><br><span class="line"><span class="meta">[main]</span> <span class="string">[DynamicRoutingDataSource.java : 33] setDynamicRoutingDataSource ... </span></span><br><span class="line"><span class="meta">[main]</span> <span class="string">[ExecutorConfigurationSupport.java : 181] Initializing ExecutorService 'applicationTaskExecutor'</span></span><br><span class="line"><span class="meta">[main]</span> <span class="string">[Undertow.java : 120] starting server: Undertow - 2.2.7.Final</span></span><br><span class="line"><span class="meta">[main]</span> <span class="string">[Xnio.java : 95] XNIO version 3.8.0.Final</span></span><br><span class="line"><span class="meta">[main]</span> <span class="string">[NioXnio.java : 59] XNIO NIO Implementation Version 3.8.0.Final</span></span><br><span class="line"><span class="meta">[main]</span> <span class="string">[Version.java : 52] JBoss Threads version 3.1.0.Final</span></span><br><span class="line"><span class="meta">[main]</span> <span class="string">[UndertowWebServer.java : 133] Undertow started on port(s) 9033 (http)</span></span><br><span class="line"><span class="meta">[main]</span> <span class="string">[StartupInfoLogger.java : 61] Started AppApplication in 2.921 seconds (JVM running for 3.593)</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>首先初始化默认的数据源HikariPool-1。</li>
+<li>通过查询租户表，再次初始化3个数据源DataSource<code>HikariPool-2\HikariPool-3\HikariPool-4</code>。</li>
+</ul>
+<h4 id="测试用例"><a href="#测试用例" class="headerlink" title="测试用例"></a>测试用例</h4><ul>
+<li>数据源信息<ul>
+<li>获取全部数据源</li>
+<li>获取当前数据源key</li>
+</ul>
+</li>
+<li>切换数据源<ul>
+<li>当前数据源维护的数据库。</li>
+<li>当前数据源的key</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 数据源信息 all-db 维护数据源key , db 当前生效的数据源key</span></span><br><span class="line">➜  Downloads curl http://127.0.0.1:9033</span><br><span class="line">&#123;<span class="string">"code"</span>:<span class="string">"200"</span>,<span class="string">"all-db"</span>:[<span class="string">"942592207909552128"</span>,<span class="string">"942592207829860352"</span>,<span class="string">"942592207959883776"</span>],<span class="string">"db"</span>:<span class="string">"master"</span>&#125;%</span><br><span class="line"><span class="comment"># 切换数据源 key 当前数据源key ,db 当前数据源连接的数据库。</span></span><br><span class="line">➜  Downloads curl http://127.0.0.1:9033/942592207909552128</span><br><span class="line">&#123;<span class="string">"code"</span>:<span class="string">"200"</span>,<span class="string">"key"</span>:<span class="string">"942592207909552128"</span>,<span class="string">"db"</span>:[<span class="string">"docker_dynamic_data_1"</span>]&#125;% </span><br><span class="line"><span class="comment"># 数据源信息 all-db 维护数据源key , db 当前生效的数据源key。这里发现数据已经切换。</span></span><br><span class="line">➜  Downloads curl http://127.0.0.1:9033                   </span><br><span class="line">&#123;<span class="string">"code"</span>:<span class="string">"200"</span>,<span class="string">"all-db"</span>:[<span class="string">"942592207909552128"</span>,<span class="string">"942592207829860352"</span>,<span class="string">"942592207959883776"</span>],<span class="string">"db"</span>:<span class="string">"942592207909552128"</span>&#125;%</span><br><span class="line"><span class="comment"># 数据源信息 all-db 维护数据源key , db 当前生效的数据源key。如果数据源不存在会直接切换到默认数据库。</span></span><br><span class="line">➜  Downloads curl http://127.0.0.1:9033/1</span><br><span class="line">&#123;<span class="string">"code"</span>:<span class="string">"200"</span>,<span class="string">"key"</span>:<span class="string">"master"</span>,<span class="string">"db"</span>:[<span class="string">"docker_dynamic_data"</span>]&#125;%</span><br></pre></td></tr></table></figure>
+
+<h4 id="DynamicDataSourceContextHolder"><a href="#DynamicDataSourceContextHolder" class="headerlink" title="DynamicDataSourceContextHolder"></a>DynamicDataSourceContextHolder</h4><blockquote>
+<p>数据源上下文管理工具，用于维护当前线程数据源key。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> z201.coding@gmail.com</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DynamicDataSourceContextHolder</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">SingletonHolder</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> DynamicDataSourceContextHolder INSTANCE = <span class="keyword">new</span> DynamicDataSourceContextHolder();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">DynamicDataSourceContextHolder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> DynamicDataSourceContextHolder <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> SingletonHolder.INSTANCE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ThreadLocal&lt;String&gt; contextHolder = <span class="keyword">new</span> ThreadLocal&lt;String&gt;() &#123;</span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * 将 master 数据源的 key作为默认数据源的 key</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">protected</span> String <span class="title">initialValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> DynamicDataSourceConstant.MASTER;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 数据源的 key集合，用于切换时判断数据源是否存在</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Set&lt;Object&gt; dataSourceKeys = Collections.synchronizedSet(<span class="keyword">new</span> HashSet&lt;&gt;());</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 切换数据源</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> key 数据源</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setDataSourceKey</span><span class="params">(String key)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (containDataSourceKey(key)) &#123;</span><br><span class="line">            <span class="keyword">if</span> (!ObjectUtils.isEmpty(key)) &#123;</span><br><span class="line">                contextHolder.set(key);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取数据源</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getDataSourceKey</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> contextHolder.get();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 重置数据源</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">clearDataSourceKey</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        contextHolder.remove();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 判断是否包含数据源</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> key 数据源</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">containDataSourceKey</span><span class="params">(String key)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> dataSourceKeys.contains(key);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 添加数据源Keys</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> keys</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">addDataSourceKeys</span><span class="params">(Collection&lt;? extends Object&gt; keys)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> dataSourceKeys.addAll(keys);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取全部数据源列表</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Set&lt;Object&gt; <span class="title">all</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> dataSourceKeys;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="DynamicRoutingDataSource"><a href="#DynamicRoutingDataSource" class="headerlink" title="DynamicRoutingDataSource"></a>DynamicRoutingDataSource</h4><blockquote>
+<p>AbstractRoutingDataSource实现类，用于初始化数据源相关信息。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> z201.coding@gmail.com</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DynamicRoutingDataSource</span> <span class="keyword">extends</span> <span class="title">AbstractRoutingDataSource</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Logger logger = LoggerFactory.getLogger(DynamicRoutingDataSource<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> DataSource <span class="title">determineTargetDataSource</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.determineTargetDataSource();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     /**</span></span><br><span class="line"><span class="comment">     * 必须执行此操作，才会重新初始化AbstractRoutingDataSource 中的 resolvedDataSources，也只有这样，动态切换才会起效</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> defaultTargetDataSource 默认的数据源</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> targetDataSources       多数据源每个key对应一个数据源</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setDynamicRoutingDataSource</span><span class="params">(DataSource defaultTargetDataSource, Map&lt;Object, Object&gt; targetDataSources)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.setDefaultTargetDataSource(defaultTargetDataSource);</span><br><span class="line">        <span class="keyword">super</span>.setTargetDataSources(targetDataSources);</span><br><span class="line">        <span class="keyword">super</span>.afterPropertiesSet();</span><br><span class="line">        DynamicDataSourceContextHolder.getInstance().addDataSourceKeys(targetDataSources.keySet());</span><br><span class="line">        logger.info(<span class="string">"setDynamicRoutingDataSource ... "</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 切换数据源</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> key</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">toggleDataSource</span><span class="params">(String key)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (DynamicDataSourceContextHolder.getInstance().containDataSourceKey(key)) &#123;</span><br><span class="line">            String concurrentDataBase = DynamicDataSourceContextHolder.getInstance().getDataSourceKey();</span><br><span class="line">            DynamicDataSourceContextHolder.getInstance().setDataSourceKey(key);</span><br><span class="line">            determineTargetDataSource();</span><br><span class="line">            logger.info(<span class="string">"toggleDataSource &#123;&#125; -&gt; &#123;&#125;"</span>,concurrentDataBase ,key);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> Object <span class="title">determineCurrentLookupKey</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> DynamicDataSourceContextHolder.getInstance().getDataSourceKey();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="DynamicRoutingDataSourceConfig"><a href="#DynamicRoutingDataSourceConfig" class="headerlink" title="DynamicRoutingDataSourceConfig"></a>DynamicRoutingDataSourceConfig</h4><blockquote>
+<p>初始化相关bean。这里需要将DynamicRoutingDataSource放到MybatisSqlSessionFactoryBean、PlatformTransactionManager中。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> z201.coding@gmail.com</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DynamicRoutingDataSourceConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Logger logger = LoggerFactory.getLogger(DynamicRoutingDataSourceConfig<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    ApplicationContext applicationContext;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Resource</span></span><br><span class="line">    TenantInfoDao tenantInfoDao;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    HikariDataSource hikariDataSource;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span>(DynamicDataSourceConstant.MASTER)</span><br><span class="line">    <span class="meta">@ConfigurationProperties</span>(prefix = <span class="string">"spring.datasource.hikari"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> DataSource <span class="title">master</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> DataSourceBuilder.create().build();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@ConditionalOnBean</span>(name = &#123;DynamicDataSourceConstant.MASTER&#125;)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> DynamicRoutingDataSource <span class="title">dynamicRoutingDataSource</span><span class="params">(@Qualifier(DynamicDataSourceConstant.MASTER)</span> DataSource dataSource) </span>&#123;</span><br><span class="line">        List&lt;String&gt; dataBasesList = <span class="keyword">new</span> JdbcTemplate(dataSource).queryForList(<span class="string">"SELECT DATABASE()"</span>, String<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">        <span class="keyword">if</span> (CollectionUtils.isEmpty(dataBasesList)) &#123;</span><br><span class="line">            ClassPathResource classPathResource = <span class="keyword">new</span> ClassPathResource(<span class="string">"create.sql"</span>);</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                ScriptUtils.executeSqlScript(dataSource.getConnection(), classPathResource);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        DynamicRoutingDataSource dynamicRoutingDataSource = <span class="keyword">new</span> DynamicRoutingDataSource();</span><br><span class="line">        dynamicRoutingDataSource.setDynamicRoutingDataSource(dataSource, <span class="keyword">new</span> HashMap&lt;&gt;());</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> dynamicRoutingDataSource;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostConstruct</span></span><br><span class="line">    <span class="meta">@ConditionalOnBean</span>(DynamicRoutingDataSource<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">    <span class="title">public</span> <span class="title">void</span> <span class="title">initDynamicDataSource</span>() <span class="title">throws</span> <span class="title">Exception</span> </span>&#123;</span><br><span class="line">        logger.info(<span class="string">"initDynamicDataSource ..."</span>);</span><br><span class="line">        DynamicRoutingDataSource dynamicRoutingDataSource = applicationContext.getBean(DynamicRoutingDataSource<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">        HikariDataSource master = (HikariDataSource) applicationContext.getBean(DynamicDataSourceConstant.MASTER);</span><br><span class="line">        Map&lt;Object, Object&gt; dataSourceMap = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        List&lt;TenantInfo&gt; tenantInfoList = tenantInfoDao.selectList(<span class="keyword">null</span>);</span><br><span class="line">        tenantInfoList.stream().forEach(i -&gt;</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="comment">/**</span></span><br><span class="line"><span class="comment">                     *       maximumPoolSize: 20 # 连接池最大连接数，默认是10</span></span><br><span class="line"><span class="comment">                     *       minimumIdle: 5  # 最小空闲连接数量</span></span><br><span class="line"><span class="comment">                     *       idleTimeout: 600000 # 空闲连接存活最大时间，默认600000（10分钟）</span></span><br><span class="line"><span class="comment">                     *       connectionTimeout: 30000 # 数据库连接超时时间,默认30秒，即30000</span></span><br><span class="line"><span class="comment">                     *       maxLifetime: 1800000 # 此属性控制池中连接的最长生命周期，值0表示无限生命周期，默认1800000即30分钟</span></span><br><span class="line"><span class="comment">                     */</span></span><br><span class="line">                    logger.info(<span class="string">" init  dataSource &#123;&#125;"</span>, i.getTenantName());</span><br><span class="line">                    HikariConfig hikariConfig = <span class="keyword">new</span> HikariConfig();</span><br><span class="line">                    hikariConfig.setDriverClassName(i.getDatasourceDriver());</span><br><span class="line">                    hikariConfig.setJdbcUrl(i.getDatasourceUrl());</span><br><span class="line">                    hikariConfig.setUsername(i.getDatasourceUsername());</span><br><span class="line">                    hikariConfig.setPassword(i.getDatasourcePassword());</span><br><span class="line">                    hikariConfig.setMaximumPoolSize(<span class="number">20</span>);</span><br><span class="line">                    hikariConfig.setMinimumIdle(<span class="number">2</span>);</span><br><span class="line">                    hikariConfig.setIdleTimeout(<span class="number">600000</span>);</span><br><span class="line">                    hikariConfig.setConnectionTimeout(<span class="number">30000</span>);</span><br><span class="line">                    hikariConfig.setMaxLifetime(<span class="number">1800000</span>);</span><br><span class="line">                    <span class="comment">// 这里其实是需要对连接信息进行测试。演示环境暂时不处理。</span></span><br><span class="line">                    <span class="comment">// new HikariDataSource(hikariConfig) 用于初始化连接信息。</span></span><br><span class="line">                    DataSource dataSource = <span class="keyword">new</span> HikariDataSource(hikariConfig);</span><br><span class="line">                    dataSourceMap.put(i.getTenantId(), dataSource);</span><br><span class="line">                &#125;</span><br><span class="line">        );</span><br><span class="line">        <span class="comment">// 设置数据源</span></span><br><span class="line">        dynamicRoutingDataSource.setDynamicRoutingDataSource(master, dataSourceMap);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> MybatisSqlSessionFactoryBean <span class="title">sqlSessionFactoryBean</span><span class="params">(@Qualifier(<span class="string">"dynamicRoutingDataSource"</span>)</span> DynamicRoutingDataSource dynamicRoutingDataSource</span></span><br><span class="line"><span class="function">    ) <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        MybatisSqlSessionFactoryBean sessionFactory = <span class="keyword">new</span> MybatisSqlSessionFactoryBean();</span><br><span class="line">        sessionFactory.setDataSource(dynamicRoutingDataSource);</span><br><span class="line">        <span class="comment">// 可以从配置文件中获取，这里演示暂时写死。</span></span><br><span class="line">        sessionFactory.setMapperLocations(<span class="keyword">new</span> PathMatchingResourcePatternResolver().getResources(<span class="string">"classpath:mapper/*.xml"</span>));</span><br><span class="line">        sessionFactory.setTypeAliasesPackage(<span class="string">"cn.z201.dynamic.persistence.entity"</span>);</span><br><span class="line">        MybatisConfiguration config = <span class="keyword">new</span> MybatisConfiguration();</span><br><span class="line">        config.setMapUnderscoreToCamelCase(<span class="keyword">true</span>);  <span class="comment">//开启下划线转驼峰</span></span><br><span class="line">        config.setLogImpl(Slf4jImpl<span class="class">.<span class="keyword">class</span>)</span>; <span class="comment">// 日志输出实现</span></span><br><span class="line">        sessionFactory.setConfiguration(config);</span><br><span class="line">        <span class="keyword">return</span> sessionFactory;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 配置事务管理, 使用事务时在方法头部添加<span class="doctag">@Transactional</span>注解即可</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> dynamicRoutingDataSource</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> PlatformTransactionManager <span class="title">transactionManager</span><span class="params">(@Qualifier(<span class="string">"dynamicRoutingDataSource"</span>)</span> DynamicRoutingDataSource dynamicRoutingDataSource) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> DataSourceTransactionManager(dynamicRoutingDataSource);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * jdbc 扩展</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> dynamicRoutingDataSource</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> DynamicJdbcTemplateManager <span class="title">dynamicJdbcTemplateManager</span><span class="params">(@Qualifier(<span class="string">"dynamicRoutingDataSource"</span>)</span> DynamicRoutingDataSource dynamicRoutingDataSource) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> DynamicJdbcTemplateManager(dynamicRoutingDataSource);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="单元测试"><a href="#单元测试" class="headerlink" title="单元测试"></a>单元测试</h3><blockquote>
+<p>测试前初始化一个默认数据库、租户表信息。</p>
+<p>测试流程</p>
+<ol>
+<li>插入租户表。插入测试的租户信息。</li>
+<li>循环切换租户数据源。并输出对应数据源连接的db信息。</li>
+</ol>
+</blockquote>
+<h4 id="AppApplicationTest"><a href="#AppApplicationTest" class="headerlink" title="AppApplicationTest"></a>AppApplicationTest</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="meta">@ExtendWith</span>(SpringExtension<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">SpringBootTest</span>(<span class="title">classes</span> </span>= AppApplication<span class="class">.<span class="keyword">class</span>, <span class="title">webEnvironment</span> </span>= SpringBootTest.WebEnvironment.NONE)</span><br><span class="line"><span class="meta">@AutoConfigureMockMvc</span></span><br><span class="line"><span class="comment">// 指定单元测试方法顺序</span></span><br><span class="line"><span class="meta">@TestMethodOrder</span>(MethodOrderer.OrderAnnotation<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">class</span> <span class="title">AppApplicationTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> ApplicationContext applicationContext;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Resource</span></span><br><span class="line">    <span class="keyword">private</span> TenantInfoDao tenantInfoDao;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> JdbcTemplate jdbcTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@BeforeEach</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">before</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">"before"</span>);</span><br><span class="line">        List&lt;TenantInfo&gt; tenantInfoList = tenantInfoDao.selectList(<span class="keyword">null</span>);</span><br><span class="line">        <span class="keyword">if</span> (CollectionUtils.isEmpty(tenantInfoList)) &#123;</span><br><span class="line">            TenantInfo tenantInfo = <span class="keyword">new</span> TenantInfo();</span><br><span class="line">            <span class="keyword">int</span> i = <span class="number">3</span>;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; i; j++) &#123;</span><br><span class="line">                String sql = <span class="string">"CREATE DATABASE IF NOT EXISTS `docker_dynamic_data_$&#123;db&#125;` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"</span>.replace(<span class="string">"$&#123;db&#125;"</span>, String.valueOf(j));</span><br><span class="line">                log.info(<span class="string">"sql &#123;&#125; \n"</span>, sql);</span><br><span class="line">                tenantInfo.setTenantId(String.valueOf(SnowflakeTool.getInstance().nextId()));</span><br><span class="line">                tenantInfo.setTenantName(Base64.getEncoder().encodeToString(tenantInfo.getTenantId().getBytes()));</span><br><span class="line">                tenantInfo.setDatasourceUsername(<span class="string">"root"</span>);</span><br><span class="line">                tenantInfo.setDatasourcePassword(<span class="string">"123456"</span>);</span><br><span class="line">                tenantInfo.setDatasourceDriver(<span class="string">"com.mysql.cj.jdbc.Driver"</span>);</span><br><span class="line">                tenantInfo.setDatasourceUrl(DynamicRoutingDataSourceTool.buildDataBase(<span class="string">"docker_dynamic_data_"</span> + j));</span><br><span class="line">                tenantInfoDao.insert(tenantInfo);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@AfterEach</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">after</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">"after"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUp</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">"bean Count &#123;&#125;"</span>, applicationContext.getBeanDefinitionCount());</span><br><span class="line">        lookupCollectionType(applicationContext);</span><br><span class="line">        DynamicRoutingDataSource dynamicRoutingDataSource = applicationContext.getBean(DynamicRoutingDataSource<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">        Set&lt;Object&gt; dataSourceKeys = DynamicDataSourceContextHolder.getInstance().all();</span><br><span class="line">        concurrentDataBase();</span><br><span class="line">        log.info(<span class="string">"dataSourceKey All &#123;&#125;"</span>, dataSourceKeys);</span><br><span class="line">        <span class="keyword">for</span> (Object dataSourceKey : dataSourceKeys) &#123;</span><br><span class="line">            <span class="comment">// 切换数据库</span></span><br><span class="line">            dynamicRoutingDataSource.toggleDataSource(dataSourceKey.toString());</span><br><span class="line">            <span class="comment">// jdbcTemplate 在运行时需要重新指定 DataSource</span></span><br><span class="line">            <span class="keyword">this</span>.jdbcTemplate = <span class="keyword">new</span> JdbcTemplate(dynamicRoutingDataSource.determineTargetDataSource());</span><br><span class="line">            concurrentDataBase();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">concurrentDataBase</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        List&lt;String&gt; dataBasesList = jdbcTemplate.queryForList(<span class="string">"SELECT DATABASE();"</span>, String<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">        log.info(<span class="string">"concurrentDataBase &#123;&#125;"</span>, dataBasesList);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 单一类型集合查找</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> beanFactory</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">lookupCollectionType</span><span class="params">(BeanFactory beanFactory)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (beanFactory <span class="keyword">instanceof</span> ListableBeanFactory) &#123;</span><br><span class="line">            ListableBeanFactory listableBeanFactory = (ListableBeanFactory) beanFactory;</span><br><span class="line">            Map&lt;String, DataSource&gt; beansMap = listableBeanFactory.getBeansOfType(DataSource<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">            beansMap.forEach((key, value) -&gt; &#123;</span><br><span class="line">                System.out.println(<span class="string">"单一类型集合查找  "</span> + key + <span class="string">" "</span> + value);</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Console</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[main] [AppApplicationTest.java : <span class="number">53</span>] before</span><br><span class="line">[main] [BaseJdbcLogger.java : <span class="number">137</span>] ==&gt;  Preparing: SELECT id,tenant_id,tenant_name,datasource_url,datasource_username,datasource_password,datasource_driver,system_account,system_password,system_project,is_enable,create_time,update_time FROM tenant_info</span><br><span class="line">[main] [BaseJdbcLogger.java : <span class="number">137</span>] ==&gt; Parameters: </span><br><span class="line">[main] [BaseJdbcLogger.java : <span class="number">137</span>] &lt;==      Total: <span class="number">3</span></span><br><span class="line">[main] [AppApplicationTest.java : <span class="number">80</span>] bean Count <span class="number">96</span></span><br><span class="line">单一类型集合查找  <span class="function">master <span class="title">HikariDataSource</span> <span class="params">(HikariPool<span class="number">-1</span>)</span></span></span><br><span class="line"><span class="function">单一类型集合查找  dynamicRoutingDataSource cn.z201.dynamic.dynamic.DynamicRoutingDataSource@63cd2cd2</span></span><br><span class="line"><span class="function">[main] [AppApplicationTest.java : 84] dataSourceKey All [942592207909552128, 942592207829860352, 942592207959883776]</span></span><br><span class="line"><span class="function">[main] [DynamicRoutingDataSource.java : 46] toggleDataSource master -&gt; 942592207909552128</span></span><br><span class="line"><span class="function">[main] [AppApplicationTest.java : 95] concurrentDataBase [docker_dynamic_data_1]</span></span><br><span class="line"><span class="function">[main] [DynamicRoutingDataSource.java : 46] toggleDataSource 942592207909552128 -&gt; 942592207829860352</span></span><br><span class="line"><span class="function">[main] [AppApplicationTest.java : 95] concurrentDataBase [docker_dynamic_data_0]</span></span><br><span class="line"><span class="function">[main] [DynamicRoutingDataSource.java : 46] toggleDataSource 942592207829860352 -&gt; 942592207959883776</span></span><br><span class="line"><span class="function">[main] [AppApplicationTest.java : 95] concurrentDataBase [docker_dynamic_data_2]</span></span><br><span class="line"><span class="function">[main] [AppApplicationTest.java : 75] after</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="END"><a href="#END" class="headerlink" title="END"></a>END</h2><script type="text&#x2F;javascript" src="https://unpkg.com/kity@2.0.4/dist/kity.min.js"></script><script type="text&#x2F;javascript" src="https://unpkg.com/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text&#x2F;javascript" src="https://unpkg.com/hexo-simple-mindmap@0.8.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text&#x2F;css" href="https://unpkg.com/hexo-simple-mindmap@0.8.0/dist/mindmap.min.css">
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>憨憨在减肥
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://z201.cn/posts/2933634961/" title="SpringBoot-Dynamic-Data-Source">https://z201.cn/posts/2933634961/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Mysql/" rel="tag"># Mysql</a>
+              <a href="/tags/Mybatis/" rel="tag"># Mybatis</a>
+              <a href="/tags/Spring/" rel="tag"># Spring</a>
+              <a href="/tags/MybaitsPuls/" rel="tag"># MybaitsPuls</a>
+              <a href="/tags/%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90/" rel="tag"># 多数据源</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/posts/2694709029/" rel="prev" title="Docker-Compose-SpringBoot-Mysql-Redis">
+      <i class="fa fa-chevron-left"></i> Docker-Compose-SpringBoot-Mysql-Redis
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/posts/1183386531/" rel="next" title="学习技巧">
+      学习技巧 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#动态数据源"><span class="nav-number">1.</span> <span class="nav-text">动态数据源</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#需求"><span class="nav-number">1.1.</span> <span class="nav-text">需求</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#方案"><span class="nav-number">1.1.1.</span> <span class="nav-text">方案</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#技术方案"><span class="nav-number">1.1.2.</span> <span class="nav-text">技术方案</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#AbstractRoutingDataSource"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">AbstractRoutingDataSource</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#演示代码"><span class="nav-number">1.2.</span> <span class="nav-text">演示代码</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#启动效果"><span class="nav-number">1.2.1.</span> <span class="nav-text">启动效果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#测试用例"><span class="nav-number">1.2.2.</span> <span class="nav-text">测试用例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DynamicDataSourceContextHolder"><span class="nav-number">1.2.3.</span> <span class="nav-text">DynamicDataSourceContextHolder</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DynamicRoutingDataSource"><span class="nav-number">1.2.4.</span> <span class="nav-text">DynamicRoutingDataSource</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DynamicRoutingDataSourceConfig"><span class="nav-number">1.2.5.</span> <span class="nav-text">DynamicRoutingDataSourceConfig</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#单元测试"><span class="nav-number">1.3.</span> <span class="nav-text">单元测试</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#AppApplicationTest"><span class="nav-number">1.3.1.</span> <span class="nav-text">AppApplicationTest</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#END"><span class="nav-number">2.</span> <span class="nav-text">END</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="憨憨在减肥"
+      src="/images/avatar-min.jpg">
+  <p class="site-author-name" itemprop="name">憨憨在减肥</p>
+  <div class="site-description" itemprop="description">SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">129</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">32</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">129</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/z201" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;z201" rel="noopener" target="_blank"><i class="github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:int_java_se@@163.com" title="E-Mail → mailto:int_java_se@@163.com" rel="noopener" target="_blank"><i class="envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" class="cc-opacity" rel="noopener" target="_blank"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://openjdk.java.net/" title="https:&#x2F;&#x2F;openjdk.java.net&#x2F;" rel="noopener" target="_blank">openJdk-docs</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://docs.spring.io/spring-framework/docs/" title="https:&#x2F;&#x2F;docs.spring.io&#x2F;spring-framework&#x2F;docs&#x2F;" rel="noopener" target="_blank">spring-projects-docs</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.journaldev.com/" title="https:&#x2F;&#x2F;www.journaldev.com&#x2F;" rel="noopener" target="_blank">journaldev</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.geeksforgeeks.org/" title="https:&#x2F;&#x2F;www.geeksforgeeks.org&#x2F;" rel="noopener" target="_blank">geeksforgeeks</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://dev.mysql.com/doc/" title="https:&#x2F;&#x2F;dev.mysql.com&#x2F;doc&#x2F;" rel="noopener" target="_blank">mysql-docs</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://redis.io/commands/" title="https:&#x2F;&#x2F;redis.io&#x2F;commands&#x2F;" rel="noopener" target="_blank">redis-commands</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://redis.com/community/oss-projects/" title="https:&#x2F;&#x2F;redis.com&#x2F;community&#x2F;oss-projects&#x2F;" rel="noopener" target="_blank">redis-projects</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://rocketmq.apache.org/" title="https:&#x2F;&#x2F;rocketmq.apache.org&#x2F;" rel="noopener" target="_blank">apache-rocketmq</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://docs.docker.com/" title="https:&#x2F;&#x2F;docs.docker.com&#x2F;" rel="noopener" target="_blank">docker-docs</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://mybatis.org/mybatis-3/zh/index.html/" title="https:&#x2F;&#x2F;mybatis.org&#x2F;mybatis-3&#x2F;zh&#x2F;index.html&#x2F;" rel="noopener" target="_blank">mybatis-docs</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://netty.io/wiki/" title="https:&#x2F;&#x2F;netty.io&#x2F;wiki&#x2F;" rel="noopener" target="_blank">netty-docs</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.lintcode.com/" title="https:&#x2F;&#x2F;www.lintcode.com&#x2F;" rel="noopener" target="_blank">lintCode</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://stackoverflow.com/" title="https:&#x2F;&#x2F;stackoverflow.com&#x2F;" rel="noopener" target="_blank">stackoverflow</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.baeldung.com/" title="https:&#x2F;&#x2F;www.baeldung.com&#x2F;" rel="noopener" target="_blank">beeldung教程</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.sczyh30.com/" title="http:&#x2F;&#x2F;www.sczyh30.com&#x2F;" rel="noopener" target="_blank">浮生若梦</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://objcoding.com/" title="https:&#x2F;&#x2F;objcoding.com&#x2F;" rel="noopener" target="_blank">后端进阶</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.javazhiyin.com/" title="https:&#x2F;&#x2F;www.javazhiyin.com&#x2F;" rel="noopener" target="_blank">Java知音</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://ifeve.com/" title="http:&#x2F;&#x2F;ifeve.com&#x2F;" rel="noopener" target="_blank">并发编程网</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://learnku.com/" title="https:&#x2F;&#x2F;learnku.com&#x2F;" rel="noopener" target="_blank">Learnku编程者中文社区</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://rustcc.cn/" title="https:&#x2F;&#x2F;rustcc.cn&#x2F;" rel="noopener" target="_blank">Rust语言中文设计</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://kaiyiwing.gitee.io/qwerty-learner/" title="https:&#x2F;&#x2F;kaiyiwing.gitee.io&#x2F;qwerty-learner&#x2F;" rel="noopener" target="_blank">英语肌肉记忆锻炼软件</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/redisson/redisson/wiki/%E7%9B%AE%E5%BD%95/" title="https:&#x2F;&#x2F;github.com&#x2F;redisson&#x2F;redisson&#x2F;wiki&#x2F;%E7%9B%AE%E5%BD%95&#x2F;" rel="noopener" target="_blank">Redisson-docs</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.murphysec.com/" title="https:&#x2F;&#x2F;www.murphysec.com&#x2F;" rel="noopener" target="_blank">墨菲安全</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://rcode.rbtree.cn/" title="http:&#x2F;&#x2F;rcode.rbtree.cn&#x2F;" rel="noopener" target="_blank">红黑编程</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://jmh.morethan.io/" title="https:&#x2F;&#x2F;jmh.morethan.io&#x2F;" rel="noopener" target="_blank">jmh-Visual</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">憨憨在减肥</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">847k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">12:50</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+</html>
