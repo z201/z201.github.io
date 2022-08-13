@@ -270,6 +270,265 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/2124610325/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="憨憨在减肥">
+      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="憨憨在减肥的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/2124610325/" class="post-title-link" itemprop="url">查缺补漏-Dubbo</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-01-01 00:00:01" itemprop="dateCreated datePublished" datetime="2019-01-01T00:00:01+08:00">2019-01-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-02-04 15:04:13" itemprop="dateModified" datetime="2022-02-04T15:04:13+08:00">2022-02-04</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9F%A5%E7%BC%BA%E8%A1%A5%E6%BC%8F/" itemprop="url" rel="index"><span itemprop="name">查缺补漏</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>本章是整理知识内容，为强化知识长期更新。</p>
+</blockquote>
+<h3 id="Dubbo概述"><a href="#Dubbo概述" class="headerlink" title="Dubbo概述"></a>Dubbo概述</h3><ul>
+<li>服务治理（SOA）治理框架</li>
+<li>Duboo是一个分布式服务框架<ul>
+<li>远程通讯：提供多种基于长链接的NIO框架抽象封装,包括多种线程模型、序列化“请求-响应”的信息交换方案。</li>
+<li>集群容错：提供基于接口方法的透明远程调用过程，包括多协议支持、软负载均衡、失败容错、地址路由、动态配置等集群支持。</li>
+<li>自动发现：基于注册中心目录服务，使服务消费方能动态地查找提供方，使地址透明，使服务提供方可以平滑增或减少机器。</li>
+<li>介绍：</li>
+<li>致力于提供高性能和透明化的RPC远程服务调用方案，以及SOA服务治理方案。</li>
+<li>Dubbo的命名：澳大利亚达博市</li>
+<li>同类型框架：<ul>
+<li>Apache Thrift、Hessian、RMI、WebService（原生）、HSF（淘宝，不开源）、JSF（京东，不开源）。</li>
+</ul>
+</li>
+<li>Dubbo涉及的基础知识<ul>
+<li>远程调用方面：RMI、Hassion、WebService、Thrift进行底层调用。</li>
+<li>通讯交互：HTTP、Mian、netty。</li>
+<li>序列化：Hession2、Java、Json。</li>
+<li>容器：Jetty、Spring。</li>
+<li>负载均衡：zookeeper、Redis。（大部分都是zookeeper）</li>
+</ul>
+</li>
+<li>简单的使用场景<ul>
+<li>作为对内提供服务应用的容器。</li>
+<li>拆分负载Web应用到服务容器。</li>
+<li>应用负载均和协调。</li>
+<li>引用服务处理。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="架构节点（抽象概念）"><a href="#架构节点（抽象概念）" class="headerlink" title="架构节点（抽象概念）"></a>架构节点（抽象概念）</h3><ul>
+<li>Provider:暴露服务的服务提供方。</li>
+<li>Consumer：调用远程服务的服务消费方。</li>
+<li>Registry：服务注册于发现服务</li>
+<li>Monitor:统计服务的调用次调用时间监控中心</li>
+<li>Container:服务运行容器<ul>
+<li>节点调用关系</li>
+<li>服务提供-服务提供者在启动的时候,向注册中心提供自己提供的服务。</li>
+<li>服务消费-服务消费者在启动的时候,向注册中心订阅自己所需要的服务。<ul>
+<li>注册中心异步返回服务提供者地址列表给消费者,如果有变动,注册中心将给予长连接推送变更数据给消费者。</li>
+</ul>
+</li>
+<li>服务统计-服务者和消费者,在内存中累计调用次数和调用时间,定时每分钟发送一次统计数据到监控中心。<ul>
+<li>异步方式</li>
+</ul>
+</li>
+<li>服务调用关系<ul>
+<li>服务消费者,从提供者地址列表中,基于[软负载均衡算法],选一台提供者进行调用,如果调用失败,在选另一台调用。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="Dubbo源码相关"><a href="#Dubbo源码相关" class="headerlink" title="Dubbo源码相关"></a>Dubbo源码相关</h3><ul>
+<li><p>源码地址<code>git clone https://github.com/alibaba/dubbo</code></p>
+</li>
+<li><p>初次编码不执行Test <code>mvn clean install -Dmaven.test.skip=true</code></p>
+</li>
+<li><p>JS错误不修改,请自行忽视。</p>
+</li>
+<li><p>修复mavan的警告<br>* 地址：<code>dubbo-parent pom.xml</code><br>* maven-jar-plugin version:2.4<br>* maven-surefire-plugin Version 2.19.1<br>* maven-deploy-plugin Version 3.3.9</p>
+</li>
+<li><p>项目导入后修复Dubbo XML校验错误提示</p>
+</li>
+<li><p>需要导入dubbo.xsd文件</p>
+</li>
+<li><p>下载dubbo-2.5.3.jar 版本尽量保持源码同步,解压dt后导入eclipse中。</p>
+<ul>
+<li><p>Preferences-XML-XML Catalog 添加一个自定义的：</p>
+<ul>
+<li>Location: D:\xsd\dubbo.xsd</li>
+<li>Key: <a href="http://code.alibabatech.com/schema/dubbo/dubbo.xsd" target="_blank" rel="noopener">http://code.alibabatech.com/schema/dubbo/dubbo.xsd</a> （默认生成的不行自行修改）。</li>
+<li>在校验错误的XML头部添加：</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span> <span class="meta">&lt;!DOCTYPE <span class="meta-keyword">dubbo</span> <span class="meta-keyword">SYSTEM</span><span class="meta-string">"http://code.alibabatech.com/schema/dubbo"</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>关于maven-dependency-plugin错误 可能是IDE错误提示，空白处添加空格保存自动消失。</p>
+<ul>
+<li><p>错误信息如下：Artifact has not been packaged yet. When used on reactor artifact, unpack should be executed after packaging: see MDEP-98. (org.apache.maven.plugins:maven-dependency-plugin:2.8:unpack:unpack:package)</p>
+<ul>
+<li>修复方案更改插件配置:</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">plugin</span>&gt;</span> </span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.maven.plugins<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-dependency-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.10<span class="tag">&lt;/<span class="name">version</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;<span class="name">executions</span>&gt;</span> </span><br><span class="line">    <span class="tag">&lt;<span class="name">execution</span>&gt;</span> </span><br><span class="line">      <span class="tag">&lt;<span class="name">id</span>&gt;</span>unpack<span class="tag">&lt;/<span class="name">id</span>&gt;</span>  </span><br><span class="line">      <span class="tag">&lt;<span class="name">phase</span>&gt;</span>packaged<span class="tag">&lt;/<span class="name">phase</span>&gt;</span>  </span><br><span class="line">      <span class="tag">&lt;<span class="name">goals</span>&gt;</span> </span><br><span class="line">        <span class="tag">&lt;<span class="name">goal</span>&gt;</span>unpack<span class="tag">&lt;/<span class="name">goal</span>&gt;</span> </span><br><span class="line">      <span class="tag">&lt;/<span class="name">goals</span>&gt;</span> </span><br><span class="line">    <span class="tag">&lt;/<span class="name">execution</span>&gt;</span> </span><br><span class="line">  <span class="tag">&lt;/<span class="name">executions</span>&gt;</span> </span><br><span class="line"><span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>Dubbo源码模块<ul>
+<li>Config配置层(Dubbo-config)</li>
+<li>Proxy服务代理层(Dubbo-rpc)</li>
+<li>Registry注册中心层(Dubbo-registry)</li>
+<li>Cluster路由层(Dubbo-cluster)</li>
+<li>Monitor监控层(Dubbo-monitor)</li>
+<li>Protocol远程调用层(Dubbo-rpc)</li>
+<li>Exchange信息交换层(Dubbo-remoting)</li>
+<li>Transport网络传输层(Dubbo-remoting)</li>
+<li>Serialize数据序列化层(Dubbo-common)</li>
+</ul>
+</li>
+</ul>
+<h3 id="Zookeeper"><a href="#Zookeeper" class="headerlink" title="Zookeeper"></a>Zookeeper</h3><blockquote>
+<p>（测试方案采用zookeeper做均衡负载，简单介绍下配置信息）</p>
+</blockquote>
+<ul>
+<li>下载地址 <a href="http://apache.fayea.com/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz" target="_blank" rel="noopener">http://apache.fayea.com/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz</a></li>
+<li>基本配置：<ul>
+<li>单机模式：修改zookeeper-3.4.8/conf zoo.cfg(原始文件名zoo_sanple.cfg复制一份重命名)<ul>
+<li>编辑内容（仅供参考,具体环境自行修改）</li>
+<li>tickTime = 2000<ul>
+<li>tickTime：基本事件单元，以毫秒为单位。这个时间是作为 Zookeeper 服务器之间或客户端与服务器之间维持心跳的时间间隔，也就是每个 tickTime 时间就会发送一个心跳。</li>
+</ul>
+</li>
+<li>initLimit= 5<ul>
+<li>initLimit:这个配置项用来配置Zookeeper接受客户端初始化连接时最长能忍受多少个心跳时间间隔数，当已超过5个心跳的时间（也就是tickTime）长度后Zookeeper服务器还没有收到客户端的返回信息，那么表明这个客户端连接失败。总的时间长度是5 * 2000=4s。</li>
+</ul>
+</li>
+<li>dataDir = D:\zookeeper\data<ul>
+<li>顾名思义就是 Zookeeper 保存数据快照的目录，默认情况下，Zookeeper 将写数据的日志文件也保存在这个目录里）。</li>
+</ul>
+</li>
+<li>dataLogDir= D:\zookeeper\log<ul>
+<li>顾名思义就是 Zookeeper 保存日志的目录。</li>
+</ul>
+</li>
+<li>synclimit = 5<ul>
+<li>这个配置项表示Leader与Follower之间发送消息，请求和应答时间长长度，最长不能超过多少个tickTime的时间长度,总的时间长度是2 * 2000 = 4s。</li>
+</ul>
+</li>
+<li>clientPort = 2181<ul>
+<li>这个端口就是客户端连接 Zookeeper 服务器的端口，Zookeeper 会监听这个端口，接受客户端的访问请求。</li>
+</ul>
+</li>
+<li>Server（待续）<ul>
+<li>格式：server.id=host:port:port（两个port保证可以正常使用就行）<ul>
+<li>id：通常为整数，建议使用整数。</li>
+<li>host：服务器的IP地址。</li>
+<li>port: Follower端口</li>
+<li>port: Leader选举投票。</li>
+</ul>
+</li>
+<li>ZooKeeper建议使用hostname，而非ip。这需要对主机的/etc/hostname和/etc/hosts做host绑定(不用的OS不同修改方式)。</li>
+</ul>
+</li>
+<li>创建一个myid文件（放在 dataDir文件下面）<ul>
+<li>写入一行数据（请查阅zoo.cfg文件）<ul>
+<li>写入当前Zookeeper id位置的数据即可。表示当前系统环境Zookeeper是哪一个Server（通讯用的）。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="Dubbo程序运行"><a href="#Dubbo程序运行" class="headerlink" title="Dubbo程序运行"></a>Dubbo程序运行</h3><ul>
+<li>测试运行,默认配置即可。注意与zookeeper一台机器。</li>
+<li>运行Dubbo-admin本机tomcat启动启动成功后127.0.0.1:8080/dubbo-admin（注意默认请设置跟目录,否则部分功能不发正常显示）<ul>
+<li>默认用户名密码(root/root,guest/guest)</li>
+</ul>
+</li>
+</ul>
+<script type="text&#x2F;javascript" src="https://unpkg.com/kity@2.0.4/dist/kity.min.js"></script><script type="text&#x2F;javascript" src="https://unpkg.com/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text&#x2F;javascript" src="https://unpkg.com/hexo-simple-mindmap@0.8.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text&#x2F;css" href="https://unpkg.com/hexo-simple-mindmap@0.8.0/dist/mindmap.min.css">
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/2654339136/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2065,106 +2324,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/1743596067/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="憨憨在减肥">
-      <meta itemprop="description" content="SpringBoot | SpringCloud | Jvm | Java | Netty | Mybatis | Redis | Mysql | Docker | Linux | Dota2 | Rust">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="憨憨在减肥的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/1743596067/" class="post-title-link" itemprop="url">源码阅读-HashSet</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-08-10 12:08:00" itemprop="dateCreated datePublished" datetime="2018-08-10T12:08:00+08:00">2018-08-10</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-02-10 11:55:27" itemprop="dateModified" datetime="2022-02-10T11:55:27+08:00">2022-02-10</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">源码分析</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>393</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章属于持续学习、长期更修。</p>
-</blockquote>
-<h2 id="HashSet"><a href="#HashSet" class="headerlink" title="HashSet"></a>HashSet</h2><p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/hashSet/HashSet.png"></p>
-<h3 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h3><ul>
-<li>HashSet不允许重复数据。</li>
-<li>HashSet不允许null，因为null也是可以重复的。</li>
-<li>HashSet不保证数据的插入顺序。</li>
-<li>HashSet不是线程安全的，如果想使用线程的安全的HashSet可以通过<code>Collections.synchronizedSet</code> 来获取线程安全的HashSet。也可以使用<code>CopyOnWriteArraySet</code>。但是性能会有很大的损失。</li>
-<li>HashSet迭代器方法是快速失败的。因此，在创建迭代器之后对集合进行任何结构修改都会抛出ConcurrentModificationException。</li>
-<li>HashSet支持泛型，这是在运行时避免ClassCastException的推荐方法。</li>
-<li>HashSet使用<code>HashMap</code>存储元素，因此对象应该提供hashCode（）和equals（）方法的良好实现，以避免不必要的结果。</li>
-</ul>
-<h3 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h3><script type="text&#x2F;javascript" src="https://unpkg.com/kity@2.0.4/dist/kity.min.js"></script><script type="text&#x2F;javascript" src="https://unpkg.com/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text&#x2F;javascript" src="https://unpkg.com/hexo-simple-mindmap@0.8.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text&#x2F;css" href="https://unpkg.com/hexo-simple-mindmap@0.8.0/dist/mindmap.min.css">
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2235,7 +2394,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">133</span>
+          <span class="site-state-item-count">134</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2246,7 +2405,7 @@
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">134</span>
+        <span class="site-state-item-count">135</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -2379,13 +2538,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">868k</span>
+    <span title="站点总字数">871k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">13:09</span>
+    <span title="站点阅读时长">13:12</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
