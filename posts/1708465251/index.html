@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 4.2.1">
+<meta name="generator" content="Hexo 7.0.0">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -322,7 +322,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>2.1k</span>
+              <span>2.4k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -369,20 +369,20 @@
 </li>
 </ol>
 <ul>
-<li><p>jenkins shell</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mvn clean install -Dmaven.test.skip=true</span><br><span class="line">cp x x x/target/xxx-1.0.0-SNAPSHOT.jar /opt/xxx/upgrade</span><br><span class="line">cd /opt/xxx</span><br><span class="line">BUILD_ID=dontKillMe sh xxx.sh</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>编写程序运行shell脚本。</p>
-</li>
-<li><p>部署java</p>
-</li>
+<li>jenkins shell</li>
 </ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line">app=xxx</span><br><span class="line">appName=$&#123;app&#125;-1.0.0-SNAPSHOT</span><br><span class="line">projPath=/opt/xxx</span><br><span class="line">upgradePath=$&#123;projPath&#125;/upgrade</span><br><span class="line">backPath=$&#123;projPath&#125;/backup</span><br><span class="line">logFile=$&#123;projPath&#125;/data/logs/$&#123;app&#125;.log</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 检查升级文件是否存在</span></span><br><span class="line">echo "checking upgrade file..."</span><br><span class="line">if [ ! -f $&#123;upgradePath&#125;/$&#123;appName&#125;.jar ]; then</span><br><span class="line">    echo "cann't found file $&#123;upgradePath&#125;/$&#123;appName&#125;.jar!"</span><br><span class="line">    exit</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 结束进程</span></span><br><span class="line">pid=`ps aux | grep $&#123;projPath&#125;/$&#123;appName&#125;.jar | grep -v grep | grep -v kill | awk '&#123;print $2&#125;'`</span><br><span class="line">if [ $&#123;pid&#125; ]; then</span><br><span class="line">    echo "kill $&#123;appName&#125;!"</span><br><span class="line">    kill -9 $pid</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 备份原升级文件,如果存在的话</span></span><br><span class="line">if [ -f $&#123;projPath&#125;/$&#123;appName&#125;.jar ]; then</span><br><span class="line">    timeStr=`date +%Y%m%d%H%M%S`</span><br><span class="line">    mv $&#123;projPath&#125;/$&#123;appName&#125;.jar $&#123;backPath&#125;/$&#123;appName&#125;.jar.bak_$&#123;timeStr&#125;</span><br><span class="line">    echo "load $&#123;appName&#125; success!"</span><br><span class="line">    echo "backup $&#123;appName&#125; success!"</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 拷贝升级文件</span></span><br><span class="line">echo "copy $&#123;appName&#125;.jar..."</span><br><span class="line">cp $&#123;upgradePath&#125;/$&#123;appName&#125;.jar $&#123;projPath&#125;/$&#123;appName&#125;.jar</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 启动进程</span></span><br><span class="line">echo "start $&#123;appName&#125;..."</span><br><span class="line">nohup java -Djava.security.egd=file:/dev/./urandom -Xms512m -Xmx512m -XX:MetaspaceSize=256m -XX:MaxMetaspaceSize=256m -jar $&#123;projPath&#125;/$&#123;appName&#125;.jar --spring.profiles.active=test &gt;/dev/null 2&gt;&amp;1 &amp;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 查看日志</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 判断当天日志文件是否存在</span></span><br><span class="line">if [ ! -f $&#123;logFile&#125; ]; then</span><br><span class="line">    # 文件不存在则创建文件，再执行tail命令</span><br><span class="line">    touch $&#123;logFile&#125;</span><br><span class="line">fi</span><br><span class="line">echo "tail -f $&#123;logFile&#125;"</span><br></pre></td></tr></table></figure>
+ <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mvn clean install -Dmaven.test.skip=true</span><br><span class="line">cp x x x/target/xxx-1.0.0-SNAPSHOT.jar /opt/xxx/upgrade</span><br><span class="line">cd /opt/xxx</span><br><span class="line">BUILD_ID=dontKillMe sh xxx.sh</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>编写程序运行shell脚本。</li>
+<li>部署java</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/bash</span></span><br><span class="line">app=xxx</span><br><span class="line">appName=$&#123;app&#125;-1.0.0-SNAPSHOT</span><br><span class="line">projPath=/opt/xxx</span><br><span class="line">upgradePath=$&#123;projPath&#125;/upgrade</span><br><span class="line">backPath=$&#123;projPath&#125;/backup</span><br><span class="line">logFile=$&#123;projPath&#125;/data/logs/$&#123;app&#125;.log</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">检查升级文件是否存在</span></span><br><span class="line">echo &quot;checking upgrade file...&quot;</span><br><span class="line">if [ ! -f $&#123;upgradePath&#125;/$&#123;appName&#125;.jar ]; then</span><br><span class="line">    echo &quot;cann&#x27;t found file $&#123;upgradePath&#125;/$&#123;appName&#125;.jar!&quot;</span><br><span class="line">    exit</span><br><span class="line">fi</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">结束进程</span></span><br><span class="line">pid=`ps aux | grep $&#123;projPath&#125;/$&#123;appName&#125;.jar | grep -v grep | grep -v kill | awk &#x27;&#123;print $2&#125;&#x27;`</span><br><span class="line">if [ $&#123;pid&#125; ]; then</span><br><span class="line">    echo &quot;kill $&#123;appName&#125;!&quot;</span><br><span class="line">    kill -9 $pid</span><br><span class="line">fi</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">备份原升级文件,如果存在的话</span></span><br><span class="line">if [ -f $&#123;projPath&#125;/$&#123;appName&#125;.jar ]; then</span><br><span class="line">    timeStr=`date +%Y%m%d%H%M%S`</span><br><span class="line">    mv $&#123;projPath&#125;/$&#123;appName&#125;.jar $&#123;backPath&#125;/$&#123;appName&#125;.jar.bak_$&#123;timeStr&#125;</span><br><span class="line">    echo &quot;load $&#123;appName&#125; success!&quot;</span><br><span class="line">    echo &quot;backup $&#123;appName&#125; success!&quot;</span><br><span class="line">fi</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">拷贝升级文件</span></span><br><span class="line">echo &quot;copy $&#123;appName&#125;.jar...&quot;</span><br><span class="line">cp $&#123;upgradePath&#125;/$&#123;appName&#125;.jar $&#123;projPath&#125;/$&#123;appName&#125;.jar</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">启动进程</span></span><br><span class="line">echo &quot;start $&#123;appName&#125;...&quot;</span><br><span class="line">nohup java -Djava.security.egd=file:/dev/./urandom -Xms512m -Xmx512m -XX:MetaspaceSize=256m -XX:MaxMetaspaceSize=256m -jar $&#123;projPath&#125;/$&#123;appName&#125;.jar --spring.profiles.active=test &gt;/dev/null 2&gt;&amp;1 &amp;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看日志</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">判断当天日志文件是否存在</span></span><br><span class="line">if [ ! -f $&#123;logFile&#125; ]; then</span><br><span class="line">    # 文件不存在则创建文件，再执行tail命令</span><br><span class="line">    touch $&#123;logFile&#125;</span><br><span class="line">fi</span><br><span class="line">echo &quot;tail -f $&#123;logFile&#125;&quot;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>部署vue</li>
 </ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> git revert</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> git restore .</span></span><br><span class="line"></span><br><span class="line">applicationPath=/opt/view/xxxx</span><br><span class="line"></span><br><span class="line">echo 'delete old files...'</span><br><span class="line">rm -rf $&#123;applicationPath&#125;/*</span><br><span class="line"></span><br><span class="line">echo 'copy files after npm build!'</span><br><span class="line">cp -rf dist/* $&#123;applicationPath&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/bash</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">git revert</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">git restore .</span></span><br><span class="line"></span><br><span class="line">applicationPath=/opt/view/xxxx</span><br><span class="line"></span><br><span class="line">echo &#x27;delete old files...&#x27;</span><br><span class="line">rm -rf $&#123;applicationPath&#125;/*</span><br><span class="line"></span><br><span class="line">echo &#x27;copy files after npm build!&#x27;</span><br><span class="line">cp -rf dist/* $&#123;applicationPath&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 
     </div>
@@ -485,7 +485,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#单机部署"><span class="nav-number">1.</span> <span class="nav-text">单机部署</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%95%E6%9C%BA%E9%83%A8%E7%BD%B2"><span class="nav-number">1.</span> <span class="nav-text">单机部署</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -637,7 +637,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2023</span>
+  <span itemprop="copyrightYear">2024</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -647,13 +647,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">873k</span>
+    <span title="站点总字数">1m</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">13:14</span>
+    <span title="站点阅读时长">15:49</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
@@ -713,11 +713,18 @@
 
   
 
-<script>
+
+        <style>
+            [bg-lazy] {
+                background-image: none !important;
+                background-color: #eee !important;
+            }
+        </style>
+        <script>
             window.imageLazyLoadSetting = {
                 isSPA: false,
                 preloadRatio: 1,
                 processImages: null,
             };
-        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(r){r.imageLazyLoadSetting.processImages=t;var e=r.imageLazyLoadSetting.isSPA,n=r.imageLazyLoadSetting.preloadRatio||1,c=a();function a(){var t=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")),e=Array.prototype.slice.call(document.querySelectorAll("[bg-lazy]"));return t.concat(e)}function t(){e&&(c=a());for(var t,o=0;o<c.length;o++)0<=(t=(t=c[o]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(r.innerHeight*n||document.documentElement.clientHeight*n)&&function(){var t,e,n,a,i=c[o];e=function(){c=c.filter(function(t){return i!==t}),r.imageLazyLoadSetting.onImageLoaded&&r.imageLazyLoadSetting.onImageLoaded(i)},(t=i).hasAttribute("bg-lazy")?(t.removeAttribute("bg-lazy"),e&&e()):(n=new Image,a=t.getAttribute("data-original"),n.onload=function(){t.src=a,t.removeAttribute("data-original"),e&&e()},t.src!==a&&(n.src=a))}()}function i(){clearTimeout(t.tId),t.tId=setTimeout(t,500)}t(),document.addEventListener("scroll",i),r.addEventListener("resize",i),r.addEventListener("orientationchange",i)}(this);</script></body>
 </html>

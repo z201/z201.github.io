@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 4.2.1">
+<meta name="generator" content="Hexo 7.0.0">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -323,7 +323,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.4k</span>
+              <span>1.5k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -348,10 +348,10 @@
 <h3 id="升级springBoot、SpringCloud版本"><a href="#升级springBoot、SpringCloud版本" class="headerlink" title="升级springBoot、SpringCloud版本"></a>升级springBoot、SpringCloud版本</h3><ul>
 <li>升级完成后直接在测试环境测试部署，结果发现eureka的cpu资源占用过高，导致假死。通过arthas发现是tomcat线程阻塞。通过dependepency看了下springboot中内嵌tomcat的版本是9了。之前是8，测试环境一大堆人等着测试接口。首先想着降低tomcat版本。</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">查看依赖</span><br><span class="line">gradle dependencies</span><br><span class="line">mvn dependency:tree &gt; output.txt   # 输出到文件里</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">查看依赖</span><br><span class="line">gradle dependencies</span><br><span class="line">mvn dependency:tree &gt; output.txt   # 输出到文件里 </span><br></pre></td></tr></table></figure>
 
 <h3 id="排除SpringBoot的Tomcat，指定Tomcat版本"><a href="#排除SpringBoot的Tomcat，指定Tomcat版本" class="headerlink" title="排除SpringBoot的Tomcat，指定Tomcat版本"></a>排除SpringBoot的Tomcat，指定Tomcat版本</h3><p>有时候我们需要在特定情况下使用特定的Tomcat版本，这时候总不能因为Tomcat就改变SpringBoot的版本，所以可以采用排除SpringBoot中的Tomcat包，然后手动指定Tomcat的版本，当然还要引入Tomcat相关的包。</p>
-<h5 id="Gradle的配置"><a href="#Gradle的配置" class="headerlink" title="Gradle的配置"></a>Gradle的配置</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">compile(<span class="string">'org.springframework.boot:spring-boot-starter-web'</span>) &#123;</span><br><span class="line">  exclude <span class="keyword">module</span>: <span class="string">"spring-boot-starter-tomcat"</span></span><br><span class="line">&#125;</span><br><span class="line">compile <span class="string">'org.apache.tomcat.embed:tomcat-embed-core:8.5.37'</span></span><br><span class="line">compile <span class="string">'org.apache.tomcat.embed:tomcat-embed-el:8.5.37'</span></span><br><span class="line">compile <span class="string">'org.apache.tomcat.embed:tomcat-embed-logging-juli:8.5.2'</span></span><br><span class="line">compile <span class="string">'org.apache.tomcat.embed:tomcat-embed-websocket:8.5.37'</span></span><br></pre></td></tr></table></figure>
+<h5 id="Gradle的配置"><a href="#Gradle的配置" class="headerlink" title="Gradle的配置"></a>Gradle的配置</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">compile(<span class="string">&#x27;org.springframework.boot:spring-boot-starter-web&#x27;</span>) &#123;</span><br><span class="line">  exclude <span class="keyword">module</span>: <span class="string">&quot;spring-boot-starter-tomcat&quot;</span></span><br><span class="line">&#125;</span><br><span class="line">compile <span class="string">&#x27;org.apache.tomcat.embed:tomcat-embed-core:8.5.37&#x27;</span></span><br><span class="line">compile <span class="string">&#x27;org.apache.tomcat.embed:tomcat-embed-el:8.5.37&#x27;</span></span><br><span class="line">compile <span class="string">&#x27;org.apache.tomcat.embed:tomcat-embed-logging-juli:8.5.2&#x27;</span></span><br><span class="line">compile <span class="string">&#x27;org.apache.tomcat.embed:tomcat-embed-websocket:8.5.37&#x27;</span></span><br></pre></td></tr></table></figure>
 
 <p>如果不指定版本，则会使用最新的Tomcat版本, 否则直接指定对应的版本号。</p>
 <h5 id="Maven的配置"><a href="#Maven的配置" class="headerlink" title="Maven的配置"></a>Maven的配置</h5><ol>
@@ -365,7 +365,7 @@
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span> </span><br><span class="line">   <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.tomcat<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span> </span><br><span class="line">   <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>tomcat-juli<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span> </span><br><span class="line">   <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;tomcat.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span> </span><br><span class="line"> <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.tomcat.embed<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>tomcat-embed-logging-juli<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;tomcat.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <p>重新部署eureka后一切正常。处理时间短暂，没有影响大家工作。时间过了大半年了，也忘记具体是啥原因了。有机会本地复现试试。</p>
-<script type="text&#x2F;javascript" src="https://unpkg.com/kity@2.0.4/dist/kity.min.js"></script><script type="text&#x2F;javascript" src="https://unpkg.com/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text&#x2F;javascript" src="https://unpkg.com/hexo-simple-mindmap@0.8.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text&#x2F;css" href="https://unpkg.com/hexo-simple-mindmap@0.8.0/dist/mindmap.min.css">
+
     </div>
 
     
@@ -467,7 +467,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#升级springBoot、SpringCloud版本"><span class="nav-number">1.</span> <span class="nav-text">升级springBoot、SpringCloud版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#排除SpringBoot的Tomcat，指定Tomcat版本"><span class="nav-number">2.</span> <span class="nav-text">排除SpringBoot的Tomcat，指定Tomcat版本</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Gradle的配置"><span class="nav-number">2.0.1.</span> <span class="nav-text">Gradle的配置</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Maven的配置"><span class="nav-number">2.0.2.</span> <span class="nav-text">Maven的配置</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%87%E7%BA%A7springBoot%E3%80%81SpringCloud%E7%89%88%E6%9C%AC"><span class="nav-number">1.</span> <span class="nav-text">升级springBoot、SpringCloud版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%92%E9%99%A4SpringBoot%E7%9A%84Tomcat%EF%BC%8C%E6%8C%87%E5%AE%9ATomcat%E7%89%88%E6%9C%AC"><span class="nav-number">2.</span> <span class="nav-text">排除SpringBoot的Tomcat，指定Tomcat版本</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Gradle%E7%9A%84%E9%85%8D%E7%BD%AE"><span class="nav-number">2.0.1.</span> <span class="nav-text">Gradle的配置</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Maven%E7%9A%84%E9%85%8D%E7%BD%AE"><span class="nav-number">2.0.2.</span> <span class="nav-text">Maven的配置</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -619,7 +619,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2023</span>
+  <span itemprop="copyrightYear">2024</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -629,13 +629,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">873k</span>
+    <span title="站点总字数">1m</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">13:14</span>
+    <span title="站点阅读时长">15:49</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
@@ -695,11 +695,18 @@
 
   
 
-<script>
+
+        <style>
+            [bg-lazy] {
+                background-image: none !important;
+                background-color: #eee !important;
+            }
+        </style>
+        <script>
             window.imageLazyLoadSetting = {
                 isSPA: false,
                 preloadRatio: 1,
                 processImages: null,
             };
-        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(r){r.imageLazyLoadSetting.processImages=t;var e=r.imageLazyLoadSetting.isSPA,n=r.imageLazyLoadSetting.preloadRatio||1,c=a();function a(){var t=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")),e=Array.prototype.slice.call(document.querySelectorAll("[bg-lazy]"));return t.concat(e)}function t(){e&&(c=a());for(var t,o=0;o<c.length;o++)0<=(t=(t=c[o]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(r.innerHeight*n||document.documentElement.clientHeight*n)&&function(){var t,e,n,a,i=c[o];e=function(){c=c.filter(function(t){return i!==t}),r.imageLazyLoadSetting.onImageLoaded&&r.imageLazyLoadSetting.onImageLoaded(i)},(t=i).hasAttribute("bg-lazy")?(t.removeAttribute("bg-lazy"),e&&e()):(n=new Image,a=t.getAttribute("data-original"),n.onload=function(){t.src=a,t.removeAttribute("data-original"),e&&e()},t.src!==a&&(n.src=a))}()}function i(){clearTimeout(t.tId),t.tId=setTimeout(t,500)}t(),document.addEventListener("scroll",i),r.addEventListener("resize",i),r.addEventListener("orientationchange",i)}(this);</script></body>
 </html>

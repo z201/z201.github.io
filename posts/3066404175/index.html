@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 4.2.1">
+<meta name="generator" content="Hexo 7.0.0">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"z201.cn","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.json"};
   </script>
 
-  <meta name="description" content="性能指标 在设计系统时，应该多思考**墨菲定律**  任何事情都没表面看起来那么简单。 所以事情都会比你预期的时间长。 可能出错的事情总会出错。 如果你担心某一件发生，那么它就更有可能发生。  在系统划分的时，也要思考**康威定律 **   系统架构是公司组织架构的反映。 应该按照业务闭环进行系统拆分&#x2F;组织架构拆分,实现闭环&#x2F;高内聚&#x2F;低耦合,减少沟通成本。 在合适的时间进行系统拆分,不要一开始就吧">
+  <meta name="description" content="性能指标 在设计系统时，应该多思考**墨菲定律**  任何事情都没表面看起来那么简单。 所以事情都会比你预期的时间长。 可能出错的事情总会出错。 如果你担心某一件发生，那么它就更有可能发生。  在系统划分的时，也要思考**康威定律 **   系统架构是公司组织架构的反映。 应该按照业务闭环进行系统拆分&#x2F;组织架构拆分,实现闭环&#x2F;高内聚&#x2F;低耦合,减少沟通成本。 在合适的时">
 <meta property="og:type" content="article">
 <meta property="og:title" content="查缺补漏-性能指标">
 <meta property="og:url" content="https://z201.cn/posts/3066404175/index.html">
 <meta property="og:site_name" content="憨憨在减肥的博客">
-<meta property="og:description" content="性能指标 在设计系统时，应该多思考**墨菲定律**  任何事情都没表面看起来那么简单。 所以事情都会比你预期的时间长。 可能出错的事情总会出错。 如果你担心某一件发生，那么它就更有可能发生。  在系统划分的时，也要思考**康威定律 **   系统架构是公司组织架构的反映。 应该按照业务闭环进行系统拆分&#x2F;组织架构拆分,实现闭环&#x2F;高内聚&#x2F;低耦合,减少沟通成本。 在合适的时间进行系统拆分,不要一开始就吧">
+<meta property="og:description" content="性能指标 在设计系统时，应该多思考**墨菲定律**  任何事情都没表面看起来那么简单。 所以事情都会比你预期的时间长。 可能出错的事情总会出错。 如果你担心某一件发生，那么它就更有可能发生。  在系统划分的时，也要思考**康威定律 **   系统架构是公司组织架构的反映。 应该按照业务闭环进行系统拆分&#x2F;组织架构拆分,实现闭环&#x2F;高内聚&#x2F;低耦合,减少沟通成本。 在合适的时">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==">
-<meta property="og:image" content="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==">
+<meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/web/%E5%90%9E%E5%90%90%E9%87%8F%E6%A0%97%E5%AD%90.svg">
+<meta property="og:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/web/%E7%BD%91%E7%AB%99PV.png">
 <meta property="article:published_time" content="2019-03-20T02:31:19.000Z">
 <meta property="article:modified_time" content="2022-01-26T07:57:29.510Z">
 <meta property="article:author" content="憨憨在减肥">
@@ -38,7 +38,7 @@
 <meta property="article:tag" content="TPS">
 <meta property="article:tag" content="RPS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==">
+<meta name="twitter:image" content="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/web/%E5%90%9E%E5%90%90%E9%87%8F%E6%A0%97%E5%AD%90.svg">
 
 <link rel="canonical" href="https://z201.cn/posts/3066404175/">
 
@@ -328,14 +328,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>4.8k</span>
+              <span>5.4k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
+              <span>5 分钟</span>
             </span>
 
         </div>
@@ -348,33 +348,33 @@
 
       
         <h2 id="性能指标"><a href="#性能指标" class="headerlink" title="性能指标"></a>性能指标</h2><blockquote>
-<p>在设计系统时，应该多思考**<a href="http://wiki.mbalib.com/wiki/%E5%A2%A8%E8%8F%B2%E5%AE%9A%E5%BE%8B" target="_blank" rel="noopener">墨菲定律</a>**</p>
+<p>在设计系统时，应该多思考**<a href="http://wiki.mbalib.com/wiki/%E5%A2%A8%E8%8F%B2%E5%AE%9A%E5%BE%8B">墨菲定律</a>**</p>
 <ul>
 <li>任何事情都没表面看起来那么简单。</li>
 <li>所以事情都会比你预期的时间长。</li>
 <li>可能出错的事情总会出错。</li>
 <li>如果你担心某一件发生，那么它就更有可能发生。</li>
 </ul>
-<p>在系统划分的时，也要思考**<a href="http://www.melconway.com/Home/Conways_Law.html?spm=5176.100239.blogcont8611.8.e7792abC1tP3C" target="_blank" rel="noopener">康威定律 </a>** </p>
+<p>在系统划分的时，也要思考**<a href="http://www.melconway.com/Home/Conways_Law.html?spm=5176.100239.blogcont8611.8.e7792abC1tP3C">康威定律 </a>** </p>
 <ul>
 <li>系统架构是公司组织架构的反映。</li>
-<li>应该按照业务闭环进行系统拆分/组织架构拆分,实现闭环/高内聚/低耦合,减少沟通成本。</li>
-<li>在合适的时间进行系统拆分,不要一开始就吧系统/服务拆分非常细。虽然闭环，但是每个人维护的系统多,维护成本高。</li>
+<li>应该按照业务闭环进行系统拆分&#x2F;组织架构拆分,实现闭环&#x2F;高内聚&#x2F;低耦合,减少沟通成本。</li>
+<li>在合适的时间进行系统拆分,不要一开始就吧系统&#x2F;服务拆分非常细。虽然闭环，但是每个人维护的系统多,维护成本高。</li>
 </ul>
-<p>​                                                            —亿级流量网站架构核心技术 </p>
+<p>​															—亿级流量网站架构核心技术 </p>
 </blockquote>
 <h3 id="性能指标-1"><a href="#性能指标-1" class="headerlink" title="性能指标"></a>性能指标</h3><blockquote>
-<p>在技术人员的职业生涯中，总是不断开发新的系统。在设计系统的时候，因场景、时间而异。一个系统并不是开始就能设计的非常完美，绝对多数的情况是在有限的资源，优先解决核心问题。并预测可能发生的问题，通过反复迭代的逐步消除痛点。这本身是一个持久性的过程。但是早期优良的架构设计能为未来的工作带来非常大的帮助，如何去评判设计是否合理需要数据佐证。吞吐量、PV、QPS、TPS、RPS、I/O这些指标早设计初期能为开发人员提供非常大的帮助。</p>
+<p>在技术人员的职业生涯中，总是不断开发新的系统。在设计系统的时候，因场景、时间而异。一个系统并不是开始就能设计的非常完美，绝对多数的情况是在有限的资源，优先解决核心问题。并预测可能发生的问题，通过反复迭代的逐步消除痛点。这本身是一个持久性的过程。但是早期优良的架构设计能为未来的工作带来非常大的帮助，如何去评判设计是否合理需要数据佐证。吞吐量、PV、QPS、TPS、RPS、I&#x2F;O这些指标早设计初期能为开发人员提供非常大的帮助。</p>
 </blockquote>
 <ul>
 <li><strong>吞吐量</strong>:指单位时间内系统处理用户的请求数,不同的角度评估方式也不同。</li>
 <li>**PV **  :  是Page View的缩写。来自浏览器的一次html内容请求会被看作一个PV。</li>
 <li><strong>QPS</strong>：Queries Per Second意思是“每秒查询率”，是一台服务器每秒能够相应的查询次数，是对一个特定的查询服务器在规定时间内所处理流量多少的衡量标准。</li>
-<li><strong>TPS：</strong>是Transactions Per Second的缩写，也就是事务数/秒。它是软件测试结果的测量单位。一个事务是指一个客户机向服务器发送请求然后服务器做出反应的过程。客户机在发送请求时开始计时，收到服务器响应后结束计时，以此来计算使用的时间和完成的事务个数。</li>
-<li><strong>RPS</strong> : 是Requests Per Second的缩写,指并发数/平均响应时间。</li>
-<li><strong>I/0</strong> 负载: I/O 是 input/output的缩写，即输入输出端口。每个设备都会有一个专用的I/O地址，用来处理自己的输入输出信息。一个系统要能正确工作，必须要有数据通道（data paths）的机制，软件和硬件系统都概莫能外。对于计算机系统而言，必须要有data paths的机制来确保CPU, RAM和I/O设备之间的信息数据能正确的流动。这些data paths,通常被称为总线(BUS)，是计算机内部主要的通信通道。若想深入可以参考  <a href="https://book.douban.com/subject/1776614/" target="_blank" rel="noopener">Understanding the Linux Kernel</a>。</li>
+<li><strong>TPS：</strong>是Transactions Per Second的缩写，也就是事务数&#x2F;秒。它是软件测试结果的测量单位。一个事务是指一个客户机向服务器发送请求然后服务器做出反应的过程。客户机在发送请求时开始计时，收到服务器响应后结束计时，以此来计算使用的时间和完成的事务个数。</li>
+<li><strong>RPS</strong> : 是Requests Per Second的缩写,指并发数&#x2F;平均响应时间。</li>
+<li><strong>I&#x2F;0</strong> 负载: I&#x2F;O 是 input&#x2F;output的缩写，即输入输出端口。每个设备都会有一个专用的I&#x2F;O地址，用来处理自己的输入输出信息。一个系统要能正确工作，必须要有数据通道（data paths）的机制，软件和硬件系统都概莫能外。对于计算机系统而言，必须要有data paths的机制来确保CPU, RAM和I&#x2F;O设备之间的信息数据能正确的流动。这些data paths,通常被称为总线(BUS)，是计算机内部主要的通信通道。若想深入可以参考  <a href="https://book.douban.com/subject/1776614/">Understanding the Linux Kernel</a>。</li>
 </ul>
-<a id="more"></a>
+<span id="more"></span>
 
 <h4 id="吞吐量"><a href="#吞吐量" class="headerlink" title="吞吐量"></a>吞吐量</h4><blockquote>
 <p>一个系统的承压能力。单位时间内完成的工作量的量度。通常，平均响应时间越短，系统吞吐量越大；平均响应时间越长，系统吞吐量越小。但是，系统吞吐量越大，未必平均响应时间越短。因为在某些情况（例如，不增加任何硬件配置）吞吐量的增大，有时会把平均响应时间作为牺牲，来换取一段时间处理更多的请求。</p>
@@ -389,9 +389,9 @@
 </li>
 <li><p>名词概述</p>
 <ul>
-<li><strong>并发数</strong> ： 系统同时处理的 reqeust / 事物数。</li>
+<li><strong>并发数</strong> ： 系统同时处理的 reqeust &#x2F; 事物数。</li>
 <li><strong>响应时间</strong> :  一般取reqeust的平均响应时间，很大程度上受客户端环境因素影响。</li>
-<li><strong>TPS</strong> （<strong>QPS</strong> ）: 并发数 / 响应时间。</li>
+<li><strong>TPS</strong> （<strong>QPS</strong> ）: 并发数 &#x2F; 响应时间。</li>
 <li><strong>报错率</strong>：报错率的计算方式是在统计时间范围内不符合返回期望的请求数除以总共的请求数。<ul>
 <li>状态码的校验，这在性能工具中不需要特别设置，如 4XX、5XX 这样的状态码会直接报错；</li>
 <li>业务层面的校验，为了保证业务的基本准确性，会通过返回的数据包进行校验；</li>
@@ -448,26 +448,26 @@
 </li>
 <li><p>假设参数耗时 : </p>
 <ul>
-<li>N1 = 150ms ; N2 = 200ms。</li>
-<li>A1 = 10ms ; A11 = 10ms ; A2 = 10ms ；A22 = 10ms 。</li>
-<li>D1 = 10ms ; D11 = 20ms ; D2 = 20ms  ; D22 = 30。</li>
+<li>N1 &#x3D; 150ms ; N2 &#x3D; 200ms。</li>
+<li>A1 &#x3D; 10ms ; A11 &#x3D; 10ms ; A2 &#x3D; 10ms ；A22 &#x3D; 10ms 。</li>
+<li>D1 &#x3D; 10ms ; D11 &#x3D; 20ms ; D2 &#x3D; 20ms  ; D22 &#x3D; 30。</li>
 </ul>
 </li>
 <li><p><strong>单次reqeust</strong> 。</p>
 <ul>
-<li>流程：<strong>P1</strong> = N1–&gt; A1 – &gt; D1 –&gt; D11 – &gt; A11 –&gt; N2。<ul>
-<li>耗时：<strong>T1</strong> = N1 + A1 + D1 + D11 + A11 + N2。</li>
+<li>流程：<strong>P1</strong> &#x3D; N1–&gt; A1 – &gt; D1 –&gt; D11 – &gt; A11 –&gt; N2。<ul>
+<li>耗时：<strong>T1</strong> &#x3D; N1 + A1 + D1 + D11 + A11 + N2。</li>
 </ul>
 </li>
-<li>请求一次网站首页响应时间： 150 + 200 +  10 + 10 + 10 + 20 = 400，也就是客户请求网站地址的那一刻到看到网站至少需要400ms（半秒）。</li>
+<li>请求一次网站首页响应时间： 150 + 200 +  10 + 10 + 10 + 20 &#x3D; 400，也就是客户请求网站地址的那一刻到看到网站至少需要400ms（半秒）。</li>
 </ul>
 </li>
 </ul>
 <h4 id="并发用户数的计算公式"><a href="#并发用户数的计算公式" class="headerlink" title="并发用户数的计算公式"></a>并发用户数的计算公式</h4><ul>
 <li>系统用户数: 系统额定的用户数量，如一个OA系统，可能使用该系统的用户总数是4000个，那么这个数量，就是系统用户数。</li>
 <li>同时在线用户数: 在一定的时间范围内，最大的同时在线用户数量。</li>
-<li>同时在线用户数 = 每秒请求数RPS(吞吐量) + 并发连接数 + 平均用户思考时间。</li>
-<li>平均并发用户数的计算: C = nL / T<ul>
+<li>同时在线用户数 &#x3D; 每秒请求数RPS(吞吐量) + 并发连接数 + 平均用户思考时间。</li>
+<li>平均并发用户数的计算: C &#x3D; nL &#x2F; T<ul>
 <li>C是平均的并发用户数。</li>
 <li>n是平均每天访问用户数(login session)。</li>
 <li>L是一天内用户从登录到退出的平均时间(login session的平均时间)。</li>
@@ -479,38 +479,38 @@
 <h4 id="吞吐量的计算公式"><a href="#吞吐量的计算公式" class="headerlink" title="吞吐量的计算公式"></a>吞吐量的计算公式</h4><ul>
 <li>从业务角度看<ul>
 <li>吞吐量可以用<ul>
-<li>请求数/秒。</li>
-<li>页面数/秒。</li>
-<li>人数/天或处理业务数/小时等单位来衡量。</li>
+<li>请求数&#x2F;秒。</li>
+<li>页面数&#x2F;秒。</li>
+<li>人数&#x2F;天或处理业务数&#x2F;小时等单位来衡量。</li>
 </ul>
 </li>
 </ul>
 </li>
 <li>从网络角度看，吞吐量可以用:<ul>
-<li>字节/秒来衡量</li>
+<li>字节&#x2F;秒来衡量</li>
 </ul>
 </li>
 <li>对于交互式应用来说，吞吐量指标反映的是服务器承受的压力，他能够说明系统的负载能力。</li>
 <li>以不同方式表达的吞吐量可以说明不同层次的问题，例如：<ul>
-<li>以字节数/秒方式可以表示数要受网络基础设施、服务器架构、应用服务器制约等方面的瓶颈。</li>
-<li>已请求数/秒的方式表示主要是受应用服务器和应用代码的制约体现出的瓶颈。</li>
+<li>以字节数&#x2F;秒方式可以表示数要受网络基础设施、服务器架构、应用服务器制约等方面的瓶颈。</li>
+<li>已请求数&#x2F;秒的方式表示主要是受应用服务器和应用代码的制约体现出的瓶颈。</li>
 </ul>
 </li>
 </ul>
 <h4 id="思考时间的计算公式"><a href="#思考时间的计算公式" class="headerlink" title="思考时间的计算公式"></a><strong>思考时间的计算公式</strong></h4><ul>
-<li><p>Think Time，从业务角度来看，这个时间指用户进行操作时每个请求之间的时间间隔，为了模拟这样的时间间隔，引入了思考时间这个概念，来更加真实的模拟用户的操作。<br>在吞吐量这个公式中 F = VU * R / T说明吞吐量 F 是 VU 数量、每个用户发出的请求数 R 和时间 T 的函数，而其中的 R 又可以用时间T和用户思考时间 TS 来计算：R = T / TS<br>下面给出一个计算思考时间的一般步骤：</p>
+<li><p>Think Time，从业务角度来看，这个时间指用户进行操作时每个请求之间的时间间隔，为了模拟这样的时间间隔，引入了思考时间这个概念，来更加真实的模拟用户的操作。<br>在吞吐量这个公式中 F &#x3D; VU * R &#x2F; T说明吞吐量 F 是 VU 数量、每个用户发出的请求数 R 和时间 T 的函数，而其中的 R 又可以用时间T和用户思考时间 TS 来计算：R &#x3D; T &#x2F; TS<br>下面给出一个计算思考时间的一般步骤：</p>
 <ul>
 <li><p>首先计算出系统的并发用户数</p>
-<p>C = nL / TF = R × C</p>
+<p>C &#x3D; nL &#x2F; TF &#x3D; R × C</p>
 </li>
 <li><p>统计出系统平均的吞吐量</p>
-<p>F= VU * R / T R × C = VU * R / T</p>
+<p>F&#x3D; VU * R &#x2F; T R × C &#x3D; VU * R &#x2F; T</p>
 </li>
 <li><p>统计出平均每个用户发出的请求数量</p>
-<p>R= u<em>C</em>T / VU</p>
+<p>R&#x3D; u<em>C</em>T &#x2F; VU</p>
 </li>
 <li><p>根据公式计算出思考时间</p>
-<p>TS= T / R</p>
+<p>TS&#x3D; T &#x2F; R</p>
 </li>
 </ul>
 </li>
@@ -523,7 +523,7 @@
 <ol>
 <li>reqeust  对 cpu 的消耗：单个reqeust对CPU消耗越高，外部系统接口、IO影响速度越慢，系统吞吐能力越低，反之越高。</li>
 <li>内存负载： 系统对系统内存、vm虚拟内存、swap交换区的使用情况。</li>
-<li>iO负载消耗 (<strong>这里的IO负载是指硬盘IO ，并不是网络IO</strong>): 系统在运行中常常会涉及到大量的磁盘读写操作。磁盘有两个重要的参数: Seek time、 Rotational latency。正常的I/O计数为：1000/(Seek time+Rotational latency)*0.75    在此范围内属正常。当达到85％的I/O计数以上时则基本认为已经存在I/O瓶劲。理论情况下，磁盘的随机读计数为125、顺序读计数为225。对于数据文件而言是随机读写，日志文件是顺序读写。</li>
+<li>iO负载消耗 (<strong>这里的IO负载是指硬盘IO ，并不是网络IO</strong>): 系统在运行中常常会涉及到大量的磁盘读写操作。磁盘有两个重要的参数: Seek time、 Rotational latency。正常的I&#x2F;O计数为：1000&#x2F;(Seek time+Rotational latency)*0.75    在此范围内属正常。当达到85％的I&#x2F;O计数以上时则基本认为已经存在I&#x2F;O瓶劲。理论情况下，磁盘的随机读计数为125、顺序读计数为225。对于数据文件而言是随机读写，日志文件是顺序读写。</li>
 </ol>
 </li>
 <li><p><strong>外部接口</strong></p>
@@ -538,7 +538,7 @@
 <li><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/web/%E7%BD%91%E7%AB%99PV.png"></li>
 </ul>
 <h4 id="QPS、TPS"><a href="#QPS、TPS" class="headerlink" title="QPS、TPS"></a>QPS、TPS</h4><blockquote>
-<p>每秒钟request/事务数量，一个事务是指一个客户机向服务器发送请求然后服务器做出反应的过程。</p>
+<p>每秒钟request&#x2F;事务数量，一个事务是指一个客户机向服务器发送请求然后服务器做出反应的过程。</p>
 </blockquote>
 <ol>
 <li><p>事务可以从客户端角度进行定义。如：</p>
@@ -559,12 +559,12 @@
 <li>单体<ol>
 <li>本次测试只测登录这一功能，便于分析和寻找瓶颈。</li>
 <li>也可做并发测试。</li>
-<li>TPS = 总事务数 / 总时间(秒)。</li>
+<li>TPS &#x3D; 总事务数 &#x2F; 总时间(秒)。</li>
 </ol>
 </li>
 <li>混合<ol>
 <li>多种模块一起进行测试，更符合真实场景，便于对服务器的整体处理能力进行评估。</li>
-<li>TPS=单个事务的TPS总和。</li>
+<li>TPS&#x3D;单个事务的TPS总和。</li>
 </ol>
 </li>
 </ol>
@@ -593,7 +593,7 @@
 </ul>
 </li>
 </ul>
-<script type="text&#x2F;javascript" src="https://unpkg.com/kity@2.0.4/dist/kity.min.js"></script><script type="text&#x2F;javascript" src="https://unpkg.com/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text&#x2F;javascript" src="https://unpkg.com/hexo-simple-mindmap@0.8.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text&#x2F;css" href="https://unpkg.com/hexo-simple-mindmap@0.8.0/dist/mindmap.min.css">
+
     </div>
 
     
@@ -697,7 +697,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#性能指标"><span class="nav-number">1.</span> <span class="nav-text">性能指标</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#性能指标-1"><span class="nav-number">1.1.</span> <span class="nav-text">性能指标</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#吞吐量"><span class="nav-number">1.1.1.</span> <span class="nav-text">吞吐量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#系统响应时间计算"><span class="nav-number">1.1.2.</span> <span class="nav-text">系统响应时间计算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#并发用户数的计算公式"><span class="nav-number">1.1.3.</span> <span class="nav-text">并发用户数的计算公式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#吞吐量的计算公式"><span class="nav-number">1.1.4.</span> <span class="nav-text">吞吐量的计算公式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#思考时间的计算公式"><span class="nav-number">1.1.5.</span> <span class="nav-text">思考时间的计算公式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#因素（指标）"><span class="nav-number">1.1.6.</span> <span class="nav-text">因素（指标）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PV"><span class="nav-number">1.1.7.</span> <span class="nav-text">PV</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#QPS、TPS"><span class="nav-number">1.1.8.</span> <span class="nav-text">QPS、TPS</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#RPS"><span class="nav-number">1.1.9.</span> <span class="nav-text">RPS</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#IO"><span class="nav-number">1.1.10.</span> <span class="nav-text">IO</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基准场景"><span class="nav-number">1.2.</span> <span class="nav-text">基准场景</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87"><span class="nav-number">1.</span> <span class="nav-text">性能指标</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87-1"><span class="nav-number">1.1.</span> <span class="nav-text">性能指标</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%90%9E%E5%90%90%E9%87%8F"><span class="nav-number">1.1.1.</span> <span class="nav-text">吞吐量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E5%93%8D%E5%BA%94%E6%97%B6%E9%97%B4%E8%AE%A1%E7%AE%97"><span class="nav-number">1.1.2.</span> <span class="nav-text">系统响应时间计算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91%E7%94%A8%E6%88%B7%E6%95%B0%E7%9A%84%E8%AE%A1%E7%AE%97%E5%85%AC%E5%BC%8F"><span class="nav-number">1.1.3.</span> <span class="nav-text">并发用户数的计算公式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%90%9E%E5%90%90%E9%87%8F%E7%9A%84%E8%AE%A1%E7%AE%97%E5%85%AC%E5%BC%8F"><span class="nav-number">1.1.4.</span> <span class="nav-text">吞吐量的计算公式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%80%9D%E8%80%83%E6%97%B6%E9%97%B4%E7%9A%84%E8%AE%A1%E7%AE%97%E5%85%AC%E5%BC%8F"><span class="nav-number">1.1.5.</span> <span class="nav-text">思考时间的计算公式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9B%A0%E7%B4%A0%EF%BC%88%E6%8C%87%E6%A0%87%EF%BC%89"><span class="nav-number">1.1.6.</span> <span class="nav-text">因素（指标）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PV"><span class="nav-number">1.1.7.</span> <span class="nav-text">PV</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#QPS%E3%80%81TPS"><span class="nav-number">1.1.8.</span> <span class="nav-text">QPS、TPS</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#RPS"><span class="nav-number">1.1.9.</span> <span class="nav-text">RPS</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#IO"><span class="nav-number">1.1.10.</span> <span class="nav-text">IO</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E5%87%86%E5%9C%BA%E6%99%AF"><span class="nav-number">1.2.</span> <span class="nav-text">基准场景</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -849,7 +849,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2023</span>
+  <span itemprop="copyrightYear">2024</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -859,13 +859,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">873k</span>
+    <span title="站点总字数">1m</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">13:14</span>
+    <span title="站点阅读时长">15:49</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
@@ -925,11 +925,18 @@
 
   
 
-<script>
+
+        <style>
+            [bg-lazy] {
+                background-image: none !important;
+                background-color: #eee !important;
+            }
+        </style>
+        <script>
             window.imageLazyLoadSetting = {
                 isSPA: false,
                 preloadRatio: 1,
                 processImages: null,
             };
-        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(r){r.imageLazyLoadSetting.processImages=t;var e=r.imageLazyLoadSetting.isSPA,n=r.imageLazyLoadSetting.preloadRatio||1,c=a();function a(){var t=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")),e=Array.prototype.slice.call(document.querySelectorAll("[bg-lazy]"));return t.concat(e)}function t(){e&&(c=a());for(var t,o=0;o<c.length;o++)0<=(t=(t=c[o]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(r.innerHeight*n||document.documentElement.clientHeight*n)&&function(){var t,e,n,a,i=c[o];e=function(){c=c.filter(function(t){return i!==t}),r.imageLazyLoadSetting.onImageLoaded&&r.imageLazyLoadSetting.onImageLoaded(i)},(t=i).hasAttribute("bg-lazy")?(t.removeAttribute("bg-lazy"),e&&e()):(n=new Image,a=t.getAttribute("data-original"),n.onload=function(){t.src=a,t.removeAttribute("data-original"),e&&e()},t.src!==a&&(n.src=a))}()}function i(){clearTimeout(t.tId),t.tId=setTimeout(t,500)}t(),document.addEventListener("scroll",i),r.addEventListener("resize",i),r.addEventListener("orientationchange",i)}(this);</script></body>
 </html>

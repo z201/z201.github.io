@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 4.2.1">
+<meta name="generator" content="Hexo 7.0.0">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -323,14 +323,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>5.8k</span>
+              <span>6.1k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>5 分钟</span>
+              <span>6 分钟</span>
             </span>
 
         </div>
@@ -346,8 +346,8 @@
 <p>mongodb的安装方式比较简单，下面演示在CentOS7上用yum方式安装。</p>
 </blockquote>
 <h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><ul>
-<li>下载地址 <a href="https://www.mongodb.com/download-center#community" target="_blank" rel="noopener">https://www.mongodb.com/download-center#community</a></li>
-<li>在线文档 <a href="https://docs.mongodb.com/manual/introduction/" target="_blank" rel="noopener">https://docs.mongodb.com/manual/introduction/</a></li>
+<li>下载地址 <a href="https://www.mongodb.com/download-center#community">https://www.mongodb.com/download-center#community</a></li>
+<li>在线文档 <a href="https://docs.mongodb.com/manual/introduction/">https://docs.mongodb.com/manual/introduction/</a></li>
 </ul>
 <h2 id="使用yum方式安装"><a href="#使用yum方式安装" class="headerlink" title="使用yum方式安装"></a>使用yum方式安装</h2><blockquote>
 <p>仅供学习参考，若在生产环境中部署请注意修改安全配置。</p>
@@ -384,7 +384,7 @@
 </ul>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/yum.repos.d/mongodb-org-3.4.repo1</span><br></pre></td></tr></table></figure>
 
-<a id="more"></a>
+<span id="more"></span>
 
 <ul>
 <li>把下面的内容复制到上面的文件中</li>
@@ -404,7 +404,7 @@
 <p>自CentOS6版本开始引入了Transparent Huge Pages(THP)，从CentOS7版本开始，该特性默认就会启用。尽管THP的本意是为提升内存的性能，不过某些数据库厂商还是建议直接关闭THP(比如说Oracle、MariaDB、MongoDB等)，否则可能会导致性能出现下降。</p>
 </blockquote>
 <p>首先检查THP的启用状态：不关闭mongo启动的时候会警告。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// 检查THP状态</span><br><span class="line">cat /sys/kernel/mm/transparent_hugepage/defrag</span><br><span class="line">[always] madvise never</span><br><span class="line">cat /sys/kernel/mm/transparent_hugepage/enabled</span><br><span class="line">[always] madvise never</span><br><span class="line">这个状态就说明都是启用的。</span><br></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// 检查THP状态</span><br><span class="line"><span class="built_in">cat</span> /sys/kernel/mm/transparent_hugepage/defrag</span><br><span class="line">[always] madvise never</span><br><span class="line"><span class="built_in">cat</span> /sys/kernel/mm/transparent_hugepage/enabled</span><br><span class="line">[always] madvise never</span><br><span class="line">这个状态就说明都是启用的。</span><br></pre></td></tr></table></figure>
 
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">//禁用THP,编辑rc.local文件</span><br><span class="line">vim /etc/rc.d/rc.local</span><br><span class="line">增加下列内容：</span><br><span class="line"><span class="keyword">if</span> <span class="built_in">test</span> -f /sys/kernel/mm/transparent_hugepage/enabled; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> never &gt; /sys/kernel/mm/transparent_hugepage/enabled</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"><span class="keyword">if</span> <span class="built_in">test</span> -f /sys/kernel/mm/transparent_hugepage/defrag; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> never &gt; /sys/kernel/mm/transparent_hugepage/defrag</span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
 
@@ -415,23 +415,24 @@
 <li><p>whereis mongd</p>
 </li>
 <li><pre><code class="bash">mongod: /usr/bin/mongod /etc/mongod.conf /usr/share/man/man1/mongod.1
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- mongd.conf 就是配置文件。</span><br><span class="line"></span><br><span class="line">- 打开就可以看到相关配置信息。</span><br><span class="line"></span><br><span class="line">### mongdb权限操作配置信息</span><br><span class="line"></span><br><span class="line">#### Built-In Roles（内置角色）：</span><br><span class="line"></span><br><span class="line">- 数据库用户角色：</span><br><span class="line">  - read、readWrite;</span><br><span class="line">- 数据库管理角色：</span><br><span class="line">  - dbAdmin、dbOwner、userAdmin；</span><br><span class="line">- 集群管理角色：</span><br><span class="line">  - clusterAdmin、clusterManager、clusterMonitor、hostManager；</span><br><span class="line">- 备份恢复角色：</span><br><span class="line">  - backup、restore；</span><br><span class="line">- 所有数据库角色：</span><br><span class="line">  - readAnyDatabase、readWriteAnyDatabase、userAdminAnyDatabase、dbAdminAnyDatabase</span><br><span class="line">- 超级用户角色：</span><br><span class="line">  - root  </span><br><span class="line">    - 这里还有几个角色间接或直接提供了系统超级用户的访问（dbOwner 、userAdmin、userAdminAnyDatabase）</span><br><span class="line">- 内部角色：</span><br><span class="line">  - __system</span><br><span class="line"></span><br><span class="line">#### 具体角色：</span><br><span class="line"></span><br><span class="line">- Read：</span><br><span class="line">  - 允许用户读取指定数据库。</span><br><span class="line">- readWrite：</span><br><span class="line">  - 允许用户读写指定数据库。</span><br><span class="line">- dbAdmin：</span><br><span class="line">  - 允许用户在指定数据库中执行管理函数，如索引创建、删除，查看统计或访问system.profile。</span><br><span class="line">- userAdmin：</span><br><span class="line">  - 允许用户向system.users集合写入，可以找指定数据库里创建、删除和管理用户。</span><br><span class="line">- clusterAdmin：</span><br><span class="line">  - 只在admin数据库中可用，赋予用户所有分片和复制集相关函数的管理权限。</span><br><span class="line">- readAnyDatabase：</span><br><span class="line">  - 只在admin数据库中可用，赋予用户所有数据库的读权限。</span><br><span class="line">- readWriteAnyDatabase：</span><br><span class="line">  - 只在admin数据库中可用，赋予用户所有数据库的读写权限。</span><br><span class="line">- userAdminAnyDatabase：</span><br><span class="line">  - 只在admin数据库中可用，赋予用户所有数据库的userAdmin权限。</span><br><span class="line">- dbAdminAnyDatabase：</span><br><span class="line">  - 只在admin数据库中可用，赋予用户所有数据库的dbAdmin权限。</span><br><span class="line">- root：</span><br><span class="line">  - 只在admin数据库中可用。超级账号，超级权限。</span><br><span class="line"></span><br><span class="line">### 开启用户权限</span><br><span class="line"></span><br><span class="line">&gt; 提示：即便设置了账号密码依然可以不通过密码链接，需要在mongo 启动的时候开启认证。</span><br><span class="line"></span><br><span class="line">- 创建用户</span><br><span class="line">  - 注意读写用户的权限请使用readWrite。</span><br><span class="line"></span><br><span class="line">&#96;&#96;&#96;json</span><br><span class="line">show dbs; </span><br><span class="line">&#x2F;&#x2F;显示数据库列表</span><br><span class="line"></span><br><span class="line">use admin; </span><br><span class="line"> &#x2F;&#x2F;进入admin collections</span><br><span class="line"></span><br><span class="line">db.createUser(&#123;&quot;user&quot;:&quot;root&quot;,&quot;pwd&quot;:&quot;z201.com&quot;,&quot;roles&quot;:[&#123;&quot;role&quot;:&quot;root&quot;,&quot;db&quot;:&quot;admin&quot;&#125;]&#125;) </span><br><span class="line">&#x2F;&#x2F;创建超级管理员root库管理账号</span><br><span class="line"></span><br><span class="line">db.auth(&quot;root&quot;,&quot;eoner.com&quot;)</span><br><span class="line">&#x2F;&#x2F;校验账号是否匹配</span><br><span class="line">1 </span><br><span class="line">&#x2F;&#x2F;显示1表示匹配成功</span><br><span class="line"></span><br><span class="line">user yisheng; </span><br><span class="line">&#x2F;&#x2F;进入yisheng collections,如果没有该数据库会自己创建一个；但是如果不在里面插入数据是不显示出来的。</span><br><span class="line"></span><br><span class="line">db.createUser(&#123;&quot;user&quot;:&quot;yisheng&quot;,&quot;pwd&quot;:&quot;z201.com&quot;,&quot;roles&quot;:[&#123;&quot;role&quot;:&quot;readWrite&quot;,&quot;db&quot;:&quot;yisheng&quot;&#125;]&#125;)</span><br><span class="line">&#x2F;&#x2F;创建数据库管理员</span><br><span class="line"></span><br><span class="line">db.auth(&quot;yisheng&quot;,&quot;z201.com&quot;)</span><br><span class="line">1 </span><br><span class="line">&#x2F;&#x2F;显示1表示匹配成功</span><br></pre></td></tr></table></figure></code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- mongd.conf 就是配置文件。</span><br><span class="line"></span><br><span class="line">- 打开就可以看到相关配置信息。</span><br><span class="line"></span><br><span class="line">### mongdb权限操作配置信息</span><br><span class="line"></span><br><span class="line">#### Built-In Roles（内置角色）：</span><br><span class="line"></span><br><span class="line">- 数据库用户角色：</span><br><span class="line">  - read、readWrite;</span><br><span class="line">- 数据库管理角色：</span><br><span class="line">  - dbAdmin、dbOwner、userAdmin；</span><br><span class="line">- 集群管理角色：</span><br><span class="line">  - clusterAdmin、clusterManager、clusterMonitor、hostManager；</span><br><span class="line">- 备份恢复角色：</span><br><span class="line">  - backup、restore；</span><br><span class="line">- 所有数据库角色：</span><br><span class="line">  - readAnyDatabase、readWriteAnyDatabase、userAdminAnyDatabase、dbAdminAnyDatabase</span><br><span class="line">- 超级用户角色：</span><br><span class="line">  - root  </span><br><span class="line">    - 这里还有几个角色间接或直接提供了系统超级用户的访问（dbOwner 、userAdmin、userAdminAnyDatabase）</span><br><span class="line">- 内部角色：</span><br><span class="line">  - __system</span><br><span class="line"></span><br><span class="line">#### 具体角色：</span><br><span class="line"></span><br><span class="line">- Read：</span><br><span class="line">  - 允许用户读取指定数据库。</span><br><span class="line">- readWrite：</span><br><span class="line">  - 允许用户读写指定数据库。</span><br><span class="line">- dbAdmin：</span><br><span class="line">  - 允许用户在指定数据库中执行管理函数，如索引创建、删除，查看统计或访问system.profile。</span><br><span class="line">- userAdmin：</span><br><span class="line">  - 允许用户向system.users集合写入，可以找指定数据库里创建、删除和管理用户。</span><br><span class="line">- clusterAdmin：</span><br><span class="line">  - 只在admin数据库中可用，赋予用户所有分片和复制集相关函数的管理权限。</span><br><span class="line">- readAnyDatabase：</span><br><span class="line">  - 只在admin数据库中可用，赋予用户所有数据库的读权限。</span><br><span class="line">- readWriteAnyDatabase：</span><br><span class="line">  - 只在admin数据库中可用，赋予用户所有数据库的读写权限。</span><br><span class="line">- userAdminAnyDatabase：</span><br><span class="line">  - 只在admin数据库中可用，赋予用户所有数据库的userAdmin权限。</span><br><span class="line">- dbAdminAnyDatabase：</span><br><span class="line">  - 只在admin数据库中可用，赋予用户所有数据库的dbAdmin权限。</span><br><span class="line">- root：</span><br><span class="line">  - 只在admin数据库中可用。超级账号，超级权限。</span><br><span class="line"></span><br><span class="line">### 开启用户权限</span><br><span class="line"></span><br><span class="line">&gt; 提示：即便设置了账号密码依然可以不通过密码链接，需要在mongo 启动的时候开启认证。</span><br><span class="line"></span><br><span class="line">- 创建用户</span><br><span class="line">  - 注意读写用户的权限请使用readWrite。</span><br><span class="line"></span><br><span class="line">```json</span><br><span class="line">show dbs; </span><br><span class="line">//显示数据库列表</span><br><span class="line"></span><br><span class="line">use admin; </span><br><span class="line"> //进入admin collections</span><br><span class="line"></span><br><span class="line">db.createUser(&#123;&quot;user&quot;:&quot;root&quot;,&quot;pwd&quot;:&quot;z201.com&quot;,&quot;roles&quot;:[&#123;&quot;role&quot;:&quot;root&quot;,&quot;db&quot;:&quot;admin&quot;&#125;]&#125;) </span><br><span class="line">//创建超级管理员root库管理账号</span><br><span class="line"></span><br><span class="line">db.auth(&quot;root&quot;,&quot;eoner.com&quot;)</span><br><span class="line">//校验账号是否匹配</span><br><span class="line">1 </span><br><span class="line">//显示1表示匹配成功</span><br><span class="line"></span><br><span class="line">user yisheng; </span><br><span class="line">//进入yisheng collections,如果没有该数据库会自己创建一个；但是如果不在里面插入数据是不显示出来的。</span><br><span class="line"></span><br><span class="line">db.createUser(&#123;&quot;user&quot;:&quot;yisheng&quot;,&quot;pwd&quot;:&quot;z201.com&quot;,&quot;roles&quot;:[&#123;&quot;role&quot;:&quot;readWrite&quot;,&quot;db&quot;:&quot;yisheng&quot;&#125;]&#125;)</span><br><span class="line">//创建数据库管理员</span><br><span class="line"></span><br><span class="line">db.auth(&quot;yisheng&quot;,&quot;z201.com&quot;)</span><br><span class="line">1 </span><br><span class="line">//显示1表示匹配成功</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</code></pre>
 </li>
 <li><p>修改密码</p>
 </li>
 </ul>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.changeUserPassword('root','z201.com');</span><br></pre></td></tr></table></figure>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.changeUserPassword(&#x27;root&#x27;<span class="punctuation">,</span>&#x27;z201.com&#x27;);</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>数据库开启认证，注意请进入数据库中在执行。</li>
 </ul>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">security:</span><br><span class="line">    authorization:true</span><br></pre></td></tr></table></figure>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">security<span class="punctuation">:</span></span><br><span class="line">    authorization<span class="punctuation">:</span><span class="literal"><span class="keyword">true</span></span></span><br></pre></td></tr></table></figure>
 
 <h2 id="基础操作"><a href="#基础操作" class="headerlink" title="基础操作"></a>基础操作</h2><p>启动</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start mongod</span><br></pre></td></tr></table></figure>
 
 <p>重启</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart mongod</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart mongod </span><br></pre></td></tr></table></figure>
 
 <ul>
 <li><p>如果无效</p>
@@ -445,10 +446,10 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop mongod</span><br></pre></td></tr></table></figure>
 
 <p>认证模式启动</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup mongod --auth --port 27017 --dbpath /var/lib/mongo/ &amp;</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">nohup</span> mongod --auth --port 27017 --dbpath /var/lib/mongo/ &amp;</span><br></pre></td></tr></table></figure>
 
 <ul>
-<li>/var/bin/mongd 可以在mongod.conf中查看。</li>
+<li>&#x2F;var&#x2F;bin&#x2F;mongd 可以在mongod.conf中查看。</li>
 </ul>
 <h2 id="客户端连接失败问题："><a href="#客户端连接失败问题：" class="headerlink" title="客户端连接失败问题："></a>客户端连接失败问题：</h2><blockquote>
 <p><code>SCRAM-SHA-1 authentication failed ``for</code> <code>root</code></p>
@@ -460,28 +461,28 @@
 </li>
 <li><p>参考文献</p>
 <ul>
-<li><a href="https://yq.aliyun.com/articles/16919" target="_blank" rel="noopener">MongoDB中使用的SCRAM-SHA1认证机制</a></li>
+<li><a href="https://yq.aliyun.com/articles/16919">MongoDB中使用的SCRAM-SHA1认证机制</a></li>
 </ul>
 </li>
 </ul>
 <h3 id="CURD"><a href="#CURD" class="headerlink" title="CURD"></a>CURD</h3><ul>
 <li>插入</li>
 </ul>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">db.ops_dev.insert(&#123;title: 'MongoDB ', </span><br><span class="line">    description: 'MongoDB 是一个 Nosql 数据库',</span><br><span class="line">    tags: ['mongodb', 'database', 'NoSQL']</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">db.ops_dev.insert(<span class="punctuation">&#123;</span>title<span class="punctuation">:</span> &#x27;MongoDB &#x27;<span class="punctuation">,</span> </span><br><span class="line">    description<span class="punctuation">:</span> &#x27;MongoDB 是一个 Nosql 数据库&#x27;<span class="punctuation">,</span></span><br><span class="line">    tags<span class="punctuation">:</span> <span class="punctuation">[</span>&#x27;mongodb&#x27;<span class="punctuation">,</span> &#x27;database&#x27;<span class="punctuation">,</span> &#x27;NoSQL&#x27;<span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span>)</span><br></pre></td></tr></table></figure>
 
 <h2 id="其他注意事项"><a href="#其他注意事项" class="headerlink" title="其他注意事项"></a>其他注意事项</h2><h3 id="mongodb进程莫名退出"><a href="#mongodb进程莫名退出" class="headerlink" title="mongodb进程莫名退出"></a>mongodb进程莫名退出</h3><blockquote>
 <p>每天早上到公司发现Mongo都会自己关闭掉。</p>
 </blockquote>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">2018-01-03T18:21:03.135+0800 I CONTROL  [signalProcessingThread] got signal 1 (Hangup), will terminate after current cmd ends</span><br><span class="line">2018-01-03T18:21:03.136+0800 I NETWORK  [signalProcessingThread] shutdown: going to close listening sockets...</span><br><span class="line">2018-01-03T18:21:03.136+0800 I NETWORK  [signalProcessingThread] closing listening socket: 6</span><br><span class="line">2018-01-03T18:21:03.136+0800 I NETWORK  [signalProcessingThread] closing listening socket: 7</span><br><span class="line">2018-01-03T18:21:03.136+0800 I NETWORK  [signalProcessingThread] removing socket file: /tmp/mongodb-27017.sock</span><br><span class="line">2018-01-03T18:21:03.136+0800 I NETWORK  [signalProcessingThread] shutdown: going to flush diaglog...</span><br><span class="line">2018-01-03T18:21:03.136+0800 I FTDC     [signalProcessingThread] Shutting down full-time diagnostic data capture</span><br><span class="line">2018-01-03T18:21:03.138+0800 I STORAGE  [signalProcessingThread] WiredTigerKVEngine shutting down</span><br><span class="line">2018-01-03T18:21:03.366+0800 I STORAGE  [signalProcessingThread] shutdown: removing fs lock...</span><br><span class="line">2018-01-03T18:21:03.366+0800 I CONTROL  [signalProcessingThread] now exiting</span><br><span class="line">2018-01-03T18:21:03.366+0800 I CONTROL  [signalProcessingThread] shutting down with code:0</span><br></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">2018-01-03T18:21:03.135+0800 I CONTROL  [signalProcessingThread] got signal 1 (Hangup), will terminate after current cmd ends</span><br><span class="line">2018-01-03T18:21:03.136+0800 I NETWORK  [signalProcessingThread] shutdown: going to close listening sockets...</span><br><span class="line">2018-01-03T18:21:03.136+0800 I NETWORK  [signalProcessingThread] closing listening socket: 6</span><br><span class="line">2018-01-03T18:21:03.136+0800 I NETWORK  [signalProcessingThread] closing listening socket: 7</span><br><span class="line">2018-01-03T18:21:03.136+0800 I NETWORK  [signalProcessingThread] removing socket file: /tmp/mongodb-27017.sock</span><br><span class="line">2018-01-03T18:21:03.136+0800 I NETWORK  [signalProcessingThread] shutdown: going to flush diaglog...</span><br><span class="line">2018-01-03T18:21:03.136+0800 I FTDC     [signalProcessingThread] Shutting down full-time diagnostic data capture</span><br><span class="line">2018-01-03T18:21:03.138+0800 I STORAGE  [signalProcessingThread] WiredTigerKVEngine shutting down</span><br><span class="line">2018-01-03T18:21:03.366+0800 I STORAGE  [signalProcessingThread] shutdown: removing fs lock...</span><br><span class="line">2018-01-03T18:21:03.366+0800 I CONTROL  [signalProcessingThread] now exiting</span><br><span class="line">2018-01-03T18:21:03.366+0800 I CONTROL  [signalProcessingThread] shutting down with code:0</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>天啦噜有人发送了Hangup。。。好比<code>kill -1 pid</code>,但可以确认的是没有人手动信号给mongodb进程。</li>
-<li>然后网上找了很久发现了这篇文档 <a href="https://www.gnu.org/software/bash/manual/html_node/Signals.html" target="_blank" rel="noopener">Signals</a></li>
+<li>然后网上找了很久发现了这篇文档 <a href="https://www.gnu.org/software/bash/manual/html_node/Signals.html">Signals</a></li>
 </ul>
 <blockquote>
 <p>Bash resends a SIGHUP to all jobs if it receives a SIGHUP itself; this would include mongod.<br>Also, if you happen to have huponexit turned on, every job will receive a SIGHUP when bash exits. </p>
 </blockquote>
-<p>​    shell登进之后启动了mongo,然后退出shell使用的方式是直接关掉窗口,linux认为这是一起异常退出,这样一来这个shell进程就会收到SIGHUP信号,为了保证状态一致性,从而给它的所有子进程发送SIGHUP信号.而使用命令exit退出就不会有这种问题,因为linux会认为这是一种正常的退出。<br>​    mongodb官方文档会发现mongo有–-fork这样的一个参数,使用该参数启动mongo时,会自动将其挂到init进程(pid为1)下启动,而不加的话ppid(父进程id)就是当前的shell进程。</p>
+<p>​	shell登进之后启动了mongo,然后退出shell使用的方式是直接关掉窗口,linux认为这是一起异常退出,这样一来这个shell进程就会收到SIGHUP信号,为了保证状态一致性,从而给它的所有子进程发送SIGHUP信号.而使用命令exit退出就不会有这种问题,因为linux会认为这是一种正常的退出。<br>​	mongodb官方文档会发现mongo有–-fork这样的一个参数,使用该参数启动mongo时,会自动将其挂到init进程(pid为1)下启动,而不加的话ppid(父进程id)就是当前的shell进程。</p>
 <ul>
 <li>如果使用了 fork 参数就必须添加 logpath</li>
 </ul>
@@ -491,7 +492,7 @@
 <p>一定要以命令方式关闭</p>
 </blockquote>
 <p>关闭服务时，一定要注意，用–shutdown命令关闭，既方便又安全。</p>
-<script type="text&#x2F;javascript" src="https://unpkg.com/kity@2.0.4/dist/kity.min.js"></script><script type="text&#x2F;javascript" src="https://unpkg.com/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script><script defer="true" type="text&#x2F;javascript" src="https://unpkg.com/hexo-simple-mindmap@0.8.0/dist/mindmap.min.js"></script><link rel="stylesheet" type="text&#x2F;css" href="https://unpkg.com/hexo-simple-mindmap@0.8.0/dist/mindmap.min.css">
+
     </div>
 
     
@@ -593,7 +594,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文献"><span class="nav-number">1.</span> <span class="nav-text">参考文献</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用yum方式安装"><span class="nav-number">2.</span> <span class="nav-text">使用yum方式安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关闭THP"><span class="nav-number">3.</span> <span class="nav-text">关闭THP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置信息"><span class="nav-number">4.</span> <span class="nav-text">配置信息</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#mongo配置文件操作"><span class="nav-number">4.1.</span> <span class="nav-text">mongo配置文件操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基础操作"><span class="nav-number">5.</span> <span class="nav-text">基础操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#客户端连接失败问题："><span class="nav-number">6.</span> <span class="nav-text">客户端连接失败问题：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CURD"><span class="nav-number">6.1.</span> <span class="nav-text">CURD</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他注意事项"><span class="nav-number">7.</span> <span class="nav-text">其他注意事项</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#mongodb进程莫名退出"><span class="nav-number">7.1.</span> <span class="nav-text">mongodb进程莫名退出</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安全的推出方式"><span class="nav-number">8.</span> <span class="nav-text">安全的推出方式</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="nav-number">1.</span> <span class="nav-text">参考文献</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8yum%E6%96%B9%E5%BC%8F%E5%AE%89%E8%A3%85"><span class="nav-number">2.</span> <span class="nav-text">使用yum方式安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E9%97%ADTHP"><span class="nav-number">3.</span> <span class="nav-text">关闭THP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E4%BF%A1%E6%81%AF"><span class="nav-number">4.</span> <span class="nav-text">配置信息</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#mongo%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E6%93%8D%E4%BD%9C"><span class="nav-number">4.1.</span> <span class="nav-text">mongo配置文件操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C"><span class="nav-number">5.</span> <span class="nav-text">基础操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%BF%9E%E6%8E%A5%E5%A4%B1%E8%B4%A5%E9%97%AE%E9%A2%98%EF%BC%9A"><span class="nav-number">6.</span> <span class="nav-text">客户端连接失败问题：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CURD"><span class="nav-number">6.1.</span> <span class="nav-text">CURD</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">7.</span> <span class="nav-text">其他注意事项</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#mongodb%E8%BF%9B%E7%A8%8B%E8%8E%AB%E5%90%8D%E9%80%80%E5%87%BA"><span class="nav-number">7.1.</span> <span class="nav-text">mongodb进程莫名退出</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E7%9A%84%E6%8E%A8%E5%87%BA%E6%96%B9%E5%BC%8F"><span class="nav-number">8.</span> <span class="nav-text">安全的推出方式</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -745,7 +746,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2023</span>
+  <span itemprop="copyrightYear">2024</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -755,13 +756,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">873k</span>
+    <span title="站点总字数">1m</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">13:14</span>
+    <span title="站点阅读时长">15:49</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
@@ -821,11 +822,18 @@
 
   
 
-<script>
+
+        <style>
+            [bg-lazy] {
+                background-image: none !important;
+                background-color: #eee !important;
+            }
+        </style>
+        <script>
             window.imageLazyLoadSetting = {
                 isSPA: false,
                 preloadRatio: 1,
                 processImages: null,
             };
-        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(r){r.imageLazyLoadSetting.processImages=t;var e=r.imageLazyLoadSetting.isSPA,n=r.imageLazyLoadSetting.preloadRatio||1,c=a();function a(){var t=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")),e=Array.prototype.slice.call(document.querySelectorAll("[bg-lazy]"));return t.concat(e)}function t(){e&&(c=a());for(var t,o=0;o<c.length;o++)0<=(t=(t=c[o]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(r.innerHeight*n||document.documentElement.clientHeight*n)&&function(){var t,e,n,a,i=c[o];e=function(){c=c.filter(function(t){return i!==t}),r.imageLazyLoadSetting.onImageLoaded&&r.imageLazyLoadSetting.onImageLoaded(i)},(t=i).hasAttribute("bg-lazy")?(t.removeAttribute("bg-lazy"),e&&e()):(n=new Image,a=t.getAttribute("data-original"),n.onload=function(){t.src=a,t.removeAttribute("data-original"),e&&e()},t.src!==a&&(n.src=a))}()}function i(){clearTimeout(t.tId),t.tId=setTimeout(t,500)}t(),document.addEventListener("scroll",i),r.addEventListener("resize",i),r.addEventListener("orientationchange",i)}(this);</script></body>
 </html>
