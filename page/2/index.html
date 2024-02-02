@@ -255,6 +255,362 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/683461717/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="庆峰的博客">
+      <meta itemprop="description" content="Java | Sql | DataBase | Programmatic | EnterpriseArchitecture | DataAnalysis | ProjectManagement">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="庆峰的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/683461717/" class="post-title-link" itemprop="url">Docker-Drone-Deploy</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-05-01 19:22:26" itemprop="dateCreated datePublished" datetime="2021-05-01T19:22:26+08:00">2021-05-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-01-06 18:41:07" itemprop="dateModified" datetime="2024-01-06T18:41:07+08:00">2024-01-06</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Programmatic/" itemprop="url" rel="index"><span itemprop="name">Programmatic</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>之前都是用jenkins+gitee 做的CI方案，发现朋友在使用Drone构建。运行资源占用比较小。适合个人做CI。</p>
+</blockquote>
+<h2 id="Drone"><a href="#Drone" class="headerlink" title="Drone"></a><a href="https://github.com/harness/drone">Drone</a></h2><blockquote>
+<p>Drone是一款基于容器技术的持续集成工具，使用简单的YAML配置文件即可完成复杂的自动化构建、测试、部署任务，在Github上已经有22K+Star。</p>
+</blockquote>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20220201192512.png"></p>
+<ul>
+<li>相比于jenkins使用起来简介很多，大多时候没那么多需求。这个也足够满足基础需求。</li>
+<li>使用gitee + drone 演示</li>
+<li><a href="https://docs.drone.io/">官方文档</a></li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/683461717/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/5961172/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="庆峰的博客">
+      <meta itemprop="description" content="Java | Sql | DataBase | Programmatic | EnterpriseArchitecture | DataAnalysis | ProjectManagement">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="庆峰的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/5961172/" class="post-title-link" itemprop="url">SpringBoot-Mybatis</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-15 13:36:02" itemprop="dateCreated datePublished" datetime="2021-03-15T13:36:02+08:00">2021-03-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-01-06 17:39:24" itemprop="dateModified" datetime="2024-01-06T17:39:24+08:00">2024-01-06</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Programmatic/" itemprop="url" rel="index"><span itemprop="name">Programmatic</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>11k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>10 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="数据审计"><a href="#数据审计" class="headerlink" title="数据审计"></a>数据审计</h2><blockquote>
+<p>部分业务需要记录用户对操作行为，如果给每张表都做一个记录表，感觉冗余数据太多了。所以采用审计表存储相关日志信息。</p>
+</blockquote>
+<h2 id="实现方案"><a href="#实现方案" class="headerlink" title="实现方案"></a>实现方案</h2><blockquote>
+<p>基于Spring Aop 织入方式对关键方法进行拦截，也可以通过方法进行拦截。</p>
+</blockquote>
+<ul>
+<li>基于注解，在方法上织入。</li>
+<li>基于普通方法，在业务逻辑中进行调用。</li>
+<li>批量写入、延时写入数据库可能会出现短时间部分数据的丢失，但是频繁写入会导致Mysql资源占用过多。<ul>
+<li>使用java.util.concurrent.ConcurrentLinkedQueue 作为消费列队。每次最多消费消费10条日志记录批量写入数据库。</li>
+</ul>
+</li>
+<li>在审计信息中添加业务执行链路标识、执行用户标识。方便排查问题。<ul>
+<li>基于MDC记录链路标识。</li>
+</ul>
+</li>
+</ul>
+<h2 id="演示效果"><a href="#演示效果" class="headerlink" title="演示效果"></a>演示效果</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * 无参数</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"> <span class="meta">@MonitorAnnotation(audit = true, type = &quot;查看&quot;, title = &quot;首页&quot;)</span></span><br><span class="line"> <span class="meta">@RequestMapping(value = &quot;&quot;)</span></span><br><span class="line"> <span class="keyword">public</span> Object <span class="title function_">index</span><span class="params">()</span> &#123;</span><br><span class="line">     ...</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> <span class="comment">/**</span></span><br><span class="line"><span class="comment">  * url占位符</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> key</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"> <span class="meta">@RequestMapping(value = &quot;/add&#123;key&#125;&quot;)</span></span><br><span class="line"> <span class="keyword">public</span> Object <span class="title function_">add</span><span class="params">(<span class="meta">@PathVariable(required = false)</span> String key)</span> &#123;</span><br><span class="line">     <span class="keyword">if</span> (Objects.isNull(key)) &#123;</span><br><span class="line">         key = Strings.EMPTY;</span><br><span class="line">     &#125;</span><br><span class="line">     auditService.test(key);</span><br><span class="line">      ...</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> <span class="comment">/**</span></span><br><span class="line"><span class="comment">  * url参数</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> apiParam</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"> <span class="meta">@MonitorAnnotation(audit = true, type = &quot;查看&quot;, title = &quot;api&quot;, descriptionExpression = &quot;解析参数 #&#123;[0].id&#125;&quot;)</span></span><br><span class="line"> <span class="meta">@RequestMapping(value = &quot;/path&quot;)</span></span><br><span class="line"> <span class="keyword">public</span> Object <span class="title function_">path</span><span class="params">(ApiParam apiParam)</span> &#123;</span><br><span class="line">     ...</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> <span class="comment">/**</span></span><br><span class="line"><span class="comment">  * json参数</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> apiParam</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"> <span class="meta">@MonitorAnnotation(audit = true, type = &quot;查看&quot;, title = &quot;api&quot;, descriptionExpression = &quot;解析json #&#123;[0].id&#125;&quot;)</span></span><br><span class="line"> <span class="meta">@RequestMapping(value = &quot;/api&quot;)</span></span><br><span class="line"> <span class="keyword">public</span> Object <span class="title function_">api</span><span class="params">(<span class="meta">@RequestBody</span> ApiParam apiParam)</span> &#123;</span><br><span class="line">      ...</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Console</li>
+</ul>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 无参数</span></span><br><span class="line"><span class="attr">➜</span>  <span class="string">code-example git:(main) ✗ curl http://127.0.0.1:9041</span></span><br><span class="line"><span class="attr">&#123;&quot;code&quot;</span>:<span class="string">&quot;200&quot;&#125;%  </span></span><br><span class="line"></span><br><span class="line"><span class="attr">[XNIO-1</span> <span class="string">task-1] [MonitorAnnotationAspectPlugImpl.java : 58] [fffffffffe71f0b8ffffffffaed06e501644984299461010] []  HTTP URL Method :  http://127.0.0.1:9041/#GET</span></span><br><span class="line"><span class="attr">[XNIO-1</span> <span class="string">task-1] [MonitorAnnotationAspectPlugImpl.java : 68] [fffffffffe71f0b8ffffffffaed06e501644984299461010] []  Class Method    :  cn.z201.audit.AppApplicationController#index</span></span><br><span class="line"><span class="attr">[XNIO-1</span> <span class="string">task-1] [MonitorAnnotationAspectPlugImpl.java : 79] [fffffffffe71f0b8ffffffffaed06e501644984299461010] []  Args   : []</span></span><br><span class="line"><span class="attr">[XNIO-1</span> <span class="string">task-1] [MonitorAnnotationAspectPlugImpl.java : 64] [fffffffffe71f0b8ffffffffaed06e501644984299461010] []  Time-Consuming : 10 ms</span></span><br><span class="line"><span class="attr">[XNIO-1</span> <span class="string">task-1] [AuditRepository.java : 50] [fffffffffe71f0b8ffffffffaed06e501644984299461010] [] &#123;&quot;eventType&quot;:&quot;查看&quot;,&quot;eventTitle&quot;:&quot;首页&quot;,&quot;eventDescription&quot;:&quot;&quot;,&quot;eventTime&quot;:1644984299487,&quot;opTraceId&quot;:&quot;fffffffffe71f0b8ffffffffaed06e501644984299461010&quot;,&quot;userId&quot;:1&#125;</span></span><br><span class="line"><span class="comment"># url参数 方法调用</span></span><br><span class="line"><span class="attr">➜</span>  <span class="string">code-example git:(main) ✗ curl http://127.0.0.1:9041/add1</span></span><br><span class="line"><span class="attr">&#123;&quot;code&quot;</span>:<span class="string">&quot;200&quot;,&quot;data&quot;:&quot;1&quot;&#125;% </span></span><br><span class="line"></span><br><span class="line"><span class="attr">[XNIO-1</span> <span class="string">task-1] [AuditRepository.java : 50] [000000001aeb91faffffffff9f9ad4b01644984411302010] [] &#123;&quot;eventType&quot;:&quot;查看&quot;,&quot;eventTitle&quot;:&quot;测试方法写入&quot;,&quot;eventDescription&quot;:&quot;1&quot;,&quot;opTraceId&quot;:&quot;000000001aeb91faffffffff9f9ad4b01644984411302010&quot;,&quot;userId&quot;:1&#125;</span></span><br><span class="line"><span class="comment">#url参数</span></span><br><span class="line"><span class="attr">➜</span>  <span class="string">code-example git:(main) ✗ curl http://127.0.0.1:9041/path\?id\=1</span></span><br><span class="line"><span class="attr">&#123;&quot;code&quot;</span>:<span class="string">&quot;200&quot;,&quot;data&quot;:&#123;&quot;id&quot;:1&#125;&#125;%   </span></span><br><span class="line"><span class="attr">[XNIO-1</span> <span class="string">task-1] [MonitorAnnotationAspectPlugImpl.java : 58] [ffffffffbc9cb15500000000603b0e6a1644984489674100] []  HTTP URL Method :  http://127.0.0.1:9041/path#GET</span></span><br><span class="line"><span class="attr">[XNIO-1</span> <span class="string">task-1] [MonitorAnnotationAspectPlugImpl.java : 68] [ffffffffbc9cb15500000000603b0e6a1644984489674100] []  Class Method    :  cn.z201.audit.AppApplicationController#path</span></span><br><span class="line"><span class="attr">[XNIO-1</span> <span class="string">task-1] [MonitorAnnotationAspectPlugImpl.java : 79] [ffffffffbc9cb15500000000603b0e6a1644984489674100] []  Args   : [&#123;&quot;id&quot;:1&#125;]</span></span><br><span class="line"><span class="attr">[XNIO-1</span> <span class="string">task-1] [MonitorAnnotationAspectPlugImpl.java : 64] [ffffffffbc9cb15500000000603b0e6a1644984489674100] []  Time-Consuming : 3 ms</span></span><br><span class="line"><span class="attr">[XNIO-1</span> <span class="string">task-1] [AuditRepository.java : 50] [ffffffffbc9cb15500000000603b0e6a1644984489674100] [] &#123;&quot;eventType&quot;:&quot;查看&quot;,&quot;eventTitle&quot;:&quot;api&quot;,&quot;eventDescription&quot;:&quot;解析参数 1&quot;,&quot;opTraceId&quot;:&quot;ffffffffbc9cb15500000000603b0e6a1644984489674100&quot;,&quot;userId&quot;:1&#125;</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment"># json 参数</span></span><br><span class="line"><span class="attr">➜</span>  <span class="string">code-example git:(main) ✗ curl -X POST http://localhost:9041/api -H &#x27;Content-Type: application/json&#x27; -d &#x27;&#123;&quot;id&quot;:&quot;1&quot;&#125;&#x27; </span></span><br><span class="line"><span class="attr">&#123;&quot;code&quot;</span>:<span class="string">&quot;200&quot;,&quot;data&quot;:&#123;&quot;id&quot;:1&#125;&#125;%   </span></span><br><span class="line"><span class="attr">[XNIO-1</span> <span class="string">task-1] [MonitorAnnotationAspectPlugImpl.java : 58] [000000001fbbccdf000000006a218db41644985048604100] []  HTTP URL Method :  http://localhost:9041/api#POST</span></span><br><span class="line"><span class="attr">[XNIO-1</span> <span class="string">task-1] [MonitorAnnotationAspectPlugImpl.java : 68] [000000001fbbccdf000000006a218db41644985048604100] []  Class Method    :  cn.z201.audit.AppApplicationController#api</span></span><br><span class="line"><span class="attr">[XNIO-1</span> <span class="string">task-1] [MonitorAnnotationAspectPlugImpl.java : 79] [000000001fbbccdf000000006a218db41644985048604100] []  Args   : [&#123;&quot;id&quot;:1&#125;]</span></span><br><span class="line"><span class="attr">[XNIO-1</span> <span class="string">task-1] [MonitorAnnotationAspectPlugImpl.java : 64] [000000001fbbccdf000000006a218db41644985048604100] []  Time-Consuming : 1 ms</span></span><br><span class="line"><span class="attr">[XNIO-1</span> <span class="string">task-1] [AuditRepository.java : 50] [000000001fbbccdf000000006a218db41644985048604100] [] &#123;&quot;eventType&quot;:&quot;查看&quot;,&quot;eventTitle&quot;:&quot;api&quot;,&quot;eventDescription&quot;:&quot;解析json 1&quot;,&quot;opTraceId&quot;:&quot;000000001fbbccdf000000006a218db41644985048604100&quot;,&quot;userId&quot;:1&#125;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="演示代码"><a href="#演示代码" class="headerlink" title="演示代码"></a><a href="https://github.com/z201/code-example/tree/main/SpringBoot-Mybatis-Audit">演示代码</a></h2>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/5961172/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/232268034/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="庆峰的博客">
+      <meta itemprop="description" content="Java | Sql | DataBase | Programmatic | EnterpriseArchitecture | DataAnalysis | ProjectManagement">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="庆峰的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/232268034/" class="post-title-link" itemprop="url">SpringBoot-Redison</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-11 02:20:38" itemprop="dateCreated datePublished" datetime="2021-03-11T02:20:38+08:00">2021-03-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-01-06 17:25:26" itemprop="dateModified" datetime="2024-01-06T17:25:26+08:00">2024-01-06</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Programmatic/" itemprop="url" rel="index"><span itemprop="name">Programmatic</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="Redisson"><a href="#Redisson" class="headerlink" title="Redisson"></a>Redisson</h2><blockquote>
+<p>Redisson是一个在Redis的基础上实现的Java驻内存数据网格（In-Memory Data Grid）。它不仅提供了一系列的分布式的Java常用对象，还提供了许多分布式服务。其中包括(<code>BitSet</code>, <code>Set</code>, <code>Multimap</code>, <code>SortedSet</code>, <code>Map</code>, <code>List</code>, <code>Queue</code>, <code>BlockingQueue</code>, <code>Deque</code>, <code>BlockingDeque</code>, <code>Semaphore</code>, <code>Lock</code>, <code>AtomicLong</code>, <code>CountDownLatch</code>, <code>Publish / Subscribe</code>, <code>Bloom filter</code>, <code>Remote service</code>, <code>Spring cache</code>, <code>Executor service</code>, <code>Live Object service</code>, <code>Scheduler service</code>) Redisson提供了使用Redis的最简单和最便捷的方法。Redisson的宗旨是促进使用者对Redis的关注分离（Separation of Concern），从而让使用者能够将精力更集中地放在处理业务逻辑上。</p>
+</blockquote>
+<h3 id="代码演示"><a href="#代码演示" class="headerlink" title="代码演示"></a><a href="https://github.com/z201/code-example/tree/main/Redisson">代码演示</a></h3><h2 id="RedLock"><a href="#RedLock" class="headerlink" title="RedLock"></a>RedLock</h2><blockquote>
+<p>Redlock 算法的基本思路，是让客户端和多个独立的 Redis 实例依次请求加锁，如果客户端能够和半数以上的实例成功地完成加锁操作，就认为客户端成功地获得分布式锁了，否则加锁失败。即使有单个 Redis 实例发生故障，因为锁变量在其它实例上也有保存，所以，客户端仍然可以正常地进行锁操作，锁变量并不会丢失。</p>
+</blockquote>
+<ul>
+<li>操作流程</li>
+</ul>
+<ol>
+<li><p>客户端获取当前时间</p>
+</li>
+<li><p>客户端按照N个Redis实例执行加锁操作</p>
+<ul>
+<li>加锁操作和在单实例上执行的加锁操作一样，使用 SET 命令，带上 NX，EX&#x2F;PX 选项，以及带上客户端的唯一标识。还有一个超时时间。如果在某一个Redis实例上加锁失败，会直接在下一个实例上执行。加锁操作的超时时间需要远远地小于锁的有效时间，一般也就是设置为几十毫秒。</li>
+</ul>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20220106194554.png"></p>
+</li>
+<li><p>客户端完成了和所有 Redis 实例的加锁操作，客户端就要计算整个加锁过程的总耗时。</p>
+<ul>
+<li>当客户端加锁操作满足，以下条件才算成功。<ol>
+<li>客户端从超过半数（大于等于 N&#x2F;2+1）的 Redis 实例上成功获取到了锁；</li>
+<li>客户端获取锁的总耗时没有超过锁的有效时间。</li>
+</ol>
+</li>
+</ul>
+</li>
+<li><p>客户端释放锁</p>
+<ul>
+<li>释放掉锁执行lua脚本即可。</li>
+</ul>
+</li>
+</ol>
+<h2 id="Redisson实现RedLock"><a href="#Redisson实现RedLock" class="headerlink" title="Redisson实现RedLock"></a>Redisson实现RedLock</h2><ul>
+<li>Redisson是一个在Redis的基础上实现的Java驻内存数据网格（In-Memory Data Grid）。Redisson提供了使用Redis的最简单和最便捷的方法。Redisson的宗旨是促进使用者对Redis的关注分离（Separation of Concern），从而让使用者能够将精力更集中地放在处理业务逻辑上。</li>
+</ul>
+<h3 id="Redis主从版本"><a href="#Redis主从版本" class="headerlink" title="Redis主从版本"></a>Redis主从版本</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> z201.coding@gmail.com</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RedisConfig</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> RedissonConnectionFactory <span class="title function_">redissonConnectionFactory</span><span class="params">(RedissonClient redisson)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">RedissonConnectionFactory</span>(redisson);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> RedisTemplate <span class="title function_">redisTemplate</span><span class="params">(RedisConnectionFactory redisConnectionFactory)</span> &#123;</span><br><span class="line">        <span class="type">RedisTemplate</span> <span class="variable">redisTemplate</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">RedisTemplate</span>();</span><br><span class="line">        RedisSerializer&lt;String&gt; redisSerializer = <span class="keyword">new</span> <span class="title class_">StringRedisSerializer</span>();</span><br><span class="line">        redisTemplate.setConnectionFactory(redisConnectionFactory);</span><br><span class="line">        <span class="comment">// key序列化方式</span></span><br><span class="line">        redisTemplate.setKeySerializer(redisSerializer);</span><br><span class="line">        <span class="comment">// value序列化</span></span><br><span class="line">        redisTemplate.setValueSerializer(redisSerializer);</span><br><span class="line">        <span class="comment">// value hashmap序列化</span></span><br><span class="line">        redisTemplate.setHashValueSerializer(redisSerializer);</span><br><span class="line">        <span class="keyword">return</span> redisTemplate;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> RedissonClient <span class="title function_">redissonClient</span><span class="params">()</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="type">Config</span> <span class="variable">config</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Config</span>();</span><br><span class="line">        <span class="comment">// 主从</span></span><br><span class="line">        config.useMasterSlaveServers()</span><br><span class="line">                <span class="comment">//可以用&quot;rediss://&quot;来启用SSL连接</span></span><br><span class="line">                .setMasterAddress(<span class="string">&quot;redis://127.0.0.1:6379&quot;</span>).setPassword(<span class="string">&quot;redis_pwd&quot;</span>)</span><br><span class="line">                .addSlaveAddress(<span class="string">&quot;redis://127.0.0.1:6380&quot;</span>,<span class="string">&quot;redis://127.0.0.1:6381&quot;</span>).setPassword(<span class="string">&quot;redis_pwd&quot;</span>)</span><br><span class="line">                .setRetryInterval(<span class="number">5000</span>)</span><br><span class="line">                .setTimeout(<span class="number">10000</span>)</span><br><span class="line">                .setConnectTimeout(<span class="number">10000</span>);<span class="comment">//（连接超时，单位：毫秒 默认值：3000）;</span></span><br><span class="line">        <span class="keyword">return</span> Redisson.create(config);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>单元测试</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="meta">@ExtendWith(SpringExtension.class)</span></span><br><span class="line"><span class="meta">@SpringBootTest(classes = AppApplication.class)</span></span><br><span class="line"><span class="meta">@TestMethodOrder(MethodOrderer.OrderAnnotation.class)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AppApplicationTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> RedissonClient redissonClient;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">String</span> <span class="variable">LOCK_TITLE</span> <span class="operator">=</span> <span class="string">&quot;redisLock_&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="meta">@Disabled</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">contextLoads</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">count</span> <span class="operator">=</span> <span class="number">10</span>;</span><br><span class="line">        <span class="type">CountDownLatch</span> <span class="variable">countDownLatch</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">CountDownLatch</span>(count);</span><br><span class="line">        <span class="type">ExecutorService</span> <span class="variable">executorService</span> <span class="operator">=</span> Executors.newFixedThreadPool(count);</span><br><span class="line">        <span class="type">String</span> <span class="variable">key</span> <span class="operator">=</span> UUID.randomUUID().toString();</span><br><span class="line">        <span class="type">String</span> <span class="variable">lockKey</span> <span class="operator">=</span> LOCK_TITLE + key;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; count; i++) &#123;</span><br><span class="line">            executorService.execute(() -&gt; &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    <span class="type">RLock</span> <span class="variable">lock</span> <span class="operator">=</span> redissonClient.getLock(lockKey);</span><br><span class="line">                    <span class="comment">//加锁，并且设置锁过期时间，防止死锁的产生</span></span><br><span class="line">                    <span class="type">Boolean</span> <span class="variable">result</span> <span class="operator">=</span> lock.tryLock(<span class="number">2</span>, TimeUnit.MINUTES);</span><br><span class="line">                    log.info(<span class="string">&quot; &#123;&#125; lock &#123;&#125;&quot;</span>, result, lockKey);</span><br><span class="line">                    Thread.sleep(<span class="number">1000L</span>);</span><br><span class="line">                    <span class="comment">//执行具体业务逻辑</span></span><br><span class="line">                    redissonClient.getBucket(<span class="string">&quot;value&quot;</span>).set(String.valueOf(System.currentTimeMillis()));</span><br><span class="line">                    <span class="type">String</span> <span class="variable">value</span> <span class="operator">=</span> (String) redissonClient.getBucket(<span class="string">&quot;value&quot;</span>).get();</span><br><span class="line">                    log.info(<span class="string">&quot; &#123;&#125; value &#123;&#125;&quot;</span>, Thread.currentThread().getName(), value);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                    log.error(<span class="string">&quot;&#123;&#125;&quot;</span>, e.getMessage());</span><br><span class="line">                &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                    <span class="comment">//获取所对象</span></span><br><span class="line">                    <span class="type">RLock</span> <span class="variable">lock</span> <span class="operator">=</span> redissonClient.getLock(lockKey);</span><br><span class="line">                    <span class="comment">//释放锁（解锁）</span></span><br><span class="line">                    lock.unlock();</span><br><span class="line">                    log.info(<span class="string">&quot; &#123;&#125; unlock &#123;&#125;&quot;</span>, Thread.currentThread().getName(), lockKey);</span><br><span class="line">                &#125;</span><br><span class="line">                countDownLatch.countDown();</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">        countDownLatch.countDown();</span><br><span class="line">        executorService.shutdown();</span><br><span class="line">        ;</span><br><span class="line">        log.info(<span class="string">&quot;run end~~~&quot;</span>);</span><br><span class="line">        Thread.sleep(<span class="number">11000L</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="END"><a href="#END" class="headerlink" title="END"></a>END</h2>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/496266781/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1944,7 +2300,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/posts/1183386531/" class="post-title-link" itemprop="url">学习技巧</a>
+            <a href="/posts/1183386531/" class="post-title-link" itemprop="url">学习技巧-减少学习排斥心理</a>
         </h2>
 
         <div class="post-meta">
@@ -1961,7 +2317,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-01-06 18:57:23" itemprop="dateModified" datetime="2024-01-06T18:57:23+08:00">2024-01-06</time>
+                <time title="修改时间：2024-02-02 23:03:33" itemprop="dateModified" datetime="2024-02-02T23:03:33+08:00">2024-02-02</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -2940,370 +3296,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/3237165083/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="庆峰的博客">
-      <meta itemprop="description" content="Java | Sql | DataBase | Programmatic | EnterpriseArchitecture | DataAnalysis | ProjectManagement">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="庆峰的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/3237165083/" class="post-title-link" itemprop="url">MySQL基础（四）</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-12-29 09:43:58" itemprop="dateCreated datePublished" datetime="2020-12-29T09:43:58+08:00">2020-12-29</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-01-06 16:46:16" itemprop="dateModified" datetime="2024-01-06T16:46:16+08:00">2024-01-06</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/DataBase/" itemprop="url" rel="index"><span itemprop="name">DataBase</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.7k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>本章是整理知识内容，为强化知识长期更新。</p>
-</blockquote>
-<h2 id="练手项目"><a href="#练手项目" class="headerlink" title="练手项目"></a>练手项目</h2><h3 id="牛客网"><a href="#牛客网" class="headerlink" title="牛客网"></a>牛客网</h3><h4 id="准备一个mysql-5-7的数据库"><a href="#准备一个mysql-5-7的数据库" class="headerlink" title="准备一个mysql 5.7的数据库"></a>准备一个mysql 5.7的数据库</h4><h4 id="配置本地数据库"><a href="#配置本地数据库" class="headerlink" title="配置本地数据库"></a>配置本地数据库</h4><ul>
-<li><p><a href="https://launchpad.net/test-db/employees-db-1/1.0.6">https://launchpad.net/test-db/employees-db-1/1.0.6</a> 下载文件 <strong>employees_db-full-1.0.6.tar.bz2</strong></p>
-</li>
-<li><p>解压文件</p>
-</li>
-</ul>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">➜  employees_db tree </span><br><span class="line">.</span><br><span class="line">├── Changelog</span><br><span class="line">├── README</span><br><span class="line">├── employees.sql</span><br><span class="line">├── employees_partitioned.sql</span><br><span class="line">├── employees_partitioned2.sql</span><br><span class="line">├── employees_partitioned3.sql</span><br><span class="line">├── load_departments.dump</span><br><span class="line">├── load_dept_emp.dump</span><br><span class="line">├── load_dept_manager.dump</span><br><span class="line">├── load_employees.dump</span><br><span class="line">├── load_salaries.dump</span><br><span class="line">├── load_titles.dump</span><br><span class="line">├── objects.sql</span><br><span class="line">├── test_employees_md5.sql</span><br><span class="line">└── test_employees_sha.sql</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>在将文件导入数据库</li>
-</ul>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -uroot -p -t &lt; employees.sql</span><br></pre></td></tr></table></figure>
-
-<h4 id="解决问题"><a href="#解决问题" class="headerlink" title="解决问题"></a>解决问题</h4><ul>
-<li>employees.sql 修改内容</li>
-</ul>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># <span class="number">38</span>行 <span class="keyword">set</span> storage_engine <span class="operator">=</span> InnoDB; 替换</span><br><span class="line"><span class="keyword">set</span> default_storage_engine <span class="operator">=</span> InnoDB;</span><br><span class="line"># <span class="number">44</span>行 <span class="keyword">select</span> CONCAT(<span class="string">&#x27;storage engine: &#x27;</span>, @<span class="variable">@storage_engine</span>) <span class="keyword">as</span> INFO; 替换</span><br><span class="line"><span class="keyword">select</span> CONCAT(<span class="string">&#x27;storage engine: &#x27;</span>, @<span class="variable">@default_storage_engine</span>) <span class="keyword">as</span> INFO;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>注意导入的时候会出现文件打不开的问题</li>
-</ul>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="string">&#x27;LOADING departments&#x27;</span> <span class="keyword">as</span> <span class="string">&#x27;INFO&#x27;</span>;</span><br><span class="line">source <span class="operator">/</span>home<span class="operator">/</span>employees_db<span class="operator">/</span>load_departments.dump ;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">&#x27;LOADING employees&#x27;</span> <span class="keyword">as</span> <span class="string">&#x27;INFO&#x27;</span>;</span><br><span class="line">source <span class="operator">/</span>home<span class="operator">/</span>employees_db<span class="operator">/</span>load_employees.dump ;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">&#x27;LOADING dept_emp&#x27;</span> <span class="keyword">as</span> <span class="string">&#x27;INFO&#x27;</span>;</span><br><span class="line">source <span class="operator">/</span>home<span class="operator">/</span>employees_db<span class="operator">/</span>load_dept_emp.dump ;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">&#x27;LOADING dept_manager&#x27;</span> <span class="keyword">as</span> <span class="string">&#x27;INFO&#x27;</span>;</span><br><span class="line">source <span class="operator">/</span>home<span class="operator">/</span>employees_db<span class="operator">/</span>load_dept_manager.dump ;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">&#x27;LOADING titles&#x27;</span> <span class="keyword">as</span> <span class="string">&#x27;INFO&#x27;</span>;</span><br><span class="line">source <span class="operator">/</span>home<span class="operator">/</span>employees_db<span class="operator">/</span>load_titles.dump ;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">&#x27;LOADING salaries&#x27;</span> <span class="keyword">as</span> <span class="string">&#x27;INFO&#x27;</span>;</span><br><span class="line">source <span class="operator">/</span>home<span class="operator">/</span>employees_db<span class="operator">/</span>load_salaries.dump ;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><p>这里要将文件正确的路径写进去。</p>
-</li>
-<li><p>如果是本地的docker环境部署mysql，可以使用docker cp 命令将文件复制到容器中。在登陆到容器执行导入脚本</p>
-</li>
-</ul>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// 从宿主机器拷贝到容器中</span><br><span class="line">docker <span class="built_in">cp</span> ~/Downloads/employees_db laughing_black:/home</span><br><span class="line">// laughing_black 是容器的名称</span><br><span class="line"></span><br><span class="line">// 从容器中拷贝会宿主机器中</span><br><span class="line">docker <span class="built_in">cp</span> laughing_black:/employees_db.sql .</span><br></pre></td></tr></table></figure>
-
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/2519242267/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="庆峰的博客">
-      <meta itemprop="description" content="Java | Sql | DataBase | Programmatic | EnterpriseArchitecture | DataAnalysis | ProjectManagement">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="庆峰的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/2519242267/" class="post-title-link" itemprop="url">Java-Snowflake</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-12-27 15:22:38" itemprop="dateCreated datePublished" datetime="2020-12-27T15:22:38+08:00">2020-12-27</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-01-06 18:35:09" itemprop="dateModified" datetime="2024-01-06T18:35:09+08:00">2024-01-06</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Programmatic/" itemprop="url" rel="index"><span itemprop="name">Programmatic</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>12k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>11 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Snowflake"><a href="#Snowflake" class="headerlink" title="Snowflake"></a>Snowflake</h1><blockquote>
-<p>Snowflake，雪花算法是由Twitter开源的分布式ID生成算法，以划分命名空间的方式将 64-bit位分割成多个部分，每个部分代表不同的含义。这种就是将64位划分为不同的段，每段代表不同的涵义，基本就是时间戳、机器ID和序列数，当然这种方案就是需要考虑时钟回拨的问题以及做一些 buffer的缓冲设计提高性能。</p>
-</blockquote>
-<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><blockquote>
-<p>Twitter 早期用 MySQL 存储数据，随着用户的增长，单一的 MySQL 实例没法承受海量的数据，开发团队就开始用 <a href="http://cassandra.apache.org/">Cassandra</a> 和 sharded MySQL 替代原有的系统。然而和 MySQL 不同的是，Cassandra 没有内置为每一条数据生成唯一 ID 的功能，因为在一个分布式环境下，很难有完美的 ID 生成方案。</p>
-</blockquote>
-<ul>
-<li>对于 Twitter 而言，这样的 ID 生成方案要满足两个基本的要求，一是每秒能生成几十万条 ID 用于标识不同的 tweet；二是这些 ID 应该可以有个大致的顺序，也就是说发布时间相近的两条 tweet，它们的 ID 也应当相近，这样才能方便各种客户端对 tweet 进行排序。</li>
-<li>第一个要求意味着 ID 生成要以一种非协作的（uncoordinated）的方式进行，例如不能有一个全局的原子变量。</li>
-<li>第二个要求使得 tweet 按 ID 排序后满足 <a href="http://ci.nii.ac.jp/naid/110002673489/">k-sorted</a> 条件。如果序列 A 要满足 k-sorted，当且仅当对于任意的 p, q，如果 1 &lt;&#x3D; p &lt;&#x3D; q - k (1 &lt;&#x3D; p &lt;&#x3D; q &lt;&#x3D; n)，则有 A[p] &lt;&#x3D; A[q]。换句话说，如果元素 p 排在 q 前面，且相差至少 k 个位置，那么 p 必然小于或等于 q。如果 tweet 序列满足这个条件，要获取第 r 条 tweet 之后的消息，只要从第 r - k 条开始查找即可。</li>
-<li>Twitter 解决这两个问题的方案非常简单高效：每一个 ID 都是 64 位数字，由时间戳、节点号和序列编号组成。其中序列编号是每个节点本地生成的序号，而节点号则由 <a href="http://zookeeper.apache.org/">ZooKeeper</a> 维护。</li>
-</ul>
-<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211227152630.png"></p>
-<ul>
-<li>官网给出的代码是scala写出来的<a href="https://github.com/twitter-archive/snowflake/blob/snowflake-2010/src/main/scala/com/twitter/service/snowflake/IdWorker.scala">代码</a>。</li>
-<li><strong>1bit</strong>，不用，因为二进制中最高位是符号位，1表示负数，0表示正数。生成的id一般都是用整数，所以最高位固定为0。</li>
-<li><strong>41bit-时间戳</strong>，用来记录时间戳，毫秒级。<ul>
-<li>41位可以表示2^41-1个数字，<br>- 如果只用来表示正整数（计算机中正数包含0），可以表示的数值范围是：0 至 2^41-1，减1是因为可表示的数值范围是从0开始算的，而不是1。<br>- 也就是说41位可以表示2^41-1个毫秒的值，转化成单位年则是(2^{41}-1) &#x2F; (1000 * 60 * 60 * 24 *365) &#x3D; 69年</li>
-</ul>
-</li>
-<li><strong>10bit-工作机器id</strong>，用来记录工作机器id。<ul>
-<li>可以部署在2^{10} &#x3D; 1024个节点，包括5位datacenterId和5位workerId</li>
-<li>5位（bit）可以表示的最大正整数是2^{5}-1 &#x3D; 31，即可以用0、1、2、3、….31这32个数字，来表示不同的datecenterId或workerId</li>
-</ul>
-</li>
-<li><strong>12bit-序列号</strong>，序列号，用来记录同毫秒内产生的不同id。<br> -  12位（bit）可以表示的最大正整数是2^{12}-1 &#x3D; 4095，即可以用0、1、2、3、….4094这4095个数字，来表示同一机器同一时间截（毫秒)内产生的4095个ID序号。</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/posts/2519242267/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/786198647/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="庆峰的博客">
-      <meta itemprop="description" content="Java | Sql | DataBase | Programmatic | EnterpriseArchitecture | DataAnalysis | ProjectManagement">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="庆峰的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/786198647/" class="post-title-link" itemprop="url">Redis-Geo</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-12-24 14:17:42" itemprop="dateCreated datePublished" datetime="2020-12-24T14:17:42+08:00">2020-12-24</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-01-06 18:58:00" itemprop="dateModified" datetime="2024-01-06T18:58:00+08:00">2024-01-06</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Programmatic/" itemprop="url" rel="index"><span itemprop="name">Programmatic</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>8.8k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>8 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="源码地址"><a href="#源码地址" class="headerlink" title="源码地址"></a><a href="https://github.com/z201/code-example/tree/main/Redis-Geo">源码地址</a></h3><h3 id="Geo"><a href="#Geo" class="headerlink" title="Geo"></a>Geo</h3><blockquote>
-<p>Redis 在 3.2 版本中增加了 GEO 类型用于存储和查询地理位置。</p>
-</blockquote>
-<ul>
-<li><p>GEOADD：添加地理位置</p>
-</li>
-<li><p>GEOPOS：查询位置信息</p>
-</li>
-<li><p>GEODIST：距离统计</p>
-</li>
-<li><p>GEORADIUS：以给定的经纬度为中心， 找出某一半径内的元素</p>
-</li>
-<li><p>GEORADIUSBYMEMBER 找出位于指定范围内的元素，中心点是由给定的位置元素决定</p>
-</li>
-<li><p>GEOHASH：返回一个或多个位置元素HASH</p>
-</li>
-<li><p>关于删除，使用集合函数中的zrem，geo本质存在一个集合中。</p>
-</li>
-</ul>
-<h3 id="演示效果"><a href="#演示效果" class="headerlink" title="演示效果"></a>演示效果</h3><p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20211224143558.png"></p>
-<ul>
-<li>使用百度地图，标记出5个坐标。<a href="https://api.map.baidu.com/lbsapi/getpoint/index.html">百度地图坐标获取</a>  <a href="https://map.baidu.com/">百度地图</a></li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1.杭州市 蒋村商务中心 120.075338,30.294845</span></span><br><span class="line"><span class="comment">// 2.杭州市 中节能西溪首座 120.081806,30.294907</span></span><br><span class="line"><span class="comment">// 3.杭州市 西溪蝶园 120.070452,30.294221</span></span><br><span class="line"><span class="comment">// 4.杭州市 西溪财富中心 120.077854,30.296342</span></span><br><span class="line"><span class="comment">// 5.杭州市 九橙 西溪创投中心 120.055468,30.284523</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>使用redis-cli作为客户端测试工具 geo 集合key &#x3D; hz</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/posts/786198647/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -3374,7 +3366,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">135</span>
+          <span class="site-state-item-count">138</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -3521,13 +3513,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">1m</span>
+    <span title="站点总字数">1.1m</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">15:51</span>
+    <span title="站点阅读时长">16:11</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>

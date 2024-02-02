@@ -255,6 +255,334 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/2813270003/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="庆峰的博客">
+      <meta itemprop="description" content="Java | Sql | DataBase | Programmatic | EnterpriseArchitecture | DataAnalysis | ProjectManagement">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="庆峰的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/2813270003/" class="post-title-link" itemprop="url">SpringBoot-Mdc-Log</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-02-10 18:37:52" itemprop="dateCreated datePublished" datetime="2021-02-10T18:37:52+08:00">2021-02-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-01-06 17:24:44" itemprop="dateModified" datetime="2024-01-06T17:24:44+08:00">2024-01-06</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Programmatic/" itemprop="url" rel="index"><span itemprop="name">Programmatic</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>16k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>14 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>日常在开发过程中方便排查文件，需要在日志中输出一些关键内容。</p>
+</blockquote>
+<h2 id="MDC"><a href="#MDC" class="headerlink" title="MDC"></a>MDC</h2><blockquote>
+<p>在茫茫日志中定位需要的信息很费时，MDC 全称是 Mapped Diagnostic Context.一个线程安全的存放诊断日志的容器。</p>
+</blockquote>
+<h3 id="演示代码"><a href="#演示代码" class="headerlink" title="演示代码"></a><a href="https://github.com/z201/code-example/tree/main/Spring-Boot-Mdc-Log">演示代码</a></h3><h3 id="HTTP处理演示"><a href="#HTTP处理演示" class="headerlink" title="HTTP处理演示"></a>HTTP处理演示</h3><h4 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h4><blockquote>
+<p>实际上代码不需要这么麻烦,只需要调用MDC.put 就能将数据写入，但是实际开发过程中。通过手动编码的方式添加太低效了，这里在spring mvc的场景下使用用拦截器来处理数据注入操作。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> z201.coding@gmail.com</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AppApplicationController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping(value = &quot;&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Object <span class="title function_">index</span><span class="params">()</span> &#123;</span><br><span class="line">        log.info(<span class="string">&quot;index&quot;</span>);</span><br><span class="line">        Map&lt;String, Object&gt; data = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        data.put(<span class="string">&quot;code&quot;</span>, <span class="string">&quot;200&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> data;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">**</span><br><span class="line"> * <span class="meta">@author</span> z201.coding<span class="meta">@gamil</span>.com</span><br><span class="line"> */</span><br><span class="line"><span class="meta">@Order(Ordered.HIGHEST_PRECEDENCE + 8)</span></span><br><span class="line"><span class="meta">@ConditionalOnClass(WebMvcConfigurer.class)</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MdcTraceContextFilter</span> <span class="keyword">extends</span> <span class="title class_">OncePerRequestFilter</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">doFilterInternal</span><span class="params">(HttpServletRequest request, HttpServletResponse response,</span></span><br><span class="line"><span class="params">                                    FilterChain filterChain)</span> <span class="keyword">throws</span> ServletException, IOException &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">appTraceId</span> <span class="operator">=</span> request.getHeader(MdcApiConstant.HTTP_HEADER_TRACE_ID);</span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * 没有设置就设置下,设置了就直接返回。注意这里必须提前在拦截器中设置好，不然会失效。</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="keyword">if</span> (StrUtil.isEmpty(appTraceId)) &#123;</span><br><span class="line">            appTraceId = MDC.get(MdcApiConstant.HTTP_HEADER_TRACE_ID);</span><br><span class="line">            <span class="keyword">if</span> (Strings.isEmpty(appTraceId)) &#123;</span><br><span class="line">                appTraceId = MdcTool.getInstance().currentTraceId();</span><br><span class="line">            &#125;</span><br><span class="line">            request.setAttribute(MdcApiConstant.HTTP_HEADER_TRACE_ID, appTraceId);</span><br><span class="line">        &#125;</span><br><span class="line">        MDC.put(MdcApiConstant.HTTP_HEADER_TRACE_ID, appTraceId);</span><br><span class="line">        filterChain.doFilter(request, response);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> z201.coding@gmail.com</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MdcTool</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">SingletonHolder</span> &#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">MdcTool</span> <span class="variable">INSTANCE</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MdcTool</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">private</span> <span class="title function_">MdcTool</span> <span class="params">()</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> MdcTool <span class="title function_">getInstance</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> SingletonHolder.INSTANCE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">synchronized</span> String <span class="title function_">currentTraceId</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">ThreadLocalRandom</span> <span class="variable">random</span> <span class="operator">=</span> ThreadLocalRandom.current();</span><br><span class="line">        <span class="type">UUID</span> <span class="variable">uuid</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">UUID</span>(random.nextInt(), random.nextInt());</span><br><span class="line">        <span class="type">StringBuilder</span> <span class="variable">st</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">StringBuilder</span>(uuid.toString().replace(<span class="string">&quot;-&quot;</span>, <span class="string">&quot;&quot;</span>).toLowerCase());</span><br><span class="line">        st.append(Instant.now().toEpochMilli());</span><br><span class="line">        <span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">while</span> (i &lt; <span class="number">3</span>) &#123;</span><br><span class="line">            i++;</span><br><span class="line">            st.append(ThreadLocalRandom.current().nextInt(<span class="number">2</span>));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> st.toString();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h4 id="log配置文件"><a href="#log配置文件" class="headerlink" title="log配置文件"></a>log配置文件</h4><blockquote>
+<p>Log4j 或者 logback 在pattern表中修改表达式<code>%X&#123;AppTraceId&#125;</code> 这就是拦截去注入进去的数据key。</p>
+</blockquote>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">pattern</span>&gt;</span>[%t][%level][%file:%line][%X&#123;AppTraceId&#125;] %msg%n<span class="tag">&lt;/<span class="name">pattern</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Console</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">culr http://localhost:9007/mdc/</span><br><span class="line">[AppApplicationController.java:19][00000000299baa76ffffffffbd27659b1641811416723011] index</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/2813270003/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/1113160147/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="庆峰的博客">
+      <meta itemprop="description" content="Java | Sql | DataBase | Programmatic | EnterpriseArchitecture | DataAnalysis | ProjectManagement">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="庆峰的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/1113160147/" class="post-title-link" itemprop="url">SpringBoot-Scheduling-Tasks</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-02-09 15:39:33" itemprop="dateCreated datePublished" datetime="2021-02-09T15:39:33+08:00">2021-02-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-01-06 17:25:30" itemprop="dateModified" datetime="2024-01-06T17:25:30+08:00">2024-01-06</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Programmatic/" itemprop="url" rel="index"><span itemprop="name">Programmatic</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="Scheduling-Tasks"><a href="#Scheduling-Tasks" class="headerlink" title="Scheduling-Tasks"></a>Scheduling-Tasks</h2><blockquote>
+<p>Spring Scheduler里有两个概念：任务（Task）和运行任务的框架（TaskExecutor&#x2F;TaskScheduler）。TaskExecutor顾名思义，是任务的执行器，允许我们异步执行多个任务。TaskScheduler是任务调度器，来运行未来的定时任务。触发器Trigger可以决定定时任务是否该运行了，最常用的触发器是CronTrigger，具体用法会在下面章节中详细介绍。Spring内置了多种类型的TaskExecutor和TaskScheduler，方便用户根据不同业务场景选择。</p>
+</blockquote>
+<ul>
+<li>相同的方案还有Quartz，但是需要持久化数据库。</li>
+<li>Java.util中的Timer，功能相对少了点。</li>
+</ul>
+<h3 id="Scheduled"><a href="#Scheduled" class="headerlink" title="@Scheduled"></a>@Scheduled</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target(&#123;ElementType.METHOD, ElementType.ANNOTATION_TYPE&#125;)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Repeatable(Schedules.class)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> Scheduled &#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * cron 表达式</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	String <span class="title function_">cron</span><span class="params">()</span> <span class="keyword">default</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 将解析 cron 表达式的时区。默认情况下，此属性为空字符串（即将使用服务器的本地时区</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	String <span class="title function_">zone</span><span class="params">()</span> <span class="keyword">default</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * Execute the annotated method with a fixed period in milliseconds between the</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="type">long</span> <span class="title function_">fixedDelay</span><span class="params">()</span> <span class="keyword">default</span> -<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 和fixedDelay一个意思，只是类型是字符串。</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	String <span class="title function_">fixedDelayString</span><span class="params">()</span> <span class="keyword">default</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 表示按照一定频率时间间隔执行，类型long单位ms。</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="type">long</span> <span class="title function_">fixedRate</span><span class="params">()</span> <span class="keyword">default</span> -<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 和fixedRate一个意思，只是类型是字符串。</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	String <span class="title function_">fixedRateString</span><span class="params">()</span> <span class="keyword">default</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 表示延时多久再执行第一次任务，类型long单位ms。</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="type">long</span> <span class="title function_">initialDelay</span><span class="params">()</span> <span class="keyword">default</span> -<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/** </span></span><br><span class="line"><span class="comment">	 * 和initialDelay一个意思，只是类型是字符串。</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	String <span class="title function_">initialDelayString</span><span class="params">()</span> <span class="keyword">default</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Cron表示式"><a href="#Cron表示式" class="headerlink" title="Cron表示式"></a>Cron表示式</h3><ul>
+<li>cron<a href="https://www.bejson.com/othertools/cron/">生成</a></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"> ┌───────────── second (0-59)</span><br><span class="line"> │ ┌───────────── minute (0 - 59)</span><br><span class="line"> │ │ ┌───────────── hour (0 - 23)</span><br><span class="line"> │ │ │ ┌───────────── day of the month (1 - 31)</span><br><span class="line"> │ │ │ │ ┌───────────── month (1 - 12) (or JAN-DEC)</span><br><span class="line"> │ │ │ │ │ ┌───────────── day of the week (0 - 7)</span><br><span class="line"> │ │ │ │ │ │          (0 or 7 is Sunday, or MON-SUN)</span><br><span class="line"> │ │ │ │ │ │</span><br><span class="line"> * * * * * *</span><br><span class="line"></span><br><span class="line">每一个域可出现的字符如下：</span><br><span class="line">Seconds:可出现<span class="string">&quot;, - * /&quot;</span>四个字符，有效范围为0-59的整数</span><br><span class="line">Minutes:可出现<span class="string">&quot;, - * /&quot;</span>四个字符，有效范围为0-59的整数</span><br><span class="line">Hours:可出现<span class="string">&quot;, - * /&quot;</span>四个字符，有效范围为0-23的整数</span><br><span class="line">DayofMonth:可出现<span class="string">&quot;, - * / ? L W C&quot;</span>八个字符，有效范围为0-31的整数</span><br><span class="line">Month:可出现<span class="string">&quot;, - * /&quot;</span>四个字符，有效范围为1-12的整数或JAN-DEc</span><br><span class="line">DayofWeek:可出现<span class="string">&quot;, - * / ? L C #&quot;</span>四个字符，有效范围为1-7的整数或SUN-SAT两个范围。1表示星期天，2表示星期一， 依次类推</span><br><span class="line">Year:可出现<span class="string">&quot;, - * /&quot;</span>四个字符，有效范围为1970-2099年</span><br><span class="line"></span><br><span class="line">举几个例子:</span><br><span class="line">0 0 2 1 * ? * 表示在每月的1日的凌晨2点调度任务</span><br><span class="line">0 15 10 ? * MON-FRI 表示周一到周五每天上午10：15执行作业</span><br><span class="line">0 15 10 ? 6L 2020-2021 表示2020-2021年的每个月的最后一个星期五上午10:15执行作</span><br></pre></td></tr></table></figure>
+
+<h3 id="演示代码"><a href="#演示代码" class="headerlink" title="演示代码"></a><a href="https://github.com/z201/code-example/tree/main/SpringBoot-Scheduling-Tasks">演示代码</a></h3>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/1113160147/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/3888198838/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="庆峰的博客">
+      <meta itemprop="description" content="Java | Sql | DataBase | Programmatic | EnterpriseArchitecture | DataAnalysis | ProjectManagement">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="庆峰的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/3888198838/" class="post-title-link" itemprop="url">Centos7-Nginx-GoAccess</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-02-09 15:04:55" itemprop="dateCreated datePublished" datetime="2021-02-09T15:04:55+08:00">2021-02-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-01-06 17:44:25" itemprop="dateModified" datetime="2024-01-06T17:44:25+08:00">2024-01-06</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Programmatic/" itemprop="url" rel="index"><span itemprop="name">Programmatic</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="GoAccess"><a href="#GoAccess" class="headerlink" title="GoAccess"></a>GoAccess</h2><blockquote>
+<p>GoAccess是一个基于终端的快速日志分析器。其核心思想是实时快速分析和查看Web服务器统计信息，而无需使用您的浏览器（如果您希望通过SSH快速分析访问日志，或者只是喜欢在终端中工作），终端输出是默认输出，但它能够生成完整的，独立的实时 HTML报告（非常适合分析，监控和数据可视化），以及a JSON和CSV报告。</p>
+</blockquote>
+<ul>
+<li>数据持久性强，GoAccess能够通过磁盘上的B + Tree数据库逐步处理日志。</li>
+<li>GoAccess是用C语言编写的，要运行它，你只需要将ncurses作为依赖项，它甚至还具有自己的RFC6455兼容Web Socket服务器。</li>
+<li>跟踪提供请求所需的时间。如果您想跟踪减慢网站速度的网页，则非常有用。</li>
+<li>GoAccess允许任何自定义日志格式字符串。预定义选项包括Apache，Nginx，Amazon S3，Elastic Load Balancing，CloudFront等。</li>
+<li>所有面板和指标都定时在终端输出上每200毫秒更新一次，在HTML输出上每秒更新一次。</li>
+</ul>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20220209151200.png"></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/3888198838/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/2280464314/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -655,369 +983,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/1183386531/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="庆峰的博客">
-      <meta itemprop="description" content="Java | Sql | DataBase | Programmatic | EnterpriseArchitecture | DataAnalysis | ProjectManagement">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="庆峰的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/1183386531/" class="post-title-link" itemprop="url">学习技巧</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-01-21 22:56:36" itemprop="dateCreated datePublished" datetime="2021-01-21T22:56:36+08:00">2021-01-21</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-01-06 18:57:23" itemprop="dateModified" datetime="2024-01-06T18:57:23+08:00">2024-01-06</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Life/" itemprop="url" rel="index"><span itemprop="name">Life</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>7.1k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>6 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>爱迪生说：“天才不过是一个经常能完成自己工作的聪明人而已。”我们不必做天才，优秀的人不过是一个经常能完成自己工作的普通人而已。</p>
-</blockquote>
-<h3 id="减少学习排斥心理"><a href="#减少学习排斥心理" class="headerlink" title="减少学习排斥心理"></a>减少学习排斥心理</h3><ol>
-<li>在学习过程中，可以穿插安排喜欢且擅长的环节。而不是死磕一个艰难的任务。<strong>艰难和轻松的任务穿插完成</strong>，避免过度负面情绪，让自己在学习和工作中保持愉悦和高效的方法。</li>
-<li>定制学习计划<ol>
-<li>定制学习OKR，不要指定完不成的任务。将任务具像化，人的大脑是善于遗忘的。让自己每天都能从学习上得到正面都反馈，拥有足够都收获感。</li>
-<li>人的大脑存在<strong>奖励系统</strong>，它更加愿意选择立刻就能得到的好处。避免每天同类型的学习任务，任务类型尽可能少安排。</li>
-<li>尝试让学习变得自发自觉，不要追求某种解决，而是专注与学习的本身。</li>
-<li>我们的大脑中存在<strong>场所神经元</strong>，<strong>环境的改变可以激发它的活性</strong>。</li>
-</ol>
-</li>
-<li>学习过程中，遭遇困难是很正常的事情。它是成长过程中的一部分。</li>
-</ol>
-<h3 id="伪勤奋"><a href="#伪勤奋" class="headerlink" title="伪勤奋"></a>伪勤奋</h3><ol>
-<li>学习是<strong>了解、记忆、应用、输出的过程</strong>，只有去完成感到需要思考、需要克服困难的任务，才能算真<strong>勤奋</strong>。</li>
-<li>学的东西，要立刻检验，检验自己有没有记住。要有输出和思考。</li>
-<li>观察、分析、试错、反思、调整、应用、总结。可以让学习到的知识能被掌握并应用，要知道自己是如何做到的。</li>
-<li>避免<strong>形式主义</strong>，很多事情动起来就能解决**80%**。</li>
-</ol>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/posts/1183386531/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/2933634961/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="庆峰的博客">
-      <meta itemprop="description" content="Java | Sql | DataBase | Programmatic | EnterpriseArchitecture | DataAnalysis | ProjectManagement">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="庆峰的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/2933634961/" class="post-title-link" itemprop="url">SpringBoot-Dynamic-Data-Source</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-01-14 23:18:50" itemprop="dateCreated datePublished" datetime="2021-01-14T23:18:50+08:00">2021-01-14</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-01-06 17:24:23" itemprop="dateModified" datetime="2024-01-06T17:24:23+08:00">2024-01-06</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Programmatic/" itemprop="url" rel="index"><span itemprop="name">Programmatic</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>22k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>20 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>在对老系统进行saas改造的时候，在项目初期使用了动态数据源的方式处理业务。</p>
-</blockquote>
-<ul>
-<li>本文内容仅针对数据存储方案。</li>
-</ul>
-<h2 id="动态数据源"><a href="#动态数据源" class="headerlink" title="动态数据源"></a>动态数据源</h2><blockquote>
-<p><strong>SaaS是Software-as-a-service（软件即服务）</strong>它是一种通过Internet提供软件的模式，厂商将应用软件统一部署在自己的服务器</p>
-<p>①独立性：每个租户的系统相互独立。</p>
-<p>②平台性：所有租户归平台统一管理。</p>
-<p>③隔离性：每个租户的数据相互隔离。</p>
-</blockquote>
-<h3 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h3><ul>
-<li>老项目系统进行saas改造工作。</li>
-</ul>
-<h4 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h4><blockquote>
-<p>独立数据库、共享数据库、共享架构、OLTP、OLAP</p>
-</blockquote>
-<ul>
-<li>根据客户需求可以选择隔离数据库。</li>
-<li>也可以选择公用数据库。</li>
-<li>采用OLTP方案进行数据同步。</li>
-<li>采用OLAP方案进行冷数据同步。</li>
-</ul>
-<h4 id="技术方案"><a href="#技术方案" class="headerlink" title="技术方案"></a>技术方案</h4><ul>
-<li>spring boot 2.4.5</li>
-<li>mybatis plus</li>
-</ul>
-<h5 id="AbstractRoutingDataSource"><a href="#AbstractRoutingDataSource" class="headerlink" title="AbstractRoutingDataSource"></a>AbstractRoutingDataSource</h5><blockquote>
-<p>Spring 官网提供的切换数据源的抽象方法，基于查找键将getConnection()调用路由到各种目标 DataSource 之一的抽象DataSource实现。后者通常（但不一定）通过一些线程绑定的事务上下文来确定。</p>
-</blockquote>
-<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20220215104558.png"></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"> <span class="comment">/**</span></span><br><span class="line"><span class="comment">  * determineTargetDataSource() 方法进行切换。</span></span><br><span class="line"><span class="comment">  **/</span></span><br><span class="line"> <span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> Connection <span class="title function_">getConnection</span><span class="params">()</span> <span class="keyword">throws</span> SQLException &#123;</span><br><span class="line">	<span class="keyword">return</span> determineTargetDataSource().getConnection();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> Connection <span class="title function_">getConnection</span><span class="params">(String username, String password)</span> <span class="keyword">throws</span> SQLException &#123;</span><br><span class="line">	<span class="keyword">return</span> determineTargetDataSource().getConnection(username, password);</span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line"> <span class="comment">/**</span></span><br><span class="line"><span class="comment">  * 确定当前查找键。这通常会被实现来检查线程绑定的事务上下文。允许任意键。返回的键需要匹配存储的查找键类型，由resolveSpecifiedLookupKey方法解析。</span></span><br><span class="line"><span class="comment">  **/</span></span><br><span class="line"> <span class="meta">@Nullable</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">abstract</span> Object <span class="title function_">determineCurrentLookupKey</span><span class="params">()</span>;</span><br><span class="line"> <span class="comment">/**</span></span><br><span class="line"><span class="comment">  * 检索当前目标数据源。确定current lookup key ，在targetDataSources映射中执行查找，必要时回退到指定  的default target DataSource </span></span><br><span class="line"><span class="comment">  **/</span></span><br><span class="line"> <span class="keyword">protected</span> DataSource <span class="title function_">determineTargetDataSource</span><span class="params">()</span> &#123;</span><br><span class="line">	Assert.notNull(<span class="built_in">this</span>.resolvedDataSources, <span class="string">&quot;DataSource router not initialized&quot;</span>);</span><br><span class="line">	<span class="type">Object</span> <span class="variable">lookupKey</span> <span class="operator">=</span> determineCurrentLookupKey();</span><br><span class="line">	<span class="type">DataSource</span> <span class="variable">dataSource</span> <span class="operator">=</span> <span class="built_in">this</span>.resolvedDataSources.get(lookupKey);</span><br><span class="line">	<span class="keyword">if</span> (dataSource == <span class="literal">null</span> &amp;&amp; (<span class="built_in">this</span>.lenientFallback || lookupKey == <span class="literal">null</span>)) &#123;</span><br><span class="line">		dataSource = <span class="built_in">this</span>.resolvedDefaultDataSource;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (dataSource == <span class="literal">null</span>) &#123;</span><br><span class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalStateException</span>(<span class="string">&quot;Cannot determine target DataSource for lookup key [&quot;</span> + lookupKey + <span class="string">&quot;]&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> dataSource;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="演示代码"><a href="#演示代码" class="headerlink" title="演示代码"></a><a href="https://github.com/z201/code-example/tree/main/SpringBoot-Dynamic-Data-Source">演示代码</a></h3>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/posts/2933634961/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/2694709029/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="庆峰的博客">
-      <meta itemprop="description" content="Java | Sql | DataBase | Programmatic | EnterpriseArchitecture | DataAnalysis | ProjectManagement">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="庆峰的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/2694709029/" class="post-title-link" itemprop="url">Docker-Compose-SpringBoot-Mysql-Redis</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-01-09 21:23:02" itemprop="dateCreated datePublished" datetime="2021-01-09T21:23:02+08:00">2021-01-09</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-01-06 18:41:27" itemprop="dateModified" datetime="2024-01-06T18:41:27+08:00">2024-01-06</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Programmatic/" itemprop="url" rel="index"><span itemprop="name">Programmatic</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>5.9k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>5 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>在Java的技术栈中可以使用maven插件来构建docker镜像，用起来没有docker-compose好用。</p>
-</blockquote>
-<h3 id="实现目标"><a href="#实现目标" class="headerlink" title="实现目标"></a>实现目标</h3><ol>
-<li>spring boot 、mysql 、redis 定义正常运行。</li>
-<li>解决docker compose 启动顺序问题。</li>
-<li>解决配置文件读取其它容器ip问题。</li>
-</ol>
-<h2 id="源码地址"><a href="#源码地址" class="headerlink" title="源码地址"></a><a href="https://github.com/z201/code-example/tree/main/Docker-Compose-SpringBoot-Mysql-Redis">源码地址</a></h2><h3 id="演示效果"><a href="#演示效果" class="headerlink" title="演示效果"></a>演示效果</h3><h4 id="docker运行情况"><a href="#docker运行情况" class="headerlink" title="docker运行情况"></a>docker运行情况</h4><p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20220107221150.png"></p>
-<h4 id="spring-boot运行情况"><a href="#spring-boot运行情况" class="headerlink" title="spring boot运行情况"></a>spring boot运行情况</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">➜  docker-run curl http://127.0.0.1:9000/docker/</span><br><span class="line">&#123;<span class="string">&quot;code&quot;</span>:<span class="string">&quot;200&quot;</span>,<span class="string">&quot;data&quot;</span>:<span class="string">&quot;[information_schema, docker_app_1, mysql, performance_schema, sys]&quot;</span>,<span class="string">&quot;cache&quot;</span>:&#123;<span class="string">&quot;redis_version&quot;</span>: <span class="string">&quot;5.0.5&quot;</span>&#125;&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="构建项目"><a href="#构建项目" class="headerlink" title="构建项目"></a>构建项目</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── Dockerfile <span class="comment"># Dockerfile</span></span><br><span class="line">├── docker-compose.yml <span class="comment"># docker-compose文件</span></span><br><span class="line">├── docker-config <span class="comment"># docekr配置文件</span></span><br><span class="line">│   ├── mysql</span><br><span class="line">│   │   ├── init</span><br><span class="line">│   │   │   └── 1_init.sql <span class="comment"># mysql数据库初始化文件</span></span><br><span class="line">│   │   └── my.cnf <span class="comment"># mysql 配置文件</span></span><br><span class="line">│   ├── pwd.txt </span><br><span class="line">│   └── redis </span><br><span class="line">│       └── redis.conf <span class="comment"># redis 配置文件</span></span><br><span class="line">├── pom.xml <span class="comment"># java maven 项目依赖</span></span><br><span class="line">├── src</span><br><span class="line">│   ├── main</span><br><span class="line">│   │   ├── java</span><br><span class="line">│   │   │   └── cn</span><br><span class="line">│   │   │       └── z201</span><br><span class="line">│   │   │           └── docker</span><br><span class="line">│   │   │               ├── AppApplication.java <span class="comment"># spring boot 启动类</span></span><br><span class="line">│   │   │               └── AppApplicationController.java <span class="comment"># demo接口类</span></span><br><span class="line">│   │   └── resources</span><br><span class="line">│   │       ├── application-dev.yml <span class="comment"># dev环境下配置文件</span></span><br><span class="line">│   │       ├── application-test.yml <span class="comment"># test环境下配置文件</span></span><br><span class="line">│   │       ├── application.yml <span class="comment"># spring boot 配置文件</span></span><br><span class="line">│   │       └── logback.xml <span class="comment"># 日志输出文件</span></span><br><span class="line">│   └── <span class="built_in">test</span></span><br><span class="line">│       └── java</span><br><span class="line">└── target</span><br><span class="line">    ├── Docker-Compose-SpringBoot-Mysql-Redis-1.0.0-SNAPSHOT.jar <span class="comment"># mvn install 构建多产物</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h4 id="spring-boot-项目"><a href="#spring-boot-项目" class="headerlink" title="spring boot 项目"></a>spring boot 项目</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> cn.z201.docker;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RequestMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RestController;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> z201.coding@gmail.com</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AppApplicationController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> JdbcTemplate jdbcTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> RedisTemplate redisTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping(value = &quot;&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Object <span class="title function_">index</span><span class="params">()</span> &#123;</span><br><span class="line">        List&lt;String&gt; dataBasesList = jdbcTemplate.queryForList(<span class="string">&quot;SHOW  DATABASES&quot;</span>, String.class);</span><br><span class="line">        <span class="type">Properties</span> <span class="variable">info</span> <span class="operator">=</span>  redisTemplate.getConnectionFactory().getConnection().info();</span><br><span class="line">        Map&lt;String, Object&gt; data = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        data.put(<span class="string">&quot;code&quot;</span>, <span class="string">&quot;200&quot;</span>);</span><br><span class="line">        data.put(<span class="string">&quot;db&quot;</span>, dataBasesList.toString());</span><br><span class="line">        data.put(<span class="string">&quot;cache&quot;</span>, info);</span><br><span class="line">        <span class="keyword">return</span> data;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> cn.z201.docker;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.SpringApplication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.autoconfigure.SpringBootApplication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.ApplicationContext;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> z201.coding@gmail.com</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AppApplication</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">ApplicationContext</span> <span class="variable">applicationContext</span> <span class="operator">=</span> SpringApplication.run(AppApplication.class, args);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>配置文件</li>
-</ul>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">application:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">spring-boot-mysql-redis</span></span><br><span class="line">  <span class="attr">profiles:</span></span><br><span class="line">    <span class="attr">active:</span> <span class="string">dev</span></span><br><span class="line">  <span class="attr">mvc:</span></span><br><span class="line">    <span class="attr">throw-exception-if-no-handler-found:</span> <span class="literal">true</span> <span class="comment"># 处理404</span></span><br><span class="line">  <span class="attr">web:</span></span><br><span class="line">    <span class="attr">resources:</span></span><br><span class="line">      <span class="attr">add-mappings:</span> <span class="literal">false</span> <span class="comment"># 关闭资源映射</span></span><br><span class="line"><span class="attr">server:</span></span><br><span class="line">  <span class="attr">port:</span> <span class="number">9000</span></span><br><span class="line">  <span class="attr">servlet:</span></span><br><span class="line">    <span class="attr">context-path:</span> <span class="string">/docker</span></span><br><span class="line"></span><br><span class="line"><span class="attr">logging:</span></span><br><span class="line">  <span class="attr">config:</span> <span class="string">classpath:logback.xml</span></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>test</li>
-</ul>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">datasource:</span></span><br><span class="line">    <span class="attr">url:</span> <span class="string">jdbc:mysql://mysql:3306/docker_app_1?useSSL=false&amp;useUnicode=true&amp;autoReconnect=true&amp;failOverReadOnly=false&amp;characterEncoding=utf-8</span></span><br><span class="line">    <span class="attr">username:</span> <span class="string">root</span></span><br><span class="line">    <span class="attr">password:</span> <span class="string">root</span></span><br><span class="line">    <span class="attr">driver-class-name:</span> <span class="string">com.mysql.jdbc.Driver</span></span><br><span class="line">    <span class="attr">type:</span> <span class="string">com.zaxxer.hikari.HikariDataSource</span></span><br><span class="line">    <span class="attr">hikari:</span> <span class="comment"># https://github.com/brettwooldridge/HikariCP (uses milliseconds for all time values)</span></span><br><span class="line">      <span class="attr">maximumPoolSize:</span> <span class="number">20</span> <span class="comment"># 连接池最大连接数，默认是10</span></span><br><span class="line">      <span class="attr">minimumIdle:</span> <span class="number">5</span>  <span class="comment"># 最小空闲连接数量</span></span><br><span class="line">      <span class="attr">idleTimeout:</span> <span class="number">600000</span> <span class="comment"># 空闲连接存活最大时间，默认600000（10分钟）</span></span><br><span class="line">      <span class="attr">connectionTimeout:</span> <span class="number">30000</span> <span class="comment"># 数据库连接超时时间,默认30秒，即30000</span></span><br><span class="line">      <span class="attr">maxLifetime:</span> <span class="number">1800000</span> <span class="comment"># 此属性控制池中连接的最长生命周期，值0表示无限生命周期，默认1800000即30分钟</span></span><br><span class="line">  <span class="attr">redis:</span></span><br><span class="line">    <span class="attr">host:</span> <span class="string">redis</span></span><br><span class="line">    <span class="attr">port:</span> <span class="number">6379</span></span><br><span class="line">    <span class="attr">password:</span> <span class="string">root</span></span><br><span class="line">    <span class="attr">database:</span> <span class="number">0</span></span><br><span class="line">    <span class="attr">lettuce:</span></span><br><span class="line">      <span class="attr">pool:</span></span><br><span class="line">        <span class="attr">max-active:</span> <span class="number">8</span> <span class="comment"># 连接池最大连接数（使用负值表示没有限制）</span></span><br><span class="line">        <span class="attr">max-wait:</span> <span class="number">2000</span> <span class="comment"># 连接池最大阻塞等待时间（使用负值表示没有限制）</span></span><br><span class="line">        <span class="attr">min-idle:</span> <span class="number">0</span> <span class="comment"># 连接池中的最小空闲连接</span></span><br><span class="line">        <span class="attr">max-idle:</span> <span class="number">8</span> <span class="comment"># 连接池中的最大空闲连接</span></span><br><span class="line">      <span class="attr">shutdown-timeout:</span> <span class="number">100</span> <span class="comment"># 关闭超时时间</span></span><br><span class="line">    <span class="attr">timeout:</span> <span class="string">60s</span></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><p>这里需要注意在mysql和redis连接上并没有写ip而是docker容器互联的功能，在同一个网桥中使用links互通多个容器的网络。</p>
-</li>
-<li><p>dev的环境都是本地环境，可以自己搭建mysql、redis环境。</p>
-</li>
-</ul>
-<h4 id="docket-compose配置文件"><a href="#docket-compose配置文件" class="headerlink" title="docket-compose配置文件"></a>docket-compose配置文件</h4><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version :</span> <span class="string">&#x27;3&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">networks:</span></span><br><span class="line">  <span class="attr">network-docker-app:</span></span><br><span class="line">    <span class="attr">driver:</span> <span class="string">bridge</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">web:</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">cn.z201.docker-app</span></span><br><span class="line">    <span class="attr">build:</span></span><br><span class="line">      <span class="attr">context:</span> <span class="string">.</span></span><br><span class="line">      <span class="attr">dockerfile:</span> <span class="string">.</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">cn.z201.docker-app-3</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">network-docker-app</span></span><br><span class="line">    <span class="attr">expose:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&#x27;9000&#x27;</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&#x27;9000:9000&#x27;</span></span><br><span class="line">    <span class="attr">depends_on:</span> <span class="comment"># 等待其它服务启动完成</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">mysql</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">redis</span></span><br><span class="line">    <span class="attr">links:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">mysql</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">redis</span></span><br><span class="line">  <span class="attr">mysql:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">mysql:5.7</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">mysql5.7-dev-3</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">network-docker-app</span></span><br><span class="line">    <span class="attr">expose:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&#x27;3306&#x27;</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&#x27;3306:3306&#x27;</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./docker-config/mysql/my.cnf:/etc/mysql/my.cnf</span> <span class="comment"># 映射数据库配置文件</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./docker-config/mysql/init:/docker-entrypoint-initdb.d</span> <span class="comment"># 初始化数据库</span></span><br><span class="line">    <span class="attr">command:</span> [</span><br><span class="line">      <span class="string">&#x27;--character-set-server=utf8mb4&#x27;</span>,</span><br><span class="line">      <span class="string">&#x27;--collation-server=utf8mb4_unicode_ci&#x27;</span>,</span><br><span class="line">      <span class="string">&#x27;--lower_case_table_names=1&#x27;</span>,</span><br><span class="line">      <span class="string">&#x27;--default-time-zone=+8:00&#x27;</span>]</span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">MYSQL_ROOT_PASSWORD=root</span> <span class="comment"># 设置root密码</span></span><br><span class="line">    <span class="attr">healthcheck:</span></span><br><span class="line">      <span class="attr">test:</span> <span class="string">&quot;/bin/netstat -anpt|grep 3306&quot;</span></span><br><span class="line">      <span class="attr">interval:</span> <span class="string">30s</span></span><br><span class="line">      <span class="attr">timeout:</span> <span class="string">3s</span></span><br><span class="line">      <span class="attr">retries:</span> <span class="number">1</span></span><br><span class="line">  <span class="attr">redis:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">redis:5.0.5</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">redis5.0.6-dev-3</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">network-docker-app</span></span><br><span class="line">    <span class="attr">expose:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&#x27;6379&#x27;</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&#x27;6379:6379&#x27;</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./docker-config/redis/redis.conf:/etc/redis.conf</span> <span class="comment"># 映射数据库配置文件</span></span><br><span class="line">    <span class="attr">command:</span> <span class="string">redis-server</span> <span class="string">/etc/redis.conf</span> <span class="comment"># 启动redis命令</span></span><br><span class="line">    <span class="attr">healthcheck:</span></span><br><span class="line">      <span class="attr">test:</span> <span class="string">&quot;/bin/netstat -anpt|grep 6379&quot;</span></span><br><span class="line">      <span class="attr">interval:</span> <span class="string">30s</span></span><br><span class="line">      <span class="attr">timeout:</span> <span class="string">3s</span></span><br><span class="line">      <span class="attr">retries:</span> <span class="number">1</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h3 id="END"><a href="#END" class="headerlink" title="END"></a>END</h3>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1088,7 +1053,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">135</span>
+          <span class="site-state-item-count">138</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1235,13 +1200,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">1m</span>
+    <span title="站点总字数">1.1m</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">15:51</span>
+    <span title="站点阅读时长">16:11</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>

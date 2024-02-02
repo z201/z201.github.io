@@ -255,6 +255,346 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/899510692/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="庆峰的博客">
+      <meta itemprop="description" content="Java | Sql | DataBase | Programmatic | EnterpriseArchitecture | DataAnalysis | ProjectManagement">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="庆峰的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/899510692/" class="post-title-link" itemprop="url">Java-Mybatis-Junit4</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-02-27 14:16:34" itemprop="dateCreated datePublished" datetime="2019-02-27T14:16:34+08:00">2019-02-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-01-06 18:34:39" itemprop="dateModified" datetime="2024-01-06T18:34:39+08:00">2024-01-06</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Programmatic/" itemprop="url" rel="index"><span itemprop="name">Programmatic</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p><a href="https://z201.cn/2019/02/26/mybatis%E5%B0%8F%E8%AF%95%E7%89%9B%E5%88%80/">mybatis小试牛刀</a> 在此基础上添加log日志。</p>
+</blockquote>
+<ul>
+<li><p>官方文档 ： <a href="http://www.mybatis.org/mybatis-3/zh/logging.html">http://www.mybatis.org/mybatis-3/zh/logging.html</a></p>
+</li>
+<li><p>项目地址 ： <a href="https://github.com/z201/z201.github.io.code/tree/master/mybatis-learning/mybatis-learning-02">mybatis-learning-02</a></p>
+</li>
+</ul>
+<h3 id="0x01-测试控制台的显示内容"><a href="#0x01-测试控制台的显示内容" class="headerlink" title="0x01 测试控制台的显示内容"></a>0x01 测试控制台的显示内容</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">User</span>(id<span class="operator">=</span><span class="number">1</span>, name<span class="operator">=</span>TOM, age<span class="operator">=</span><span class="number">12</span>, gender<span class="operator">=</span><span class="number">0</span>)</span><br><span class="line"><span class="keyword">User</span>(id<span class="operator">=</span><span class="number">2</span>, name<span class="operator">=</span>JON, age<span class="operator">=</span><span class="number">13</span>, gender<span class="operator">=</span><span class="number">1</span>)</span><br><span class="line"><span class="keyword">User</span>(id<span class="operator">=</span><span class="number">3</span>, name<span class="operator">=</span>King, age<span class="operator">=</span><span class="number">11</span>, gender<span class="operator">=</span><span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="0x02-增加日志输出"><a href="#0x02-增加日志输出" class="headerlink" title="0x02 增加日志输出"></a>0x02 增加日志输出</h3><blockquote>
+<p>根据官方文档显示，支持的log有很多实现，这里使用Slf4j + Logback 多组合。</p>
+</blockquote>
+<ul>
+<li>根据之前的项目，这里偷懒重新创建一个项目并把之前的代码都复制过来。</li>
+<li>添加maven依赖。</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"> <span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">mybatis.version</span>&gt;</span>3.5.0<span class="tag">&lt;/<span class="name">mybatis.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">junit.version</span>&gt;</span>4.12<span class="tag">&lt;/<span class="name">junit.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">lmbok.version</span>&gt;</span>1.18.4<span class="tag">&lt;/<span class="name">lmbok.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">mysql.version</span>&gt;</span>5.1.47<span class="tag">&lt;/<span class="name">mysql.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">h2.version</span>&gt;</span>1.4.197<span class="tag">&lt;/<span class="name">h2.version</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 新增内容 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">slf4j.version</span>&gt;</span>1.7.25<span class="tag">&lt;/<span class="name">slf4j.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">logback.version</span>&gt;</span>1.2.3<span class="tag">&lt;/<span class="name">logback.version</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- pom文件需要指定打包编码集，[WARNING] File encoding has not been set, using platform encoding GBK, i.e. build is platform dependent!  --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">project.build.sourceEncoding</span>&gt;</span>UTF-8<span class="tag">&lt;/<span class="name">project.build.sourceEncoding</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.slf4j<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>slf4j-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;slf4j.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>ch.qos.logback<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>logback-classic<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;logback.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>添加logback配置文件</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">appender</span> <span class="attr">name</span>=<span class="string">&quot;STDOUT&quot;</span> <span class="attr">class</span>=<span class="string">&quot;ch.qos.logback.core.ConsoleAppender&quot;</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- encoders are assigned the type</span></span><br><span class="line"><span class="comment">             ch.qos.logback.classic.encoder.PatternLayoutEncoder by default --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">encoder</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">pattern</span>&gt;</span>z201.github.cn %d&#123;HH:mm:ss.SSS&#125; [%thread] %-5level %logger&#123;36&#125; - %msg%n<span class="tag">&lt;/<span class="name">pattern</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">encoder</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">appender</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">root</span> <span class="attr">level</span>=<span class="string">&quot;debug&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">appender-ref</span> <span class="attr">ref</span>=<span class="string">&quot;STDOUT&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">root</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>再次运行单元测试。</li>
+</ul>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.046</span> [main] DEBUG org<span class="variable">.apache</span><span class="variable">.ibatis</span><span class="variable">.logging</span><span class="variable">.LogFactory</span> - Logging initialized using &#x27;<span class="keyword">class</span> org<span class="variable">.apache</span><span class="variable">.ibatis</span><span class="variable">.logging</span><span class="variable">.slf4j</span><span class="variable">.Slf4jImpl</span>&#x27; adapter.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.049</span> [main] DEBUG org<span class="variable">.apache</span><span class="variable">.ibatis</span><span class="variable">.logging</span><span class="variable">.LogFactory</span> - Logging initialized using &#x27;<span class="keyword">class</span> org<span class="variable">.apache</span><span class="variable">.ibatis</span><span class="variable">.logging</span><span class="variable">.slf4j</span><span class="variable">.Slf4jImpl</span>&#x27; adapter.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.076</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - PooledDataSource forcefully closed/removed all connections.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.076</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - PooledDataSource forcefully closed/removed all connections.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.076</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - PooledDataSource forcefully closed/removed all connections.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.076</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - PooledDataSource forcefully closed/removed all connections.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.155</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.t</span><span class="variable">.jdbc</span><span class="variable">.JdbcTransaction</span> - Opening JDBC Connection</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.356</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - Created connection <span class="number">1839168128</span>.</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.356</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.t</span><span class="variable">.jdbc</span><span class="variable">.JdbcTransaction</span> - Setting autocommit to false on JDBC Connection [conn0: url=jdbc:h2:mem:mybatis_learning_01_db user=ROOT]</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.358</span> [main] DEBUG c<span class="variable">.z201</span><span class="variable">.mybatis</span><span class="variable">.learning</span><span class="variable">.UserDao</span><span class="variable">.list</span> - ==&gt;  Preparing: SELECT * FROM `user` </span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.384</span> [main] DEBUG c<span class="variable">.z201</span><span class="variable">.mybatis</span><span class="variable">.learning</span><span class="variable">.UserDao</span><span class="variable">.list</span> - ==&gt; Parameters: </span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.411</span> [main] DEBUG c<span class="variable">.z201</span><span class="variable">.mybatis</span><span class="variable">.learning</span><span class="variable">.UserDao</span><span class="variable">.list</span> - &lt;==      Total: <span class="number">3</span></span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.414</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.t</span><span class="variable">.jdbc</span><span class="variable">.JdbcTransaction</span> - Resetting autocommit to true on JDBC Connection [conn0: url=jdbc:h2:mem:mybatis_learning_01_db user=ROOT]</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.415</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.t</span><span class="variable">.jdbc</span><span class="variable">.JdbcTransaction</span> - Closing JDBC Connection [conn0: url=jdbc:h2:mem:mybatis_learning_01_db user=ROOT]</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.415</span> [main] DEBUG o<span class="variable">.a</span><span class="variable">.i</span><span class="variable">.d</span><span class="variable">.pooled</span><span class="variable">.PooledDataSource</span> - Returned connection <span class="number">1839168128</span> to pool.</span><br><span class="line">User(id=<span class="number">1</span>, name=TOM, age=<span class="number">12</span>, gender=<span class="number">0</span>)</span><br><span class="line">User(id=<span class="number">2</span>, name=JON, age=<span class="number">13</span>, gender=<span class="number">1</span>)</span><br><span class="line">User(id=<span class="number">3</span>, name=King, age=<span class="number">11</span>, gender=<span class="number">0</span>)</span><br><span class="line">z201<span class="variable">.github</span><span class="variable">.cn</span> <span class="number">15</span>:<span class="number">08</span>:<span class="number">30</span><span class="variable">.416</span> [main] DEBUG cn<span class="variable">.z201</span><span class="variable">.mybatis</span><span class="variable">.test</span><span class="variable">.MybatisTest01</span> - <span class="keyword">end</span>...</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/887797189/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="庆峰的博客">
+      <meta itemprop="description" content="Java | Sql | DataBase | Programmatic | EnterpriseArchitecture | DataAnalysis | ProjectManagement">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="庆峰的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/887797189/" class="post-title-link" itemprop="url">Java-Mybatis-H2-Junit4</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-02-26 20:46:08" itemprop="dateCreated datePublished" datetime="2019-02-26T20:46:08+08:00">2019-02-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-01-06 18:34:33" itemprop="dateModified" datetime="2024-01-06T18:34:33+08:00">2024-01-06</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Programmatic/" itemprop="url" rel="index"><span itemprop="name">Programmatic</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>8.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>接着上章内容<a href="https://z201.cn/2019/02/26/mybatis%E6%BA%90%E7%A0%81%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">mybatis源码环境搭建</a>,根据官方文档，运行一个demo项目。</p>
+</blockquote>
+<h3 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h3><ul>
+<li>项目源代码:<a href="https://github.com/z201/z201.github.io.code/tree/master/mybatis-learning/mybatis-learning-01">mybatis-learning-01</a></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">mybatis-learning/mybatis-learning-01</span><br><span class="line">├── mybatis-learning-01.iml</span><br><span class="line">├── pom.xml  <span class="comment">#项目依赖管理 1</span></span><br><span class="line">└── src</span><br><span class="line">    ├── main</span><br><span class="line">    │   ├── java</span><br><span class="line">    │   │   ├── cn</span><br><span class="line">    │   │   │   └── z201</span><br><span class="line">    │   │   │       └── mybatis</span><br><span class="line">    │   │   │           └── learning</span><br><span class="line">    │   │   │               ├── SetUpSessionFactory.java <span class="comment"># mybatis 初始化  3</span></span><br><span class="line">    │   │   │               ├── User.java <span class="comment"># 实体 5</span></span><br><span class="line">    │   │   │               └── UserDao.java <span class="comment"># 实体dao 6</span></span><br><span class="line">    │   │   └── package-info.java</span><br><span class="line">    │   └── resources</span><br><span class="line">    │       ├── init_table.sql <span class="comment"># h2数据库初始化sql 4</span></span><br><span class="line">    │       ├── mybatis</span><br><span class="line">    │       │   └── UserDao.xml <span class="comment"># dao 对应的mapper 7</span></span><br><span class="line">    │       └── mybatis-config.xml <span class="comment"># mybatis 配置文件 2</span></span><br><span class="line">    └── <span class="built_in">test</span></span><br><span class="line">        └── java</span><br><span class="line">            └── cn</span><br><span class="line">                └── z201</span><br><span class="line">                    └── mybatis</span><br><span class="line">                        └── <span class="built_in">test</span></span><br><span class="line">                            ├── MybatisTest01.java <span class="comment"># 单元测试 8</span></span><br><span class="line">                            └── package-info.java</span><br><span class="line"></span><br><span class="line">15 directories, 11 files</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>根据上面注释的顺序，我们依次介绍项目代码。</p>
+</blockquote>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/887797189/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/716639737/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="庆峰的博客">
+      <meta itemprop="description" content="Java | Sql | DataBase | Programmatic | EnterpriseArchitecture | DataAnalysis | ProjectManagement">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="庆峰的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/716639737/" class="post-title-link" itemprop="url">Mybatis-Source-Code-Environment-build</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-02-26 14:17:54" itemprop="dateCreated datePublished" datetime="2019-02-26T14:17:54+08:00">2019-02-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-01-06 18:30:16" itemprop="dateModified" datetime="2024-01-06T18:30:16+08:00">2024-01-06</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Programmatic/" itemprop="url" rel="index"><span itemprop="name">Programmatic</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>mybatis学习笔记。</p>
+</blockquote>
+<h2 id="0x00-阅读源代码"><a href="#0x00-阅读源代码" class="headerlink" title="0x00 阅读源代码"></a>0x00 阅读源代码</h2><h3 id="下载源代码"><a href="#下载源代码" class="headerlink" title="下载源代码"></a>下载源代码</h3><ul>
+<li>代码仓库地址 <a href="https://github.com/mybatis/mybatis-3.git">https://github.com/mybatis/mybatis-3.git</a></li>
+<li>阅读版本号 <code>myabtis-3.5.0</code></li>
+<li>下载版本<code>git clone -b mybatis-3.5.0 https://github.com/mybatis/mybatis-3.git</code><ul>
+<li>由于github下载速度是在太慢了，这里用gitee克隆一个镜像。</li>
+<li>下载版本<code>git clone -b mybatis-3.5.0 https://gitee.com/Z201/mybatis-3.git</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="查看源代码结构"><a href="#查看源代码结构" class="headerlink" title="查看源代码结构"></a>查看源代码结构</h3><ul>
+<li>查看项目主要文件夹</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">tree -d L 2</span><br><span class="line">.</span><br><span class="line">├── src  </span><br><span class="line">│   ├── main <span class="comment"># 源代码</span></span><br><span class="line">│   ├── site <span class="comment"># 站点稳当</span></span><br><span class="line">│   └── <span class="built_in">test</span> <span class="comment"># 单元测试</span></span><br><span class="line">└── travis   <span class="comment"># 官方的ci集成</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>查看项目源码主目录</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">tree -d src/main -L 5</span><br><span class="line">src/main</span><br><span class="line">└── java</span><br><span class="line">    └── org</span><br><span class="line">        └── apache</span><br><span class="line">            └── ibatis</span><br><span class="line">                ├── annotations <span class="comment"># 注解</span></span><br><span class="line">                ├── binding     <span class="comment"># 代理</span></span><br><span class="line">                ├── builder     <span class="comment"># 构造</span></span><br><span class="line">                ├── cache       <span class="comment"># 缓存</span></span><br><span class="line">                ├── cursor      <span class="comment"># 返回值类型为游标的方法</span></span><br><span class="line">                ├── datasource  <span class="comment"># 数据源</span></span><br><span class="line">                ├── exceptions  <span class="comment"># 异常</span></span><br><span class="line">                ├── executor    <span class="comment"># 数据操作具体执行</span></span><br><span class="line">                ├── io          <span class="comment"># 文件流</span></span><br><span class="line">                ├── jdbc        <span class="comment"># jdbc模块</span></span><br><span class="line">                ├── lang        <span class="comment"># 工具</span></span><br><span class="line">                ├── logging     <span class="comment"># 日志</span></span><br><span class="line">                ├── mapping     <span class="comment"># 映射、参数、结果集。</span></span><br><span class="line">                ├── parsing     <span class="comment"># 解析器</span></span><br><span class="line">                ├── plugin      <span class="comment"># 插件</span></span><br><span class="line">                ├── reflection  <span class="comment"># 反射</span></span><br><span class="line">                ├── scripting   <span class="comment"># sql解析</span></span><br><span class="line">                ├── session     <span class="comment"># 接口层会话</span></span><br><span class="line">                ├── transaction <span class="comment"># 事物</span></span><br><span class="line">                └── <span class="built_in">type</span>        <span class="comment"># 类型</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>将项目导入idea中，就可以看到完整的源代码了。</li>
+</ul>
+<h2 id="0x01-根据官方文档快速入门"><a href="#0x01-根据官方文档快速入门" class="headerlink" title="0x01 根据官方文档快速入门"></a>0x01 根据官方文档快速入门</h2><blockquote>
+<p>强烈推荐认真阅读mybatis的官方文档。</p>
+</blockquote>
+<ul>
+<li>官方文档地址 ： <a href="http://www.mybatis.org/mybatis-3/zh/getting-started.html">http://www.mybatis.org/mybatis-3/zh/getting-started.html</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/2654339136/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3731,387 +4071,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/809784495/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="庆峰的博客">
-      <meta itemprop="description" content="Java | Sql | DataBase | Programmatic | EnterpriseArchitecture | DataAnalysis | ProjectManagement">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="庆峰的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/809784495/" class="post-title-link" itemprop="url">Centos7-Redis-Deploy</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-04-26 06:34:08" itemprop="dateCreated datePublished" datetime="2018-04-26T06:34:08+08:00">2018-04-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-01-06 18:40:42" itemprop="dateModified" datetime="2024-01-06T18:40:42+08:00">2024-01-06</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Programmatic/" itemprop="url" rel="index"><span itemprop="name">Programmatic</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h1><blockquote>
-<p>Redis全称：Remote Dictionary Server(远程数据服务)。Redis是一个开源的使用ANSI C语言编写、支持网络、可基于内存亦可持久化的日志型、Key-Value数据库，并提供多种语言的API。</p>
-</blockquote>
-<h2 id="单实例安装"><a href="#单实例安装" class="headerlink" title="单实例安装"></a>单实例安装</h2><blockquote>
-<p>只是学习使用使用yum 方式安装比较快。而且centos自带官方源。</p>
-</blockquote>
-<h3 id="yum安装"><a href="#yum安装" class="headerlink" title="yum安装"></a>yum安装</h3><ul>
-<li>yum install epel-release    –下载fedora的epel仓库</li>
-<li>yum install redis    – 安装redis数据库</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/posts/809784495/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/1440395111/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="庆峰的博客">
-      <meta itemprop="description" content="Java | Sql | DataBase | Programmatic | EnterpriseArchitecture | DataAnalysis | ProjectManagement">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="庆峰的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/1440395111/" class="post-title-link" itemprop="url">Centos7-Mongodb-Deploy</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-04-25 05:16:12" itemprop="dateCreated datePublished" datetime="2018-04-25T05:16:12+08:00">2018-04-25</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-01-06 17:32:20" itemprop="dateModified" datetime="2024-01-06T17:32:20+08:00">2024-01-06</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Programmatic/" itemprop="url" rel="index"><span itemprop="name">Programmatic</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>6.1k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>6 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>mongodb的安装方式比较简单，下面演示在CentOS7上用yum方式安装。</p>
-</blockquote>
-<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><ul>
-<li>下载地址 <a href="https://www.mongodb.com/download-center#community">https://www.mongodb.com/download-center#community</a></li>
-<li>在线文档 <a href="https://docs.mongodb.com/manual/introduction/">https://docs.mongodb.com/manual/introduction/</a></li>
-</ul>
-<h2 id="使用yum方式安装"><a href="#使用yum方式安装" class="headerlink" title="使用yum方式安装"></a>使用yum方式安装</h2><blockquote>
-<p>仅供学习参考，若在生产环境中部署请注意修改安全配置。</p>
-</blockquote>
-<ul>
-<li>整个mongodb（社区版）包含如下软件</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>软件名称</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>mongodb-org-server</td>
-<td>包含mongod守护程序和关联的配置和init脚本</td>
-</tr>
-<tr>
-<td>mongodb-org-mongos</td>
-<td>包含mongos守护程序</td>
-</tr>
-<tr>
-<td>mongodb-org-shell</td>
-<td>包含mongo shell，它是一个连接mongodb的命令行客户端，允许用户直接输入nosql语法管理数据库。</td>
-</tr>
-<tr>
-<td>mongodb-org-tools</td>
-<td>包含以下工具的MongoDB：数据导入、导出、备份、恢复等等</td>
-</tr>
-</tbody></table>
-<ul>
-<li>创建yum源文件</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/yum.repos.d/mongodb-org-3.4.repo1</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/posts/1440395111/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/1254138214/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="庆峰的博客">
-      <meta itemprop="description" content="Java | Sql | DataBase | Programmatic | EnterpriseArchitecture | DataAnalysis | ProjectManagement">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="庆峰的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/1254138214/" class="post-title-link" itemprop="url">Centos7-Base-Command</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-04-23 08:58:34" itemprop="dateCreated datePublished" datetime="2018-04-23T08:58:34+08:00">2018-04-23</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-01-06 18:40:35" itemprop="dateModified" datetime="2024-01-06T18:40:35+08:00">2024-01-06</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Programmatic/" itemprop="url" rel="index"><span itemprop="name">Programmatic</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>10k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>9 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>linux作为个人工作经常使用的系统、做下简单的记录方便以后工作参考。</p>
-</blockquote>
-<h2 id="ps"><a href="#ps" class="headerlink" title="ps"></a><a href="http://man.linuxde.net/ps">ps</a></h2><blockquote>
-<p>ps命令用于报告系统某个时间内进程的情况</p>
-</blockquote>
-<ul>
-<li>参数</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">-A : 所有的进程均显示出来</span><br><span class="line">-a : 不与terminal有关的所有进程</span><br><span class="line">-u : 有效用户的相关进程</span><br><span class="line">-x : 一般与a参数一起使用，可以列出比较完整的信息。</span><br><span class="line">-l : 较详细地将PID的信息列出。</span><br></pre></td></tr></table></figure>
-
-<h3 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h3><p>查询某程序的情况</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">[root@VM_115_109_centos ~]<span class="comment"># ps -ef | grep mysqld</span></span></span><br><span class="line">root      8013 17307  0 05:34 pts/0    00:00:00 grep --color=auto mysqld</span><br><span class="line">mysql    28882     1  0 Apr02 ?        00:07:03 /usr/sbin/mysqld --daemonize --pid-file=/var/run/mysqld/mysqld.pid</span><br></pre></td></tr></table></figure>
-
-<p>UID      PID   PPID     C STIME   TTY    TIME     CMD (类目描述)</p>
-<ul>
-<li>UID 程序被该 UID 所拥有</li>
-<li>PID 就是这个程序的 ID </li>
-<li>PPID 则是其上级父程序的ID</li>
-<li>C CPU 使用的资源百分比</li>
-<li>STIME 系统启动时间</li>
-<li>TTY 登入者的终端机位置</li>
-<li>TIME 使用掉的 CPU 时间。</li>
-<li>CMD 所下达的指令</li>
-</ul>
-<p>查看内存占用前1的进程</p>
-<ul>
-<li>ps auxw | head -1;ps auxw|sort -rn -k4|head -1</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"> ps auxw | <span class="built_in">head</span> -1;ps auxw|<span class="built_in">sort</span> -rn -k4|<span class="built_in">head</span> -1</span></span><br><span class="line">USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</span><br><span class="line">mysql    28882  0.0 10.9 1143416 205484 ?      Sl   Apr02   7:20 /usr/sbin/mysqld --daemonize --pid-file=/var/run/mysqld/mysqld.pid</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><p>内存的单位是kb，VSZ是虚拟内存的占用，RSS是真实的内存的占用。</p>
-</li>
-<li><p>命令分解：</p>
-</li>
-<li><p>ps auxw显示系统资源占用情况；</p>
-</li>
-<li><p>head -1表示显示第一列，即标题列；</p>
-</li>
-<li><p>sort -r 表示反向排序，-n表示按数字排序，-k4表示列的第4个字符。</p>
-</li>
-</ul>
-<p>查看CPU占用前1的进程</p>
-<ul>
-<li>ps auxw|head -1;ps auxw|sort -rn -k3|head -1</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">ps auxw|<span class="built_in">head</span> -1;ps auxw|<span class="built_in">sort</span> -rn -k3|<span class="built_in">head</span> -5</span></span><br><span class="line">USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</span><br><span class="line">root      1690  0.1  0.6 536692 12436 ?        Sl   Apr10  29:58 barad_agent</span><br><span class="line">USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</span><br><span class="line">root         9  0.0  0.0      0     0 ?        R    Mar08   1:45 [rcu_sched]</span><br><span class="line">root       884  0.0  0.0 110044   808 ttyS0    Ss+  Mar08   0:00 /sbin/agetty --keep-baud 115200 38400 9600 ttyS0 vt220</span><br><span class="line">root       883  0.0  0.0 110044   788 tty1     Ss+  Mar08   0:00 /sbin/agetty --noclear tty1 linux</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/posts/1254138214/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -4182,7 +4141,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">135</span>
+          <span class="site-state-item-count">138</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -4329,13 +4288,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">1m</span>
+    <span title="站点总字数">1.1m</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">15:51</span>
+    <span title="站点阅读时长">16:11</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>

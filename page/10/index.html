@@ -255,6 +255,481 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/564432686/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="庆峰的博客">
+      <meta itemprop="description" content="Java | Sql | DataBase | Programmatic | EnterpriseArchitecture | DataAnalysis | ProjectManagement">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="庆峰的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/564432686/" class="post-title-link" itemprop="url">Spring-Spi</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-12-16 14:18:29" itemprop="dateCreated datePublished" datetime="2020-12-16T14:18:29+08:00">2020-12-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-01-06 18:42:51" itemprop="dateModified" datetime="2024-01-06T18:42:51+08:00">2024-01-06</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Programmatic/" itemprop="url" rel="index"><span itemprop="name">Programmatic</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>9.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>8 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>SPI 全称为 Service Provider Interface，是一种服务发现机制。SPI 的本质是将接口实现类的全限定名配置在文件中，并由服务加载器读取配置文件，加载实现类。这样可以在运行时，动态为接口替换实现类。</p>
+</blockquote>
+<ul>
+<li><p>本文对比JDK、Spring对SPI机制的实现。</p>
+</li>
+<li><p>在实际的应用场景。</p>
+<ul>
+<li>jdbc驱动，不同的数据有不同的驱动。</li>
+</ul>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20220216160121.png"></p>
+<p> <code>com.mysql.cj.jdbc.Driver</code></p>
+<ul>
+<li>spring 也使用spi机制，用于扩展实现。</li>
+</ul>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="https://z201.oss-cn-shanghai.aliyuncs.com/JavaNote/20220216160337.png"><code>org.springframework.beans.BeanInfoFactory=org.springframework.beans.ExtendedBeanInfoFactory</code></p>
+<ul>
+<li>dubbo也通过spi机制实现自定义扩展。</li>
+<li>日志门面接口实现类加载，SLF4J加载不同提供商的日志是现类。</li>
+</ul>
+</li>
+</ul>
+<h3 id="SPI"><a href="#SPI" class="headerlink" title="SPI"></a>SPI</h3><h3 id="演示代码"><a href="#演示代码" class="headerlink" title="演示代码"></a><a href="https://github.com/z201/code-example/tree/main/Spring-SPI">演示代码</a></h3><blockquote>
+<p>JDK 中 提供了一个 SPI 的功能，核心类是 java.util.ServiceLoader。其作用就是，可以通过类名获取在”META-INF&#x2F;services&#x2F;“下的多个配置实现文件。</p>
+</blockquote>
+<h4 id="ServiceLoader"><a href="#ServiceLoader" class="headerlink" title="ServiceLoader"></a>ServiceLoader</h4><ul>
+<li>META-INF&#x2F;services下的文件(以Interface全路径命名)中添加具体实现类的全路径名。</li>
+<li>使用程序使用ServiceLoader动态加载实现类(根据目录META-INF&#x2F;services下的配置文件找到实现类的全限定名并调用classloader来加载实现类到JVM)</li>
+<li>SPI的实现类必须具有无参数的构造方法</li>
+</ul>
+<h4 id="演示代码-1"><a href="#演示代码-1" class="headerlink" title="演示代码"></a>演示代码</h4>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/564432686/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/2936478442/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="庆峰的博客">
+      <meta itemprop="description" content="Java | Sql | DataBase | Programmatic | EnterpriseArchitecture | DataAnalysis | ProjectManagement">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="庆峰的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/2936478442/" class="post-title-link" itemprop="url">Java-Zookeeper</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-12-09 12:10:31" itemprop="dateCreated datePublished" datetime="2020-12-09T12:10:31+08:00">2020-12-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-01-06 18:32:39" itemprop="dateModified" datetime="2024-01-06T18:32:39+08:00">2024-01-06</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Programmatic/" itemprop="url" rel="index"><span itemprop="name">Programmatic</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="Zookeeper概述"><a href="#Zookeeper概述" class="headerlink" title="Zookeeper概述"></a>Zookeeper概述</h3><blockquote>
+<p>Zookeeper可以让企业的IT架构逐步从集中式向分布式过度，所谓的分布式是指：把一个计算任务分解成若干个计算单元，并且分派到若干不同的计算机中去执行，然后汇总计算结果的过程。</p>
+</blockquote>
+<ul>
+<li><p>Zookeeper介绍</p>
+<ul>
+<li>Zookeeper是源代码开放的分布式协调服务，由雅虎创建，是Google Chubby开源实现。Zookeeper是一个高性能的分布式数据一致性解决方案，它将那些复杂、容易出错的分布式一致性服务封装起来，构成一个搞笑可靠的原语集，并提供一系列简单易用的接口给用户使用。</li>
+</ul>
+</li>
+<li><p>Zookeeper的典型应用场景</p>
+<ul>
+<li>数据发布&#x2F;订阅 顾名思义就是一方把数据发布出来，另一方通过某种手动可以得到这些数据。<ul>
+<li>通常数据订阅有两种方式：推模式和拉模式，推模式一般是服务器主动向客户端推送消息，拉模式是客户端主动去服务端获取数据（通常采用的是轮询的方式）。</li>
+<li>Zookeeper采用两种方式的结合。<ul>
+<li>发布者将数据发布到Zookeeper集群节点上，订阅者通过一定的方法告诉服务器，我对那个节点的数据感兴趣，那个服务器在这些节点的数据发送变化时，就通知客户端，客户端得到通知后可以去服务器获取数据信息。</li>
+<li>分布式协调&#x2F;通知<ul>
+<li>心跳检测：在分布式系统中，通常需要机器是否可以用，Zookeeper中我们让所有的机器都注册一个临时节点，所以只需要判断这个节点是否存在就可以了，不需要直接去连接需要检查的机器，降低系统的负载度（节点分为临时和持久）。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Zookpeeper重量级使用</p>
+<ul>
+<li>Hadoop、HBase、Storm、Solr。</li>
+</ul>
+</li>
+<li><p>集群角色</p>
+<ul>
+<li>Leader、Follower、Observer<ul>
+<li>Leader服务器是整个Zookeeper集群工作机制的核心</li>
+<li>Follower服务器是Zookeeper集群状态的跟随者</li>
+<li>Oserver服务器充当一个观察者的角色</li>
+<li>Leader、Follower设计模式，Observer观察者模式</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>会话</p>
+<ul>
+<li>会话是指客户端Zookeeper服务器的连接，Zookeeper中的会话叫Session，客户端与服务器建立TCP的长连接来维持一个Session,客户端在启动的时候首先会与服务器建立一个TCP连接,通过这个连接客户端能够通过心跳检测与服务器保持有效的会话，也能向Zookeeper服务器发送请求并获得响应。</li>
+</ul>
+</li>
+<li><p>数据节点</p>
+<ul>
+<li>Zookeeper中的节点有两类<ul>
+<li>集群中的一台机器称为一个节点</li>
+<li>数据模型中的数据单元Znode，分别为持久节点和临时节点。（其实数据节点就是一个tree节点就是Znode）</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>版本</p>
+<ul>
+<li>Zookeeper中的版本<ul>
+<li>version<ul>
+<li>当前数据节点数据内容版本</li>
+</ul>
+</li>
+<li>cversion<ul>
+<li>当前数据节点子节点的版本号</li>
+</ul>
+</li>
+<li>aversion<ul>
+<li>当前数据节点ACL变更版本号</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>watcher（事件监听器）</p>
+<ul>
+<li>Zookeeper允许用户在指定节点上注册一些Watcher，当数据节点发生变化的时候，Zookeeper服务器会把这个变化通知发送给感兴趣的客户端。</li>
+</ul>
+</li>
+<li><p>ACL权限控制</p>
+<ul>
+<li>ACL是Access Contril Lists 的缩写,Zookeeper采用ACL策略来进行权限控制,有以下权限：<ul>
+<li>CREATE：创建子节点</li>
+<li>READ：获取子节点</li>
+<li>WRITE:更新子节点数据权限</li>
+<li>DELETE:删除子节点权限</li>
+<li>ADMIN：设置节点ACL权限</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="Zoopeeper环境搭建（集群、单机、伪集群）"><a href="#Zoopeeper环境搭建（集群、单机、伪集群）" class="headerlink" title="Zoopeeper环境搭建（集群、单机、伪集群）"></a>Zoopeeper环境搭建（集群、单机、伪集群）</h3><ul>
+<li>单机模式（设备环境有限暂时单机）<ul>
+<li>准备工作<ul>
+<li>下载Zookeeper（此处自行处理）</li>
+<li>解压 tar xzvf xxx.gz 解压</li>
+<li>重命名文件夹 Zookeeper 命令mv xxx xxx 后面的参数是新名字（可以不做）</li>
+<li>进入文件夹中&#x2F;conf&#x2F;</li>
+<li>复制配置文件zoo_sample.cfg（样例文件） 并重命名 zoo.cfg</li>
+</ul>
+</li>
+<li>编辑zoo.cfg内容（仅供参考,具体环境自行修改）</li>
+<li>tickTime &#x3D; 2000<ul>
+<li>tickTime：基本事件单元，以毫秒为单位。这个时间是作为 Zookeeper 服务器之间或客户端与服务器之间维持心跳的时间间隔，也就是每个 tickTime 时间就会发送一个心跳。</li>
+</ul>
+</li>
+<li>initLimit&#x3D; 5<ul>
+<li>initLimit:这个配置项用来配置Zookeeper接受客户端初始化连接时最长能忍受多少个心跳时间间隔数，当已超过5个心跳的时间（也就是tickTime）长度后Zookeeper服务器还没有收到客户端的返回信息，那么表明这个客户端连接失败。总的时间长度是5 * 2000&#x3D;4s。</li>
+</ul>
+</li>
+<li>dataDir &#x3D; D:\zookeeper\data<ul>
+<li>顾名思义就是 Zookeeper 保存数据快照的目录，默认情况下，Zookeeper 将写数据的日志文件也保存在这个目录里）。</li>
+</ul>
+</li>
+<li>dataLogDir&#x3D; D:\zookeeper\log<ul>
+<li>顾名思义就是 Zookeeper 保存日志的目录。</li>
+</ul>
+</li>
+<li>synclimit &#x3D; 5<ul>
+<li>这个配置项表示Leader与Follower之间发送消息，请求和应答时间长长度，最长不能超过多少个tickTime的时间长度,总的时间长度是2 * 2000 &#x3D; 4s。</li>
+</ul>
+</li>
+<li>clientPort &#x3D; 2181<ul>
+<li>这个端口就是客户端连接 Zookeeper 服务器的端口，Zookeeper 会监听这个端口，接受客户端的访问请求。</li>
+</ul>
+</li>
+<li>Server（待续）<ul>
+<li>格式：server.id&#x3D;host:port:port（两个port保证可以正常使用就行）<ul>
+<li>id：通常为整数，并且不能重复使用整数。</li>
+<li>host：服务器的IP地址。</li>
+<li>port: Follower端口</li>
+<li>port: Leader选举投票。</li>
+</ul>
+</li>
+<li>ZooKeeper建议使用hostname，而非ip。这需要对主机的&#x2F;etc&#x2F;hostname和&#x2F;etc&#x2F;hosts做host绑定(不用的OS不同修改方式)。</li>
+<li>创建一个myid文件（放在 dataDir文件下面）</li>
+<li>写入一行数据（请查阅zoo.cfg文件）<ul>
+<li>写入id位置的数据即可。表示当前系统环境Zookeeper是哪一个Server（通讯用的）。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>启动服务与停止服务</li>
+<li>进入bin&#x2F;文件</li>
+<li>执行zkServer.cmd 或则 <a href="http://zkserver.sh/">zkServer.sh</a></li>
+<li>CMD直接双击运行 ,SH则 sudo sh .&#x2F;zkServer.sh start 启动 stop 关闭</li>
+<li>验证 使用telnet来测试(自行安装)<ul>
+<li>telnet ip port 敲命令 stat 若返回数据表示当前服务器不能对外提供服务表明集群下其他服务器未启动（在Zookeeper中只要有半数的服务器正常工作就可以向外提供服务）。</li>
+</ul>
+</li>
+<li>在此简单说明下何为伪集群就是在一台服务器上的多个Zookeeper的集群叫伪集群（伪集群 两个port不能与其他zookeeper的port一样）。</li>
+<li>单机模式就删除其他服务器运行的时候就是单机模式。</li>
+</ul>
+</li>
+</ul>
+<h3 id="END"><a href="#END" class="headerlink" title="END"></a>END</h3>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/3587309950/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-min.jpg">
+      <meta itemprop="name" content="庆峰的博客">
+      <meta itemprop="description" content="Java | Sql | DataBase | Programmatic | EnterpriseArchitecture | DataAnalysis | ProjectManagement">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="庆峰的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/3587309950/" class="post-title-link" itemprop="url">SpringBoot-JMH</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-12-08 22:50:17" itemprop="dateCreated datePublished" datetime="2020-12-08T22:50:17+08:00">2020-12-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-01-06 17:24:33" itemprop="dateModified" datetime="2024-01-06T17:24:33+08:00">2024-01-06</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Programmatic/" itemprop="url" rel="index"><span itemprop="name">Programmatic</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>尝试在spring test中使用基准测试。</p>
+</blockquote>
+<h3 id="演示代码"><a href="#演示代码" class="headerlink" title="演示代码"></a>演示代码</h3><ul>
+<li><p>JMH 是一个用于在 JVM 上编写基准测试的 Java 工具库，它是作为 OpenJDK 项目的一部分开发的。</p>
+</li>
+<li><p>在与spring test集成过程中，只需要成功加载spring即可。</p>
+</li>
+</ul>
+<h4 id="Console"><a href="#Console" class="headerlink" title="Console"></a>Console</h4><ul>
+<li>当jmh先启动，在启动spring就正常使用了。</li>
+</ul>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># JMH version: 1.21</span></span><br><span class="line"><span class="comment"># VM version: JDK 1.8.0_275, OpenJDK 64-Bit Server VM, 25.275-b01</span></span><br><span class="line"><span class="comment"># VM invoker: /Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/jre/bin/java</span></span><br><span class="line"><span class="comment"># VM options: -server</span></span><br><span class="line"><span class="comment"># Warmup: 1 iterations, 10 s each</span></span><br><span class="line"><span class="comment"># Measurement: 1 iterations, 10 s each</span></span><br><span class="line"><span class="comment"># Timeout: 10 min per iteration</span></span><br><span class="line"><span class="comment"># Threads: 1 thread, will synchronize iterations</span></span><br><span class="line"><span class="comment"># Benchmark mode: Average time, time/op</span></span><br><span class="line"><span class="comment"># Benchmark: cn.z201.jmh.AppApplicationTest.environment</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment"># Run progress: 0.00% complete, ETA 00:00:20</span></span><br><span class="line"><span class="comment"># Fork: N/A, test runs in the host VM</span></span><br><span class="line"><span class="comment"># *** WARNING: Non-forked runs may silently omit JVM options, mess up profilers, disable compiler hints, etc. ***</span></span><br><span class="line"><span class="comment"># *** WARNING: Use non-forked runs only for debugging purposes, not for actual performance runs. ***</span></span><br><span class="line"><span class="comment"># Warmup Iteration   1: </span></span><br><span class="line">  <span class="attr">.</span>   <span class="string">____          _            __ _ _</span></span><br><span class="line"> <span class="attr">/\\</span> <span class="string">/ ___&#x27;_ __ _ _(_)_ __  __ _ \ \ \ \</span></span><br><span class="line"><span class="string">( ( )\___ | &#x27;_ | &#x27;_| | &#x27;_ \/ _` | \ \ \ \</span></span><br><span class="line"><span class="string"> \\/  ___)| |_)| | | | | || (_| |  ) ) ) )</span></span><br><span class="line">  <span class="attr">&#x27;</span>  <span class="string">|____| .__|_| |_|_| |_\__, | / / / /</span></span><br><span class="line"> =========<span class="attr">|_|</span>=<span class="string">=============|___/=/_/_/_/</span></span><br><span class="line"> :: <span class="attr">Spring</span> <span class="string">Boot ::                (v2.4.5)</span></span><br><span class="line"></span><br><span class="line"><span class="attr">[cn.z201.jmh.AppApplicationTest.environment-jmh-worker-1]</span> <span class="string">[StartupInfoLogger.java : 55] Starting application using Java 1.8.0_275 on z201MacBook-Pro.local with PID 23242 (started by zengqingfeng in /Users/zengqingfeng/word/code-example/SpringBoot-JMH)</span></span><br><span class="line"><span class="attr">[cn.z201.jmh.AppApplicationTest.environment-jmh-worker-1]</span> <span class="string">[SpringApplication.java : 679] The following profiles are active: dev</span></span><br><span class="line"><span class="attr">[cn.z201.jmh.AppApplicationTest.environment-jmh-worker-1]</span> <span class="string">[Bootstrap.java : 68] UT026010: Buffer pool was not set on WebSocketDeploymentInfo, the default pool will be used</span></span><br><span class="line"><span class="attr">[cn.z201.jmh.AppApplicationTest.environment-jmh-worker-1]</span> <span class="string">[ServletContextImpl.java : 371] Initializing Spring embedded WebApplicationContext</span></span><br><span class="line"><span class="attr">[cn.z201.jmh.AppApplicationTest.environment-jmh-worker-1]</span> <span class="string">[ServletWebServerApplicationContext.java : 289] Root WebApplicationContext: initialization completed in 809 ms</span></span><br><span class="line"><span class="attr">[cn.z201.jmh.AppApplicationTest.environment-jmh-worker-1]</span> <span class="string">[ExecutorConfigurationSupport.java : 181] Initializing ExecutorService &#x27;applicationTaskExecutor&#x27;</span></span><br><span class="line"><span class="attr">[cn.z201.jmh.AppApplicationTest.environment-jmh-worker-1]</span> <span class="string">[Undertow.java : 120] starting server: Undertow - 2.2.7.Final</span></span><br><span class="line"><span class="attr">[cn.z201.jmh.AppApplicationTest.environment-jmh-worker-1]</span> <span class="string">[Xnio.java : 95] XNIO version 3.8.0.Final</span></span><br><span class="line"><span class="attr">[cn.z201.jmh.AppApplicationTest.environment-jmh-worker-1]</span> <span class="string">[NioXnio.java : 59] XNIO NIO Implementation Version 3.8.0.Final</span></span><br><span class="line"><span class="attr">[cn.z201.jmh.AppApplicationTest.environment-jmh-worker-1]</span> <span class="string">[Version.java : 52] JBoss Threads version 3.1.0.Final</span></span><br><span class="line"><span class="attr">[cn.z201.jmh.AppApplicationTest.environment-jmh-worker-1]</span> <span class="string">[UndertowWebServer.java : 133] Undertow started on port(s) 9031 (http)</span></span><br><span class="line"><span class="attr">[cn.z201.jmh.AppApplicationTest.environment-jmh-worker-1]</span> <span class="string">[StartupInfoLogger.java : 61] Started application in 2.018 seconds (JVM running for 3.629)</span></span><br><span class="line"><span class="attr">[cn.z201.jmh.AppApplicationTest.environment-jmh-worker-1]</span> <span class="string">[AppApplicationTest.java : 40] dev</span></span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/3587309950/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/112304606/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -647,406 +1122,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/2918322548/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="庆峰的博客">
-      <meta itemprop="description" content="Java | Sql | DataBase | Programmatic | EnterpriseArchitecture | DataAnalysis | ProjectManagement">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="庆峰的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/2918322548/" class="post-title-link" itemprop="url">Netty-Source-Code-Environment-build</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-10-17 01:28:40" itemprop="dateCreated datePublished" datetime="2020-10-17T01:28:40+08:00">2020-10-17</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-01-06 18:23:53" itemprop="dateModified" datetime="2024-01-06T18:23:53+08:00">2024-01-06</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Programmatic/" itemprop="url" rel="index"><span itemprop="name">Programmatic</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2.5k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="0x00-阅读源代码"><a href="#0x00-阅读源代码" class="headerlink" title="0x00 阅读源代码"></a>0x00 阅读源代码</h2><h3 id="下载源代码"><a href="#下载源代码" class="headerlink" title="下载源代码"></a>下载源代码</h3><ul>
-<li>阅读版本号 <code>netty-4.1.33.Final</code><ul>
-<li>由于github下载速度是在太慢了，这里用gitee克隆一个镜像。</li>
-<li>下载版本<code>git clone -b netty-4.1.33.Final git@gitee.com:Z201/netty.git</code></li>
-</ul>
-</li>
-</ul>
-<h3 id="查看源代码结构"><a href="#查看源代码结构" class="headerlink" title="查看源代码结构"></a>查看源代码结构</h3><ul>
-<li>查看项目主要文件夹</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">tree -d  -L 1    </span><br><span class="line">├── all</span><br><span class="line">├── bom</span><br><span class="line">├── buffer (Core netty定制的buffer)</span><br><span class="line">├── codec (Protocol Support)</span><br><span class="line">├── codec-dns (Protocol Support)</span><br><span class="line">├── codec-haproxy (Protocol Support)</span><br><span class="line">├── codec-http (Protocol Support)</span><br><span class="line">├── codec-http2 (Protocol Support)</span><br><span class="line">├── codec-memcache (Protocol Support)</span><br><span class="line">├── codec-mqtt (Protocol Support 物联网)</span><br><span class="line">├── codec-redis (Protocol Support )</span><br><span class="line">├── codec-smtp (Protocol Support 邮件)</span><br><span class="line">├── codec-socks (Protocol Support)</span><br><span class="line">├── codec-stomp (Protocol Support ws)</span><br><span class="line">├── codec-xml (Protocol Support)</span><br><span class="line">├── common (Core)</span><br><span class="line">├── dev-tools</span><br><span class="line">├── docker</span><br><span class="line">├── example （抄代码的地方）</span><br><span class="line">├── handler  (Protocol Support)</span><br><span class="line">├── handler-proxy (Protocol Support)</span><br><span class="line">├── license</span><br><span class="line">├── microbench (测试用的)</span><br><span class="line">├── resolver	(Core)</span><br><span class="line">├── resolver-dns (Core)</span><br><span class="line">├── tarball</span><br><span class="line">├── target</span><br><span class="line">├── testsuite</span><br><span class="line">├── testsuite-autobahn</span><br><span class="line">├── testsuite-http2</span><br><span class="line">├── testsuite-osgi</span><br><span class="line">├── testsuite-shading</span><br><span class="line">├── transport (Transport Services)</span><br><span class="line">├── transport-native-epoll  (Transport Servicesnative omitted - reserved keyword <span class="keyword">in</span> Java)</span><br><span class="line">├── transport-native-kqueue (Transport Servicesnative omitted - reserved keyword <span class="keyword">in</span> Java)</span><br><span class="line">├── transport-native-unix-common Transport Services native omitted - reserved keyword <span class="keyword">in</span> Java)</span><br><span class="line">├── transport-native-unix-common-tests </span><br><span class="line">├── transport-rxtx (Transport Services 串口编程 作废)</span><br><span class="line">├── transport-sctp (Transport Services )</span><br><span class="line">└── transport-udt  (Transport Services 作废)</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>将项目导入idea中，笔者采用mac系统。这里需要注意需要安装部分软件。</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">brew install autoconf automake libtool</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">如果安装了国内的镜像出现Error opening archive: Failed to open</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">export</span> HOMEBREW_BOTTLE_DOMAIN=<span class="string">&#x27;&#x27;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">参考文档 https://zhuanlan.zhihu.com/p/383707713</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">如果是mac系统需要手动将pom文件tcnative.classifier修改成对应系统的。</span></span><br><span class="line">mvn install -Dmaven.test.skip=true </span><br></pre></td></tr></table></figure>
-
-<h2 id="0x01-根据官方文档快速入门"><a href="#0x01-根据官方文档快速入门" class="headerlink" title="0x01 根据官方文档快速入门"></a>0x01 根据官方文档快速入门</h2><blockquote>
-<p>强烈推荐认真阅读netty的官方文档。</p>
-</blockquote>
-<ul>
-<li>官方文档地址 ：<a href="https://netty.io/wiki/index.html">https://netty.io/wiki/index.html</a></li>
-</ul>
-<h3 id="Core"><a href="#Core" class="headerlink" title="Core"></a>Core</h3><ul>
-<li>netty-common模块是 Netty 的核心基础包，其他模块都需要依赖它。常用的包括通用工具类和自定义并发包。</li>
-<li>netty-buffer 模块中Netty自己实现了的一个更加完备的ByteBuf 工具类，用于网络通信中的数据载体。</li>
-<li>netty-resover模块主要提供了一些有关基础设施的解析工具，包括 IP Address、Hostname、DNS 等。</li>
-</ul>
-<h3 id="Protocol-Support"><a href="#Protocol-Support" class="headerlink" title="Protocol Support"></a>Protocol Support</h3><ul>
-<li>netty-codec模块主要负责编解码工作，提供主流协议的编辑码，还提供了抽象编解码类 ByteToMessageDecoder 和 MessageToByteEncoder，通过继承这两个类我们可以轻松实现自定义的编解码逻辑。</li>
-</ul>
-<h3 id="Transport-Service"><a href="#Transport-Service" class="headerlink" title="Transport Service"></a>Transport Service</h3><ul>
-<li>netty-transport 模块可以说是 Netty 提供数据处理和传输的核心模块，如 Bootstrap、Channel、ChannelHandler、EventLoop、EventLoopGroup、ChannelPipeline 等。其中 Bootstrap 负责客户端或服务端的启动工作，包括创建、初始化 Channel 等；EventLoop 负责向注册的 Channel 发起 I&#x2F;O 读写操作；ChannelPipeline 负责 ChannelHandler 的有序编排，这些组件在介绍 Netty 逻辑架构的时候都有所涉及。</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/2011046270/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="庆峰的博客">
-      <meta itemprop="description" content="Java | Sql | DataBase | Programmatic | EnterpriseArchitecture | DataAnalysis | ProjectManagement">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="庆峰的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/2011046270/" class="post-title-link" itemprop="url">MySQL基础（三）</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-09-29 09:43:58" itemprop="dateCreated datePublished" datetime="2020-09-29T09:43:58+08:00">2020-09-29</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-01-06 16:46:14" itemprop="dateModified" datetime="2024-01-06T16:46:14+08:00">2024-01-06</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/DataBase/" itemprop="url" rel="index"><span itemprop="name">DataBase</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>14k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>13 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="SQL-常见用法"><a href="#SQL-常见用法" class="headerlink" title="SQL 常见用法"></a>SQL 常见用法</h2><h3 id="1-查找数据的查询"><a href="#1-查找数据的查询" class="headerlink" title="1. 查找数据的查询"></a>1. 查找数据的查询</h3><h4 id="SELECT-用于从数据库中选择数据"><a href="#SELECT-用于从数据库中选择数据" class="headerlink" title="SELECT: 用于从数据库中选择数据"></a><strong>SELECT</strong>: 用于从数据库中选择数据</h4><ul>
-<li><code>SELECT</code> * <code>FROM</code> table_name;</li>
-</ul>
-<h4 id="DISTINCT-用于过滤掉重复的值并返回指定列的行"><a href="#DISTINCT-用于过滤掉重复的值并返回指定列的行" class="headerlink" title="DISTINCT: 用于过滤掉重复的值并返回指定列的行"></a><strong>DISTINCT</strong>: 用于过滤掉重复的值并返回指定列的行</h4><ul>
-<li><code>SELECT DISTINCT</code> column_name;</li>
-</ul>
-<h4 id="WHERE-用于过滤记录-行"><a href="#WHERE-用于过滤记录-行" class="headerlink" title="WHERE: 用于过滤记录&#x2F;行"></a><strong>WHERE</strong>: 用于过滤记录&#x2F;行</h4><ul>
-<li><code>SELECT</code> column1, column2 <code>FROM</code> table_name <code>WHERE</code> condition;</li>
-<li><code>SELECT</code> * <code>FROM</code> table_name <code>WHERE</code> condition1 <code>AND</code> condition2;</li>
-<li><code>SELECT</code> * <code>FROM</code> table_name <code>WHERE</code> condition1 <code>OR</code> condition2;</li>
-<li><code>SELECT</code> * <code>FROM</code> table_name <code>WHERE NOT</code> condition;</li>
-<li><code>SELECT</code> * <code>FROM</code> table_name <code>WHERE</code> condition1 <code>AND</code> (condition2 <code>OR</code> condition3);</li>
-<li><code>SELECT</code> * <code>FROM</code> table_name <code>WHERE EXISTS</code> (<code>SELECT</code> column_name <code>FROM</code> table_name <code>WHERE</code> condition);</li>
-</ul>
-<h4 id="ORDER-BY-用于结果集的排序，升序（ASC）或者降序（DESC）"><a href="#ORDER-BY-用于结果集的排序，升序（ASC）或者降序（DESC）" class="headerlink" title="ORDER BY: 用于结果集的排序，升序（ASC）或者降序（DESC）"></a><strong>ORDER BY</strong>: 用于结果集的排序，升序（ASC）或者降序（DESC）</h4><ul>
-<li><code>SELECT</code> * <code>FROM</code> table_name <code>ORDER BY</code> column;</li>
-<li><code>SELECT</code> * <code>FROM</code> table_name <code>ORDER BY</code> column <code>DESC</code>;</li>
-<li><code>SELECT</code> * <code>FROM</code> table_name <code>ORDER BY</code> column1 <code>ASC</code>, column2 <code>DESC</code>;</li>
-</ul>
-<h4 id="SELECT-TOP-用于指定从表顶部返回的记录数"><a href="#SELECT-TOP-用于指定从表顶部返回的记录数" class="headerlink" title="SELECT TOP: 用于指定从表顶部返回的记录数"></a><strong>SELECT TOP</strong>: 用于指定从表顶部返回的记录数</h4><ul>
-<li><code>SELECT TOP</code> number columns_names <code>FROM</code> table_name <code>WHERE</code> condition;</li>
-<li><code>SELECT TOP</code> percent columns_names <code>FROM</code> table_name <code>WHERE</code> condition;</li>
-<li>并非所有数据库系统都支持<code>SELECT TOP</code>。 MySQL 中是<code>LIMIT</code>子句</li>
-<li><code>SELECT</code> column_names <code>FROM</code> table_name <code>LIMIT</code> offset, count;</li>
-</ul>
-<h4 id="LIKE-用于搜索列中的特定模式，WHERE-子句中使用的运算符"><a href="#LIKE-用于搜索列中的特定模式，WHERE-子句中使用的运算符" class="headerlink" title="LIKE: 用于搜索列中的特定模式，WHERE 子句中使用的运算符"></a><strong>LIKE</strong>: 用于搜索列中的特定模式，WHERE 子句中使用的运算符</h4><ul>
-<li>% (percent sign) 是一个表示零个，一个或多个字符的通配符</li>
-<li>_ (underscore) 是一个表示单个字符通配符</li>
-<li><code>SELECT</code> column_names <code>FROM</code> table_name <code>WHERE</code> column_name <code>LIKE</code> pattern;</li>
-<li><code>LIKE</code> ‘a%’    （查找任何以“a”开头的值）</li>
-<li><code>LIKE</code> ‘%a’    （查找任何以“a”结尾的值）</li>
-<li><code>LIKE</code> ‘%or%’  （查找任何包含“or”的值）</li>
-<li><code>LIKE</code> ‘_r%’   （查找任何第二位是“r”的值）</li>
-<li><code>LIKE</code> ‘a_%_%’ （查找任何以“a”开头且长度至少为3的值）</li>
-<li><code>LIKE</code> ‘[a-c]%’（查找任何以“a”或“b”或“c”开头的值）</li>
-</ul>
-<h4 id="IN-用于在-WHERE-子句中指定多个值的运算符"><a href="#IN-用于在-WHERE-子句中指定多个值的运算符" class="headerlink" title="IN: 用于在 WHERE 子句中指定多个值的运算符"></a><strong>IN</strong>: 用于在 WHERE 子句中指定多个值的运算符</h4><ul>
-<li>本质上，IN运算符是多个OR条件的简写</li>
-<li><code>SELECT</code> column_names <code>FROM</code> table_name <code>WHERE</code> column_name <code>IN</code> (value1, value2, …);</li>
-<li><code>SELECT</code> column_names <code>FROM</code> table_name <code>WHERE</code> column_name <code>IN</code> (<code>SELECT STATEMENT</code>);</li>
-</ul>
-<h4 id="BETWEEN-用于过滤给定范围的值的运算符"><a href="#BETWEEN-用于过滤给定范围的值的运算符" class="headerlink" title="BETWEEN: 用于过滤给定范围的值的运算符"></a><strong>BETWEEN</strong>: 用于过滤给定范围的值的运算符</h4><ul>
-<li><code>SELECT</code> column_names <code>FROM</code> table_name <code>WHERE</code> column_name <code>BETWEEN</code> value1 <code>AND</code> value2;</li>
-<li><code>SELECT</code> * <code>FROM</code> Products <code>WHERE</code> (column_name <code>BETWEEN</code> value1 <code>AND</code> value2) <code>AND NOT</code> column_name2 <code>IN</code> (value3, value4);</li>
-<li><code>SELECT</code> * <code>FROM</code> Products <code>WHERE</code> column_name <code>BETWEEN</code> #01&#x2F;07&#x2F;1999# AND #03&#x2F;12&#x2F;1999#;</li>
-</ul>
-<h4 id="NULL-代表一个字段没有值"><a href="#NULL-代表一个字段没有值" class="headerlink" title="NULL: 代表一个字段没有值"></a><strong>NULL</strong>: 代表一个字段没有值</h4><ul>
-<li><code>SELECT</code> * <code>FROM</code> table_name <code>WHERE</code> column_name <code>IS NULL</code>;</li>
-<li><code>SELECT</code> * <code>FROM</code> table_name <code>WHERE</code> column_name <code>IS NOT NULL</code>;</li>
-</ul>
-<h4 id="AS-用于给表或者列分配别名"><a href="#AS-用于给表或者列分配别名" class="headerlink" title="AS: 用于给表或者列分配别名"></a><strong>AS</strong>: 用于给表或者列分配别名</h4><ul>
-<li><code>SELECT</code> column_name <code>AS</code> alias_name <code>FROM</code> table_name;</li>
-<li><code>SELECT</code> column_name <code>FROM</code> table_name <code>AS</code> alias_name;</li>
-<li><code>SELECT</code> column_name <code>AS</code> alias_name1, column_name2 <code>AS</code> alias_name2;</li>
-<li><code>SELECT</code> column_name1, column_name2 + ‘, ‘ + column_name3 <code>AS</code> alias_name;</li>
-</ul>
-<h4 id="UNION-用于组合两个或者多个-SELECT-语句的结果集的运算符"><a href="#UNION-用于组合两个或者多个-SELECT-语句的结果集的运算符" class="headerlink" title="UNION: 用于组合两个或者多个 SELECT 语句的结果集的运算符"></a><strong>UNION</strong>: 用于组合两个或者多个 SELECT 语句的结果集的运算符</h4><ul>
-<li>每个 SELECT 语句必须拥有相同的列数</li>
-<li>列必须拥有相似的数据类型</li>
-<li>每个 SELECT 语句中的列也必须具有相同的顺序</li>
-<li><code>SELECT</code> columns_names <code>FROM</code> table1 <code>UNION SELECT</code> column_name <code>FROM</code> table2;</li>
-<li><code>UNION</code> 仅允许选择不同的值, <code>UNION ALL</code> 允许重复</li>
-</ul>
-<h4 id="ANY-ALL-用于检查-WHERE-或-HAVING-子句中使用的子查询条件的运算符"><a href="#ANY-ALL-用于检查-WHERE-或-HAVING-子句中使用的子查询条件的运算符" class="headerlink" title="ANY|ALL: 用于检查 WHERE 或 HAVING 子句中使用的子查询条件的运算符"></a><strong>ANY|ALL</strong>: 用于检查 WHERE 或 HAVING 子句中使用的子查询条件的运算符</h4><ul>
-<li><code>ANY</code> 如果任何子查询值满足条件，则返回 true。</li>
-<li><code>ALL</code> 如果所有子查询值都满足条件，则返回 true。</li>
-<li><code>SELECT</code> columns_names <code>FROM</code> table1 <code>WHERE</code> column_name operator (<code>ANY</code>|<code>ALL</code>) (<code>SELECT</code> column_name <code>FROM</code> table_name <code>WHERE</code> condition);</li>
-</ul>
-<h4 id="GROUP-BY-通常与聚合函数（COUNT，MAX，MIN，SUM，AVG）一起使用，用于将结果集分组为一列或多列"><a href="#GROUP-BY-通常与聚合函数（COUNT，MAX，MIN，SUM，AVG）一起使用，用于将结果集分组为一列或多列" class="headerlink" title="GROUP BY: 通常与聚合函数（COUNT，MAX，MIN，SUM，AVG）一起使用，用于将结果集分组为一列或多列"></a><strong>GROUP BY</strong>: 通常与聚合函数（COUNT，MAX，MIN，SUM，AVG）一起使用，用于将结果集分组为一列或多列</h4><ul>
-<li><code>SELECT</code> column_name1, COUNT(column_name2) <code>FROM</code> table_name <code>WHERE</code> condition <code>GROUP BY</code> column_name1 <code>ORDER BY</code> COUNT(column_name2) DESC;</li>
-</ul>
-<h4 id="HAVING-HAVING-子句指定-SELECT-语句应仅返回聚合值满足指定条件的行。它被添加到-SQL-语言中，因为WHERE关键字不能与聚合函数一起使用。"><a href="#HAVING-HAVING-子句指定-SELECT-语句应仅返回聚合值满足指定条件的行。它被添加到-SQL-语言中，因为WHERE关键字不能与聚合函数一起使用。" class="headerlink" title="HAVING: HAVING 子句指定 SELECT 语句应仅返回聚合值满足指定条件的行。它被添加到 SQL 语言中，因为WHERE关键字不能与聚合函数一起使用。"></a><strong>HAVING</strong>: HAVING 子句指定 SELECT 语句应仅返回聚合值满足指定条件的行。它被添加到 SQL 语言中，因为WHERE关键字不能与聚合函数一起使用。</h4><ul>
-<li><code>SELECT</code> <code>COUNT</code>(column_name1), column_name2 <code>FROM</code> table <code>GROUP BY</code> column_name2 <code>HAVING</code> <code>COUNT(</code>column_name1<code>)</code> &gt; 5;</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/posts/2011046270/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://z201.cn/posts/4212331734/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar-min.jpg">
-      <meta itemprop="name" content="庆峰的博客">
-      <meta itemprop="description" content="Java | Sql | DataBase | Programmatic | EnterpriseArchitecture | DataAnalysis | ProjectManagement">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="庆峰的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/4212331734/" class="post-title-link" itemprop="url">Centos7-Selenium-Java-Programming-Environment</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-08-31 09:45:59" itemprop="dateCreated datePublished" datetime="2020-08-31T09:45:59+08:00">2020-08-31</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-01-06 18:40:45" itemprop="dateModified" datetime="2024-01-06T18:40:45+08:00">2024-01-06</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Programmatic/" itemprop="url" rel="index"><span itemprop="name">Programmatic</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.9k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>最近在编写爬虫程序，这里简单的做下笔记。</p>
-</blockquote>
-<h3 id="阅读注意事项"><a href="#阅读注意事项" class="headerlink" title="阅读注意事项"></a>阅读注意事项</h3><ol>
-<li>需要一台服务器(阿里ESC)这种，分配的公网ip。</li>
-<li>这里使用的yum安装，所以环境配置都创建好了，不需要在手动修改。</li>
-</ol>
-<h3 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h3><blockquote>
-<p>安装Java、maven、git、selenium运行环境</p>
-</blockquote>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用的机器是centos7.4</span></span><br><span class="line"><span class="comment"># 系统环境一个一个来安装。</span></span><br><span class="line"><span class="comment"># 1.检查是否安装jdk</span></span><br><span class="line">-&gt; yum install java-1.8.0-openjdk-devel.x86_64</span><br><span class="line">-&gt; java -version</span><br><span class="line">openjdk version <span class="string">&quot;1.8.0_262&quot;</span></span><br><span class="line">OpenJDK Runtime Environment (build 1.8.0_262-b10)</span><br><span class="line">OpenJDK 64-Bit Server VM (build 25.262-b10, mixed mode)</span><br><span class="line">-&gt; yum install maven</span><br><span class="line">-&gt; mvn -version</span><br><span class="line">Java version: 1.8.0_262, vendor: Oracle Corporation</span><br><span class="line">Java home: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.262.b10-0.el7_8.x86_64/jre</span><br><span class="line">Default locale: zh_CN, platform encoding: UTF-8</span><br><span class="line">OS name: <span class="string">&quot;linux&quot;</span>, version: <span class="string">&quot;3.10.0-862.el7.x86_64&quot;</span>, <span class="built_in">arch</span>: <span class="string">&quot;amd64&quot;</span>, family: <span class="string">&quot;unix&quot;</span></span><br><span class="line">-&gt; yum install git</span><br><span class="line">git version 1.8.3.1</span><br><span class="line"><span class="comment"># 查看是否生成过证书</span></span><br><span class="line">-&gt; <span class="built_in">ls</span> -al ~/.ssh</span><br><span class="line"><span class="comment"># 这里配置下ssh公钥方便git拉去代码</span></span><br><span class="line">-&gt; ssh-keygen -t rsa -C “you email@gamil.com”</span><br><span class="line"><span class="comment"># 查看证书</span></span><br><span class="line">-&gt; <span class="built_in">cat</span> ~/.ssh/id_rsa.pub</span><br><span class="line"><span class="comment"># 开始配置 selenium 运行环境</span></span><br><span class="line">-&gt; wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm</span><br><span class="line">-&gt; yum localinstall google-chrome-stable_current_x86_64.rpm</span><br><span class="line"><span class="comment"># 检查版本 </span></span><br><span class="line">-&gt; google-chrome --version </span><br><span class="line">Google Chrome 85.0.4183.83 </span><br><span class="line"><span class="comment"># 安装 chromedriver</span></span><br><span class="line">-&gt; yum install chromedriver</span><br><span class="line">-&gt; chromedriver -version</span><br><span class="line">ChromeDriver 84.0.4147.89 </span><br><span class="line"><span class="comment"># 这里注意 chromedriver 可能与chrome的版本不一致，去官方网站下载后解压复制到/usr/bin中</span></span><br><span class="line"><span class="comment"># 下载地址 https://chromedriver.chromium.org/</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>注意 google-chrome 和 chromedriver版本是需要对应的具体可以到官方查看。</li>
-<li>在centos上运行需要配置下关键参数</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ChromeOptions</span> <span class="variable">chromeOptions</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ChromeOptions</span>();</span><br><span class="line">   chromeOptions.addArguments(<span class="string">&quot;--headless&quot;</span>);</span><br><span class="line">   chromeOptions.addArguments(<span class="string">&quot;--disable-gpu&quot;</span>); <span class="comment">// 不配置一定报错</span></span><br><span class="line">   chromeOptions.addArguments(<span class="string">&quot;--no-sandbox&quot;</span>);</span><br><span class="line">   <span class="comment">// 创建无界面浏览器对象</span></span><br><span class="line">   chromeOptions.setHeadless(<span class="literal">true</span>);</span><br><span class="line">   <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">ChromeDriver</span>(chromeOptions);</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>启动代码的需要指定环境变量</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">System.setProperty(<span class="string">&quot;webdriver.chrome.chromedriver&quot;</span>, <span class="string">&quot;/usr/bin/chromedriver&quot;</span>);</span><br><span class="line"># 具体可以通过 whereis chromedriver查看。</span><br></pre></td></tr></table></figure>
-
-<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p><a href="https://segmentfault.com/a/1190000015389941">CentOS使用yum安装jdk</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1117,7 +1192,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">135</span>
+          <span class="site-state-item-count">138</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1264,13 +1339,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">1m</span>
+    <span title="站点总字数">1.1m</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">15:51</span>
+    <span title="站点阅读时长">16:11</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
